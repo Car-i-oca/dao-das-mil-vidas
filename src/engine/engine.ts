@@ -14,7 +14,7 @@ import { EVENTS } from '../data/events';
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
 /** Enquanto o personagem não encontra um método, usa-se uma trilha neutra (escada xianxia, sem bônus). */
-const NO_PATH: Path = { id: '', name: 'Sem trilha ainda', ladder: 'xianxia', desc: 'O método ainda será encontrado.', stats: {}, xpMult: 1, tags: [] };
+const NO_PATH: Path = { id: '', name: 'Sem trilha ainda', ladder: 'neutro', desc: 'O método ainda será encontrado.', stats: {}, xpMult: 1, tags: [] };
 export const PATH: Record<string, Path> = { ...byId(PATHS), '': NO_PATH };
 export const ORIGIN = byId(ORIGINS);
 export const TALENT = byId(TALENTS);
@@ -219,6 +219,8 @@ function setPath(s: State, id: string) {
     if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
   }
   if (!s.flags.includes('trilha_definida')) s.flags.push('trilha_definida');
+  const lifeMult = (TALENT[s.talent].lifeMult ?? 1) * (FLAW[s.flaw].lifeMult ?? 1);
+  s.maxAge = Math.max(s.maxAge, Math.round(realmOf(s).lifespan * lifeMult));
   addLog(s, `Encontrou seu método: ${p.name}.`);
 }
 
@@ -324,19 +326,31 @@ function doBreakthrough(s: State, rng: Rng, pill?: Item): string {
       return `Raios atravessaram seu corpo. Quando o céu enfim se calou, você estava de pé: ${target}.`;
     }
     tierUp(s, 1);
-    return `O Qi fluiu como rio sem margens. Seu corpo cedeu, a mente iluminou: ${target}.`;
+    return rng.pick([
+      `O Qi fluiu como rio sem margens. Seu corpo cedeu, a mente iluminou: ${target}.`,
+      `Uma porta que parecia parede abriu-se em silêncio. Do outro lado, ${target}.`,
+      `Durante dias, nada. Então, num suspiro, tudo se encaixou: ${target}.`,
+      `O Qi subiu como maré de lua cheia e, quando recuou, você já era ${target}.`,
+    ]);
   }
   // Falhar custa tempo de recuperação.
   s.age += Math.max(1, Math.ceil(realmOf(s).years * 0.12));
   const r = rng.next();
   if (r < 0.6) {
     s.xp = 45;
-    return 'O rompimento falhou. O Qi recuou como maré, deixando cansaço e uma lição amarga.';
+    return rng.pick([
+      'O rompimento falhou. O Qi recuou como maré, deixando cansaço e uma lição amarga.',
+      'A porta não cedeu. Você ficou diante dela até as pernas tremerem e voltou para trás, em silêncio.',
+      'O Qi chegou à beira e não passou. Faltou pouco, ou faltou tudo; é difícil saber.',
+    ]);
   }
   if (r < 0.85) {
     s.xp = 40;
     s.wounds += 2;
-    return 'O rompimento falhou e o Qi rebateu contra os meridianos. Sangue na boca, ferimentos no corpo.';
+    return rng.pick([
+      'O rompimento falhou e o Qi rebateu contra os meridianos. Sangue na boca, ferimentos no corpo.',
+      'O Qi estourou contra a barreira e voltou como chicote. Você acordou no chão, sem lembrar de ter caído.',
+    ]);
   }
   const pDev = Math.min(0.9, Math.max(0.15, 0.5 + (eff(s, 'dao') - 12) * 0.03));
   if (rng.chance(pDev)) {
@@ -416,14 +430,15 @@ export function view(s: State): View {
 }
 
 /* ---------- Escolhas ---------- */
-interface Snap { stats: Stats; pedras: number; karma: number; fama: number; corr: number; wounds: number; tier: number; xp: number; maxAge: number; items: string[]; techs: string[]; path: string }
-const snap = (s: State): Snap => ({ stats: { ...s.stats }, pedras: s.pedras, karma: s.karma, fama: s.fama, corr: s.corr, wounds: s.wounds, tier: s.tier, xp: s.xp, maxAge: s.maxAge, items: [...s.items], techs: [...s.techniques], path: s.path });
+interface Snap { realm: string; stats: Stats; pedras: number; karma: number; fama: number; corr: number; wounds: number; tier: number; xp: number; maxAge: number; items: string[]; techs: string[]; path: string }
+const snap = (s: State): Snap => ({ realm: realmName(s), stats: { ...s.stats }, pedras: s.pedras, karma: s.karma, fama: s.fama, corr: s.corr, wounds: s.wounds, tier: s.tier, xp: s.xp, maxAge: s.maxAge, items: [...s.items], techs: [...s.techniques], path: s.path });
 
 /** Compara o estado antes e depois de uma escolha e lista o que mudou, para o jogador enxergar a consequência. */
 function diffSnap(b: Snap, s: State): Change[] {
   const out: Change[] = [];
   const sign = (n: number) => (n > 0 ? '+' : '−') + Math.abs(n);
   if (s.tier !== b.tier) out.push({ t: `Reino: ${realmName(s)}`, k: s.tier > b.tier ? 'up' : 'down' });
+  else if (realmName(s) !== b.realm) out.push({ t: `Reino: ${realmName(s)}`, k: 'neutral' });
   if (s.path !== b.path && s.path) out.push({ t: `Trilha: ${PATH[s.path].name}`, k: 'up' });
   const lvl = s.tier > b.tier ? 2 : 0; // o ganho fixo de +2 por reino já está no aviso de reino
   for (const k of STAT_KEYS) {
@@ -471,7 +486,11 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   if (v.action) {
     if (v.action === 'wait') {
       s.seen['__break'] = s.age;
-      s.result = { text: 'Você recolhe o Qi e espera. Os dias passam; o gargalo amadurece.' };
+      s.result = { text: rng.pick([
+        'Você recolhe o Qi e espera. Os dias passam; o gargalo amadurece.',
+        'Respirar, esperar, respirar. A barreira não some, mas já não parece tão alta.',
+        'Você troca a pressa por rotina: cultiva de manhã, caminha à tarde, medita à noite. O gargalo respeita quem não o encara.',
+      ]) };
       applyFx(s, { stats: { comp: 1 }, anos: 1 }, rng);
       s.log.push({ age: Math.floor(s.age), text: 'Adiou o rompimento para se preparar melhor.' });
       return;

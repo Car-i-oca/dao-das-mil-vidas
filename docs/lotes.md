@@ -123,3 +123,9 @@ Feito como designer, jogador e avaliador, sem mexer no balanceamento.
 - **Códice:** coleção de finais, técnicas e itens descobertos em qualquer vida; o que falta aparece como "???".
 - **Copiar resumo da vida:** botão na tela final.
 - **Linter de conteúdo** (`npm run validate`): marcadores desconhecidos como `{foo}`, textos vazios ou longos, opções repetidas, atributos ou xp exagerados, nomes e títulos repetidos, eventos cujas opções todas têm condição. Resultado: o conteúdo está limpo; só renomeei três eventos com o mesmo título ("Refinar Pílula de Passagem").
+
+## Ciclo de melhorias 2 (leitura de uma vida inteira como jogador)
+Achados e correções:
+- **Reino que "mudava de nome" depois da cena de trilha** (ex.: "Refinamento de Qi" virava "Terceira Classe"): quem despertou e ainda não tem trilha usa agora a escada neutra "Qi Despertado"; ao adotar a trilha, o reino ganha o nome definitivo e aparece um chip informativo.
+- **Textos de rompimento e de "acumular anos" repetidos palavra por palavra:** agora há 2 a 4 variações para sucesso, falha, falha com ferimento e espera.
+- `finalChance` ajustado de 0,05 para 0,055. Com 10.000 vidas: ascensão 0,6% (independente) e 1,8% (meta).

@@ -2,10 +2,20 @@ import type { Realm } from '../types';
 
 /** Escadas de reinos. O índice é o "tier" (0 = mortal). */
 export const LADDERS: Record<string, { name: string; realms: Realm[]; finalName: string; finalChance: number }> = {
+  /** Só vale entre o despertar do Qi e a cena de primeiro método (a trilha define a escada de verdade). */
+  neutro: {
+    name: 'Qi desperto',
+    finalName: 'Ascensão',
+    finalChance: 0.055,
+    realms: [
+      { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
+      { name: 'Qi Despertado', lifespan: 90, years: 10, breakChance: 0.8 },
+    ],
+  },
   xianxia: {
     name: 'Escada Xianxia',
     finalName: 'Ascensão',
-    finalChance: 0.05,
+    finalChance: 0.055,
     realms: [
       { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
       { name: 'Refinamento de Qi', lifespan: 110, years: 10, breakChance: 0.85 },
@@ -21,7 +31,7 @@ export const LADDERS: Record<string, { name: string; realms: Realm[]; finalName:
   murim: {
     name: 'Escada Murim',
     finalName: 'Transcendência',
-    finalChance: 0.05,
+    finalChance: 0.055,
     realms: [
       { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
       { name: 'Terceira Classe', lifespan: 80, years: 6, breakChance: 0.9 },
