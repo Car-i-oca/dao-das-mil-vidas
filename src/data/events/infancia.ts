@@ -152,7 +152,7 @@ export const infancia: GameEvent[] = [
     cond: { tierMax: 0, ageMin: 11, noFlags: ['despertou'], flags: ['sangue_demoniaco'] },
     text: 'Na seita demoníaca, os mais jovens são levados ao Altar do Sangue. Ali, o poder acorda, mas cobra seu preço.',
     choices: [
-      { text: 'Aceitar o poder que sobe pelas veias.', check: { stat: ['fis', 'dao'], dif: -2 }, ok: { text: 'Você sente o poder queimando e algo dentro de você sorri. O Qi desperta, escuro e faminto.', fx: { tier: 1, setFlags: ['despertou'], faccao: 'demoniaca', corr: 10, tecnica: ['caminho_do_sangue'] } }, fail: { text: 'O sangue rejeita seu corpo. Cuspindo vermelho, você sobrevive para tentar outra vez.', fx: { ferida: 1, stats: { dao: 1 } } } },
+      { text: 'Aceitar o poder que sobe pelas veias.', check: { stat: ['fis', 'dao'], dif: -2 }, ok: { text: 'Você sente o poder queimando e algo dentro de você sorri. O Qi desperta, escuro e faminto.', fx: { tier: 1, setFlags: ['despertou', 'membro_demoniaca'], faccao: 'demoniaca', corr: 10, tecnica: ['caminho_do_sangue'] } }, fail: { text: 'O sangue rejeita seu corpo. Cuspindo vermelho, você sobrevive para tentar outra vez.', fx: { ferida: 1, stats: { dao: 1 } } } },
     ],
   },
   {

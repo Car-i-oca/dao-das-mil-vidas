@@ -189,7 +189,10 @@ function tierUp(s: State, delta: number) {
   const t = Math.min(max, Math.max(0, s.tier + delta));
   if (t === s.tier) return;
   if (delta > 0) {
-    if (s.tier === 0 && s.path === 'demoniaca') s.faction = 'demoniaca';
+    if (s.tier === 0 && s.path === 'demoniaca') {
+      s.faction = 'demoniaca';
+      if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
+    }
     for (const k of STAT_KEYS) s.stats[k] += 2;
     s.fama += t * 2;
   }
@@ -210,7 +213,8 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.xp && s.tier > 0) s.xp = Math.min(130, Math.max(0, s.xp + fx.xp * Math.min(1, Math.pow(10 / realmOf(s).years, 0.75))));
   if (fx.vida) s.maxAge += fx.vida;
   if (fx.ferida) s.wounds = Math.max(0, s.wounds + fx.ferida);
-  if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + fx.corr));
+  // Quem trilha o Caminho do Sangue controla melhor a corrupção (compensa o ritmo de cultivo maior).
+  if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + (fx.corr > 0 && s.path === 'demoniaca' ? fx.corr * 0.6 : fx.corr)));
   if (fx.setFlags) for (const f of fx.setFlags) if (!s.flags.includes(f)) s.flags.push(f);
   if (fx.clearFlags) s.flags = s.flags.filter((f) => !fx.clearFlags!.includes(f));
   if (fx.item) for (const i of fx.item) if (s.items.length < 40) s.items.push(i);
@@ -487,7 +491,7 @@ export function pickNext(s: State, rng: Rng) {
 }
 
 /* ---------- Final da vida ---------- */
-export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_ancestral: 6, ach_conselheiro: 5, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
+export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_ancestral: 6, ach_conselheiro: 5, ach_senhor_sangue: 5, ach_penitente: 6, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
 
 export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;

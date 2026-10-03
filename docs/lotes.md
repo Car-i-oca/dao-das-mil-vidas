@@ -57,3 +57,20 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 **Calibração:** com 267 eventos o pool diluiu cadeias de lotes anteriores; subi os pesos de `mestre_pede_favor`, `prova_do_nucleo`, `privilegios_do_nucleo`, `sucessao_seita`, `aprendiz_alquimista` e `rank_alquimista`. `finalChance` 0,075.
 
 **Resultado (4.000 vidas):** ascensão ~0,6–0,7% (independente) e ~1,7% (meta); todos os eventos do lote aparecem. Os finais voluntários novos ficam em ~0% no bot (que os evita) mas são alcançáveis (`cla_prospera` aparece ~4× por 4.000 vidas; os eventos que levam ao final de Ancestral aparecem normalmente).
+
+---
+
+## Lote 5 — Caminho demoníaco, karma e inimigos
+**Pesquisa:** seitas demoníacas (sacrifício de sangue, refino de almas, técnicas proibidas), divisão justo × demoníaco, demônio interior e retribuição cármica. Fontes: [Demon Sect (xianxialitrpgwiki)](https://xianxialitrpgwiki.com/demon-sect/), [Demonic Cultivation](https://ranmafanon.fandom.com/wiki/Demonic_Cultivation), [Grandmaster of Demonic Cultivation](https://en.wikipedia.org/wiki/Grandmaster_of_Demonic_Cultivation), [Reverend Insanity](https://en.wikipedia.org/wiki/Reverend_Insanity).
+
+**Entrou:** 24 eventos (`lote5_sangue.ts`), 2 técnicas, 4 itens, 2 finais (Senhor do Sangue, O Penitente), 2 conquistas.
+- Seita demoníaca: `entrada_seita_demoniaca`, `prova_de_sangue`, `mestre_demoniaco_exige`, `lago_de_sangue`, `traicao_mestre_demoniaco` (→ `senhor_do_sangue` / `tregua_sangue`), `coracao_dividido` (→ `perseguidor_demoniaco`), `purgacao_cidade`, `pacto_demonio_antigo`, `caminho_cinzento` (lendário).
+- Karma: `viuva_vinganca` → `filho_da_viuva` (o filho que volta décadas depois), `espiritos_vingativos`, `tumulo_vitima`, `emboscada_tres_seitas`, `cacador_implacavel`, `lista_negra`, `carta_anonima`, `rival_ascendido`, `o_grande_inimigo` (lendário) e `penitente` (lendário, final de redenção).
+
+**Correções e calibração:**
+- Bug encontrado: ninguém recebia a flag `membro_demoniaca` (nem a trilha do Sangue, nem a oferta, nem o despertar demoníaco), então os arcos demoníacos nunca apareciam. Corrigido no motor (`tierUp`) e nos eventos.
+- Bug em `filho_da_viuva` (condição vazia deixava o evento sortear a qualquer hora): agora exige a flag `chen_vinganca`.
+- A trilha do Sangue converte só 60% do ganho de Corrupção (compensa o cultivo mais rápido). Sem isso, o final "Caminho Demoníaco" ia de 0,6% para 1,8%.
+- Pesos de elos raros ajustados (`coracao_dividido`, `traicao_mestre_demoniaco`, `tregua_sangue`, `senhor_do_sangue`, `luto_e_caminho`, `o_grande_inimigo`).
+
+**Resultado (4.000 vidas):** ascensão 0,6% (independente) e 1,8% (meta); "Caminho Demoníaco" 1,1% / 0,6%; todos os eventos aparecem nos dois modos (exceto os 4 que dependem de desbloqueio no modo independente).

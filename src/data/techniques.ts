@@ -52,4 +52,8 @@ export const TECHNIQUES: Technique[] = [
   // Lote 4: mundo mortal e família
   { id: 'sutra_familia', name: 'Sutra da Casa Acesa', grade: 2, desc: 'Cada ausência vira raiz; cada lembrança, chama.', stats: { dao: 1 }, tags: ['mente'] },
   { id: 'passo_jianghu', name: 'Passo do Andarilho do Jianghu', grade: 1, desc: 'Para quem dorme em estalagens e acorda em estradas.', stats: { sor: 1 }, tags: ['fuga', 'social'] },
+
+  // Lote 5: sangue, karma e inimigos
+  { id: 'passo_sombrio', name: 'Passo da Sombra Longa', grade: 2, desc: 'Move-se onde a luz não alcança.', stats: { sor: 1 }, tags: ['fuga', 'demonio'] },
+  { id: 'sutra_cinzento', name: 'Sutra do Caminho Cinzento', grade: 3, desc: 'Domar a sombra sem negá-la.', stats: { dao: 2, esp: 1 }, tags: ['mente', 'demonio'] },
 ];

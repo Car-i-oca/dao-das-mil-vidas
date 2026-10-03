@@ -166,7 +166,7 @@ export const cultivo: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, noFlags: ['rejeitou_demonio'], faction: ['errante', 'nenhuma', 'cla', 'seita'] },
     text: 'Numa noite chuvosa, um homem de manto negro aparece em seu quarto. "Você está preso no gargalo. Eu posso destravá-lo, pelo preço certo."',
     choices: [
-      { text: 'Aceitar o pacto.', res: { text: 'Uma gota de sangue sela o acordo. Seu Qi aumenta de forma estranha e deliciosa.', fx: { faccao: 'demoniaca', corr: 20, xp: 25, tecnica: ['caminho_do_sangue'], karma: -10, setFlags: ['pacto_demoniaco'] } } },
+      { text: 'Aceitar o pacto.', res: { text: 'Uma gota de sangue sela o acordo. Seu Qi aumenta de forma estranha e deliciosa.', fx: { faccao: 'demoniaca', corr: 20, xp: 25, tecnica: ['caminho_do_sangue'], karma: -10, setFlags: ['pacto_demoniaco', 'membro_demoniaca'] } } },
       { text: 'Rejeitar com firmeza.', check: { stat: 'dao', dif: 1 }, ok: { text: 'O homem recua com respeito. "Você é difícil de comprar."', fx: { stats: { dao: 2 }, setFlags: ['rejeitou_demonio'] } }, fail: { text: 'Ele sorri e deixa uma marca em sua mente antes de sumir.', fx: { corr: 8, setFlags: ['rejeitou_demonio'] } } },
     ],
   },

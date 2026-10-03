@@ -19,6 +19,8 @@ export const ENDINGS: Ending[] = [
   { id: 'pilula', name: 'A Pílula Suprema', legacy: 1.5, text: 'O fogo aceitou {nome}. Na fornalha restou uma única pílula, sem cor e sem nome. Séculos depois, alguém a tomou e passou a se lembrar de uma vida que não era sua.' },
   { id: 'ancestral', name: 'Ancestral do Clã', legacy: 1.6, text: 'O retrato de {nome} ainda pende no salão do {cla}. Cada geração recebe, aos sete anos, uma lição sobre quem ergueu aquelas paredes.' },
   { id: 'conselheiro', name: 'A Sombra do Trono', legacy: 1.4, text: 'Poucos livros mencionam {nome}. Mas, em cada reinado próspero, um conselheiro silencioso sempre sussurrava a decisão certa antes que ela fosse necessária.' },
+  { id: 'senhor_sangue', name: 'Senhor do Sangue', legacy: 1.4, text: 'No trono de ossos, {nome} governou a seita demoníaca por séculos. Aldeias rezavam para que a sombra passasse longe; outras, para que ela decidisse protegê-las.' },
+  { id: 'penitente', name: 'O Penitente', legacy: 1.5, text: 'No templo de pedra gasta, {nome} varreu o mesmo corredor por quarenta anos. Quando a vassoura caiu, o corredor estava limpo, e a alma também.' },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
 
@@ -46,6 +48,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_pilula', name: 'Alquimista Absoluto', desc: 'Refine a si mesmo na Pílula Suprema.', reward: '+6 Herança do Dao' },
   { id: 'ach_ancestral', name: 'Retrato no Salão', desc: 'Torne-se Ancestral de um clã.', reward: '+6 Herança do Dao' },
   { id: 'ach_conselheiro', name: 'Voz Atrás do Trono', desc: 'Termine como Conselheiro Eterno de um império.', reward: '+5 Herança do Dao' },
+  { id: 'ach_senhor_sangue', name: 'Coroa de Ossos', desc: 'Torne-se Senhor do Sangue.', reward: '+5 Herança do Dao' },
+  { id: 'ach_penitente', name: 'Vassoura e Silêncio', desc: 'Termine uma vida como Penitente.', reward: '+6 Herança do Dao' },
   { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Receba ensinamentos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
 ];
 
@@ -74,6 +78,8 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   ach_pilula: (_s, e) => e === 'pilula',
   ach_ancestral: (_s, e) => e === 'ancestral',
   ach_conselheiro: (_s, e) => e === 'conselheiro',
+  ach_senhor_sangue: (_s, e) => e === 'senhor_sangue',
+  ach_penitente: (_s, e) => e === 'penitente',
   ach_diaspora: (s) => s.flags.includes('tocado_por_mestre'),
 };
 

@@ -98,7 +98,7 @@ export const lote4Mundo: GameEvent[] = [
     ],
   },
   {
-    id: 'luto_e_caminho', title: 'O Luto no Caminho', rarity: 'raro', once: true,
+    id: 'luto_e_caminho', title: 'O Luto no Caminho', rarity: 'raro', once: true, weight: 6,
     cond: { flags: ['viuvo_do_dao'] },
     text: 'Meses depois, um monge passa pela sua porta e vê a tristeza nos olhos. "O luto também é um caminho", diz. "Quem o atravessa carrega quem foi embora dentro de si."',
     choices: [

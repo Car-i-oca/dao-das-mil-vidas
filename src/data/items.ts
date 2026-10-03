@@ -94,4 +94,10 @@ export const ITEMS: Item[] = [
   { id: 'colar_familia', name: 'Colar da Família', kind: 'artefato', grade: 2, desc: 'Um fio de jade herdado de quatro gerações.', passive: { sor: 1, dao: 1 }, value: 60 },
   { id: 'seda_imperial', name: 'Manto de Seda Imperial', kind: 'artefato', grade: 3, desc: 'Presente da corte; abre portas e olhares.', passive: { car: 2, sor: 1 }, value: 150 },
   { id: 'arroz_espiritual', name: 'Arroz Espiritual do Campo Fértil', kind: 'erva', grade: 2, desc: 'Grão de campos abençoados, nutritivo e silencioso.', use: { ferida: -2, xp: 6 }, value: 20 },
+
+  // Lote 5: sangue, karma e inimigos
+  { id: 'lamina_sangrenta', name: 'Lâmina de Aço Sangrento', kind: 'artefato', grade: 3, desc: 'Sempre quente, nunca limpa.', passive: { fis: 2, esp: 1 }, value: 140 },
+  { id: 'contas_penitencia', name: 'Contas de Penitência', kind: 'artefato', grade: 2, desc: 'Uma conta para cada vida que se quer reparar.', passive: { dao: 1, esp: 1 }, value: 60 },
+  { id: 'talisma_exorcismo', name: 'Talismã de Exorcismo', kind: 'talisma', grade: 3, desc: 'Afasta espíritos vingativos e sussurros (uso único em eventos).', value: 50 },
+  { id: 'sino_alma', name: 'Sino da Alma Reconciliada', kind: 'artefato', grade: 4, desc: 'Seu som lembra o que foi perdoado.', passive: { esp: 2, dao: 1 }, value: 260 },
 ];
