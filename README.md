@@ -31,7 +31,9 @@ O save fica no navegador ou no app (localStorage), separado entre site, PWA e AP
 | `npm run build` | verifica tipos e gera `dist/` |
 | `npm run preview` | serve o build |
 | `npm run sim -- 4000` | simula 4.000 vidas (`--meta` joga em sequência com desbloqueios; `--report` grava `docs/balanceamento.md`) |
-| `npm run validate` | confere referências cruzadas do conteúdo |
+| `npm run validate` | confere referências cruzadas e a qualidade do texto (marcadores, tamanhos, repetições) |
+| `npm run fuzz -- 3000` | joga vidas com escolhas aleatórias e confere invariantes (sem NaN, atributos na faixa, etc.) |
+| `npm run endings` | confere que cada final com evento próprio é alcançável |
 | `npm run icons` | regera os ícones do PWA e as fontes do APK |
 
 ## Estrutura

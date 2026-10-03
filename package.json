@@ -9,6 +9,8 @@
     "preview": "vite preview --host",
     "sim": "tsx sim/simulate.ts",
     "validate": "tsx sim/validate.ts",
+    "fuzz": "tsx sim/fuzz.ts",
+    "endings": "tsx sim/endings.ts",
     "icons": "node scripts/gen-icons.mjs"
   },
   "devDependencies": {

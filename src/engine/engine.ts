@@ -36,7 +36,7 @@ export function newMeta(): Meta {
 
 /* ---------- Consultas ---------- */
 export const ladderOf = (s: State) => LADDERS[PATH[s.path].ladder];
-export const realmOf = (s: State, tier = s.tier): Realm => ladderOf(s).realms[tier];
+export const realmOf = (s: State, tier = s.tier): Realm => { const r = ladderOf(s).realms; return r[Math.min(tier, r.length - 1)]; };
 export const realmName = (s: State) => realmOf(s).name;
 export const has = (s: State, f: string) => s.flags.includes(f);
 

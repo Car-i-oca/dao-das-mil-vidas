@@ -156,3 +156,10 @@ Achados e correções:
 - **Marcos da vida** na tela final: nascimento, trilha e cada reino alcançado, com a idade.
 
 - **Epitáfios variados:** os finais mais comuns (velhice, combate, tribulação, desvio de Qi, vida comum) ganharam 2 a 4 variações de texto; a escolhida depende do nome e da idade do personagem, então a mesma vida sempre termina com o mesmo texto, mas vidas diferentes não repetem o epitáfio. O linter também confere as variações.
+
+## Ciclo de melhorias 4 (qualidade e robustez)
+- **Fuzzer** (`npm run fuzz`): 3.000 vidas com escolhas totalmente aleatórias (inclusive finais voluntários e uso de itens): 183 mil escolhas, nenhum problema (atributos na faixa, sem NaN, sem telas sem opção, itens e técnicas existentes).
+- **Alcançabilidade dos finais** (`npm run endings`): monta o estado exigido por cada evento com final e força o resultado; os 23 finais saem (20 por evento próprio, 3 por regra do motor).
+- Os dois testes entram no workflow de publicação do site: conteúdo quebrado não vai ao ar.
+- **Service worker:** páginas e manifesto vêm da rede primeiro (atualização aparece na hora quando há internet) e do cache quando offline; os arquivos com hash continuam cache-first.
+- `realmOf` ficou robusto a números de reino fora da escada.
