@@ -2,7 +2,7 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, recStage, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
+  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
@@ -14,6 +14,10 @@ import { WORLD } from '../data/mundo';
 import { EVENTS } from '../data/events';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
+import { itemIcon, techIcon, pathIcon, realmIcon } from './art/icons';
+import { sceneSvg, endingCard, type SceneKind } from './art/scenes';
+import { portraitSvg, lookFromState, lookForNpc, type Role } from './art/portrait';
+import { hash } from './art/core';
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
@@ -181,11 +185,31 @@ function hudHtml(s: State): string {
   const ageRatio = Math.min(1, s.age / s.maxAge);
   return `
     <div class="hud">
+      <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
       <div class="row between"><span class="name">${esc(s.name)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
+      </div></div>
     </div>`;
+}
+
+/** Cenário do lugar atual (e da era do mundo, quando há). */
+function sceneFor(s: State, eventId: string): string {
+  let kind: string = s.place;
+  if (s.world?.id === 'reino_secreto') kind = 'reino_secreto';
+  else if (s.tier >= 7 && hash(eventId) % 3 === 0) kind = 'ceu';
+  return `<div class="scene">${sceneSvg(kind as SceneKind, eventId, hash(eventId) % 4 === 0)}</div>`;
+}
+
+/** Retrato do personagem recorrente citado no texto do evento ({mentor}, {rival}...). */
+function npcFor(s: State, eventId: string): string {
+  const raw = EVENT[eventId]?.text ?? '';
+  const roles: Role[] = ['mentor', 'rival', 'amigo', 'noivo', 'discipulo', 'inimigo'];
+  const role = roles.find((r) => raw.includes('{' + r + '}'));
+  if (!role) return '';
+  const name = s.names[role] ?? role;
+  return `<div class="npc">${portraitSvg(lookForNpc(role, name, Math.max(1, s.tier)), 54)}<div class="small muted">${esc(name)}</div></div>`;
 }
 
 function tabsHtml(): string {
@@ -238,7 +262,9 @@ function lifeHtml(s: State): string {
   return `
     ${intro}
     <div class="card story" data-act="skip">
+      ${sceneFor(s, s.current?.id ?? 'x')}
       <div class="ev-title">${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
+      ${npcFor(s, s.current?.id ?? '')}
       <p class="story-text" id="typed"></p>
       <div class="hint" id="hint">toque para pular</div>
     </div>
@@ -300,11 +326,12 @@ function statusHtml(s: State): string {
     ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
     ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
   ].join(' · ');
-  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech"><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span><div class="small">${esc(t.desc)}</div><div class="muted small">${esc(techEffects(t))}</div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
+  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span><div class="small">${esc(t.desc)}</div><div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
   const fac: Record<string, string> = { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
     <div class="card">
+      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon(L.name.includes('Murim') ? 'murim' : 'xianxia', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
       <div class="kv">
         <div class="k">Trilha</div><div class="v">${esc(path.name)}</div>
         <div class="k">Reino</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
@@ -371,7 +398,7 @@ function bagHtml(s: State): string {
   const rows = [...counts.entries()].map(([id, n]) => {
     const it = ITEM[id];
     const usable = !!it.use;
-    return `<div class="item"><div><b>${esc(it.name)}</b>${n > 1 ? ` ×${n}` : ''}<div class="muted small">${esc(it.desc)}${it.passive ? ' · ' + Object.entries(it.passive).map(([k, v]) => `${STAT_NAMES[k as keyof typeof STAT_NAMES]} +${v}`).join(', ') : ''}${it.breakBonus ? ` · ajuda no rompimento (+${Math.round(it.breakBonus.bonus * 100)}%)` : ''}</div></div>${usable ? `<button class="btn" data-act="use" data-id="${id}">Usar</button>` : ''}</div>`;
+    return `<div class="item"><div class="ico">${itemIcon(it, 46)}</div><div class="grow"><b>${esc(it.name)}</b>${n > 1 ? ` ×${n}` : ''}<div class="muted small">${esc(it.desc)}${it.passive ? ' · ' + Object.entries(it.passive).map(([k, v]) => `${STAT_NAMES[k as keyof typeof STAT_NAMES]} +${v}`).join(', ') : ''}${it.breakBonus ? ` · ajuda no rompimento (+${Math.round(it.breakBonus.bonus * 100)}%)` : ''}</div></div>${usable ? `<button class="btn" data-act="use" data-id="${id}">Usar</button>` : ''}</div>`;
   }).join('');
   return `<div class="card list">${rows}</div>`;
 }
@@ -395,6 +422,7 @@ function renderEnd() {
   const ach = sm.ach.map((id) => ACHIEVEMENTS.find((a) => a.id === id)!).filter(Boolean);
   app.innerHTML = `
     <div class="screen end">
+      <div class="end-card">${endingCard(e.id, e.name)}<div class="end-pt">${portraitSvg(lookFromState(s), 64)}</div></div>
       <div class="muted small" style="text-align:center">${esc(s.name)} · ${esc(PATH[s.path].name)}</div>
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
@@ -437,10 +465,10 @@ function renderMeta() {
     <div class="card muted small">Origens liberadas: ${ORIGINS.filter((o) => !o.unlock || m.achievements.includes(o.unlock)).length}/${ORIGINS.length} · Talentos liberados: ${TALENTS.filter((t) => !t.unlock || m.achievements.includes(t.unlock)).length}/${TALENTS.length}</div>`;
   } else if (metaTab === 'codice') {
     const cx = m.codex ?? { items: [], techs: [] };
-    const pill = (name: string, ok: boolean, grade?: number) => `<span class="pill ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${ok ? esc(name) : '???'}</span>`;
+    const pill = (name: string, ok: boolean, grade?: number, icon = '') => `<span class="pill cx ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${icon ? `<span class="cxi">${icon}</span>` : ''}${ok ? esc(name) : '???'}</span>`;
     body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${ENDINGS.length}</div>${ENDINGS.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
-      <div class="card"><div class="muted small">TÉCNICAS · ${cx.techs.length}/${TECHNIQUES.length}</div>${TECHNIQUES.map((t) => pill(t.name, cx.techs.includes(t.id), t.grade)).join('')}</div>
-      <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${ITEMS.length}</div>${ITEMS.map((i) => pill(i.name, cx.items.includes(i.id), i.grade)).join('')}</div>
+      <div class="card"><div class="muted small">TÉCNICAS · ${cx.techs.length}/${TECHNIQUES.length}</div>${TECHNIQUES.map((t) => pill(t.name, cx.techs.includes(t.id), t.grade, cx.techs.includes(t.id) ? techIcon(t, 26) : '')).join('')}</div>
+      <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${ITEMS.length}</div>${ITEMS.map((i) => pill(i.name, cx.items.includes(i.id), i.grade, cx.items.includes(i.id) ? itemIcon(i, 26) : '')).join('')}</div>
       <div class="card muted small">O Códice guarda tudo o que você já encontrou em qualquer vida. Os nomes escondidos (???) esperam ser descobertos.</div>`;
   } else if (metaTab === 'historico') {
     body = m.history.length

@@ -13,7 +13,8 @@
     "endings": "tsx sim/endings.ts",
     "variedade": "tsx sim/variedade.ts",
     "icons": "node scripts/gen-icons.mjs",
-    "poder": "tsx sim/poder.ts"
+    "poder": "tsx sim/poder.ts",
+    "galeria": "tsx sim/galeria.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",

@@ -6,7 +6,7 @@ export const LADDERS: Record<string, { name: string; realms: Realm[]; finalName:
   neutro: {
     name: 'Qi desperto',
     finalName: 'Ascensão',
-    finalChance: 0.025,
+    finalChance: 0.02,
     realms: [
       { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
       { name: 'Qi Despertado', lifespan: 90, years: 10, breakChance: 0.8 },
@@ -15,7 +15,7 @@ export const LADDERS: Record<string, { name: string; realms: Realm[]; finalName:
   xianxia: {
     name: 'Escada Xianxia',
     finalName: 'Ascensão',
-    finalChance: 0.025,
+    finalChance: 0.02,
     realms: [
       { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
       { name: 'Refinamento de Qi', lifespan: 110, years: 10, breakChance: 0.85, titulo: 'Discípulo Externo', poder: 'Seu Qi agora responde ao pensamento: você enxerga o fluxo de energia ao redor.' },
@@ -31,7 +31,7 @@ export const LADDERS: Record<string, { name: string; realms: Realm[]; finalName:
   murim: {
     name: 'Escada Murim',
     finalName: 'Transcendência',
-    finalChance: 0.025,
+    finalChance: 0.02,
     realms: [
       { name: 'Mortal', lifespan: 75, years: 0, breakChance: 1 },
       { name: 'Terceira Classe', lifespan: 80, years: 6, breakChance: 0.9, titulo: 'Discípulo Externo', poder: 'O Qi desce ao Dantian: os golpes ganham peso, e o corpo deixa de se cansar à toa.' },

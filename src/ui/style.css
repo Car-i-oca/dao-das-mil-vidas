@@ -147,3 +147,21 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .intro li { margin-bottom: 4px; }
 .tech { padding: 8px 0; border-bottom: 1px dashed var(--line); }
 .tech:last-child { border-bottom: 0; }
+
+/* ---------- Arte ---------- */
+.art { display: block; }
+.scene svg { width: 100%; height: auto; border-radius: 10px; display: block; margin-bottom: 10px; }
+.hud-row { display: flex; gap: 10px; align-items: center; }
+.hud-pt svg { width: 52px; height: 52px; display: block; }
+.hud-main { flex: 1; min-width: 0; }
+.npc { float: right; margin: 0 0 6px 10px; text-align: center; max-width: 60px; }
+.npc svg { width: 54px; height: 54px; }
+.emblems { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.item .ico, .tech-ico .ico { flex: none; }
+.tech-ico { display: flex; gap: 10px; align-items: flex-start; }
+.pill.cx { display: inline-flex; align-items: center; gap: 4px; }
+.pill.cx .cxi svg { width: 22px; height: 22px; display: block; }
+.end-card { position: relative; }
+.end-card .art-ending { width: 100%; height: auto; border-radius: 14px; }
+.end-pt { position: absolute; left: 12px; bottom: -22px; }
+.end-pt svg { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 2px 8px #0008; }

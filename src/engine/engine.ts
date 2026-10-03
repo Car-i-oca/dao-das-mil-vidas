@@ -575,7 +575,7 @@ export function choose(s: State, idx: number, rng: Rng) {
  * entrega uma fração do que entregava, para o total por reino continuar o mesmo. Atributos inteiros
  * usam arredondamento por sorteio (1,0 × 0,8 vira 1 em 80% das vezes). Itens, técnicas e danos não escalam.
  */
-const REWARD_SCALE = [0.55, 0.65, 0.6, 0.5, 0.45, 0.45, 0.45, 0.45, 0.45];
+const REWARD_SCALE = [0.5, 0.6, 0.55, 0.46, 0.42, 0.42, 0.45, 0.45, 0.45];
 
 /** Teto suave dos atributos por reino: perto dele, ganhos de eventos rendem cada vez menos (o balanço não depende da quantidade de eventos). */
 const softCap = (tier: number) => 62 + 7 * tier;
@@ -667,13 +667,13 @@ function chooseCore(s: State, idx: number, rng: Rng) {
 
 /* ---------- Passagem do tempo e próximo evento ---------- */
 /** Passo máximo (em anos) de um turno comum, por reino. O resto do tempo passa nas reclusões. */
-const DT_CAP = [2, 1, 2, 2, 3, 4, 6, 8, 10];
+const DT_CAP = [2, 1, 2, 2, 2, 3, 4, 8, 10];
 /** Chance de um turno de reclusão, por reino. */
 const P_RETIRO = [0, 0, 0, 0.12, 0.25, 0.35, 0.45, 0.5, 0.55];
 
 function advance(s: State, rng: Rng) {
   const realm = realmOf(s);
-  const dt = s.tier === 0 ? 1 : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
+  const dt = s.tier === 0 ? 1 : s.tier <= 5 && rng.chance(0.55) ? 1 : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
   if (s.tier > 0) s.xp = Math.min(130, s.xp + cultivationRate(s) * dt);
   s.age += dt;
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
