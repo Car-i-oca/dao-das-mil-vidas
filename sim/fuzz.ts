@@ -18,7 +18,7 @@ function check(s: State, where: string) {
   for (const id of s.items) if (!ITEM[id]) note(`${where}: item desconhecido ${id}`);
   for (const id of s.techniques) if (!TECH[id]) note(`${where}: técnica desconhecida ${id}`);
   if (s.ending && !ENDING[s.ending]) note(`${where}: final desconhecido ${s.ending}`);
-  if (s.current && !s.current.breakthrough && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
+  if (s.current && !s.current.breakthrough && !s.current.retiro && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
   if (new Set(s.techniques).size !== s.techniques.length) note(`${where}: técnica duplicada`);
 }
 

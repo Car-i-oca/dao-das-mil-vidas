@@ -56,10 +56,14 @@ export interface Cond {
   item?: string;
   tecnica?: string;
   corrMin?: number;
+  /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
+  mundo?: string[];
 }
 
 export interface Outcome {
   text: string;
+  /** Variações do texto do desfecho (uma é sorteada). */
+  alt?: string[];
   fx?: Effects;
 }
 
@@ -89,6 +93,8 @@ export interface GameEvent {
   rarity: Rarity;
   weight?: number;
   once?: boolean;
+  /** Variações do texto do evento (uma é sorteada a cada ocorrência). */
+  alt?: string[];
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
   cond?: Cond;
@@ -238,9 +244,15 @@ export interface State {
   log: LogEntry[];
   turn: number;
   /** Evento atual (null quando em resultado/final). */
-  current: { id: string; breakthrough?: boolean } | null;
+  current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number } | null;
   /** Resultado exibido após uma escolha. */
   result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[] } | null;
+  /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
+  counts?: Record<string, number>;
+  /** Era do mundo em curso. */
+  world?: { id: string; until: number } | null;
+  nextWorldAt?: number;
+  lastWorld?: string;
   /** Dificuldade escolhida: -1 calmo, 0 normal, 1 desafio. */
   dif?: number;
   /** Técnicas e itens já obtidos nesta vida (alimenta o Códice). */

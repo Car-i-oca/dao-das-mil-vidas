@@ -124,4 +124,8 @@ export const ITEMS: Item[] = [
 
   // Lote 12: torneio
   { id: 'selo_campeao', name: 'Selo de Campeão dos Cem Picos', kind: 'artefato', grade: 3, desc: 'Cera dourada e uma estampa de pico nevado. Abre portas e fecha bocas.', passive: { car: 2, dao: 1 }, value: 160 },
+
+  // Lote 13: o mundo em movimento
+  { id: 'cura_da_praga', name: 'Elixir Contra a Febre Espiritual', kind: 'pilula', grade: 3, desc: 'Fórmula antiga que levantou uma fila inteira de doentes.', use: { ferida: -4, vida: 10 }, value: 80 },
+  { id: 'fragmento_cometa', name: 'Fragmento de Cometa', kind: 'misc', grade: 4, desc: 'Pedra luminosa, quente ao toque, Qi puro em estado bruto.', use: { xp: 25, stats: { esp: 1 } }, value: 150 },
 ];

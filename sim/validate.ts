@@ -4,6 +4,7 @@ import { ITEMS } from '../src/data/items';
 import { TECHNIQUES } from '../src/data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
+import { WORLDS, WORLD } from '../src/data/mundo';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import type { Cond, Effects } from '../src/types';
 
@@ -40,6 +41,7 @@ function cond(where: string, c?: Cond) {
   if (c.tecnica && !techIds.has(c.tecnica)) errors.push(`${where}: cond.tecnica inexistente "${c.tecnica}"`);
   c.path?.forEach((p) => !PATHS.some((x) => x.id === p) && errors.push(`${where}: trilha inexistente "${p}"`));
   c.origin?.forEach((o) => !ORIGINS.some((x) => x.id === o) && errors.push(`${where}: origem inexistente "${o}"`));
+  c.mundo?.forEach((m) => !WORLD[m] && errors.push(`${where}: era do mundo inexistente "${m}"`));
   if (c.tierMin !== undefined && c.tierMax !== undefined && c.tierMin > c.tierMax) errors.push(`${where}: tierMin > tierMax`);
 }
 
@@ -58,6 +60,12 @@ for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {
   if (p.tecnica && !techIds.has(p.tecnica)) errors.push(`trilha ${p.id}: técnica inexistente`);
   if (p.unlock && !achIds.has(p.unlock)) errors.push(`trilha ${p.id}: conquista inexistente "${p.unlock}"`);
+}
+for (const w of WORLDS) {
+  if (!evIds.has(w.startEvent)) errors.push(`era ${w.id}: evento de abertura inexistente "${w.startEvent}"`);
+  if (w.hazard && !endIds.has(w.hazard.fim)) errors.push(`era ${w.id}: final de perigo inexistente "${w.hazard.fim}"`);
+  const own = EVENTS.filter((e) => e.cond?.mundo?.includes(w.id) && e.id !== w.startEvent);
+  if (own.length < 3) warnings.push(`era ${w.id}: só ${own.length} eventos próprios`);
 }
 for (const o of ORIGINS) {
   if (o.unlock && !achIds.has(o.unlock)) errors.push(`origem ${o.id}: conquista inexistente "${o.unlock}"`);

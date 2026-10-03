@@ -22,10 +22,11 @@ import { lote9Trilhas } from './lote9_trilhas';
 import { lote10Regioes } from './lote10_regioes';
 import { lote11Ecos } from './lote11_ecos';
 import { lote12Torneio } from './lote12_torneio';
+import { lote13Mundo } from './lote13_mundo';
 
 export const EVENTS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
-  ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio,
+  ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
 ];

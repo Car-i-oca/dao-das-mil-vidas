@@ -40,6 +40,43 @@ export const ENDINGS: Ending[] = [
   { id: 'penitente', name: 'O Penitente', legacy: 1.5, text: 'No templo de pedra gasta, {nome} varreu o mesmo corredor por quarenta anos. Quando a vassoura caiu, o corredor estava limpo, e a alma também.' },
   { id: 'iluminacao', name: 'A Iluminação', legacy: 2.4, text: 'Não houve nuvens, nem raios, nem degraus. {nome} apenas sentou-se à beira da estrada e entendeu. O mundo seguiu como antes, e algo, bem de leve, sorriu para sempre.' },
   { id: 'celeste', name: 'Oficial da Corte Celeste', legacy: 1.5, text: 'No terceiro andar da Secretaria de Tribulações, uma mesa de jade guarda os carimbos de {nome}. Dizem que cultivadores desavisados, às vezes, se salvam por uma rasura bem colocada.' },
+  // Variações da velhice, conforme a vida que a pessoa levou
+  { id: 'velhice_mestre', name: 'Mestre Respeitado', legacy: 1.3, text: 'Quando {nome} se despediu, o pátio inteiro da {seita} estava de joelhos, e nenhum discípulo teve vergonha de chorar. Ensinara menos pelo que dizia do que pelo que fazia.', alt: [
+    'O funeral de {nome} durou sete dias. Vieram seitas rivais, mercadores, camponeses, e até um velho inimigo, que se curvou mais fundo do que todos.',
+    '{nome} partiu cercado de nomes que o pronunciavam com respeito. Nos anos seguintes, o título "Mestre" ficou mais pesado para quem veio depois.',
+  ] },
+  { id: 'velhice_esquecido', name: 'O Velho Esquecido', legacy: 0.9, text: '{nome} morreu como viveu nos últimos anos: sem aplausos, sem testemunhas e sem pressa. Poucos lembraram do nome. A montanha, que lembrava, não disse nada.', alt: [
+    'Ninguém soube ao certo quando {nome} partiu. Meses depois, alguém achou a cabana vazia, o chá frio e um caderno cheio de letras pequenas, que ninguém leu.',
+    'A fama de {nome} se dissolveu como orvalho. Quando o velho cultivador fechou os olhos, a estalagem do vale estava cheia, e ninguém comentou.',
+  ] },
+  { id: 'velhice_avo', name: 'A Casa Cheia', legacy: 1.2, text: 'No último dia, a casa de {nome} estava cheia de netos, sobrinhos, vizinhos e panelas. Alguém tocava flauta no pátio. Para quem sempre procurou a eternidade, foi uma saída barulhenta e feliz.', alt: [
+    'Netos brincavam no pátio quando {nome} fechou os olhos. Alguém viria, minutos depois, e cobriria o velho cultivador com o xale que ele mesmo havia tecido anos antes.',
+    'O {cla} inteiro se reuniu no salão para a despedida. Cada um contou uma história diferente de {nome}, e nenhuma delas era mentira.',
+  ] },
+  { id: 'velhice_sabio', name: 'O Sábio da Montanha', legacy: 1.4, text: 'Peregrinos subiam a montanha de {nome} para fazer uma única pergunta e ouviam, quase sempre, uma resposta que só entendiam anos depois. Quando a cabana ficou em silêncio, o vento continuou respondendo.', alt: [
+    '{nome} morreu sentado, de olhos abertos, olhando um desfiladeiro. Os que o encontraram juram que o sorriso era de quem acabou de ouvir uma boa piada do Céu.',
+    'Até o fim, {nome} manteve o Coração do Dao firme como uma pedra de rio. Diz-se que, no instante da partida, o riacho ao lado parou de correr por uma respiração.',
+  ] },
+  { id: 'velhice_rancoroso', name: 'O Rancor Que Sobrou', legacy: 0.9, text: '{nome} viveu muito, e cada ano foi um tijolo a mais no muro do rancor. Morreu sozinho, cercado de memórias de dívidas cobradas e de dívidas por cobrar.', alt: [
+    'Havia gente que esperava o fim de {nome} com alívio. Outros, com saudade da própria raiva. A lápide ficou sem flores, e ninguém se surpreendeu.',
+    'O último pensamento de {nome} foi uma lista de nomes. O primeiro era o de quem o havia ofendido, e o último, estranhamente, o próprio.',
+  ] },
+  { id: 'velhice_rico', name: 'A Fortuna Que Ficou', legacy: 1.0, text: 'Os cofres de {nome} estavam cheios quando o coração parou. Herdeiros brigaram por três anos pelo que sobrou, e todos descobriram que ninguém, sozinho, soube gastar tudo aquilo.', alt: [
+    '{nome} morreu cercado de pedras espirituais, com o olhar fixo no teto. Alguns dizem que tentou contá-las uma última vez, e perdeu a conta no mesmo instante em que perdeu o fôlego.',
+    'A fortuna de {nome} financiou três templos, uma biblioteca e um processo judicial que durou setenta anos. Poucos se lembravam do rosto do dono.',
+  ] },
+  { id: 'velhice_veterano', name: 'O Veterano das Cicatrizes', legacy: 1.2, text: '{nome} morreu com mais cicatrizes que dentes. Cada uma, dizia, era uma história que não valia a pena contar. Os jovens, mesmo assim, pediam que contasse.', alt: [
+    'No fim, {nome} só queria sentar-se ao sol com uma tigela de sopa. Teve esse último gosto, e mais uma cicatriz nova, de uma cadeira de bambu quebrada.',
+    'Duas guerras, três torneios, um cerco e um inverno interminável. {nome} morreu na cama, o que, para um veterano, é o desfecho mais improvável.',
+  ] },
+  // Mortes ligadas às eras do mundo e a traições
+  { id: 'guerra', name: 'Caído na Guerra', legacy: 1.0, text: 'A guerra entre as seitas não escolheu lados na hora de cobrar. {nome} caiu num campo cheio de bandeiras que ninguém mais lembra de quem eram.', alt: ['Nos registros da guerra, o nome de {nome} aparece numa linha, entre duzentos outros. Em casa, uma criança perguntou por que a mãe chorava, e ninguém soube explicar a política.'] },
+  { id: 'doenca', name: 'A Febre da Praga', legacy: 0.9, text: 'A praga não distinguiu rico de pobre, mortal de cultivador. {nome} deitou-se numa esteira simples e, entre uma febre e outra, lembrou de uma canção que a avó cantava.', alt: ['Os curandeiros tentaram tudo. {nome} agradeceu cada chá, cada oração, cada mão fria na testa, e partiu com um sorriso cansado.'] },
+  { id: 'feras', name: 'Engolido pela Maré de Bestas', legacy: 1.0, text: 'Quando a maré de bestas desceu da cordilheira, {nome} segurou a linha por tempo suficiente para duas aldeias fugirem. O que se ouviu depois foi um rugido, e depois, silêncio.', alt: ['Diz-se que as feras recuaram no dia seguinte, sem razão aparente. Alguns acham que foi respeito, e outros, saciedade.'] },
+  { id: 'exilio', name: 'Exilado Para Sempre', legacy: 1.0, text: 'Com a queda da dinastia, {nome} foi declarado inimigo do trono novo e partiu para o exílio. Escreveu cartas por anos, e nenhuma foi respondida. Morreu em terra estrangeira, de saudade e de frio.', alt: ['O novo imperador mandou apagar o nome de {nome} dos registros. A montanha, indiferente, o guardou.'] },
+  { id: 'cacado', name: 'Caçado pelo Culto', legacy: 1.0, text: 'Os emissários do Culto do Demônio Celestial nunca erram o caminho. {nome} soube que eles chegariam semanas antes, e usou as semanas para queimar cartas e cuidar das pessoas.', alt: ['Ninguém ouviu a conversa entre {nome} e os emissários. Só se viu, ao amanhecer, uma casa vazia e uma xícara de chá, ainda morna.'] },
+  { id: 'traicao', name: 'Punhal nas Costas', legacy: 1.0, text: 'Foi alguém de confiança. É sempre alguém de confiança. {nome} só virou o rosto a tempo de ver o sorriso hesitante, o mesmo de tantos anos atrás.', alt: ['A lâmina veio de uma mão que {nome} havia ajudado. O último pensamento foi menos de ódio que de espanto.'] },
+  { id: 'duelo', name: 'Morto em Duelo de Honra', legacy: 1.1, text: 'Dois cultivadores, uma ponte e uma palavra empenhada. {nome} perdeu o duelo, mas ganhou o respeito do vencedor, que enterrou o adversário com as próprias mãos.', alt: ['O duelo durou três lances. Houve quem dissesse que {nome} podia ter vencido, e quem dissesse que não quis.'] },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
 

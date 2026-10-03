@@ -83,4 +83,9 @@ export const TECHNIQUES: Technique[] = [
 
   // Lote 12: torneio
   { id: 'golpe_campeao', name: 'Golpe do Campeão dos Cem Picos', grade: 3, desc: 'O golpe que fez dez mil vozes gritarem de uma vez.', stats: { fis: 1 }, tags: ['combate'] },
+
+  // Lote 13: o mundo em movimento
+  { id: 'defesa_muralha', name: 'Defesa da Muralha de Pedra Viva', grade: 2, desc: 'Linhas de Qi que correm pela pedra como veias.', stats: { fis: 1 }, tags: ['formacao', 'combate'] },
+  { id: 'respiracao_lunar', name: 'Respiração da Lua Cheia', grade: 3, desc: 'Qi lunar, mais suave que o solar, entra como leite morno.', stats: { esp: 1 }, xpMult: 1.04, tags: ['qi'] },
+  { id: 'oracao_ancestrais', name: 'Oração dos Ancestrais', grade: 2, desc: 'Dizer em voz baixa o nome de quem partiu; a colina ouve.', stats: { dao: 1 }, tags: ['mente'] },
 ];

@@ -10,6 +10,8 @@ import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
+import { WORLDS, WORLD } from '../data/mundo';
+import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from '../data/retiros';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
@@ -99,6 +101,7 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.item && !s.items.includes(c.item)) return false;
   if (c.tecnica && !s.techniques.includes(c.tecnica)) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
+  if (c.mundo && !(s.world && c.mundo.includes(s.world.id))) return false;
   return true;
 }
 
@@ -177,6 +180,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
     place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? []), ...(last ? ['tem_eco'] : [])],
     items: [], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
+    counts: {}, world: null, nextWorldAt: 24 + rng.int(0, 30),
     turn: 0, current: null, result: null, ending: null, endingText: null,
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
@@ -196,8 +200,23 @@ function noteFound(s: State, kind: 'items' | 'techs', id: string) {
   if (!s.found[kind].includes(id)) s.found[kind].push(id);
 }
 
+/** A velhice vira um final diferente conforme a vida que a pessoa levou. */
+function oldAgeEnding(s: State): string {
+  const f = (x: string) => s.flags.includes(x);
+  if (s.tier === 0) return 'velhice';
+  if (f('tem_neto') || f('cla_proprio')) return 'velhice_avo';
+  if (s.fama >= 70 && s.tier >= 3) return 'velhice_mestre';
+  if (eff(s, 'dao') >= 38 && s.karma >= 12) return 'velhice_sabio';
+  if (s.karma <= -15) return 'velhice_rancoroso';
+  if (s.pedras >= 700) return 'velhice_rico';
+  if (f('veterano') || f('heroi_do_cerco') || f('campeao_torneio') || f('torneio_campeao') || f('heroi_da_guerra')) return 'velhice_veterano';
+  if (s.fama < 20) return 'velhice_esquecido';
+  return 'velhice';
+}
+
 export function endLife(s: State, id: string) {
   if (s.ending) return;
+  if (id === 'velhice') id = oldAgeEnding(s);
   s.ending = id;
   const end = ENDING[id];
   const variants = [end.text, ...(end.alt ?? [])];
@@ -394,9 +413,10 @@ export interface View {
   choices: ViewChoice[];
 }
 
-export interface Visible { choice?: Choice; action?: 'break' | 'wait'; pill?: Item }
+export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
 
 export function visibleChoices(s: State): Visible[] {
+  if (s.current?.retiro) return [{ action: 'retiro' }];
   if (s.current?.breakthrough) {
     const v: Visible[] = [{ action: 'break' }];
     for (const p of breakPills(s)) v.push({ action: 'break', pill: p });
@@ -431,6 +451,13 @@ export function view(s: State): View {
       text: `Seu cultivo transborda. Diante de você está a porta para ${target}.${trib ? ' Raios de tribulação já se agrupam no horizonte.' : ''}`,
     };
   }
+  if (cur.retiro) {
+    const band = s.tier >= 7 ? 'C' : s.tier >= 5 ? 'B' : 'A';
+    const texts = RETIRO_TEXTS[band];
+    const base = texts[(cur.v ?? 0) % texts.length].replace(/\{d\}/g, String(cur.d ?? 10));
+    const line = RETIRO_PATH_LINES[s.path];
+    return { kind: 'event', title: 'Reclusão', rarity: 'comum', text: line ? `${base} ${line}` : base, choices: [{ text: 'Voltar ao mundo.' }] };
+  }
   const ev = EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
@@ -442,7 +469,8 @@ export function view(s: State): View {
     }
     return vc;
   });
-  return { kind: 'event', title: fill(s, ev.title), text: fill(s, ev.text), rarity: ev.rarity, choices };
+  const body = cur.v && ev.alt?.[cur.v - 1] ? ev.alt[cur.v - 1] : ev.text;
+  return { kind: 'event', title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices };
 }
 
 /* ---------- Escolhas ---------- */
@@ -492,6 +520,41 @@ export function choose(s: State, idx: number, rng: Rng) {
   }
 }
 
+/**
+ * Normalização de recompensas: como os turnos ficaram mais curtos (mais eventos por reino), cada evento
+ * entrega uma fração do que entregava, para o total por reino continuar o mesmo. Atributos inteiros
+ * usam arredondamento por sorteio (1,0 × 0,8 vira 1 em 80% das vezes). Itens, técnicas e danos não escalam.
+ */
+const REWARD_SCALE = [0.95, 0.9, 0.7, 0.55, 0.5, 0.5, 0.5, 0.5, 0.5];
+
+/** Teto suave dos atributos por reino: perto dele, ganhos de eventos rendem cada vez menos (o balanço não depende da quantidade de eventos). */
+const softCap = (tier: number) => 62 + 7 * tier;
+
+function scaleFx(s: State, fx: Effects | undefined, r: number, rng: Rng): Effects | undefined {
+  if (!fx) return fx;
+  const out: Effects = { ...fx };
+  const si = (n: number) => {
+    const a = Math.abs(n) * r;
+    const f = Math.floor(a);
+    const v = f + (rng.chance(a - f) ? 1 : 0);
+    return n < 0 ? -v : v;
+  };
+  if (fx.stats) {
+    out.stats = {};
+    for (const k of Object.keys(fx.stats) as StatKey[]) {
+      const n = fx.stats[k] ?? 0;
+      const room = n > 0 ? Math.max(0.15, 1 - s.stats[k] / softCap(s.tier)) : 1;
+      const a = Math.abs(n) * r * room;
+      const f = Math.floor(a);
+      const v = (f + (rng.chance(a - f) ? 1 : 0)) * (n < 0 ? -1 : 1);
+      if (v) out.stats[k] = v;
+    }
+  }
+  for (const k of ['pedras', 'karma', 'fama'] as const) if (fx[k]) out[k] = si(fx[k] as number);
+  if (fx.xp) out.xp = fx.xp * r;
+  return out;
+}
+
 function chooseCore(s: State, idx: number, rng: Rng) {
   if (s.ending && s.result) return;
   const vis = visibleChoices(s);
@@ -500,6 +563,18 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
   s.turn++;
   if (v.action) {
+    if (v.action === 'retiro') {
+      const d = s.current?.d ?? 10;
+      s.age += d;
+      s.xp = Math.min(130, s.xp + cultivationRate(s) * d * 1.1);
+      s.wounds = 0;
+      s.fama = Math.max(0, s.fama - Math.floor(d / 40)); // quem some do mundo vai sendo esquecido
+      if (rng.chance(0.08)) { const k = rng.pick(['esp', 'dao', 'comp'] as StatKey[]); s.stats[k] = Math.min(99, s.stats[k] + 1); }
+      s.result = { text: rng.pick(RETIRO_EXIT).replace(/\{d\}/g, String(d)) };
+      addLog(s, `Reclusão de ${d} anos.`);
+      if (!s.ending && s.age >= s.maxAge) endLife(s, 'velhice');
+      return;
+    }
     if (v.action === 'wait') {
       s.seen['__break'] = s.age;
       s.result = { text: rng.pick([
@@ -531,16 +606,23 @@ function chooseCore(s: State, idx: number, rng: Rng) {
     out = c.res ?? c.ok ?? { text: '' };
   }
   s.seen[ev.id] = s.age;
-  const txt = fill(s, out.text);
+  s.counts ??= {};
+  s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
+  const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
   s.result = { text: txt, check };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
-  applyFx(s, out.fx, rng);
+  applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
 }
 
 /* ---------- Passagem do tempo e próximo evento ---------- */
+/** Passo máximo (em anos) de um turno comum, por reino. O resto do tempo passa nas reclusões. */
+const DT_CAP = [2, 1, 2, 2, 3, 4, 6, 8, 10];
+/** Chance de um turno de reclusão, por reino. */
+const P_RETIRO = [0, 0, 0, 0.12, 0.25, 0.35, 0.45, 0.5, 0.55];
+
 function advance(s: State, rng: Rng) {
   const realm = realmOf(s);
-  const dt = s.tier === 0 ? rng.int(1, 2) : rng.int(1, Math.max(2, Math.ceil(realm.years / 8)));
+  const dt = s.tier === 0 ? rng.int(1, 2) : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
   if (s.tier > 0) s.xp = Math.min(130, s.xp + cultivationRate(s) * dt);
   s.age += dt;
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
@@ -557,6 +639,55 @@ export function proceed(s: State, rng: Rng) {
 }
 
 const RARITY_W = { comum: 10, raro: 2.5, lendario: 0.5 } as const;
+
+/** Evento "genérico": repetível e sem nenhuma condição além de reino/idade. */
+function isGeneric(e: GameEvent): boolean {
+  const c = e.cond;
+  if (e.once) return false;
+  if (!c) return true;
+  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.tecnica || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.mundo);
+}
+const GENERIC_IDS = new Set(EVENTS.filter(isGeneric).map((e) => e.id));
+
+function setCurrent(s: State, id: string, rng: Rng) {
+  const n = 1 + (EVENT[id]?.alt?.length ?? 0);
+  s.current = { id, v: n > 1 ? rng.int(0, n - 1) : 0 };
+}
+
+/** Atualiza a era do mundo. Devolve true se já definiu o próximo turno (abertura de era ou fim de vida). */
+function updateWorld(s: State, rng: Rng): boolean {
+  if (s.world && s.age >= s.world.until) {
+    addLog(s, `Termina a era: ${WORLD[s.world.id].name}.`);
+    s.lastWorld = s.world.id;
+    s.world = null;
+    s.nextWorldAt = s.age + rng.int(35, 110);
+  }
+  if (!s.world && s.age >= (s.nextWorldAt ?? 1e9) && rng.chance(0.5)) {
+    const cands = WORLDS.filter((w) => s.tier >= w.minTier && s.tier <= (w.maxTier ?? 99) && w.id !== s.lastWorld && EVENT[w.startEvent]);
+    if (cands.length) {
+      const w = rng.weighted(cands, (x) => x.weight);
+      s.world = { id: w.id, until: s.age + rng.int(w.years[0], w.years[1]) };
+      addLog(s, `Começa a era: ${w.name}.`);
+      setCurrent(s, w.startEvent, rng);
+      return true;
+    }
+  }
+  const w = s.world ? WORLD[s.world.id] : null;
+  if (w?.hazard && s.tier >= w.hazard.minTier && s.tier <= w.hazard.maxTier) {
+    const prot = Math.min(0.75, (eff(s, 'fis') + eff(s, 'dao')) / 130);
+    if (rng.chance(w.hazard.base * (1 - prot))) {
+      if (s.items.includes('talisma_escudo')) {
+        s.items.splice(s.items.indexOf('talisma_escudo'), 1);
+        addLog(s, `O Talismã de Escudo absorve o golpe da era (${w.name}).`);
+      } else {
+        addLog(s, fill(s, w.hazard.text));
+        endLife(s, w.hazard.fim);
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 export function eligibleEvents(s: State): GameEvent[] {
   return EVENTS.filter((e) => {
@@ -577,7 +708,16 @@ export function pickNext(s: State, rng: Rng) {
   const dueIdx = s.scheduled.findIndex((x) => x.at <= s.age && EVENT[x.event] && s.seen[x.event] === undefined);
   if (dueIdx >= 0) {
     const due = s.scheduled.splice(dueIdx, 1)[0];
-    s.current = { id: due.event };
+    setCurrent(s, due.event, rng);
+    return;
+  }
+  // 2b) eras do mundo
+  if (updateWorld(s, rng)) return;
+  // 2c) reclusão (reinos altos): em vez de mais um evento genérico, passam-se anos
+  if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)]) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
+    const years = realmOf(s).years;
+    s.seen['__retiro'] = s.turn;
+    s.current = { id: '__retiro', retiro: true, d: rng.int(Math.max(3, Math.round(years * 0.05)), Math.max(5, Math.round(years * 0.14))), v: rng.int(0, 4) };
     return;
   }
   // 3) vida comum caso nunca desperte
@@ -592,8 +732,18 @@ export function pickNext(s: State, rng: Rng) {
     if (scenes.length) pool = scenes;
   }
   const luck = 1 + eff(s, 'sor') / 50;
-  const ev = rng.weighted(pool, (e) => RARITY_W[e.rarity] * (e.weight ?? 1) * (e.rarity === 'comum' ? 1 : luck));
-  s.current = { id: ev ? ev.id : 'dia_comum' };
+  const ev = rng.weighted(pool, (e) => {
+    let w = RARITY_W[e.rarity] * (e.weight ?? 1) * (e.rarity === 'comum' ? 1 : luck);
+    if (!e.once) w *= Math.pow(0.45, s.counts?.[e.id] ?? 0); // fadiga: o que já aconteceu várias vezes perde peso
+    const generic = GENERIC_IDS.has(e.id);
+    if (generic) w *= 0.85;
+    if (s.world) {
+      if (e.cond?.mundo?.includes(s.world.id)) w *= 3; // a era do mundo puxa seus próprios eventos
+      else if (generic) w *= 0.7;
+    }
+    return w;
+  });
+  setCurrent(s, ev ? ev.id : 'dia_comum', rng);
 }
 
 /* ---------- Final da vida ---------- */
