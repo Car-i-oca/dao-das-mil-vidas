@@ -101,27 +101,47 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.item && !s.items.includes(c.item)) return false;
   if (c.tecnica && !s.techniques.includes(c.tecnica)) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
+  if (c.recMin !== undefined && (s.rec ?? 0) < c.recMin) return false;
   if (c.mundo && !(s.world && c.mundo.includes(s.world.id))) return false;
   return true;
 }
 
 /* ---------- Testes ---------- */
-export function checkDifficulty(s: State, ch: Check): number {
-  return 8 + s.tier * 6 + (ch.dif ?? 0);
+/** Reino da ameaça: explícito no teste ou no evento; senão, testes de combate/fuga de eventos de reino baixo viram ameaças de reino baixo. */
+export function threatTier(s: State, ch: Check, ev?: GameEvent): number {
+  let t = ch.amea ?? ev?.amea;
+  if (t === undefined && ev && !ev.escala && (ch.tag === 'combate' || ch.tag === 'fuga') && !ev.cond?.mundo) {
+    const lo = ev.cond?.tierMin ?? 1;
+    t = Math.max(1, lo) + 1;
+  }
+  return t === undefined ? s.tier : Math.max(0, Math.min(s.tier, t));
 }
 
-export function checkChance(s: State, ch: Check): number {
+export function checkDifficulty(s: State, ch: Check, ev?: GameEvent): number {
+  return 8 + threatTier(s, ch, ev) * 6 + (ch.dif ?? 0);
+}
+
+export function recStage(s: State): number {
+  const r = PATH[s.path]?.rec;
+  return r ? Math.min(r.stages.length - 1, Math.floor((s.rec ?? 0) / 3)) : 0;
+}
+
+export function checkChance(s: State, ch: Check, ev?: GameEvent): number {
   const keys = Array.isArray(ch.stat) ? ch.stat : [ch.stat];
   let total = keys.reduce((a, k) => a + eff(s, k), 0) / keys.length;
   if (ch.tag) {
-    if (PATH[s.path].tags.includes(ch.tag)) total += 1;
+    if (PATH[s.path].tags.includes(ch.tag)) total += 1 + Math.floor(recStage(s) / 2);
+    if (PATH[s.path].fraco?.includes(ch.tag)) total -= 1.5;
     for (const t of s.techniques) {
       const tech = TECH[t];
       if (tech?.tags?.includes(ch.tag)) total += tech.grade;
     }
   }
-  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
-  return Math.min(0.95, Math.max(0.05, p));
+  const p = 0.5 + (total - checkDifficulty(s, ch, ev)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
+  // Ameaças de reinos abaixo do seu ficam fáceis: quanto maior a diferença de reino, maior o piso.
+  const gap = s.tier - threatTier(s, ch, ev);
+  const floor = gap >= 4 ? 0.95 : gap === 3 ? 0.88 : gap === 2 ? 0.78 : 0;
+  return Math.min(0.95, Math.max(0.05, floor, p + Math.max(0, gap) * 0.04));
 }
 
 /* ---------- Criação ---------- */
@@ -231,7 +251,9 @@ function tierUp(s: State, delta: number) {
   const t = Math.min(max, Math.max(0, s.tier + delta));
   if (t === s.tier) return;
   if (delta > 0) {
-    for (const k of STAT_KEYS) s.stats[k] = Math.min(99, s.stats[k] + 2);
+    const g = PATH[s.path]?.growth;
+    for (const k of STAT_KEYS) s.stats[k] = Math.min(99, s.stats[k] + (g ? (g[k] ?? 0) : 2));
+    if (PATH[s.path]?.rec) s.rec = (s.rec ?? 0) + 1;
     s.fama += t * 2;
   }
   s.tier = t;
@@ -262,6 +284,7 @@ function setPath(s: State, id: string) {
 export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (!fx) return;
   if (fx.trilha) setPath(s, fx.trilha);
+  if (fx.rec && PATH[s.path]?.rec) s.rec = Math.max(0, (s.rec ?? 0) + fx.rec);
   if (fx.stats) for (const k of Object.keys(fx.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (fx.stats[k] ?? 0)));
   if (fx.pedras) s.pedras = Math.max(0, s.pedras + fx.pedras);
   if (fx.karma) s.karma += fx.karma;
@@ -318,14 +341,30 @@ export function breakChance(s: State, pill?: Item): number {
   return Math.min(0.95, Math.max(0.03, p));
 }
 
+/** Flags de preparo de tribulação (definidas no evento tribulacao_preparo; consumidas ao enfrentar o raio). */
+export const TRIB_FLAGS = ['trib_artefato', 'trib_formacao', 'trib_corpo', 'trib_merito', 'trib_consciencia'];
+
 function tribulationChance(s: State): number {
   const next = s.tier + 1;
   const avg = (eff(s, 'fis') + eff(s, 'esp') + eff(s, 'dao')) / 3;
   const karmaMod = Math.max(-0.08, Math.min(0.08, s.karma / 300)); // karma positivo suaviza a tribulação, negativo a endurece
-  return Math.min(0.95, Math.max(0.25, 0.6 + (avg - (6 + next * 4)) * 0.035 - s.wounds * 0.04 + karmaMod));
+  const preparo = TRIB_FLAGS.some((fl) => s.flags.includes(fl)) ? 0.08 : 0;
+  const metodo = PATH[s.path]?.rec ? Math.min(0.06, recStage(s) * 0.015) : 0;
+  return Math.min(0.95, Math.max(0.25, 0.6 + (avg - (6 + next * 4)) * 0.035 - s.wounds * 0.04 + karmaMod + preparo + metodo));
 }
 
 function doBreakthrough(s: State, rng: Rng, pill?: Item): string {
+  const before = s.tier;
+  const text = doBreakthroughCore(s, rng, pill);
+  if (s.tier > before && !s.ending) {
+    const r = realmOf(s);
+    const extra = [r.poder, r.titulo ? `Título: ${r.titulo}.` : ''].filter(Boolean).join(' ');
+    if (extra) { addLog(s, extra); return `${text} ${extra}`; }
+  }
+  return text;
+}
+
+function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
   const L = ladderOf(s);
   const next = s.tier + 1;
   const top = next >= L.realms.length;
@@ -336,7 +375,9 @@ function doBreakthrough(s: State, rng: Rng, pill?: Item): string {
   if (rng.chance(p)) {
     const trib = top || L.realms[next].tribulation;
     if (trib) {
-      if (!rng.chance(tribulationChance(s))) {
+      const tribOk = rng.chance(tribulationChance(s));
+      s.flags = s.flags.filter((fl) => !TRIB_FLAGS.includes(fl));
+      if (!tribOk) {
         if (s.items.includes('talisma_escudo')) {
           s.items.splice(s.items.indexOf('talisma_escudo'), 1);
           s.wounds += 3;
@@ -462,7 +503,7 @@ export function view(s: State): View {
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
     const vc: ViewChoice = { text: fill(s, c.text) };
-    if (c.check) vc.chance = checkChance(s, c.check);
+    if (c.check) vc.chance = checkChance(s, c.check, ev);
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
       if (s.pedras < c.custo) vc.disabled = true;
@@ -598,8 +639,9 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
   if (c.check) {
-    const chance = checkChance(s, c.check);
+    const chance = checkChance(s, c.check, ev);
     const success = rng.chance(chance);
+    if (success && c.check.tag && PATH[s.path]?.tags.includes(c.check.tag) && PATH[s.path].rec && rng.chance(0.25)) s.rec = (s.rec ?? 0) + 1;
     out = (success ? c.ok : c.fail) ?? c.res ?? { text: '' };
     check = { chance, success };
   } else {

@@ -2,7 +2,7 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
+  realmOf, ladderOf, eff, cultivationRate, recStage, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
@@ -261,6 +261,31 @@ function startTyping(s: State) {
   typewrite(el, text, reveal);
 }
 
+/** Título no mundo, poderes de reino e recurso próprio da trilha. */
+function powerHtml(s: State): string {
+  const path = PATH[s.path];
+  const L = ladderOf(s);
+  const r = realmOf(s);
+  const powers = L.realms
+    .map((x, i) => ({ x, i }))
+    .filter(({ x, i }) => i >= 1 && i <= s.tier && x.poder)
+    .map(({ x }) => `<li><b>${esc(x.name)}</b>: ${esc(x.poder!)}</li>`)
+    .join('');
+  const next = L.realms[s.tier + 1];
+  let rec = '';
+  if (path?.rec) {
+    const stage = recStage(s);
+    const into = (s.rec ?? 0) - stage * 3;
+    const last = stage >= path.rec.stages.length - 1;
+    rec = `<div style="margin-top:8px"><b>${esc(path.rec.name)}:</b> ${esc(path.rec.stages[stage])} <span class="muted small">(estágio ${stage + 1}/${path.rec.stages.length})</span>
+      <div class="bar"><i style="width:${last ? 100 : Math.min(100, (into / 3) * 100)}%"></i></div>
+      <div class="small muted">${esc(path.rec.desc)} A cada 2 estágios, +1 nos testes de ${esc(path.tags.join(', '))}.${path.fraco?.length ? ` Ponto fraco: ${esc(path.fraco.join(', '))}.` : ''}</div></div>`;
+  }
+  return `<div class="card"><div class="kv"><div class="k">Título</div><div class="v">${esc(r.titulo ?? 'Mortal')}</div></div>
+    ${powers ? `<ul class="small" style="margin:6px 0 0 18px">${powers}</ul>` : ''}
+    ${next?.poder ? `<div class="muted small" style="margin-top:4px">Próximo reino (${esc(next.name)}): ${esc(next.poder)}</div>` : ''}${rec}</div>`;
+}
+
 function statusHtml(s: State): string {
   const path = PATH[s.path];
   const L = ladderOf(s);
@@ -293,6 +318,7 @@ function statusHtml(s: State): string {
         <div class="k">Local</div><div class="v">${PLACE_NAMES[s.place] ?? s.place}</div>
       </div>
     </div>
+    ${powerHtml(s)}
     <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>
     <div class="card kv">
       <div class="k">Pedras</div><div class="v">${s.pedras}</div>

@@ -12,7 +12,8 @@
     "fuzz": "tsx sim/fuzz.ts",
     "endings": "tsx sim/endings.ts",
     "variedade": "tsx sim/variedade.ts",
-    "icons": "node scripts/gen-icons.mjs"
+    "icons": "node scripts/gen-icons.mjs",
+    "poder": "tsx sim/poder.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",

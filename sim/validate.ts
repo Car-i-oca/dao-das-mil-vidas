@@ -5,6 +5,7 @@ import { TECHNIQUES } from '../src/data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
 import { WORLDS, WORLD } from '../src/data/mundo';
+import { TETOS } from '../src/data/faixas';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import type { Cond, Effects } from '../src/types';
 
@@ -61,6 +62,7 @@ for (const p of PATHS) {
   if (p.tecnica && !techIds.has(p.tecnica)) errors.push(`trilha ${p.id}: técnica inexistente`);
   if (p.unlock && !achIds.has(p.unlock)) errors.push(`trilha ${p.id}: conquista inexistente "${p.unlock}"`);
 }
+for (const id of Object.keys(TETOS)) if (!evIds.has(id)) errors.push(`faixas.ts: evento inexistente ${id}`);
 for (const w of WORLDS) {
   if (!evIds.has(w.startEvent)) errors.push(`era ${w.id}: evento de abertura inexistente "${w.startEvent}"`);
   if (w.hazard && !endIds.has(w.hazard.fim)) errors.push(`era ${w.id}: final de perigo inexistente "${w.hazard.fim}"`);

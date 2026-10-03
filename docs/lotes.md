@@ -201,3 +201,12 @@ Na criação do personagem: **Calma** (+6 pontos de chance em testes, +5 no romp
 **Bug achado pelo fuzzer e corrigido:** o ganho fixo de +2 em todos os atributos a cada reino (e os bônus de trilha) não respeitava o teto de 99; um atributo chegou a 100. Agora tudo é limitado a 99.
 
 **Resultado (8.000 vidas):** ascensão 0,6% (independente) e 1,7% (meta); todos os eventos aparecem no modo meta. Totais: **427 eventos, 93 itens, 60 técnicas, 23 finais, 10 trilhas**.
+
+## Etapa 2 / Sensação de poder (lotes 13–20)
+
+- **Lote 13 (mundo em movimento):** 8 eras (guerra entre seitas, maré de bestas, reino secreto, praga, mudança de dinastia, culto, festivais, cometa), ~40 eventos.
+- **Lote 14 (poder):** 8 ameaças menores (*esmagar / assustar / poupar*) e 8 marcos de reino.
+- **Lotes 15–18 (reinos):** 14 eventos próprios dos reinos 3–4, 14 dos reinos 5–6, 15 dos reinos 7–8 e 13 dos reinos 1–2.
+- **Lote 19 (trilhas):** 30 eventos, três por trilha, ligados ao recurso próprio de cada uma.
+- **Lote 20:** preparo de tribulação com cinco métodos.
+- **Motor:** `amea` por teste/evento com piso de sucesso, `growth`/`fraco`/`rec` por trilha, poder e título por reino, tetos de reino em `src/data/faixas.ts`.

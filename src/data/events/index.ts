@@ -23,10 +23,22 @@ import { lote10Regioes } from './lote10_regioes';
 import { lote11Ecos } from './lote11_ecos';
 import { lote12Torneio } from './lote12_torneio';
 import { lote13Mundo } from './lote13_mundo';
+import { lote14Poder } from './lote14_poder';
+import { lote15Reinos34 } from './lote15_reinos_3_4';
+import { lote16Reinos56 } from './lote16_reinos_5_6';
+import { lote17Reinos78 } from './lote17_reinos_7_8';
+import { lote18Reinos12 } from './lote18_reinos_1_2';
+import { lote19TrilhasPoder } from './lote19_trilhas_poder';
+import { lote20Tribulacao } from './lote20_tribulacao';
+import { TETOS } from '../faixas';
 
-export const EVENTS: GameEvent[] = [
+const TODOS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
   ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
+  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao,
 ];
+
+/** Aplica os tetos de reino de src/data/faixas.ts. */
+export const EVENTS: GameEvent[] = TODOS.map((e) => (TETOS[e.id] !== undefined ? { ...e, cond: { ...e.cond, tierMax: Math.min(e.cond?.tierMax ?? 8, TETOS[e.id]) } } : e));

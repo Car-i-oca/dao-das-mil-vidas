@@ -22,6 +22,8 @@ export interface Effects {
   tier?: number;
   /** Define a trilha de cultivo (só vale se o personagem ainda não tem uma). */
   trilha?: string;
+  /** Pontos do recurso da trilha (intenção de espada, têmpera, etc.). */
+  rec?: number;
   setFlags?: string[];
   clearFlags?: string[];
   item?: string[];
@@ -56,6 +58,8 @@ export interface Cond {
   item?: string;
   tecnica?: string;
   corrMin?: number;
+  /** Pontos mínimos do recurso da trilha. */
+  recMin?: number;
   /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
   mundo?: string[];
 }
@@ -68,6 +72,8 @@ export interface Outcome {
 }
 
 export interface Check {
+  /** Reino da ameaça (padrão: o reino do jogador). Ameaças de reinos abaixo ficam fáceis. */
+  amea?: number;
   stat: StatKey | StatKey[];
   /** Dificuldade relativa ao reino: 0 = normal, +4 = difícil, -3 = fácil. */
   dif?: number;
@@ -95,6 +101,9 @@ export interface GameEvent {
   once?: boolean;
   /** Variações do texto do evento (uma é sorteada a cada ocorrência). */
   alt?: string[];
+  /** Reino natural da ameaça deste evento (vale para todos os testes dele). `escala` desliga a regra automática. */
+  amea?: number;
+  escala?: boolean;
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
   cond?: Cond;
@@ -110,6 +119,10 @@ export interface Realm {
   /** Chance base de rompimento para entrar NESTE reino. */
   breakChance: number;
   tribulation?: boolean;
+  /** Título do jogador no mundo neste reino. */
+  titulo?: string;
+  /** Poder novo anunciado ao romper para este reino. */
+  poder?: string;
 }
 
 export interface Path {
@@ -125,6 +138,12 @@ export interface Path {
   unlock?: string;
   /** Corrupção inicial (trilha demoníaca). */
   startCorr?: number;
+  /** Ganho de atributos a cada reino (padrão: +2 em tudo). */
+  growth?: Partial<Stats>;
+  /** Tags de testes em que a trilha é fraca (−1,5). */
+  fraco?: string[];
+  /** Recurso próprio da trilha: estágios por pontos (3 pontos por estágio). */
+  rec?: { name: string; stages: string[]; desc: string };
 }
 
 export interface Item {
@@ -249,6 +268,8 @@ export interface State {
   result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[] } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
+  /** Pontos do recurso próprio da trilha. */
+  rec?: number;
   /** Era do mundo em curso. */
   world?: { id: string; until: number } | null;
   nextWorldAt?: number;
