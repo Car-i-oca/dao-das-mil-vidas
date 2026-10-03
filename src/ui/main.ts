@@ -117,7 +117,7 @@ function bestName(m: Meta): string {
   return `reino ${b.tier}, ${b.age} anos`;
 }
 
-function newCreation(prevRerolls = 3, prevPath?: string) {
+function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0), prevPath?: string) {
   const seed = (Math.random() * 4294967295) >>> 0;
   const rng = new Rng(seed);
   creation = { c: rollCreation(save.meta, rng), seed: rng.seed, rerolls: prevRerolls, path: prevPath ?? PATHS[0].id };

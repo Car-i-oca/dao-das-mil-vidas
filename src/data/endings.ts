@@ -69,6 +69,8 @@ export const UPGRADES = [
   { id: 'destino', name: 'Fio do Destino', desc: '+1 Sorte inicial por nível', max: 6, cost: 20 },
   { id: 'ritmo', name: 'Ritmo do Dao', desc: '+3% de cultivo por nível', max: 8, cost: 18 },
   { id: 'bolso', name: 'Herança de Pedras', desc: '+10 Pedras Espirituais iniciais por nível', max: 10, cost: 8 },
+  { id: 'sorteio', name: 'Mais Destinos', desc: '+1 re-sorteio na criação do personagem por nível', max: 3, cost: 80 },
+  { id: 'memoria', name: 'Memória de Vidas Passadas', desc: '+1% de chance em todos os testes por nível', max: 5, cost: 90 },
 ] as const;
 
 /** Preço do próximo nível: cresce com o nível atual. */

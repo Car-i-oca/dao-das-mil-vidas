@@ -99,12 +99,15 @@ interface Run {
   pathUse: Record<string, number>;
   originUse: Record<string, number>;
   talentUse: Record<string, number>;
+  /** Por técnica/artefato: vidas que o possuíam ao morrer, soma do reino relativo e ascensões. */
+  gear: Record<string, { n: number; rel: number; asc: number }>;
+  relSum: number;
   finalMeta?: Meta;
   ascByQuartile: number[];
 }
 
 function emptyRun(title: string): Run {
-  return { title, total: 0, ends: {}, tiers: {}, ages: [], events: {}, byPath: {}, ascensions: 0, tierAges: {}, timeline: [], pathUse: {}, originUse: {}, talentUse: {}, ascByQuartile: [0, 0, 0, 0] };
+  return { title, total: 0, ends: {}, tiers: {}, ages: [], events: {}, byPath: {}, ascensions: 0, tierAges: {}, timeline: [], pathUse: {}, originUse: {}, talentUse: {}, gear: {}, relSum: 0, ascByQuartile: [0, 0, 0, 0] };
 }
 
 function record(run: Run, s: State) {
@@ -118,6 +121,13 @@ function record(run: Run, s: State) {
   if (s.ending === 'ascensao') { b.asc++; run.ascensions++; }
   run.originUse[s.origin] = (run.originUse[s.origin] ?? 0) + 1;
   run.talentUse[s.talent] = (run.talentUse[s.talent] ?? 0) + 1;
+  const rel = s.tier / (ladderOf(s).realms.length - 1);
+  run.relSum += rel;
+  const gearIds = [...s.techniques.map((x) => "t:" + x), ...new Set(s.items.filter((i) => ITEMS.find((it) => it.id === i)?.passive).map((x) => "i:" + x))];
+  for (const g of gearIds) {
+    const e = (run.gear[g] ??= { n: 0, rel: 0, asc: 0 });
+    e.n++; e.rel += rel; if (s.ending === "ascensao") e.asc++;
+  }
 }
 
 function runIndependent(): Run {
@@ -134,7 +144,7 @@ function runIndependent(): Run {
   return run;
 }
 
-const UPGRADE_ORDER = ['ritmo', 'mente', 'corpo', 'destino', 'bolso'];
+const UPGRADE_ORDER = ['ritmo', 'mente', 'corpo', 'destino', 'bolso', 'memoria', 'sorteio'];
 
 function runMeta(): Run {
   const run = emptyRun('Meta-progressão (vidas em sequência, como um jogador de verdade)');
@@ -204,6 +214,16 @@ function formatRun(run: Run): string {
   }
   const gated = ['despertar_alquimista', 'despertar_reencarnado', 'despertar_demoniaco', 'regressao_visao'];
   L.push('', `**Eventos que dependem de desbloqueio** (ocorrências): ${gated.map((id) => `${id} (${run.events[id] ?? 0})`).join(', ')}.`);
+  {
+    const mean = run.relSum / run.total;
+    const rows = Object.entries(run.gear).filter(([, g]) => g.n >= 60).map(([id, g]) => ({ id, n: g.n, d: g.rel / g.n - mean, asc: g.asc / g.n }));
+    rows.sort((a, b) => b.d - a.d);
+    const name = (id: string) => (id.startsWith("t:") ? TECHNIQUES.find((x) => x.id === id.slice(2))?.name : ITEMS.find((x) => x.id === id.slice(2))?.name) ?? id;
+    const fmt = (r: (typeof rows)[number]) => name(r.id) + " (n=" + r.n + ", reino relativo " + (r.d >= 0 ? "+" : "") + (100 * r.d).toFixed(1) + " pp, ascensão " + (100 * r.asc).toFixed(1) + "%)";
+    L.push("", "**Impacto de técnicas e artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)", "");
+    L.push("Maiores: " + rows.slice(0, 5).map(fmt).join("; ") + ".");
+    L.push("Menores: " + rows.slice(-3).map(fmt).join("; ") + ".");
+  }
   const never = EVENTS.filter((e) => !run.events[e.id]).map((e) => e.id);
   const seen = EVENTS.length - never.length;
   L.push('', `**Eventos vistos:** ${seen}/${EVENTS.length}. Nunca vistos: ${never.length ? never.join(', ') : 'nenhum'}.`);

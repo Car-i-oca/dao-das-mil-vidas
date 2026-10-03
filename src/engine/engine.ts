@@ -111,7 +111,7 @@ export function checkChance(s: State, ch: Check): number {
       if (tech?.tags?.includes(ch.tag)) total += tech.grade;
     }
   }
-  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03;
+  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.01;
   return Math.min(0.95, Math.max(0.05, p));
 }
 
@@ -164,7 +164,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? [])],
     items: [], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
     turn: 0, current: null, result: null, ending: null, endingText: null,
-    legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: 0, pedras: up.bolso ?? 0 },
+    legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
   pickNext(s, rng);
@@ -492,7 +492,7 @@ export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vingan
 export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;
   const end = ENDING[s.ending];
-  const raw = s.tier * 6 + s.age / 25 + s.fama / 12 + Math.max(0, s.karma) / 20;
+  const raw = s.tier * 5 + Math.min(10, s.age / 40) + s.fama / 15 + Math.max(0, s.karma) / 25;
   let gain = Math.max(1, Math.floor(raw * end.legacy));
   const newAch: string[] = [];
   for (const a of ACHIEVEMENTS) {
