@@ -89,4 +89,9 @@ export const ITEMS: Item[] = [
   { id: 'artefato_natal_menor', name: 'Artefato Natal (imperfeito)', kind: 'artefato', grade: 3, desc: 'Falhas e orgulho, mas é seu.', passive: { fis: 1, esp: 1, dao: 1 }, value: 140 },
   { id: 'lingote_celeste', name: 'Lingote de Ferro Celeste', kind: 'misc', grade: 4, desc: 'Metal caído do céu, quente ao toque.', value: 220 },
   { id: 'armadura_escamas', name: 'Armadura de Escamas de Besta', kind: 'artefato', grade: 3, desc: 'Leve, escura e quase viva.', passive: { fis: 3 }, value: 180 },
+
+  // Lote 4: mundo mortal e família
+  { id: 'colar_familia', name: 'Colar da Família', kind: 'artefato', grade: 2, desc: 'Um fio de jade herdado de quatro gerações.', passive: { sor: 1, dao: 1 }, value: 60 },
+  { id: 'seda_imperial', name: 'Manto de Seda Imperial', kind: 'artefato', grade: 3, desc: 'Presente da corte; abre portas e olhares.', passive: { car: 2, sor: 1 }, value: 150 },
+  { id: 'arroz_espiritual', name: 'Arroz Espiritual do Campo Fértil', kind: 'erva', grade: 2, desc: 'Grão de campos abençoados, nutritivo e silencioso.', use: { ferida: -2, xp: 6 }, value: 20 },
 ];

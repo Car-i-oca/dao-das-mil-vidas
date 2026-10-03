@@ -48,4 +48,8 @@ export const TECHNIQUES: Technique[] = [
   { id: 'fogo_coracao', name: 'Fogo do Coração Sereno', grade: 3, desc: 'A chama obedece ao pulso do alquimista.', xpMult: 1.04, tags: ['alquimia', 'qi'] },
   { id: 'martelo_ressonante', name: 'Martelo Ressonante', grade: 2, desc: 'Cada golpe do martelo canta a nota do metal.', stats: { fis: 1 }, tags: ['forja', 'combate'] },
   { id: 'selo_espirito_arma', name: 'Selo do Espírito da Arma', grade: 3, desc: 'Une espírito e lâmina, para que se completem.', stats: { dao: 1 }, tags: ['espada', 'combate', 'forja'] },
+
+  // Lote 4: mundo mortal e família
+  { id: 'sutra_familia', name: 'Sutra da Casa Acesa', grade: 2, desc: 'Cada ausência vira raiz; cada lembrança, chama.', stats: { dao: 1 }, tags: ['mente'] },
+  { id: 'passo_jianghu', name: 'Passo do Andarilho do Jianghu', grade: 1, desc: 'Para quem dorme em estalagens e acorda em estradas.', stats: { sor: 1 }, tags: ['fuga', 'social'] },
 ];

@@ -43,3 +43,17 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 **Calibração:** `finalChance` reduzido de 0,09 para 0,07 para manter margem (o modo meta estava em 2,0%).
 
 **Resultado (4.000 vidas):** ascensão 0,8% (independente) e 1,7% (meta); todos os eventos novos aparecem; os mais raros são `aprendiz_alquimista` e `aprendiz_retorna` (exigem alquimia + Mestre alquimista). O artefato natal e o Espelho de Bronze figuram entre os mais presentes nos mortos de reino alto, mas com ascensão dentro da média (viés de sobrevivência).
+
+---
+
+## Lote 4 — Mundo mortal, impérios, companheiro do Dao e família
+**Pesquisa:** jianghu e mundo mortal convivendo com seitas; cortes e dinastias que cultivadores influenciam; companheiro do Dao, "family cultivation" e clãs que crescem por gerações (sem conteúdo sexual). Fontes: [Cultivation Sects: Hierarchies & Power in Xianxia](https://xiuxian0.com/sects/complete-guide-cultivation-sects/), [Naming Sects and Clans in Wuxia and Xianxia](https://cultivatingdragons.com/naming-sects-and-clans-in-wuxia-and-xianxia/), [Family Cultivation: Ascending to Immortality](https://www.novelupdates.com/series/family-cultivation-ascending-to-immortality/), [Leaving A Legacy](https://www.royalroad.com/fiction/147117/leaving-a-legacy-a-xianxia-story).
+
+**Entrou:** 26 eventos (`lote4_mundo.ts`), 2 técnicas, 3 itens, 2 finais (Ancestral do Clã, A Sombra do Trono), 2 conquistas.
+- Família em 8 gerações de eventos: `pedido_de_casamento` → `filho_nasce` → `filho_adolescente` (teste de raiz) → `filho_parte` → `filho_retorna` → `cla_proprio_proposta` → `cla_prospera` (final Ancestral); doença e luto do companheiro (`doenca_companheiro` → `luto_e_caminho`).
+- Corte: `corte_imperador` → `imperador_imortalidade`; `conselheiro_imperial` (lendário, final Sombra do Trono); `general_rebelde`; `dinastia_cai` (lendário).
+- Jianghu: torneio mortal sem Qi, cavaleiro andante, irmãos jurados (`irmaos_jurados` → `irmao_pede_ajuda`), rede de mendigos, guilda de mercadores, juiz do vilarejo, fome no reino, mina de prisioneiros.
+
+**Calibração:** com 267 eventos o pool diluiu cadeias de lotes anteriores; subi os pesos de `mestre_pede_favor`, `prova_do_nucleo`, `privilegios_do_nucleo`, `sucessao_seita`, `aprendiz_alquimista` e `rank_alquimista`. `finalChance` 0,075.
+
+**Resultado (4.000 vidas):** ascensão ~0,6–0,7% (independente) e ~1,7% (meta); todos os eventos do lote aparecem. Os finais voluntários novos ficam em ~0% no bot (que os evita) mas são alcançáveis (`cla_prospera` aparece ~4× por 4.000 vidas; os eventos que levam ao final de Ancestral aparecem normalmente).

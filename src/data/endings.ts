@@ -17,6 +17,8 @@ export const ENDINGS: Ending[] = [
   { id: 'patriarca', name: 'Patriarca da Seita', legacy: 1.7, text: '{nome} governou a {seita} por incontáveis invernos. Quando o manto passou a outras mãos, o portão que antes desbotava brilhava como no primeiro dia.' },
   { id: 'guardiao', name: 'Guardião do Reino Secreto', legacy: 1.6, text: 'A névoa dourada se fechou sobre {nome}. Dizem que, a cada cem anos, quando o reino abre por sete dias, uma figura calma espera junto ao portão e faz uma pergunta a cada viajante.' },
   { id: 'pilula', name: 'A Pílula Suprema', legacy: 1.5, text: 'O fogo aceitou {nome}. Na fornalha restou uma única pílula, sem cor e sem nome. Séculos depois, alguém a tomou e passou a se lembrar de uma vida que não era sua.' },
+  { id: 'ancestral', name: 'Ancestral do Clã', legacy: 1.6, text: 'O retrato de {nome} ainda pende no salão do {cla}. Cada geração recebe, aos sete anos, uma lição sobre quem ergueu aquelas paredes.' },
+  { id: 'conselheiro', name: 'A Sombra do Trono', legacy: 1.4, text: 'Poucos livros mencionam {nome}. Mas, em cada reinado próspero, um conselheiro silencioso sempre sussurrava a decisão certa antes que ela fosse necessária.' },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
 
@@ -42,6 +44,8 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_patriarca', name: 'Manto de Séculos', desc: 'Torne-se Patriarca de uma seita.', reward: '+6 Herança do Dao' },
   { id: 'ach_guardiao', name: 'A Pergunta do Portão', desc: 'Torne-se Guardião de um Reino Secreto.', reward: '+6 Herança do Dao' },
   { id: 'ach_pilula', name: 'Alquimista Absoluto', desc: 'Refine a si mesmo na Pílula Suprema.', reward: '+6 Herança do Dao' },
+  { id: 'ach_ancestral', name: 'Retrato no Salão', desc: 'Torne-se Ancestral de um clã.', reward: '+6 Herança do Dao' },
+  { id: 'ach_conselheiro', name: 'Voz Atrás do Trono', desc: 'Termine como Conselheiro Eterno de um império.', reward: '+5 Herança do Dao' },
   { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Receba ensinamentos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
 ];
 
@@ -68,6 +72,8 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   ach_patriarca: (_s, e) => e === 'patriarca',
   ach_guardiao: (_s, e) => e === 'guardiao',
   ach_pilula: (_s, e) => e === 'pilula',
+  ach_ancestral: (_s, e) => e === 'ancestral',
+  ach_conselheiro: (_s, e) => e === 'conselheiro',
   ach_diaspora: (s) => s.flags.includes('tocado_por_mestre'),
 };
 

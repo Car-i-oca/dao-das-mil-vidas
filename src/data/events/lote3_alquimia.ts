@@ -84,7 +84,7 @@ export const lote3Alquimia: GameEvent[] = [
     ],
   },
   {
-    id: 'rank_alquimista', title: 'O Exame de Mestre Alquimista', rarity: 'raro', once: true,
+    id: 'rank_alquimista', title: 'O Exame de Mestre Alquimista', rarity: 'raro', once: true, weight: 5,
     cond: { tierMin: 3, tierMax: 8, path: ['alquimia'], flags: ['alquimista_certificado'] },
     text: 'A Associação de Alquimistas convoca você ao exame de Mestre: refinar três pílulas de graus diferentes diante de cinco juízes. Os que falham raramente tentam outra vez.',
     choices: [
@@ -110,7 +110,7 @@ export const lote3Alquimia: GameEvent[] = [
     ],
   },
   {
-    id: 'aprendiz_alquimista', title: 'O Aprendiz de Alquimia', rarity: 'raro', once: true,
+    id: 'aprendiz_alquimista', title: 'O Aprendiz de Alquimia', rarity: 'raro', once: true, weight: 8,
     cond: { tierMin: 3, path: ['alquimia'], flags: ['mestre_alquimista'] },
     text: 'Uma jovem de mãos queimadas e olhos curiosos pede para ser sua aprendiz. Sem talento especial, mas com disciplina rara. Ensiná-la custará tempo, ervas e paciência.',
     choices: [

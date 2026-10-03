@@ -1,7 +1,7 @@
 # Balanceamento — linha de base
 
 Gerado por `npm run sim -- 4000 --report` em 2026-10-03.
-Conteúdo: 241 eventos, 72 itens, 39 técnicas, 17 finais, 10 trilhas.
+Conteúdo: 267 eventos, 75 itens, 41 técnicas, 19 finais, 10 trilhas.
 
 ## Como o bot joga
 - 70% das vezes escolhe a opção de maior chance de sucesso; nos demais casos escolhe ao acaso entre as opções seguras.
@@ -17,154 +17,158 @@ Conteúdo: 241 eventos, 72 itens, 39 técnicas, 17 finais, 10 trilhas.
 
 4000 vidas.
 
-**Taxa de ascensão:** 32 (0.8%)  
-**Idade de morte:** mín 18 · p10 98 · mediana 298 · p90 1707 · p99 2707 · máx 2895
+**Taxa de ascensão:** 24 (0.6%)  
+**Idade de morte:** mín 18 · p10 101 · mediana 293 · p90 1592 · p99 2672 · máx 2870
 
 **Finais**
 
 | Final | Vidas | % |
 |---|---:|---:|
-| Fim em Paz | 2647 | 66.2% |
-| Morte em Combate | 186 | 4.7% |
+| Fim em Paz | 2682 | 67.0% |
+| Morte em Combate | 160 | 4.0% |
 | Cinzas da Tribulação | 768 | 19.2% |
-| Ascensão | 32 | 0.8% |
-| Caminho Demoníaco | 27 | 0.7% |
+| Ascensão | 24 | 0.6% |
+| Caminho Demoníaco | 15 | 0.4% |
 | Vida Comum | 90 | 2.3% |
-| Desvio de Qi | 204 | 5.1% |
-| Fundador de Seita | 4 | 0.1% |
+| Desvio de Qi | 205 | 5.1% |
+| Fundador de Seita | 6 | 0.1% |
 | A Dívida Cobrada | 1 | 0.0% |
 | Fio Vermelho | 0 | 0.0% |
 | Sacrifício Final | 8 | 0.2% |
-| O Eremita das Nuvens | 20 | 0.5% |
+| O Eremita das Nuvens | 23 | 0.6% |
 | Perdido no Vazio | 0 | 0.0% |
 | Patriarca da Seita | 0 | 0.0% |
-| Guardião do Reino Secreto | 3 | 0.1% |
+| Guardião do Reino Secreto | 4 | 0.1% |
 | A Pílula Suprema | 0 | 0.0% |
-| A Roda do Samsara | 10 | 0.3% |
+| Ancestral do Clã | 0 | 0.0% |
+| A Sombra do Trono | 0 | 0.0% |
+| A Roda do Samsara | 14 | 0.3% |
 
 **Reino máximo — xianxia** (2400 vidas)
 
 | Reino | Vidas | % |
 |---|---:|---:|
 | Mortal | 56 | 2.3% |
-| Refinamento de Qi | 40 | 1.7% |
-| Fundação | 43 | 1.8% |
-| Núcleo Dourado | 346 | 14.4% |
-| Alma Nascente | 406 | 16.9% |
-| Transformação Divina | 337 | 14.0% |
-| Refino do Vazio | 674 | 28.1% |
-| Integração Corporal | 323 | 13.5% |
-| Grande Ascensão | 175 | 7.3% |
+| Refinamento de Qi | 56 | 2.3% |
+| Fundação | 37 | 1.5% |
+| Núcleo Dourado | 393 | 16.4% |
+| Alma Nascente | 438 | 18.3% |
+| Transformação Divina | 377 | 15.7% |
+| Refino do Vazio | 609 | 25.4% |
+| Integração Corporal | 308 | 12.8% |
+| Grande Ascensão | 126 | 5.3% |
 
 **Reino máximo — murim** (1600 vidas)
 
 | Reino | Vidas | % |
 |---|---:|---:|
 | Mortal | 30 | 1.9% |
-| Terceira Classe | 17 | 1.1% |
-| Segunda Classe | 55 | 3.4% |
-| Primeira Classe | 212 | 13.3% |
-| Mestre de Pico | 741 | 46.3% |
-| Transcendente | 391 | 24.4% |
-| Além dos Limites | 108 | 6.8% |
-| Lenda Marcial | 46 | 2.9% |
+| Terceira Classe | 28 | 1.8% |
+| Segunda Classe | 49 | 3.1% |
+| Primeira Classe | 206 | 12.9% |
+| Mestre de Pico | 828 | 51.8% |
+| Transcendente | 306 | 19.1% |
+| Além dos Limites | 118 | 7.4% |
+| Lenda Marcial | 35 | 2.2% |
 
 **Por trilha**
 
 | Trilha | Vidas | Reino médio | Idade média | Ascensões |
 |---|---:|---:|---:|---:|
-| Caminho do Sopro | 400 | 5.10 | 886 | 3 |
-| Caminho da Espada | 400 | 4.24 | 219 | 2 |
-| Caminho da Alquimia | 400 | 4.93 | 817 | 4 |
-| Caminho do Corpo | 400 | 3.99 | 208 | 1 |
-| Caminho da Consciência | 400 | 5.16 | 878 | 2 |
-| Caminho das Formações | 400 | 5.08 | 856 | 1 |
-| Caminho do Mérito | 400 | 4.35 | 241 | 5 |
-| Caminho dos Venenos | 400 | 4.05 | 205 | 2 |
-| Caminho das Bestas | 400 | 5.18 | 930 | 6 |
-| Caminho do Sangue | 400 | 4.98 | 833 | 6 |
+| Caminho do Sopro | 400 | 4.89 | 786 | 4 |
+| Caminho da Espada | 400 | 4.20 | 227 | 1 |
+| Caminho da Alquimia | 400 | 4.77 | 746 | 1 |
+| Caminho do Corpo | 400 | 3.92 | 195 | 1 |
+| Caminho da Consciência | 400 | 5.18 | 898 | 4 |
+| Caminho das Formações | 400 | 4.88 | 789 | 1 |
+| Caminho do Mérito | 400 | 4.27 | 232 | 3 |
+| Caminho dos Venenos | 400 | 3.96 | 195 | 0 |
+| Caminho das Bestas | 400 | 4.83 | 819 | 3 |
+| Caminho do Sangue | 400 | 4.85 | 752 | 6 |
 
 **Eventos que dependem de desbloqueio** (ocorrências): despertar_alquimista (0), despertar_reencarnado (0), despertar_demoniaco (0), regressao_visao (0).
 
 **Impacto de técnicas e artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)
 
-Maiores: Grande Sutra do Ciclo (n=61, reino relativo +16.5 pp, ascensão 1.6%); Escama de Qilin (n=78, reino relativo +14.4 pp, ascensão 1.3%); Sutra do Espelho Quieto (n=371, reino relativo +13.1 pp, ascensão 2.7%); Anel de Jade Frio (n=248, reino relativo +13.1 pp, ascensão 0.4%); Contas de Madeira de Trovão (n=141, reino relativo +12.5 pp, ascensão 2.1%).
-Menores: Espada do Orvalho (n=400, reino relativo -1.3 pp, ascensão 0.5%); Chuva de Mil Agulhas (n=400, reino relativo -3.9 pp, ascensão 0.5%); Ossos de Ferro Frio (n=400, reino relativo -4.8 pp, ascensão 0.3%).
+Maiores: Anel de Jade Frio (n=266, reino relativo +14.8 pp, ascensão 2.3%); Escama de Qilin (n=66, reino relativo +14.0 pp, ascensão 4.5%); Sutra do Espelho Quieto (n=317, reino relativo +14.0 pp, ascensão 2.2%); Espelho de Bronze Antigo (n=557, reino relativo +11.0 pp, ascensão 1.8%); Espada Voadora de Aprendiz (n=443, reino relativo +10.3 pp, ascensão 2.5%).
+Menores: Caldeirão de Fogo Calmo (n=400, reino relativo -0.5 pp, ascensão 0.3%); Chuva de Mil Agulhas (n=400, reino relativo -3.5 pp, ascensão 0.0%); Ossos de Ferro Frio (n=400, reino relativo -4.2 pp, ascensão 0.3%).
 
-**Eventos vistos:** 237/241. Nunca vistos: despertar_alquimista, despertar_reencarnado, despertar_demoniaco, regressao_visao.
-Eventos raros/lendários menos frequentes: mestre_em_perigo (1), aprendiz_alquimista (1), aprendiz_retorna (1), mestre_pede_favor (3), sucessao_seita (3), espada_viva (5), besta_em_perigo (6), mestre_ensina_tecnica (7).
-Eventos mais repetidos (por vida): meditacao_profunda (3.0), retiro_fechado (1.6), gargalo_longo (1.5), partir_viagem (1.3), secar_ervas (1.2), desvio_de_qi_leve (1.1), cacador_recompensas (1.0), doenca_da_aldeia (1.0).
+**Eventos vistos:** 263/267. Nunca vistos: despertar_alquimista, despertar_reencarnado, despertar_demoniaco, regressao_visao.
+Eventos raros/lendários menos frequentes: ancestral_ensina (2), mestre_em_perigo (2), conspiracao_anciao (2), sucessao_seita (2), mestre_ensina_tecnica (4), cla_prospera (4), dilema_lealdade (5), mestre_pede_favor (6).
+Eventos mais repetidos (por vida): meditacao_profunda (2.7), retiro_fechado (1.5), gargalo_longo (1.3), partir_viagem (1.1), secar_ervas (1.1), desvio_de_qi_leve (1.0), doenca_da_aldeia (0.9), cacador_recompensas (0.9).
 
 ### Meta-progressão (vidas em sequência, como um jogador de verdade)
 
 4000 vidas.
 
-**Taxa de ascensão:** 67 (1.7%)  
-**Idade de morte:** mín 16 · p10 102 · mediana 382 · p90 1749 · p99 2727 · máx 3037
+**Taxa de ascensão:** 63 (1.6%)  
+**Idade de morte:** mín 15 · p10 110 · mediana 414 · p90 1753 · p99 2744 · máx 3090
 
 **Finais**
 
 | Final | Vidas | % |
 |---|---:|---:|
-| Fim em Paz | 2598 | 65.0% |
-| Morte em Combate | 123 | 3.1% |
-| Cinzas da Tribulação | 876 | 21.9% |
-| Ascensão | 67 | 1.7% |
-| Caminho Demoníaco | 10 | 0.3% |
-| Vida Comum | 23 | 0.6% |
-| Desvio de Qi | 253 | 6.3% |
-| Fundador de Seita | 13 | 0.3% |
-| A Dívida Cobrada | 3 | 0.1% |
+| Fim em Paz | 2713 | 67.8% |
+| Morte em Combate | 102 | 2.5% |
+| Cinzas da Tribulação | 863 | 21.6% |
+| Ascensão | 63 | 1.6% |
+| Caminho Demoníaco | 7 | 0.2% |
+| Vida Comum | 20 | 0.5% |
+| Desvio de Qi | 196 | 4.9% |
+| Fundador de Seita | 2 | 0.1% |
+| A Dívida Cobrada | 0 | 0.0% |
 | Fio Vermelho | 1 | 0.0% |
 | Sacrifício Final | 3 | 0.1% |
-| O Eremita das Nuvens | 13 | 0.3% |
-| Perdido no Vazio | 2 | 0.1% |
-| Patriarca da Seita | 0 | 0.0% |
-| Guardião do Reino Secreto | 4 | 0.1% |
+| O Eremita das Nuvens | 12 | 0.3% |
+| Perdido no Vazio | 0 | 0.0% |
+| Patriarca da Seita | 1 | 0.0% |
+| Guardião do Reino Secreto | 5 | 0.1% |
 | A Pílula Suprema | 0 | 0.0% |
+| Ancestral do Clã | 0 | 0.0% |
+| A Sombra do Trono | 1 | 0.0% |
 | A Roda do Samsara | 11 | 0.3% |
 
-**Reino máximo — xianxia** (2376 vidas)
+**Reino máximo — xianxia** (2372 vidas)
 
 | Reino | Vidas | % |
 |---|---:|---:|
-| Mortal | 13 | 0.5% |
-| Refinamento de Qi | 42 | 1.8% |
-| Fundação | 55 | 2.3% |
-| Núcleo Dourado | 309 | 13.0% |
-| Alma Nascente | 314 | 13.2% |
-| Transformação Divina | 310 | 13.0% |
-| Refino do Vazio | 642 | 27.0% |
-| Integração Corporal | 430 | 18.1% |
-| Grande Ascensão | 261 | 11.0% |
+| Mortal | 12 | 0.5% |
+| Refinamento de Qi | 34 | 1.4% |
+| Fundação | 32 | 1.3% |
+| Núcleo Dourado | 301 | 12.7% |
+| Alma Nascente | 304 | 12.8% |
+| Transformação Divina | 327 | 13.8% |
+| Refino do Vazio | 650 | 27.4% |
+| Integração Corporal | 452 | 19.1% |
+| Grande Ascensão | 260 | 11.0% |
 
-**Reino máximo — murim** (1624 vidas)
+**Reino máximo — murim** (1628 vidas)
 
 | Reino | Vidas | % |
 |---|---:|---:|
-| Mortal | 9 | 0.6% |
-| Terceira Classe | 16 | 1.0% |
-| Segunda Classe | 30 | 1.8% |
-| Primeira Classe | 67 | 4.1% |
-| Mestre de Pico | 626 | 38.5% |
-| Transcendente | 497 | 30.6% |
-| Além dos Limites | 253 | 15.6% |
-| Lenda Marcial | 126 | 7.8% |
+| Mortal | 7 | 0.4% |
+| Terceira Classe | 20 | 1.2% |
+| Segunda Classe | 36 | 2.2% |
+| Primeira Classe | 70 | 4.3% |
+| Mestre de Pico | 636 | 39.1% |
+| Transcendente | 496 | 30.5% |
+| Além dos Limites | 246 | 15.1% |
+| Lenda Marcial | 117 | 7.2% |
 
 **Por trilha**
 
 | Trilha | Vidas | Reino médio | Idade média | Ascensões |
 |---|---:|---:|---:|---:|
-| Caminho do Sopro | 390 | 5.25 | 918 | 5 |
-| Caminho da Espada | 383 | 4.85 | 311 | 8 |
-| Caminho da Alquimia | 410 | 5.32 | 939 | 6 |
-| Caminho do Corpo | 427 | 4.60 | 274 | 8 |
-| Caminho da Consciência | 437 | 5.52 | 1037 | 10 |
-| Caminho das Formações | 382 | 5.40 | 974 | 6 |
-| Caminho do Mérito | 410 | 4.86 | 305 | 11 |
-| Caminho dos Venenos | 404 | 4.59 | 271 | 3 |
-| Caminho das Bestas | 396 | 5.59 | 1092 | 6 |
-| Caminho do Sangue | 361 | 5.30 | 935 | 4 |
+| Caminho do Sopro | 387 | 5.58 | 1065 | 9 |
+| Caminho da Espada | 389 | 4.75 | 295 | 6 |
+| Caminho da Alquimia | 410 | 5.42 | 987 | 7 |
+| Caminho do Corpo | 430 | 4.65 | 287 | 4 |
+| Caminho da Consciência | 436 | 5.69 | 1109 | 7 |
+| Caminho das Formações | 376 | 5.40 | 959 | 4 |
+| Caminho do Mérito | 406 | 4.78 | 295 | 6 |
+| Caminho dos Venenos | 403 | 4.55 | 261 | 5 |
+| Caminho das Bestas | 398 | 5.44 | 1040 | 9 |
+| Caminho do Sangue | 365 | 5.31 | 896 | 6 |
 
 **Linha do tempo de conquistas** (nº da vida em que cada uma foi liberada)
 
@@ -174,43 +178,44 @@ Eventos mais repetidos (por vida): meditacao_profunda (3.0), retiro_fechado (1.6
 | 1 | Alicerce Firme |
 | 1 | Núcleo Brilhante |
 | 2 | Centenário |
-| 4 | Degraus de Nuvem |
 | 9 | Mão de Alquimista |
-| 11 | Dívida Quitada |
-| 25 | Mão Verde |
-| 31 | Discípulo de Sábios |
+| 9 | Dívida Quitada |
+| 11 | Sombra Escolhida |
+| 19 | Mão Verde |
+| 21 | A Roda Gira |
 | 42 | Simplicidade |
-| 55 | Sombra Escolhida |
-| 89 | A Pergunta do Portão |
-| 111 | Irmãos de Alma |
-| 125 | Silêncio Alto |
-| 243 | A Roda Gira |
-| 453 | Pedra Fundamental |
-| 584 | Entre Passos |
-| 1087 | Cofre Cheio |
-| 1651 | Luz Que Fica |
-| 3617 | Fio Vermelho |
+| 46 | Irmãos de Alma |
+| 60 | Discípulo de Sábios |
+| 61 | Luz Que Fica |
+| 145 | Degraus de Nuvem |
+| 483 | A Pergunta do Portão |
+| 561 | Silêncio Alto |
+| 1163 | Voz Atrás do Trono |
+| 1243 | Cofre Cheio |
+| 1457 | Pedra Fundamental |
+| 1565 | Manto de Séculos |
+| 2775 | Fio Vermelho |
 
-Conquistas não obtidas: Manto de Séculos, Alquimista Absoluto.
+Conquistas não obtidas: Entre Passos, Alquimista Absoluto, Retrato no Salão.
 
-Upgrades finais de Herança: Alicerce Corporal 6/6 · Mente Clara 6/6 · Fio do Destino 6/6 · Ritmo do Dao 8/8 · Herança de Pedras 10/10 · Mais Destinos 3/3 · Memória de Vidas Passadas 5/5. Pontos sobrando: 155378.
+Upgrades finais de Herança: Alicerce Corporal 6/6 · Mente Clara 6/6 · Fio do Destino 6/6 · Ritmo do Dao 8/8 · Herança de Pedras 10/10 · Mais Destinos 3/3 · Memória de Vidas Passadas 5/5. Pontos sobrando: 157235.
 
-Ascensões por quartil de vidas (1º → 4º): 18 → 18 → 13 → 18
+Ascensões por quartil de vidas (1º → 4º): 19 → 15 → 16 → 13
 
-Uso de trilhas: Caminho do Sopro 390 · Caminho da Espada 383 · Caminho da Alquimia 410 · Caminho do Corpo 427 · Caminho da Consciência 437 · Caminho das Formações 382 · Caminho do Mérito 410 · Caminho dos Venenos 404 · Caminho das Bestas 396 · Caminho do Sangue 361
+Uso de trilhas: Caminho do Sopro 387 · Caminho da Espada 389 · Caminho da Alquimia 410 · Caminho do Corpo 430 · Caminho da Consciência 436 · Caminho das Formações 376 · Caminho do Mérito 406 · Caminho dos Venenos 403 · Caminho das Bestas 398 · Caminho do Sangue 365
 
-Origens usadas: 13/13 · Talentos usados: 14/14
+Origens usadas: 13/13 · Talentos usados: 13/14
 
-**Eventos que dependem de desbloqueio** (ocorrências): despertar_alquimista (304), despertar_reencarnado (287), despertar_demoniaco (295), regressao_visao (94).
+**Eventos que dependem de desbloqueio** (ocorrências): despertar_alquimista (296), despertar_reencarnado (310), despertar_demoniaco (315), regressao_visao (101).
 
 **Impacto de técnicas e artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)
 
-Maiores: Olhar de Bai Ze (n=68, reino relativo +15.4 pp, ascensão 4.4%); Anel de Jade Frio (n=242, reino relativo +13.1 pp, ascensão 5.8%); Grande Sutra do Ciclo (n=75, reino relativo +12.9 pp, ascensão 9.3%); Sutra do Espelho Quieto (n=456, reino relativo +12.8 pp, ascensão 4.2%); Espelho de Bronze Antigo (n=566, reino relativo +9.2 pp, ascensão 2.8%).
-Menores: Ossos de Ferro Frio (n=427, reino relativo -1.8 pp, ascensão 1.9%); Respiração da Nuvem Lenta (n=390, reino relativo -1.9 pp, ascensão 1.3%); Chuva de Mil Agulhas (n=404, reino relativo -2.0 pp, ascensão 0.7%).
+Maiores: Anel de Jade Frio (n=256, reino relativo +13.3 pp, ascensão 6.6%); Bolsa Celeste (n=100, reino relativo +12.2 pp, ascensão 3.0%); Manto do Discípulo do Núcleo (n=88, reino relativo +11.0 pp, ascensão 8.0%); Sutra do Espelho Quieto (n=422, reino relativo +10.8 pp, ascensão 2.8%); Canto da Ave Persistente (n=233, reino relativo +10.6 pp, ascensão 3.9%).
+Menores: Traços do Primeiro Selo (n=376, reino relativo -0.3 pp, ascensão 1.1%); Ossos de Ferro Frio (n=430, reino relativo -1.4 pp, ascensão 0.9%); Chuva de Mil Agulhas (n=403, reino relativo -2.9 pp, ascensão 1.2%).
 
-**Eventos vistos:** 241/241. Nunca vistos: nenhum.
-Eventos raros/lendários menos frequentes: mestre_em_perigo (1), aprendiz_alquimista (2), aprendiz_retorna (2), sucessao_seita (5), ancestral_ensina (7), pacto_sangue_antigo (8), besta_em_perigo (11), mestre_pede_favor (12).
-Eventos mais repetidos (por vida): meditacao_profunda (2.4), gargalo_longo (1.3), retiro_fechado (1.2), partir_viagem (1.0), secar_ervas (0.9), desvio_de_qi_leve (0.8), cacador_recompensas (0.8), doenca_da_aldeia (0.7).
+**Eventos vistos:** 267/267. Nunca vistos: nenhum.
+Eventos raros/lendários menos frequentes: aprendiz_retorna (3), luto_e_caminho (4), besta_em_perigo (6), mestre_em_perigo (6), conselheiro_imperial (6), pacto_sangue_antigo (8), ancestral_ensina (8), cla_prospera (9).
+Eventos mais repetidos (por vida): meditacao_profunda (2.3), gargalo_longo (1.1), retiro_fechado (1.1), partir_viagem (0.9), secar_ervas (0.8), desvio_de_qi_leve (0.8), fome_no_reino (0.8), cacador_recompensas (0.7).
 
 ## Observações
 - Os 4 eventos que dependem de desbloqueio (despertar_alquimista, despertar_reencarnado, despertar_demoniaco, regressao_visao) aparecem normalmente no modo meta.

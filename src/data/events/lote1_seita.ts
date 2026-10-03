@@ -92,7 +92,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'mestre_pede_favor', title: 'O Favor do Mestre', rarity: 'raro', once: true, weight: 3,
+    id: 'mestre_pede_favor', title: 'O Favor do Mestre', rarity: 'raro', once: true, weight: 8,
     cond: { tierMin: 2, tierMax: 6, faction: ['seita'], flags: ['mestre_protetor'] },
     text: 'O Mestre {mentor} entrega uma caixa de jade lacrada. "Leve isto a um velho amigo nas Montanhas do Norte. Ninguém pode saber. Nem a seita."',
     choices: [
@@ -140,7 +140,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'prova_do_nucleo', title: 'A Prova dos Discípulos do Núcleo', rarity: 'raro', once: true, weight: 3,
+    id: 'prova_do_nucleo', title: 'A Prova dos Discípulos do Núcleo', rarity: 'raro', once: true, weight: 8,
     cond: { tierMin: 3, tierMax: 6, faction: ['seita'], flags: ['discipulo_interno'], noFlags: ['discipulo_nucleo'] },
     text: 'A cada geração, apenas dez discípulos ascendem ao núcleo da {seita}. A prova dura três dias: formações, combate e uma pergunta do Mestre da Seita, feita a sós.',
     choices: [
@@ -149,7 +149,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'privilegios_do_nucleo', title: 'Os Privilégios do Núcleo', rarity: 'comum', cooldown: 20,
+    id: 'privilegios_do_nucleo', title: 'Os Privilégios do Núcleo', rarity: 'comum', cooldown: 20, weight: 3,
     cond: { tierMin: 3, tierMax: 7, faction: ['seita'], flags: ['discipulo_nucleo'] },
     text: 'Como discípulo do núcleo, você tem a primeira escolha nas distribuições de recursos. O quartel-general dos tesouros abre diante de você: pílulas, ervas, manuais.',
     choices: [
@@ -273,7 +273,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'sucessao_seita', title: 'A Sucessão do Mestre da Seita', rarity: 'lendario', once: true, weight: 5,
+    id: 'sucessao_seita', title: 'A Sucessão do Mestre da Seita', rarity: 'lendario', once: true, weight: 12,
     cond: { tierMin: 4, tierMax: 8, faction: ['seita'], flags: ['discipulo_nucleo'], fameMin: 40, karmaMin: 0 },
     text: 'O Mestre da Seita convoca os Anciãos e os discípulos do núcleo ao Grande Pavilhão. Sua voz é cansada: "Estou velho. É hora de passar a espada. E eu quero que seja você."',
     choices: [
