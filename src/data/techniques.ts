@@ -56,4 +56,9 @@ export const TECHNIQUES: Technique[] = [
   // Lote 5: sangue, karma e inimigos
   { id: 'passo_sombrio', name: 'Passo da Sombra Longa', grade: 2, desc: 'Move-se onde a luz não alcança.', stats: { sor: 1 }, tags: ['fuga', 'demonio'] },
   { id: 'sutra_cinzento', name: 'Sutra do Caminho Cinzento', grade: 3, desc: 'Domar a sombra sem negá-la.', stats: { dao: 2, esp: 1 }, tags: ['mente', 'demonio'] },
+
+  // Lote 6: budismo e peregrinação
+  { id: 'mantra_cem_mil', name: 'Mantra das Cem Mil Voltas', grade: 2, desc: 'Recitado até a boca virar respiração.', stats: { dao: 1 }, tags: ['mente'] },
+  { id: 'koan_riso', name: 'Koan do Riso Antes do Nascimento', grade: 2, desc: 'Uma pergunta sem resposta que destrava respostas.', stats: { comp: 1 }, tags: ['mente'] },
+  { id: 'sutra_do_oeste', name: 'Sutra do Templo do Oeste', grade: 4, desc: 'A escritura que a estrada inteira escreveu em você.', stats: { dao: 3, esp: 1 }, xpMult: 1.06, tags: ['mente'] },
 ];

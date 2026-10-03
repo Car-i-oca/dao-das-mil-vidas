@@ -21,6 +21,7 @@ export const ENDINGS: Ending[] = [
   { id: 'conselheiro', name: 'A Sombra do Trono', legacy: 1.4, text: 'Poucos livros mencionam {nome}. Mas, em cada reinado próspero, um conselheiro silencioso sempre sussurrava a decisão certa antes que ela fosse necessária.' },
   { id: 'senhor_sangue', name: 'Senhor do Sangue', legacy: 1.4, text: 'No trono de ossos, {nome} governou a seita demoníaca por séculos. Aldeias rezavam para que a sombra passasse longe; outras, para que ela decidisse protegê-las.' },
   { id: 'penitente', name: 'O Penitente', legacy: 1.5, text: 'No templo de pedra gasta, {nome} varreu o mesmo corredor por quarenta anos. Quando a vassoura caiu, o corredor estava limpo, e a alma também.' },
+  { id: 'iluminacao', name: 'A Iluminação', legacy: 2.4, text: 'Não houve nuvens, nem raios, nem degraus. {nome} apenas sentou-se à beira da estrada e entendeu. O mundo seguiu como antes, e algo, bem de leve, sorriu para sempre.' },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
 
@@ -50,6 +51,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_conselheiro', name: 'Voz Atrás do Trono', desc: 'Termine como Conselheiro Eterno de um império.', reward: '+5 Herança do Dao' },
   { id: 'ach_senhor_sangue', name: 'Coroa de Ossos', desc: 'Torne-se Senhor do Sangue.', reward: '+5 Herança do Dao' },
   { id: 'ach_penitente', name: 'Vassoura e Silêncio', desc: 'Termine uma vida como Penitente.', reward: '+6 Herança do Dao' },
+  { id: 'ach_iluminacao', name: 'Despertar Sem Degraus', desc: 'Alcance a Iluminação ao fim da Peregrinação ao Oeste.', reward: '+8 Herança do Dao' },
   { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Receba ensinamentos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
 ];
 
@@ -80,6 +82,7 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   ach_conselheiro: (_s, e) => e === 'conselheiro',
   ach_senhor_sangue: (_s, e) => e === 'senhor_sangue',
   ach_penitente: (_s, e) => e === 'penitente',
+  ach_iluminacao: (_s, e) => e === 'iluminacao',
   ach_diaspora: (s) => s.flags.includes('tocado_por_mestre'),
 };
 

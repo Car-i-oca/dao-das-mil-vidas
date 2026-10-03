@@ -273,7 +273,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'sucessao_seita', title: 'A Sucessão do Mestre da Seita', rarity: 'lendario', once: true, weight: 12,
+    id: 'sucessao_seita', title: 'A Sucessão do Mestre da Seita', rarity: 'lendario', once: true, weight: 24,
     cond: { tierMin: 4, tierMax: 8, faction: ['seita'], flags: ['discipulo_nucleo'], fameMin: 40, karmaMin: 0 },
     text: 'O Mestre da Seita convoca os Anciãos e os discípulos do núcleo ao Grande Pavilhão. Sua voz é cansada: "Estou velho. É hora de passar a espada. E eu quero que seja você."',
     choices: [

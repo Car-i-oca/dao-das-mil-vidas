@@ -74,3 +74,15 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 - Pesos de elos raros ajustados (`coracao_dividido`, `traicao_mestre_demoniaco`, `tregua_sangue`, `senhor_do_sangue`, `luto_e_caminho`, `o_grande_inimigo`).
 
 **Resultado (4.000 vidas):** ascensão 0,6% (independente) e 1,8% (meta); "Caminho Demoníaco" 1,1% / 0,6%; todos os eventos aparecem nos dois modos (exceto os 4 que dependem de desbloqueio no modo independente).
+
+---
+
+## Lote 6 — Budismo, mérito e Peregrinação ao Oeste
+**Pesquisa:** samsara e os seis reinos de renascimento, mantras, vajra, mérito e karma, as 81 provações de *Jornada ao Oeste* (peregrinação, demônios disfarçados, retribuição). Fontes: [What is Samsara? (Lion's Roar)](https://www.lionsroar.com/buddhism/samsara/), [Vajrayana Buddhism for Beginners](https://tricycle.org/buddhism-vajrayana/), [Journey to the West (mythlok)](https://mythlok.com/epics/journey-to-the-west/), [Journey to the West (EBSCO)](https://www.ebsco.com/research-starters/history/journey-west/), [Glossary of Terms in Wuxia, Xianxia & Xuanhuan](https://immortalmountain.wordpress.com/glossary/wuxia-xianxia-xuanhuan-terms/).
+
+**Entrou:** 22 eventos (`lote6_oeste.ts`), 3 técnicas, 4 itens, 1 final (A Iluminação), 1 conquista (Despertar Sem Degraus). Personagens, lugares e cenas são originais; só a estrutura de peregrinação e as ideias budistas são tradicionais.
+- Peregrinação ao Oeste em 6 etapas: `chamado_peregrinacao` → `peregrinacao_rio_areias` → `peregrinacao_prisioneiro` → `peregrinacao_demonio_disfarcado` → `peregrinacao_reino_fome` → `peregrinacao_templo_oeste` (lendário; final Iluminação, ou a Escritura do Oeste).
+- Prática: mantra de cem mil voltas, koan do mestre, oferenda ao templo, voto de não matar (→ `quebra_do_voto`), pagode de sete andares, caverna dos mil budas, jardim dos lótus, sino da meia-noite.
+- Karma e seres: visão dos seis reinos (lendário), fantasma faminto, mendigo bodhisattva, transferência de mérito, monge corrompido, árvore Bodhi (lendário), corpo de vajra.
+
+**Resultado (4.000 vidas):** ascensão 0,7% (independente) e 1,6% (meta); a Iluminação sai em 0,2% / 0,1% das vidas; todos os eventos aparecem (exceto os dependentes de desbloqueio no modo independente). A técnica Sutra do Céu Vazio é a que mais cresce no impacto (+20 pp de reino relativo), mas só aparece em ~2% das vidas e a ascensão dos que a têm fica em 2–3%.

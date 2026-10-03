@@ -100,4 +100,10 @@ export const ITEMS: Item[] = [
   { id: 'contas_penitencia', name: 'Contas de Penitência', kind: 'artefato', grade: 2, desc: 'Uma conta para cada vida que se quer reparar.', passive: { dao: 1, esp: 1 }, value: 60 },
   { id: 'talisma_exorcismo', name: 'Talismã de Exorcismo', kind: 'talisma', grade: 3, desc: 'Afasta espíritos vingativos e sussurros (uso único em eventos).', value: 50 },
   { id: 'sino_alma', name: 'Sino da Alma Reconciliada', kind: 'artefato', grade: 4, desc: 'Seu som lembra o que foi perdoado.', passive: { esp: 2, dao: 1 }, value: 260 },
+
+  // Lote 6: budismo e peregrinação
+  { id: 'incenso_sagrado', name: 'Incenso de Templo', kind: 'misc', grade: 2, desc: 'Queima devagar, acalma depressa.', use: { xp: 10, stats: { dao: 1 } }, value: 25 },
+  { id: 'escritura_oeste', name: 'Escritura do Templo do Oeste', kind: 'manual', grade: 4, desc: 'Poucos caracteres, muitas vidas.', use: { tecnica: ['sutra_do_oeste'] }, value: 400 },
+  { id: 'rosario_vajra', name: 'Rosário de Vajra', kind: 'artefato', grade: 3, desc: 'Contas de pedra preta que nunca esquentam.', passive: { dao: 2, fis: 1 }, value: 140 },
+  { id: 'tigela_mendicante', name: 'Tigela do Mendigo', kind: 'artefato', grade: 2, desc: 'Amassada, humilde, abençoada.', passive: { sor: 1, dao: 1 }, value: 40 },
 ];
