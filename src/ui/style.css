@@ -194,4 +194,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .duel-banner.lose { color: #f3a08c; font-size: 1.6rem; letter-spacing: 0.12em; }
 .duel-btns { display: flex; gap: 10px; margin-top: auto; }
 .duel-btns .btn { flex: 1; }
+.duel-fx .vfx { position: absolute; top: 20%; width: 36%; height: auto; }
 @media (prefers-reduced-motion: reduce) { .duel-stage { transition: none; } }
+
+.selo { display: inline-block; font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 7px; border-radius: 8px; background: var(--gold); color: #1d1915; margin-right: 4px; vertical-align: 1px; }

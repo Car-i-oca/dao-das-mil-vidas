@@ -274,7 +274,7 @@ function lifeHtml(s: State): string {
     <div class="choices" id="choices">
       ${v.choices.map((c, i) => `
         <button class="choice" data-act="choose" data-i="${i}" ${c.disabled ? 'disabled' : ''}>
-          <span>${esc(c.text)}</span>
+          <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
           <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
         </button>`).join('')}
     </div>`;
@@ -618,6 +618,6 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     const beats = win
       ? [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 20 }, { a: 'p' as const, mov: 'Técnica Secreta', tec: true, dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 0, esq: true }, { a: 'p' as const, mov: 'Golpe Final', dano: 40, crit: true }]
       : [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 25 }, { a: 'f' as const, mov: 'Ataque', dano: 35 }, { a: 'f' as const, mov: 'Golpe Final', dano: 45, crit: true }];
-    setTimeout(() => playDuel({ foe: f, foeName: (FOE_NAMES[f] ?? f), scene: q.get('cenario') ?? 'selva', vitoria: win, beats, fim: win ? { p: 50, f: 0 } : { p: 20, f: 45 }, fraseFim: 'tomba', path: q.get('trilha') ?? 'espada', tier: Number(q.get('reino') ?? 2) }, { nome: 'Teste', onDone: () => { document.title = 'duelo-fim'; } }), 300);
+    setTimeout(() => playDuel({ foe: f, foeName: (FOE_NAMES[f] ?? f), scene: q.get('cenario') ?? 'selva', vitoria: win, desfecho: win ? 'vitoria' : ((q.get('desfecho') as 'derrota' | 'fuga' | 'salvo') ?? 'derrota'), beats, fim: win ? { p: 50, f: 0 } : { p: 20, f: 45 }, fraseFim: 'tomba', path: q.get('trilha') ?? 'espada', tier: Number(q.get('reino') ?? 2) }, { nome: 'Teste', onDone: () => { document.title = 'duelo-fim'; } }), 300);
   }
 }

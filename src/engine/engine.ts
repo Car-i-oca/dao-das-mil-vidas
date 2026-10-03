@@ -84,6 +84,38 @@ export function fill(s: State, text: string): string {
     .replace(/\{eco\}/g, s.names.eco ?? '');
 }
 
+/** Etiquetas da raiz espiritual: tipo (unica, mutante, dupla, tripla, quadrupla, caotica) e elementos. */
+export function rootTags(r: Root): string[] {
+  const n = r.elements.length;
+  const kind = r.name.includes('Mutante') ? 'mutante' : ['', 'unica', 'dupla', 'tripla', 'quadrupla', 'caotica'][n] ?? 'tripla';
+  return [kind, ...r.elements];
+}
+
+/** Idade aparente (0 criança, 1 jovem, 2 adulto, 3 maduro, 4 ancião) pela fração da vida vivida. */
+export function apparentStage(s: State): number {
+  if (s.age < 13) return 0;
+  const forever = s.flags.includes('juventude_eterna') || s.techniques.some((t) => TECH[t]?.tags?.includes('juventude')) || (!!s.constitution && !!CONSTITUTION[s.constitution]?.juventude);
+  const f = s.age / Math.max(1, s.maxAge);
+  const st = f < 0.4 ? 1 : f < 0.7 ? 2 : f < 0.85 ? 3 : 4;
+  return forever ? Math.min(st, 1) : st;
+}
+
+/** Selo mostrado na opção exclusiva: o que a torna possível. */
+export function choiceBadge(c: Choice): string | undefined {
+  const k = c.cond;
+  if (!k) return undefined;
+  if (k.path?.length) return PATH[k.path[0]]?.name.replace('Caminho d', 'D').replace(/^D[oa]s? /, '') ?? k.path[0];
+  if (k.talent?.length) return TALENT[k.talent[0]]?.name;
+  if (k.flaw?.length) return FLAW[k.flaw[0]]?.name;
+  if (k.tecnicas?.length) return TECH[k.tecnicas[0]]?.name;
+  if (k.tecnicaTag) return 'Técnica: ' + k.tecnicaTag;
+  if (k.constitution?.length) return CONSTITUTION[k.constitution[0]]?.name;
+  if (k.root?.length) return 'Raiz: ' + k.root[0];
+  if (k.origin?.length) return ORIGIN[k.origin[0]]?.name;
+  if (k.item) return ITEM[k.item]?.name;
+  return undefined;
+}
+
 export function condMet(s: State, c?: Cond): boolean {
   if (!c) return true;
   if (c.ageMin !== undefined && s.age < c.ageMin) return false;
@@ -105,6 +137,12 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.tecnica && !s.techniques.includes(c.tecnica)) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
   if (c.recMin !== undefined && (s.rec ?? 0) < c.recMin) return false;
+  if (c.talent && !c.talent.includes(s.talent)) return false;
+  if (c.flaw && !c.flaw.includes(s.flaw)) return false;
+  if (c.constitution && !(s.constitution && c.constitution.includes(s.constitution))) return false;
+  if (c.root && !rootTags(s.root).some((k) => c.root!.includes(k))) return false;
+  if (c.tecnicas && !c.tecnicas.some((t) => s.techniques.includes(t))) return false;
+  if (c.tecnicaTag && !s.techniques.some((t) => TECH[t]?.tags?.includes(c.tecnicaTag!))) return false;
   if (c.mundo && !(s.world && c.mundo.includes(s.world.id))) return false;
   return true;
 }
@@ -365,10 +403,12 @@ function tribulationChance(s: State): number {
 
 function doBreakthrough(s: State, rng: Rng, pill?: Item): string {
   const before = s.tier;
+  const st0 = apparentStage(s);
   const text = doBreakthroughCore(s, rng, pill);
   if (s.tier > before && !s.ending) {
     const r = realmOf(s);
-    const extra = [r.poder, r.titulo ? `Título: ${r.titulo}.` : ''].filter(Boolean).join(' ');
+    const young = apparentStage(s) < st0 ? 'Seu corpo rejuvenesceu.' : '';
+    const extra = [r.poder, r.titulo ? `Título: ${r.titulo}.` : '', young].filter(Boolean).join(' ');
     if (extra) { addLog(s, extra); return `${text} ${extra}`; }
   }
   return text;
@@ -454,6 +494,8 @@ export interface ViewChoice {
   chance?: number;
   disabled?: boolean;
   note?: string;
+  /** Selo da opção exclusiva (trilha, talento, defeito, técnica...). */
+  selo?: string;
 }
 
 export interface View {
@@ -512,7 +554,7 @@ export function view(s: State): View {
   const ev = EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
-    const vc: ViewChoice = { text: fill(s, c.text) };
+    const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c) };
     if (c.check) vc.chance = checkChance(s, c.check, ev);
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
@@ -662,7 +704,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
   s.result = { text: txt, check };
-  if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0);
+  if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c));
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
 }

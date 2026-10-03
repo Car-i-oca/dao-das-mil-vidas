@@ -1,5 +1,6 @@
 import type { State } from '../../types';
 import { C, hash, svg } from './core';
+import { apparentStage } from '../../engine/engine';
 
 /* =====================================================================
  * Retratos (busto 96x96). O do jogador muda com idade aparente, trilha, reino e itens;
@@ -37,7 +38,7 @@ export function stageFor(age: number, tier: number): number {
 }
 
 export function lookFromState(s: State): Look {
-  return { seed: s.name, stage: stageFor(s.age, s.tier), path: s.path, tier: s.tier, corr: s.corr, role: 'jogador', items: s.items };
+  return { seed: s.name, stage: apparentStage(s), path: s.path, tier: s.tier, corr: s.corr, role: 'jogador', items: s.items };
 }
 
 export function lookForNpc(role: Role, name: string, tier = 2): Look {

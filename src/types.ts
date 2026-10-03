@@ -60,6 +60,14 @@ export interface Cond {
   corrMin?: number;
   /** Pontos mínimos do recurso da trilha. */
   recMin?: number;
+  /** Talento, defeito, raiz (tipo ou elemento) e constituição exigidos (qualquer um da lista). */
+  talent?: string[];
+  flaw?: string[];
+  root?: string[];
+  constitution?: string[];
+  /** Qualquer uma destas técnicas (ou uma com a etiqueta indicada em `tecnicaTag`). */
+  tecnicas?: string[];
+  tecnicaTag?: string;
   /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
   mundo?: string[];
 }

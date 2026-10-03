@@ -17,7 +17,7 @@ export const TECHNIQUES: Technique[] = [
   { id: 'sutra_vazio_calmo', name: 'Sutra do Vazio Calmo', grade: 3, desc: 'Silêncio interior que domina demônios.', stats: { dao: 3 }, tags: ['mente'] },
   { id: 'fogo_nove_estacoes', name: 'Fogo das Nove Estações', grade: 3, desc: 'Cada estação, uma chama; cada chama, uma pílula.', tags: ['alquimia'] },
   { id: 'espada_corta_ceu', name: 'Espada que Corta o Céu', grade: 4, desc: 'Um golpe que a própria tribulação respeita.', tags: ['espada', 'combate'] },
-  { id: 'sutra_do_ciclo', name: 'Grande Sutra do Ciclo', grade: 4, desc: 'Morte e renascimento como respiração.', stats: { comp: 3 }, xpMult: 1.25, tags: ['qi', 'mente'] },
+  { id: 'sutra_do_ciclo', name: 'Grande Sutra do Ciclo', grade: 4, desc: 'Morte e renascimento como respiração.', stats: { comp: 3 }, xpMult: 1.25, tags: ['juventude', 'qi', 'mente'] },
   // Trilhas novas
   { id: 'mar_de_consciencia', name: 'Respiração do Mar Calmo', grade: 1, desc: 'Amplia o Mar da Consciência, onde pensamentos viram ondas.', stats: { esp: 2 }, tags: ['mente'] },
   { id: 'agulha_de_alma', name: 'Agulha de Alma', grade: 2, desc: 'Fio de consciência divina afiado como agulha.', tags: ['mente', 'combate'] },
@@ -68,7 +68,7 @@ export const TECHNIQUES: Technique[] = [
   { id: 'passo_destino', name: 'Passo Sem Fio', grade: 3, desc: 'Andar fora do traçado que alguém desenhou para você.', stats: { sor: 2 }, tags: ['fuga', 'mente'] },
 
   // Lote 9: identidade das trilhas
-  { id: 'respiracao_cem_ciclos', name: 'Ciclo de Cem Respirações', grade: 3, desc: 'Cem respirações, nenhuma igual; um fôlego do tamanho de um rio.', stats: { esp: 1 }, xpMult: 1.06, tags: ['qi'] },
+  { id: 'respiracao_cem_ciclos', name: 'Ciclo de Cem Respirações', grade: 3, desc: 'Cem respirações, nenhuma igual; um fôlego do tamanho de um rio.', stats: { esp: 1 }, xpMult: 1.06, tags: ['juventude', 'qi'] },
   { id: 'pele_de_bronze', name: 'Pele de Bronze', grade: 2, desc: 'A pele escurece, brilha e aguenta golpes de tijolo.', stats: { fis: 2 }, tags: ['corpo', 'combate'] },
   { id: 'intencao_lamina', name: 'Intenção da Lâmina', grade: 3, desc: 'Cortar a vontade do golpe antes de ele nascer.', stats: { dao: 2 }, tags: ['espada', 'combate'] },
   { id: 'selo_da_consciencia', name: 'Selo da Consciência', grade: 3, desc: 'Ler e agir sobre almas, com cuidado e culpa.', stats: { esp: 2 }, tags: ['mente', 'combate'] },
@@ -86,6 +86,6 @@ export const TECHNIQUES: Technique[] = [
 
   // Lote 13: o mundo em movimento
   { id: 'defesa_muralha', name: 'Defesa da Muralha de Pedra Viva', grade: 2, desc: 'Linhas de Qi que correm pela pedra como veias.', stats: { fis: 1 }, tags: ['formacao', 'combate'] },
-  { id: 'respiracao_lunar', name: 'Respiração da Lua Cheia', grade: 3, desc: 'Qi lunar, mais suave que o solar, entra como leite morno.', stats: { esp: 1 }, xpMult: 1.04, tags: ['qi'] },
+  { id: 'respiracao_lunar', name: 'Respiração da Lua Cheia', grade: 3, desc: 'Qi lunar, mais suave que o solar, entra como leite morno.', stats: { esp: 1 }, xpMult: 1.04, tags: ['juventude', 'qi'] },
   { id: 'oracao_ancestrais', name: 'Oração dos Ancestrais', grade: 2, desc: 'Dizer em voz baixa o nome de quem partiu; a colina ouve.', stats: { dao: 1 }, tags: ['mente'] },
 ];

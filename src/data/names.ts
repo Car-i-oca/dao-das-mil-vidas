@@ -57,6 +57,8 @@ export interface Constitution {
   stats?: Partial<Stats>;
   xpMult?: number;
   breakMod?: number;
+  /** Mantém a aparência jovem. */
+  juventude?: boolean;
 }
 
 export const CONSTITUTIONS: Constitution[] = [
@@ -64,5 +66,6 @@ export const CONSTITUTIONS: Constitution[] = [
   { id: 'ossos_dragao', name: 'Ossos de Dragão', desc: 'Densidade óssea absurda.', stats: { fis: 5 }, xpMult: 1.04 },
   { id: 'corpo_espada', name: 'Corpo de Espada Celestial', desc: 'Você nasceu afiado.', stats: { dao: 3, fis: 2 }, xpMult: 1.05 },
   { id: 'caos', name: 'Corpo Caótico', desc: 'Absorve tudo, controla pouco.', xpMult: 1.3, breakMod: -0.08 },
+  { id: 'jade_eterno', name: 'Corpo de Jade Eterno', desc: 'A carne se recusa a envelhecer à vista.', stats: { car: 2, sor: 1 }, xpMult: 1.02, juventude: true },
   { id: 'veias_quebradas', name: 'Veias Quebradas', desc: 'Selo antigo oculta um potencial imenso.', stats: { dao: 2 }, xpMult: 0.8, breakMod: 0.06 },
 ];
