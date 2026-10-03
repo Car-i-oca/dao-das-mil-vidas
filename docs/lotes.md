@@ -190,3 +190,14 @@ O jogo se chama "mil vidas", então cada vida deixa rastros na seguinte. O motor
 Na criação do personagem: **Calma** (+6 pontos de chance em testes, +5 no rompimento, Herança ×0,8), **Normal** e **Desafio** (−6 em testes, −5 no rompimento, Herança ×1,3). O balanceamento do relatório vale para o Normal.
 
 **Resultado (8.000 vidas):** ascensão 0,9% (independente) e 1,8% (meta). Totais: **420 eventos, 92 itens, 59 técnicas, 23 finais, 10 trilhas**. O linter conhece os novos marcadores; o fuzzer e o teste de finais continuam passando.
+
+---
+
+## Lote 12 — O Torneio dos Cem Picos
+**Entrou:** 7 eventos (`lote12_torneio.ts`), 1 técnica, 1 item. Arco de várias etapas encadeadas por `agenda`: `convite_torneio` → `torneio_preliminares` → `torneio_oitavas` → `torneio_sabotagem` (tentativa de envenenamento na véspera) → `torneio_semifinal` (contra o rival) → `torneio_final` (lendário) → `torneio_depois` (três caminhos: Ancião honorário, independente ou academia própria). Cada rodada é decidida por um teste; quem perde sai do arco, mas ganha fama proporcional.
+
+**Interface:** a aba Status ganhou o cartão **Relações** (mestre, rival, companheiro, filhos, discípulos, fera companheira, irmãos jurados, inimigos), montado a partir das flags da vida.
+
+**Bug achado pelo fuzzer e corrigido:** o ganho fixo de +2 em todos os atributos a cada reino (e os bônus de trilha) não respeitava o teto de 99; um atributo chegou a 100. Agora tudo é limitado a 99.
+
+**Resultado (8.000 vidas):** ascensão 0,6% (independente) e 1,7% (meta); todos os eventos aparecem no modo meta. Totais: **427 eventos, 93 itens, 60 técnicas, 23 finais, 10 trilhas**.

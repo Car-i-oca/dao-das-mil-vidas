@@ -80,4 +80,7 @@ export const TECHNIQUES: Technique[] = [
 
   // Lote 10: regiões distantes
   { id: 'passo_areia', name: 'Passo Sobre a Areia', grade: 2, desc: 'Andar sobre dunas sem afundar, e ler o vento como um livro.', stats: { sor: 1 }, tags: ['fuga'] },
+
+  // Lote 12: torneio
+  { id: 'golpe_campeao', name: 'Golpe do Campeão dos Cem Picos', grade: 3, desc: 'O golpe que fez dez mil vozes gritarem de uma vez.', stats: { fis: 1 }, tags: ['combate'] },
 ];

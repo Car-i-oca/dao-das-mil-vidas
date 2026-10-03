@@ -299,7 +299,40 @@ function statusHtml(s: State): string {
       <div class="k">Ferimentos</div><div class="v">${Math.round(s.wounds)}/6</div>
       <div class="k">Cultivo</div><div class="v">${s.tier > 0 ? `${cultivationRate(s).toFixed(1)}%/ano` : '—'}</div>
     </div>
+    ${relationsHtml(s)}
     <div class="card"><div class="muted small" style="margin-bottom:4px">TÉCNICAS</div>${techs}</div>`;
+}
+
+/** Relações importantes da história, derivadas das flags da vida. */
+function relationsHtml(s: State): string {
+  const f = (x: string) => s.flags.includes(x);
+  const n = s.names;
+  const rows: [string, string][] = [];
+  if (f('mestre_protetor')) rows.push(['Mestre ' + n.mentor, 'protege você na seita']);
+  if (f('mestre_do_anel') || f('velho_no_anel')) rows.push(['O Velho do Anel', f('velho_livre') ? 'recuperou o corpo e é seu aliado' : 'mora no anel negro e guarda seus segredos']);
+  if (f('mestre_renascido')) rows.push(['Seu antigo mestre', 'renasceu criança e você o guia de novo']);
+  if (f('companheiro_dao')) rows.push(['Companheiro(a) do Dao', 'caminha ao seu lado']);
+  if (f('viuvo_do_dao')) rows.push(['Companheiro(a) perdido(a)', 'o luto virou parte do seu caminho']);
+  if (f('tem_filho')) rows.push(['Seu filho' + (f('tem_neto') ? ' e seu neto' : ''), f('filho_com_raiz') ? 'a raiz espiritual despertou na família' : 'a família cresce']);
+  if (f('cla_proprio')) rows.push([n.cla, 'o clã que você fundou']);
+  if (f('tem_discipulo') || f('aprendiz_alquimista')) rows.push(['Discípulo(a)', 'aprende com você e um dia volta']);
+  if (f('aliado_junior')) rows.push(['Jovem discípulo que você ajudou', 'agora é um aliado poderoso']);
+  if (f('irmao_jurado')) rows.push(['Irmão jurado', 'uma promessa de vinho e sangue']);
+  if (f('irmao_de_sangue')) rows.push(['Irmão de sangue', 'um laço que cobra caro de quem trair']);
+  if (f('aliado_amigo') || f('amigo_juramento')) rows.push([n.amigo, 'amigo de infância' + (f('traiu_por_amigo') ? ', que o traiu' : '')]);
+  if (f('amigo_do_dormitorio')) rows.push(['Colega do dormitório', 'dividiu o pão com você']);
+  if (f('besta_companheira') || f('pacto_besta')) rows.push(['Fera companheira', f('pacto_besta') ? 'ligada à sua alma' : 'ainda cresce']);
+  if (f('rival_derrotado')) rows.push([n.rival, 'rival derrotado']);
+  else if (f('paz_com_rival')) rows.push([n.rival, 'rival com quem você fez as pazes']);
+  else if (f('rival_interno') || f('enfrentou_rival') || f('humilhado_por_rival') || f('humilhou_rival') || f('perdeu_para_rival_interno')) rows.push([n.rival, 'rival que ainda não esqueceu']);
+  if (f('noivado') && !f('perdoou_noivado')) rows.push([n.noivo, f('juramento_vinganca') ? 'noivado rompido; você jurou voltar com glória' : 'noivado rompido']);
+  if (f('perdoou_noivado')) rows.push([n.noivo, 'você ajudou a família que o desprezou']);
+  if (f('inimigo_anciao')) rows.push(['Um Ancião', 'inimigo na sua seita']);
+  if (f('inimigo_mestre_demoniaco')) rows.push(['Mestre demoníaco', 'quer o seu coração']);
+  if (f('viuva_inimiga') || f('chen_vinganca')) rows.push(['O filho de Chen', 'vai cobrar uma dívida antiga']);
+  if (f('devedor_demoniaca')) rows.push(['A mulher de olhos vermelhos', 'salvou sua vida e esperou nada em troca']);
+  if (!rows.length) return '';
+  return `<div class="card"><div class="muted small" style="margin-bottom:4px">RELAÇÕES</div>${rows.map(([a, b]) => `<div class="tech"><b>${esc(a)}</b><div class="small muted">${esc(b)}</div></div>`).join('')}</div>`;
 }
 
 function bagHtml(s: State): string {

@@ -121,4 +121,7 @@ export const ITEMS: Item[] = [
   { id: 'cantil_oasis', name: 'Cantil do Oásis', kind: 'misc', grade: 2, desc: 'Nunca esvazia por completo; sempre tem um gole.', use: { ferida: -2, xp: 5 }, value: 40 },
   { id: 'cristal_inverno', name: 'Cristal do Inverno', kind: 'misc', grade: 3, desc: 'Azul, frio, calmo. Aquieta o Qi ao toque.', use: { xp: 18, stats: { esp: 1 } }, value: 100 },
   { id: 'perola_abismo', name: 'Pérola do Abismo', kind: 'artefato', grade: 4, desc: 'Cintila como a lua cheia sob a água.', passive: { esp: 2, sor: 1 }, value: 280 },
+
+  // Lote 12: torneio
+  { id: 'selo_campeao', name: 'Selo de Campeão dos Cem Picos', kind: 'artefato', grade: 3, desc: 'Cera dourada e uma estampa de pico nevado. Abre portas e fecha bocas.', passive: { car: 2, dao: 1 }, value: 160 },
 ];

@@ -212,7 +212,7 @@ function tierUp(s: State, delta: number) {
   const t = Math.min(max, Math.max(0, s.tier + delta));
   if (t === s.tier) return;
   if (delta > 0) {
-    for (const k of STAT_KEYS) s.stats[k] += 2;
+    for (const k of STAT_KEYS) s.stats[k] = Math.min(99, s.stats[k] + 2);
     s.fama += t * 2;
   }
   s.tier = t;
@@ -227,7 +227,7 @@ function setPath(s: State, id: string) {
   const p = PATH[id];
   if (!p || !id || s.path) return;
   s.path = id;
-  for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.max(1, s.stats[k] + (p.stats[k] ?? 0));
+  for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (p.stats[k] ?? 0)));
   if (p.tecnica && !s.techniques.includes(p.tecnica)) { s.techniques.push(p.tecnica); noteFound(s, 'techs', p.tecnica); }
   if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
   if (id === 'demoniaca') {
