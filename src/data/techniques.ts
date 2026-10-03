@@ -61,4 +61,9 @@ export const TECHNIQUES: Technique[] = [
   { id: 'mantra_cem_mil', name: 'Mantra das Cem Mil Voltas', grade: 2, desc: 'Recitado até a boca virar respiração.', stats: { dao: 1 }, tags: ['mente'] },
   { id: 'koan_riso', name: 'Koan do Riso Antes do Nascimento', grade: 2, desc: 'Uma pergunta sem resposta que destrava respostas.', stats: { comp: 1 }, tags: ['mente'] },
   { id: 'sutra_do_oeste', name: 'Sutra do Templo do Oeste', grade: 4, desc: 'A escritura que a estrada inteira escreveu em você.', stats: { dao: 3, esp: 1 }, xpMult: 1.06, tags: ['mente'] },
+
+  // Lote 7: regressão, Registro Celeste e destino
+  { id: 'memoria_vida_passada', name: 'Memória de Mão Antiga', grade: 2, desc: 'Selos que o corpo lembra, mesmo quando a mente esquece.', stats: { comp: 1 }, tags: ['mente', 'formacao'] },
+  { id: 'olho_registro', name: 'Olho do Registro', grade: 3, desc: 'Ler a anotação em branco ao lado do próprio nome.', stats: { comp: 2 }, tags: ['mente', 'formacao'] },
+  { id: 'passo_destino', name: 'Passo Sem Fio', grade: 3, desc: 'Andar fora do traçado que alguém desenhou para você.', stats: { sor: 2 }, tags: ['fuga', 'mente'] },
 ];

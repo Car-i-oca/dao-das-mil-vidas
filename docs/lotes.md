@@ -86,3 +86,19 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 - Karma e seres: visão dos seis reinos (lendário), fantasma faminto, mendigo bodhisattva, transferência de mérito, monge corrompido, árvore Bodhi (lendário), corpo de vajra.
 
 **Resultado (4.000 vidas):** ascensão 0,7% (independente) e 1,6% (meta); a Iluminação sai em 0,2% / 0,1% das vidas; todos os eventos aparecem (exceto os dependentes de desbloqueio no modo independente). A técnica Sutra do Céu Vazio é a que mais cresce no impacto (+20 pp de reino relativo), mas só aparece em ~2% das vidas e a ascensão dos que a têm fica em 2–3%.
+
+---
+
+## Lote 7 — Regressão, o "sistema" e o Céu
+**Pesquisa:** regressores com memórias do futuro, quadro de status/missões/penalidades dos manhwas (murim e fantasia), Dao Celestial, tribulação do coração, corte celeste burocrática e o efeito do karma na dificuldade da tribulação. Fontes: [Best Regression Manhwa](https://www.themanhwadude.com/lists/best-regression-manhwa), [10 Best Murim Manhwa With Regression](https://novelnodes.com/best-murim-manhwa-with-regression/), [Heavenly Tribulation and Ascension](https://xiuxian0.com/realms/tribulation-and-ascension/), [Immortal Realm (xianxialitrpgwiki)](https://xianxialitrpgwiki.com/immortal-realm/), [Heavenly Tribulation (xianxialitrpgwiki)](http://xianxialitrpgwiki.com/heavenly-tribulation/).
+
+**Entrou:** 20 eventos (`lote7_ceu.ts`), 3 técnicas, 2 itens, 1 final (Oficial da Corte Celeste), 1 conquista (Carimbo do Céu), 1 origem (Regressor, liberada ao ascender).
+- Reencarnado/regressor: memória de técnica antiga, inimigo da vida passada, o dia em que tudo deu errado, mestre que voltou criança, nome antigo, sussurros do futuro, segunda chance.
+- O Registro Celeste (nosso "sistema", criação original): `janela_registro` → missões diárias, loja, avaliação, `erro_do_registro` → `fim_do_registro` (lendário, final Celeste).
+- Céu e destino: tribulação do coração, oficial da Corte Celeste (lendário, burocracia do Céu), Livro da Vida e da Morte (lendário), fio vermelho do destino, o dia em que o Céu sorriu (lendário), raio roxo, o olhar do Céu.
+
+**Mudança de regra:** o karma agora pesa na tribulação (±8% de sobrevivência, conforme o karma). É a convenção do gênero (karma positivo suaviza, negativo endurece) e dá um motivo mecânico para ser bom.
+
+**Calibração:** `finalChance` 0,05 (o modo meta passou de 2,0% de ascensão com os lotes 6–7). Pesos de `ruptura_do_tempo`, `mestre_ve_talento` e `mestre_pede_favor` aumentados.
+
+**Resultado (4.000 vidas):** ascensão 0,8% (independente) e 1,8% (meta; 1,8% também com 8.000 vidas). Eventos que dependem de desbloqueio (origens Alma Reencarnada, Neto de Alquimista, Rebento Demoníaco, Regressor) aparecem centenas de vezes no modo meta e, por definição, não aparecem no modo independente, que não tem desbloqueios.

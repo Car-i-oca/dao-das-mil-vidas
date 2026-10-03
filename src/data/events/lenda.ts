@@ -79,7 +79,7 @@ export const lenda: GameEvent[] = [
     ],
   },
   {
-    id: 'ruptura_do_tempo', title: 'A Fenda do Tempo', rarity: 'lendario', once: true,
+    id: 'ruptura_do_tempo', title: 'A Fenda do Tempo', rarity: 'lendario', once: true, weight: 4,
     cond: { tierMin: 3, ageMin: 60 },
     text: 'Uma rachadura prateada se abre no ar, e através dela você vê o seu eu mais jovem, num pátio de seita, rindo. Uma voz oferece: "Volte. Mas pague."',
     choices: [

@@ -92,7 +92,7 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'mestre_pede_favor', title: 'O Favor do Mestre', rarity: 'raro', once: true, weight: 8,
+    id: 'mestre_pede_favor', title: 'O Favor do Mestre', rarity: 'raro', once: true, weight: 16,
     cond: { tierMin: 2, tierMax: 6, faction: ['seita'], flags: ['mestre_protetor'] },
     text: 'O Mestre {mentor} entrega uma caixa de jade lacrada. "Leve isto a um velho amigo nas Montanhas do Norte. Ninguém pode saber. Nem a seita."',
     choices: [

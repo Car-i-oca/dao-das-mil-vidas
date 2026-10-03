@@ -264,7 +264,8 @@ export function breakChance(s: State, pill?: Item): number {
 function tribulationChance(s: State): number {
   const next = s.tier + 1;
   const avg = (eff(s, 'fis') + eff(s, 'esp') + eff(s, 'dao')) / 3;
-  return Math.min(0.95, Math.max(0.25, 0.6 + (avg - (6 + next * 4)) * 0.035 - s.wounds * 0.04));
+  const karmaMod = Math.max(-0.08, Math.min(0.08, s.karma / 300)); // karma positivo suaviza a tribulação, negativo a endurece
+  return Math.min(0.95, Math.max(0.25, 0.6 + (avg - (6 + next * 4)) * 0.035 - s.wounds * 0.04 + karmaMod));
 }
 
 function doBreakthrough(s: State, rng: Rng, pill?: Item): string {
@@ -491,7 +492,7 @@ export function pickNext(s: State, rng: Rng) {
 }
 
 /* ---------- Final da vida ---------- */
-export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_ancestral: 6, ach_conselheiro: 5, ach_senhor_sangue: 5, ach_penitente: 6, ach_iluminacao: 8, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
+export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_ancestral: 6, ach_conselheiro: 5, ach_senhor_sangue: 5, ach_penitente: 6, ach_iluminacao: 8, ach_celeste: 5, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
 
 export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;

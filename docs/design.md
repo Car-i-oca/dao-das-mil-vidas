@@ -25,8 +25,8 @@ Sorteados: **origem**, **Raiz Espiritual** (e, raramente, constituição especia
 ## Cadeias de eventos
 `agenda` agenda um evento futuro em N–M anos (o inimigo humilhado volta décadas depois). Flags (`setFlags`) liberam eventos que as exigem.
 
-## Finais (9)
-Velhice, Combate, Tribulação, Ascensão, Demônio, Mortal Comum, Desvio de Qi, Fundador de Seita, Vingança do Karma.
+## Finais
+Há 23 finais (lista em `src/data/endings.ts`): os de morte (velhice, combate, tribulação, desvio de Qi, karma), os de poder (ascensão, iluminação, demônio, Senhor do Sangue), os de legado (fundador, patriarca, ancestral do clã, Guardião, Conselheiro, Oficial Celeste, Pílula Suprema, Sacrifício, Penitente) e os de vida simples (mortal comum, eremita, fio vermelho, Roda do Samsara, perdido no Vazio). Vários são voluntários e aparecem como escolha dentro de eventos.
 
 ## Meta-progressão
 - **Conquistas** desbloqueiam origens e talentos.

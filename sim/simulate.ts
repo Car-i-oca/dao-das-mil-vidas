@@ -212,7 +212,8 @@ function formatRun(run: Run): string {
     const usedTalents = TALENTS.filter((t) => run.talentUse[t.id]).length;
     L.push('', `Origens usadas: ${usedOrigins}/${ORIGINS.length} · Talentos usados: ${usedTalents}/${TALENTS.length}`);
   }
-  const gated = ['despertar_alquimista', 'despertar_reencarnado', 'despertar_demoniaco', 'regressao_visao'];
+  const GATED_FLAGS = ['reencarnado', 'regressor', 'sangue_demoniaco', 'avo_alquimista'];
+  const gated = EVENTS.filter((e) => e.cond?.flags?.some((f) => GATED_FLAGS.includes(f))).map((e) => e.id);
   L.push('', `**Eventos que dependem de desbloqueio** (ocorrências): ${gated.map((id) => `${id} (${run.events[id] ?? 0})`).join(', ')}.`);
   {
     const mean = run.relSum / run.total;

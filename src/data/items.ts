@@ -106,4 +106,8 @@ export const ITEMS: Item[] = [
   { id: 'escritura_oeste', name: 'Escritura do Templo do Oeste', kind: 'manual', grade: 4, desc: 'Poucos caracteres, muitas vidas.', use: { tecnica: ['sutra_do_oeste'] }, value: 400 },
   { id: 'rosario_vajra', name: 'Rosário de Vajra', kind: 'artefato', grade: 3, desc: 'Contas de pedra preta que nunca esquentam.', passive: { dao: 2, fis: 1 }, value: 140 },
   { id: 'tigela_mendicante', name: 'Tigela do Mendigo', kind: 'artefato', grade: 2, desc: 'Amassada, humilde, abençoada.', passive: { sor: 1, dao: 1 }, value: 40 },
+
+  // Lote 7: regressão, Registro Celeste e destino
+  { id: 'pena_registro', name: 'Pena do Registro Celeste', kind: 'misc', grade: 3, desc: 'Leve como luz; anota o que você faz, e o que deixou de fazer.', use: { xp: 12, stats: { comp: 1 } }, value: 70 },
+  { id: 'fio_destino_vermelho', name: 'Fio Dourado do Destino', kind: 'artefato', grade: 3, desc: 'Entrelaçado por um tecelão que nunca dorme.', passive: { sor: 2, car: 1 }, value: 170 },
 ];

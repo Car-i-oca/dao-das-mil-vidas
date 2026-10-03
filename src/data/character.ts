@@ -14,6 +14,8 @@ export const ORIGINS: Origin[] = [
   { id: 'discipulo_eremita', name: 'Discípulo do Eremita', desc: 'Criado numa cabana de montanha, entre silêncios.', stats: { dao: 3, comp: 2 }, pedras: 0, place: 'montanha', faction: 'errante', unlock: 'ach_eremita' },
   { id: 'pescador_mares', name: 'Pescador dos Mares Sem Fim', desc: 'Seu pai viu uma serpente de mil anos e voltou calado.', stats: { fis: 2, sor: 2 }, pedras: 4, place: 'vilarejo', faction: 'nenhuma' },
   { id: 'filho_guarda', name: 'Filho de um Guarda do Reino', desc: 'Disciplina, cicatrizes e uma espada velha.', stats: { fis: 2, dao: 1, car: 1 }, pedras: 6, place: 'cidade', faction: 'nenhuma' },
+
+  { id: 'regressor', name: 'Regressor', desc: 'Voltou ao começo, com as memórias do que viu no fim.', stats: { comp: 2, dao: 2, sor: 1, car: -2 }, pedras: 0, place: 'vilarejo', faction: 'nenhuma', unlock: 'ach_ascensao', flags: ['regressor'] },
 ];
 
 export const TALENTS: Talent[] = [

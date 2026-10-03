@@ -39,7 +39,7 @@ export const seita: GameEvent[] = [
     ],
   },
   {
-    id: 'mestre_ve_talento', title: 'O Olhar do Mestre', rarity: 'raro', once: true, weight: 4,
+    id: 'mestre_ve_talento', title: 'O Olhar do Mestre', rarity: 'raro', once: true, weight: 8,
     cond: { tierMin: 1, tierMax: 4, faction: ['seita'], flags: ['discipulo_interno'], noFlags: ['mestre_protetor'] },
     text: 'O Mestre {mentor} passa por você no pátio e para. "Você tem algo", diz, e o olha como quem avalia uma espada.',
     choices: [
