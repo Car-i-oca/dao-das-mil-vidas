@@ -285,7 +285,7 @@ function statusHtml(s: State): string {
         <div class="k">Facção</div><div class="v">${fac[s.faction]}</div>
       </div>
     </div>
-    <div class="card">${stats}</div>
+    <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>
     <div class="card kv">
       <div class="k">Pedras</div><div class="v">${s.pedras}</div>
       <div class="k">Fama</div><div class="v">${s.fama}</div>
