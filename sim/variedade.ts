@@ -5,7 +5,7 @@
  *   npm run variedade -- 3000 --baseline     grava o resultado atual como baseline (docs/variedade.baseline.json)
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { newMeta, ladderOf, PATH } from '../src/engine/engine';
+import { newMeta, ladderOf, PATH, finalizeLife } from '../src/engine/engine';
 import { playLife } from './bot';
 import { EVENTS } from '../src/data/events';
 import { ENDINGS } from '../src/data/endings';
@@ -26,12 +26,15 @@ const GENERIC = new Set(EVENTS.filter(ID_GENERIC).map((e) => e.id));
 
 interface Life { ids: string[]; ending: string; age: number; tierMax: number; ladder: string; ticks: { id: string; age: number; tier: number }[] }
 const lives: Life[] = [];
+// Vidas em sequências de 10 com a mesma Herança (memória entre vidas: o que já apareceu perde peso).
+let meta = newMeta();
 for (let i = 0; i < N; i++) {
-  const meta = newMeta();
+  if (i % 10 === 0) meta = newMeta();
   const counts: Record<string, number> = {};
   const trace: { id: string; age: number; tier: number }[] = [];
   const s = playLife(meta, 1000 + i * 7919, '', false, counts, {}, trace);
   const real = trace.filter((t) => !t.id.startsWith('__'));
+  finalizeLife(meta, s);
   lives.push({ ids: real.map((t) => t.id), ending: s.ending ?? '??', age: s.age, tierMax: s.tier, ladder: ladderOf(s).name, ticks: real });
 }
 

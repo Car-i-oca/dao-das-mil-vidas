@@ -78,7 +78,7 @@ for (const a of ACHIEVEMENTS) if (!ACH_CHECKS[a.id]) errors.push(`conquista ${a.
 
 
 /* ---------- Linter de texto e estrutura ---------- */
-const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
+const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
 function lintText(where: string, text: string | undefined, max = 700) {
   if (text === undefined) return;
   if (!text.trim()) { errors.push(`${where}: texto vazio`); return; }

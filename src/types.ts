@@ -270,6 +270,8 @@ export interface State {
   counts?: Record<string, number>;
   /** Pontos do recurso próprio da trilha. */
   rec?: number;
+  /** Multiplicador de peso por evento, vindo das vidas anteriores (novidade entre vidas). */
+  pen?: Record<string, number>;
   /** Era do mundo em curso. */
   world?: { id: string; until: number } | null;
   nextWorldAt?: number;
@@ -300,5 +302,7 @@ export interface Meta {
   lives: number;
   best: { tier: number; age: number; ending: string } | null;
   endingsSeen: string[];
+  /** Eventos vistos nas últimas vidas (mais recente primeiro): quem já apareceu perde peso na vida seguinte. */
+  recent?: string[][];
   history: { name: string; path: string; tierName: string; age: number; ending: string; techName?: string }[];
 }

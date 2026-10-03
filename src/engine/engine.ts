@@ -70,6 +70,8 @@ export function fill(s: State, text: string): string {
     .replace(/\{mentor\}/g, s.names.mentor)
     .replace(/\{amigo\}/g, s.names.amigo)
     .replace(/\{noivo\}/g, s.names.noivo)
+    .replace(/\{discipulo\}/g, s.names.discipulo ?? 'o discípulo')
+    .replace(/\{inimigo\}/g, s.names.inimigo ?? 'o inimigo')
     .replace(/\{seita\}/g, s.names.seita)
     .replace(/\{cla\}/g, s.names.cla)
     .replace(/\{vila\}/g, s.names.vila)
@@ -182,7 +184,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   for (const k of STAT_KEYS) stats[k] = Math.max(1, stats[k]);
   const lifeMult = (talent.lifeMult ?? 1) * (flaw.lifeMult ?? 1);
   const names: Record<string, string> = {
-    rival: personName(rng), mentor: personName(rng), amigo: personName(rng), noivo: personName(rng),
+    rival: personName(rng), mentor: personName(rng), amigo: personName(rng), noivo: personName(rng), discipulo: personName(rng), inimigo: personName(rng),
     seita: sectName(rng), cla: clanName(rng), vila: villageName(rng),
   };
   // Eco da vida anterior: quem você foi vira lenda neste mundo.
@@ -193,7 +195,14 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     names.eco_trilha = last.path;
     names.eco_tecnica = last.techName ?? 'um método simples de respiração';
   }
+  // Novidade entre vidas: o que apareceu nas últimas vidas perde peso (mais a vida mais recente).
+  const pen: Record<string, number> = {};
+  (meta.recent ?? []).slice(0, 3).forEach((ids, i) => {
+    const f = [0.5, 0.72, 0.86][i];
+    for (const id of ids) pen[id] = (pen[id] ?? 1) * f;
+  });
   const s: State = {
+    pen,
     v: 1, seed: rng.seed, name: personName(rng), path: pathId, origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
@@ -566,7 +575,7 @@ export function choose(s: State, idx: number, rng: Rng) {
  * entrega uma fração do que entregava, para o total por reino continuar o mesmo. Atributos inteiros
  * usam arredondamento por sorteio (1,0 × 0,8 vira 1 em 80% das vezes). Itens, técnicas e danos não escalam.
  */
-const REWARD_SCALE = [0.95, 0.9, 0.7, 0.55, 0.5, 0.5, 0.5, 0.5, 0.5];
+const REWARD_SCALE = [0.55, 0.65, 0.6, 0.5, 0.45, 0.45, 0.45, 0.45, 0.45];
 
 /** Teto suave dos atributos por reino: perto dele, ganhos de eventos rendem cada vez menos (o balanço não depende da quantidade de eventos). */
 const softCap = (tier: number) => 62 + 7 * tier;
@@ -664,7 +673,7 @@ const P_RETIRO = [0, 0, 0, 0.12, 0.25, 0.35, 0.45, 0.5, 0.55];
 
 function advance(s: State, rng: Rng) {
   const realm = realmOf(s);
-  const dt = s.tier === 0 ? rng.int(1, 2) : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
+  const dt = s.tier === 0 ? 1 : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
   if (s.tier > 0) s.xp = Math.min(130, s.xp + cultivationRate(s) * dt);
   s.age += dt;
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
@@ -778,7 +787,9 @@ export function pickNext(s: State, rng: Rng) {
     let w = RARITY_W[e.rarity] * (e.weight ?? 1) * (e.rarity === 'comum' ? 1 : luck);
     if (!e.once) w *= Math.pow(0.45, s.counts?.[e.id] ?? 0); // fadiga: o que já aconteceu várias vezes perde peso
     const generic = GENERIC_IDS.has(e.id);
-    if (generic) w *= 0.85;
+    if (generic) w *= 0.6;
+    else if ((e.cond?.tierMin ?? 0) >= 2 && (e.cond?.tierMax ?? 8) - (e.cond?.tierMin ?? 0) <= 3) w *= 1.35; // específicos do reino
+    if (!e.once && s.pen?.[e.id]) w *= s.pen[e.id];
     if (s.world) {
       if (e.cond?.mundo?.includes(s.world.id)) w *= 3; // a era do mundo puxa seus próprios eventos
       else if (generic) w *= 0.7;
@@ -815,6 +826,7 @@ export function finalizeLife(meta: Meta, s: State): void {
   const score = s.tier * 1000 + s.age;
   if (!meta.best || score > meta.best.tier * 1000 + meta.best.age) meta.best = { tier: s.tier, age: Math.floor(s.age), ending: s.ending };
   const topTech = [...s.techniques].sort((a, b) => (TECH[b]?.grade ?? 0) - (TECH[a]?.grade ?? 0))[0];
+  meta.recent = [Object.keys(s.seen).filter((k) => !k.startsWith('__')), ...(meta.recent ?? [])].slice(0, 3);
   meta.history.unshift({ name: s.name, path: PATH[s.path].name, tierName: realmName(s), age: Math.floor(s.age), ending: end.name, techName: topTech ? TECH[topTech]?.name : undefined });
   if (meta.history.length > 30) meta.history.pop();
   s.summary = { legacy: gain, ach: newAch, tierName: realmName(s) };

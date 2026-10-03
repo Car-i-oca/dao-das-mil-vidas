@@ -30,6 +30,9 @@ import { lote17Reinos78 } from './lote17_reinos_7_8';
 import { lote18Reinos12 } from './lote18_reinos_1_2';
 import { lote19TrilhasPoder } from './lote19_trilhas_poder';
 import { lote20Tribulacao } from './lote20_tribulacao';
+import { lote21OrigensA } from './lote21_origens_a';
+import { lote22OrigensB } from './lote22_origens_b';
+import { lote23Npcs } from './lote23_npcs';
 import { TETOS } from '../faixas';
 
 const TODOS: GameEvent[] = [
@@ -37,7 +40,7 @@ const TODOS: GameEvent[] = [
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
   ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
-  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao,
+  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs,
 ];
 
 /** Aplica os tetos de reino de src/data/faixas.ts. */
