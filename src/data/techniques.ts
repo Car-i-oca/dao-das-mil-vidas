@@ -37,4 +37,10 @@ export const TECHNIQUES: Technique[] = [
   { id: 'respiracao_coletiva', name: 'Respiração Coletiva', grade: 2, desc: 'Une sua respiração à do pavilhão inteiro.', xpMult: 1.08, tags: ['qi'] },
   { id: 'guarda_do_portao', name: 'Guarda do Portão', grade: 2, desc: 'Pés plantados, coração firme: ninguém passa.', stats: { fis: 1 }, tags: ['corpo', 'combate'] },
   { id: 'sutra_do_anciao', name: 'Sutra do Ancião Recluso', grade: 3, desc: 'Um método antigo, escrito à mão e passado em segredo.', stats: { dao: 2 }, tags: ['mente'] },
+
+  // Lote 2: reinos secretos
+  { id: 'passo_nevoa', name: 'Passo da Névoa Dourada', grade: 2, desc: 'Caminhar entre brumas sem deixar rastro.', stats: { sor: 1 }, tags: ['fuga', 'formacao'] },
+  { id: 'sutra_espelho', name: 'Sutra do Espelho Quieto', grade: 3, desc: 'Ver a si mesmo sem se esconder.', stats: { dao: 1, comp: 1 }, tags: ['mente'] },
+  { id: 'canto_jingwei', name: 'Canto da Ave Persistente', grade: 3, desc: 'A lição de quem nunca para de carregar pedras.', stats: { dao: 2 }, tags: ['mente', 'corpo'] },
+  { id: 'olhar_bai_ze', name: 'Olhar de Bai Ze', grade: 4, desc: 'Conhecer o nome de cada espírito e de cada falha.', stats: { comp: 3 }, xpMult: 1.08, tags: ['mente', 'formacao'] },
 ];

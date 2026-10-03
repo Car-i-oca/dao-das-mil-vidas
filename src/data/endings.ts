@@ -15,6 +15,7 @@ export const ENDINGS: Ending[] = [
   { id: 'eremita', name: 'O Eremita das Nuvens', legacy: 1.5, text: '{nome} subiu uma montanha sem nome e nunca desceu. Pastores dizem que o vento por lá tem voz, e que a voz conta boas histórias.' },
   { id: 'vazio', name: 'Perdido no Vazio', legacy: 1.1, text: 'O portal fechou-se atrás de {nome}. Dentro, o tempo perdeu o sentido. Talvez {nome} ainda caminhe lá, em algum lugar entre um passo e outro.' },
   { id: 'patriarca', name: 'Patriarca da Seita', legacy: 1.7, text: '{nome} governou a {seita} por incontáveis invernos. Quando o manto passou a outras mãos, o portão que antes desbotava brilhava como no primeiro dia.' },
+  { id: 'guardiao', name: 'Guardião do Reino Secreto', legacy: 1.6, text: 'A névoa dourada se fechou sobre {nome}. Dizem que, a cada cem anos, quando o reino abre por sete dias, uma figura calma espera junto ao portão e faz uma pergunta a cada viajante.' },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
 
@@ -38,6 +39,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_mestre_veneno', name: 'Mão Verde', desc: 'Alcance o 3º reino no Caminho dos Venenos.', reward: '+4 Herança do Dao' },
   { id: 'ach_pacto_besta', name: 'Irmãos de Alma', desc: 'Sele um pacto com uma besta espiritual.', reward: '+3 Herança do Dao' },
   { id: 'ach_patriarca', name: 'Manto de Séculos', desc: 'Torne-se Patriarca de uma seita.', reward: '+6 Herança do Dao' },
+  { id: 'ach_guardiao', name: 'A Pergunta do Portão', desc: 'Torne-se Guardião de um Reino Secreto.', reward: '+6 Herança do Dao' },
   { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Receba ensinamentos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
 ];
 
@@ -62,6 +64,7 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   ach_mestre_veneno: (s) => s.path === 'venenos' && s.tier >= 3,
   ach_pacto_besta: (s) => s.flags.includes('pacto_besta'),
   ach_patriarca: (_s, e) => e === 'patriarca',
+  ach_guardiao: (_s, e) => e === 'guardiao',
   ach_diaspora: (s) => s.flags.includes('tocado_por_mestre'),
 };
 

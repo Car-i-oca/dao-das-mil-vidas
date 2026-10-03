@@ -72,4 +72,12 @@ export const ITEMS: Item[] = [
   { id: 'jade_identidade', name: 'Jade de Identidade', kind: 'misc', grade: 2, desc: 'Prova de confiança entre mestres e alunos.', passive: { car: 1 }, value: 40 },
   { id: 'pergaminho_anciao', name: 'Pergaminho do Ancião', kind: 'manual', grade: 3, desc: 'Notas de um Ancião sobre o próprio caminho.', use: { tecnica: ['sutra_do_anciao'] }, value: 180 },
   { id: 'manual_guarda_portao', name: 'Manual: Guarda do Portão', kind: 'manual', grade: 2, desc: 'Ilustrações de posturas e respiração.', use: { tecnica: ['guarda_do_portao'] }, value: 60 },
+
+  // Lote 2: reinos secretos
+  { id: 'selo_do_guardiao', name: 'Selo de Passagem do Guardião', kind: 'misc', grade: 3, desc: 'Prova de que alguém pagou pela rota certa.', value: 60 },
+  { id: 'lanterna_dragao', name: 'Lanterna de Sopro de Dragão', kind: 'artefato', grade: 4, desc: 'Uma chama antiga, que ilumina o que precisa ser visto.', passive: { esp: 2, comp: 1 }, value: 260 },
+  { id: 'semente_jardim', name: 'Semente do Jardim dos Imortais', kind: 'erva', grade: 4, desc: 'Cresce devagar, rende tempo e Qi.', use: { vida: 20, xp: 20 }, value: 200 },
+  { id: 'amuleto_nove_caudas', name: 'Amuleto das Nove Caudas', kind: 'artefato', grade: 3, desc: 'Pelo escarlate trançado, quente ao toque.', passive: { fis: 1, dao: 1, sor: 1 }, value: 130 },
+  { id: 'escama_qilin', name: 'Escama de Qilin', kind: 'artefato', grade: 4, desc: 'Dourada, leve, rara demais para vender.', passive: { sor: 2, car: 1 }, value: 280 },
+  { id: 'espelho_bronze', name: 'Espelho de Bronze Antigo', kind: 'artefato', grade: 2, desc: 'Mostra um pouco mais do que deveria.', passive: { comp: 1, dao: 1 }, value: 70 },
 ];
