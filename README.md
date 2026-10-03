@@ -9,17 +9,20 @@ npm run dev        # http://localhost:5173 (e na rede local, pelo IP mostrado)
 ```
 
 ## Jogar no celular
-O jogo é um site estático (PWA): depois da primeira visita funciona offline e pode ser instalado na tela inicial, como um app.
+**Site (qualquer celular):** https://car-i-oca.github.io/dao-das-mil-vidas/ — atualizado sozinho a cada push na .
 
-**Opção A — mesma rede Wi-Fi (teste rápido):** rode `npm run dev` no PC e abra no celular o endereço `http://<IP-do-PC>:5173`. (Instalar como PWA exige HTTPS, então por aqui só dá para jogar no navegador.)
+**Instalar como app (PWA):** abra o site no celular. No Android (Chrome): menu ⋮ → *Instalar app* (ou o botão *Instalar como app* na tela inicial do jogo). No iPhone (Safari): Compartilhar → *Adicionar à Tela de Início*. Depois da primeira visita funciona offline.
 
-**Opção B — publicar de graça (recomendado para instalar):**
-```bash
-npm run build      # gera a pasta dist/
-```
-Envie a pasta `dist/` para qualquer hospedagem estática com HTTPS: Netlify Drop (arraste a pasta em app.netlify.com/drop), GitHub Pages, Cloudflare Pages ou Vercel. Abra o link no celular e use "Adicionar à tela inicial" (Chrome/Android: menu ⋮ → *Instalar app*; Safari/iOS: Compartilhar → *Adicionar à Tela de Início*).
+**APK para Android (app de verdade):** baixe em https://github.com/Car-i-oca/dao-das-mil-vidas/releases/download/android-latest/dao-das-mil-vidas.apk (ou pela página da Release ). Abra o arquivo no celular e permita a instalação de apps desta fonte. O APK é recompilado e assinado na nuvem (GitHub Actions) a cada push, com a mesma chave, então dá para instalar a versão nova por cima da antiga sem perder o save. iPhone não aceita APK; use o PWA.
 
-O save fica no navegador (localStorage). Em *Herança do Dao → Opções* há backup (copiar/importar).
+**Rede local (teste rápido):**  no PC e abra  no celular.
+
+**Hospedar em outro lugar:**  gera a pasta ; envie-a para Netlify Drop, Cloudflare Pages ou Vercel.
+
+O save fica no navegador/app (localStorage), separado entre site, PWA e APK. Em *Herança do Dao → Opções* há backup (copiar/importar) para levar o progresso de um para o outro.
+
+## Como o APK é gerado
+ roda , cria o projeto Android com Capacitor (), gera os ícones a partir de , compila o APK release e o assina com a chave guardada nos segredos  e  (alias ). A pasta  não é versionada.
 
 ## Scripts
 | Comando | O que faz |
@@ -27,7 +30,8 @@ O save fica no navegador (localStorage). Em *Herança do Dao → Opções* há b
 | `npm run dev` | servidor de desenvolvimento |
 | `npm run build` | verifica tipos e gera `dist/` |
 | `npm run preview` | serve o build |
-| `npm run sim -- 2000` | simula 2.000 vidas e imprime o relatório de balanceamento |
+| `npm run sim -- 4000` | simula 4.000 vidas (`--meta` joga em sequência com desbloqueios; `--report` grava docs/balanceamento.md) |
+| `npm run validate` | confere referências cruzadas do conteúdo |
 | `npm run icons` | regera os ícones do PWA |
 
 ## Estrutura
