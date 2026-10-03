@@ -487,7 +487,7 @@ export function pickNext(s: State, rng: Rng) {
 }
 
 /* ---------- Final da vida ---------- */
-export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
+export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
 
 export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;

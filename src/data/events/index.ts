@@ -11,9 +11,10 @@ import { alto } from './alto';
 import { juventude } from './juventude';
 import { lote1Seita } from './lote1_seita';
 import { lote2Reinos } from './lote2_reinos';
+import { lote3Alquimia } from './lote3_alquimia';
 
 export const EVENTS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
   ...trilhas, ...mundo, ...alto, ...juventude,
-  ...lote1Seita, ...lote2Reinos,
+  ...lote1Seita, ...lote2Reinos, ...lote3Alquimia,
 ];

@@ -29,3 +29,17 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 - Provas: espelho, peso, três portas, silêncio; corrida contra o fechamento do reino; `rival_na_ruina` retoma a rivalidade de infância.
 
 **Resultado (4.000 vidas):** ascensão 1,1% (independente) e 1,9% (meta); todos os 23 eventos aparecem nos dois modos; nenhum item ou técnica novo foge do padrão (Olhar de Bai Ze, lendária, mostra +16 pp de reino relativo, mas com viés de sobrevivência e apenas ~2% das vidas).
+
+---
+
+## Lote 3 — Alquimia, ervas e forja
+**Pesquisa:** graus de pílulas (1–9), ervas com idade (100 e 1.000 anos), fornalhas encantadas que melhoram com o uso, ranks de alquimista; graus de artefatos (instrumento mágico → artefato → tesouro → tesouro espiritual) e as quatro etapas do refino (fundição, têmpera, forma, vínculo do espírito). Fontes: [Alchemy (xianxialitrpgwiki)](https://xianxialitrpgwiki.com/alchemy/), [Pill furnace](https://jiu-xing-ba-ti-jue-nine-star-hegemon-body-art.fandom.com/wiki/Pill_furnace), [Weapon Grades in Cultivation Fiction](https://xiuxian0.com/weapon-refining/weapon-grades-ranking/), [Weapon Refinement Method](https://btftliaw.fandom.com/wiki/Weapon_Refinement_Method_Cultivation_World_Type).
+
+**Entrou:** 24 eventos (`lote3_alquimia.ts`), 3 técnicas, 7 itens, 1 final (A Pílula Suprema), 1 conquista (Alquimista Absoluto).
+- Ervas: erva disputada, colheita sob a lua de prata, raiz de mil anos guardada, secagem de ervas.
+- Alquimia: fornalha herdada que cresce, receita perdida (→ flor onde o raio caiu), exame de Mestre, pílula envenenada, duelo de alquimistas, aprendiz (→ retorno), cura do Imperador, Pílula Sem Nome (lendário, com final).
+- Forja: arco do Artefato Natal em quatro etapas (fundição → têmpera → forma → vínculo do espírito, com ramo de falha), ferro celeste, espada que escuta, armadura de escamas, artefato amaldiçoado, leilão raro.
+
+**Calibração:** `finalChance` reduzido de 0,09 para 0,07 para manter margem (o modo meta estava em 2,0%).
+
+**Resultado (4.000 vidas):** ascensão 0,8% (independente) e 1,7% (meta); todos os eventos novos aparecem; os mais raros são `aprendiz_alquimista` e `aprendiz_retorna` (exigem alquimia + Mestre alquimista). O artefato natal e o Espelho de Bronze figuram entre os mais presentes nos mortos de reino alto, mas com ascensão dentro da média (viés de sobrevivência).

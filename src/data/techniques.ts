@@ -43,4 +43,9 @@ export const TECHNIQUES: Technique[] = [
   { id: 'sutra_espelho', name: 'Sutra do Espelho Quieto', grade: 3, desc: 'Ver a si mesmo sem se esconder.', stats: { dao: 1, comp: 1 }, tags: ['mente'] },
   { id: 'canto_jingwei', name: 'Canto da Ave Persistente', grade: 3, desc: 'A lição de quem nunca para de carregar pedras.', stats: { dao: 2 }, tags: ['mente', 'corpo'] },
   { id: 'olhar_bai_ze', name: 'Olhar de Bai Ze', grade: 4, desc: 'Conhecer o nome de cada espírito e de cada falha.', stats: { comp: 3 }, xpMult: 1.08, tags: ['mente', 'formacao'] },
+
+  // Lote 3: alquimia e forja
+  { id: 'fogo_coracao', name: 'Fogo do Coração Sereno', grade: 3, desc: 'A chama obedece ao pulso do alquimista.', xpMult: 1.04, tags: ['alquimia', 'qi'] },
+  { id: 'martelo_ressonante', name: 'Martelo Ressonante', grade: 2, desc: 'Cada golpe do martelo canta a nota do metal.', stats: { fis: 1 }, tags: ['forja', 'combate'] },
+  { id: 'selo_espirito_arma', name: 'Selo do Espírito da Arma', grade: 3, desc: 'Une espírito e lâmina, para que se completem.', stats: { dao: 1 }, tags: ['espada', 'combate', 'forja'] },
 ];

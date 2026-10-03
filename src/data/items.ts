@@ -80,4 +80,13 @@ export const ITEMS: Item[] = [
   { id: 'amuleto_nove_caudas', name: 'Amuleto das Nove Caudas', kind: 'artefato', grade: 3, desc: 'Pelo escarlate trançado, quente ao toque.', passive: { fis: 1, dao: 1, sor: 1 }, value: 130 },
   { id: 'escama_qilin', name: 'Escama de Qilin', kind: 'artefato', grade: 4, desc: 'Dourada, leve, rara demais para vender.', passive: { sor: 2, car: 1 }, value: 280 },
   { id: 'espelho_bronze', name: 'Espelho de Bronze Antigo', kind: 'artefato', grade: 2, desc: 'Mostra um pouco mais do que deveria.', passive: { comp: 1, dao: 1 }, value: 70 },
+
+  // Lote 3: alquimia e forja
+  { id: 'erva_lua_prata', name: 'Flor da Lua de Prata', kind: 'erva', grade: 3, desc: 'Qi lunar concentrado, colhido na hora certa.', use: { xp: 20 }, value: 90 },
+  { id: 'fornalha_bronze', name: 'Fornalha de Bronze Velho', kind: 'artefato', grade: 3, desc: 'Cada lote refinado a deixa mais sábia.', passive: { comp: 2 }, value: 160 },
+  { id: 'pilula_sem_nome', name: 'Pílula Sem Nome', kind: 'pilula', grade: 5, desc: 'Sem cor, sem forma, sem preço.', use: { xp: 60, vida: 40, stats: { comp: 2, dao: 2 } }, value: 900 },
+  { id: 'artefato_natal', name: 'Artefato Natal', kind: 'artefato', grade: 4, desc: 'Forjado e ligado ao seu espírito. Cresce com você.', passive: { fis: 2, esp: 2, dao: 1 }, value: 320 },
+  { id: 'artefato_natal_menor', name: 'Artefato Natal (imperfeito)', kind: 'artefato', grade: 3, desc: 'Falhas e orgulho, mas é seu.', passive: { fis: 1, esp: 1, dao: 1 }, value: 140 },
+  { id: 'lingote_celeste', name: 'Lingote de Ferro Celeste', kind: 'misc', grade: 4, desc: 'Metal caído do céu, quente ao toque.', value: 220 },
+  { id: 'armadura_escamas', name: 'Armadura de Escamas de Besta', kind: 'artefato', grade: 3, desc: 'Leve, escura e quase viva.', passive: { fis: 3 }, value: 180 },
 ];
