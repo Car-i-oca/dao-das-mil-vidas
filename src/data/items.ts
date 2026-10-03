@@ -65,4 +65,11 @@ export const ITEMS: Item[] = [
   { id: 'manual_agulha_alma', name: 'Manual: Agulha de Alma', kind: 'manual', grade: 2, desc: 'Poucos caracteres, muitíssimo cuidado.', use: { tecnica: ['agulha_de_alma'] }, value: 70 },
   { id: 'manual_punho_vajra', name: 'Manual: Punho do Vajra', kind: 'manual', grade: 2, desc: 'Impresso em papel de templo.', use: { tecnica: ['punho_vajra'] }, value: 65 },
   { id: 'manual_estrelas', name: 'Manual: Arranjo das Sete Estrelas', kind: 'manual', grade: 3, desc: 'Mapas estelares e muitos cálculos.', use: { tecnica: ['formacao_estrelas'] }, value: 210 },
+
+  // Lote 1: vida na seita
+  { id: 'pilula_merito', name: 'Pílula do Mérito', kind: 'pilula', grade: 2, desc: 'Troco de pontos de mérito; sabor de chá velho.', use: { xp: 12, stats: { dao: 1 } }, value: 30 },
+  { id: 'manto_nucleo', name: 'Manto do Discípulo do Núcleo', kind: 'artefato', grade: 3, desc: 'Escuro, bordado a prata. Abre portas e olhares.', passive: { car: 2, dao: 1 }, value: 150 },
+  { id: 'jade_identidade', name: 'Jade de Identidade', kind: 'misc', grade: 2, desc: 'Prova de confiança entre mestres e alunos.', passive: { car: 1 }, value: 40 },
+  { id: 'pergaminho_anciao', name: 'Pergaminho do Ancião', kind: 'manual', grade: 3, desc: 'Notas de um Ancião sobre o próprio caminho.', use: { tecnica: ['sutra_do_anciao'] }, value: 180 },
+  { id: 'manual_guarda_portao', name: 'Manual: Guarda do Portão', kind: 'manual', grade: 2, desc: 'Ilustrações de posturas e respiração.', use: { tecnica: ['guarda_do_portao'] }, value: 60 },
 ];

@@ -9,8 +9,10 @@ import { trilhas } from './trilhas';
 import { mundo } from './mundo';
 import { alto } from './alto';
 import { juventude } from './juventude';
+import { lote1Seita } from './lote1_seita';
 
 export const EVENTS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
   ...trilhas, ...mundo, ...alto, ...juventude,
+  ...lote1Seita,
 ];

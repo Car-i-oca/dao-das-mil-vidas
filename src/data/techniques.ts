@@ -32,4 +32,9 @@ export const TECHNIQUES: Technique[] = [
   { id: 'devorador_de_almas', name: 'Sutra do Devorador de Almas', grade: 3, desc: 'Poder roubado, nunca pago.', xpMult: 1.25, tags: ['demonio', 'combate'] },
   { id: 'passo_vento_nove', name: 'Nove Passos do Vento', grade: 2, desc: 'Nove passos e você já estava lá.', stats: { sor: 1 }, tags: ['fuga'] },
   { id: 'sutra_ceu_vazio', name: 'Sutra do Céu Vazio', grade: 3, desc: 'Quem nada carrega, nada o carrega.', stats: { dao: 2, esp: 1 }, tags: ['mente'] },
+
+  // Lote 1: vida na seita
+  { id: 'respiracao_coletiva', name: 'Respiração Coletiva', grade: 2, desc: 'Une sua respiração à do pavilhão inteiro.', xpMult: 1.08, tags: ['qi'] },
+  { id: 'guarda_do_portao', name: 'Guarda do Portão', grade: 2, desc: 'Pés plantados, coração firme: ninguém passa.', stats: { fis: 1 }, tags: ['corpo', 'combate'] },
+  { id: 'sutra_do_anciao', name: 'Sutra do Ancião Recluso', grade: 3, desc: 'Um método antigo, escrito à mão e passado em segredo.', stats: { dao: 2 }, tags: ['mente'] },
 ];

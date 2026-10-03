@@ -21,7 +21,7 @@ export const seita: GameEvent[] = [
     ],
   },
   {
-    id: 'prova_discipulo_interno', title: 'A Prova dos Discípulos Internos', rarity: 'comum', once: true,
+    id: 'prova_discipulo_interno', title: 'A Prova dos Discípulos Internos', rarity: 'comum', once: true, weight: 3,
     cond: { tierMin: 1, faction: ['seita'], flags: ['discipulo_externo'], noFlags: ['discipulo_interno'] },
     text: 'A cada poucos anos, a {seita} abre vagas para o círculo interno. A prova é dura e quem passa ganha acesso a mestres e recursos.',
     choices: [
@@ -39,7 +39,7 @@ export const seita: GameEvent[] = [
     ],
   },
   {
-    id: 'mestre_ve_talento', title: 'O Olhar do Mestre', rarity: 'raro', once: true,
+    id: 'mestre_ve_talento', title: 'O Olhar do Mestre', rarity: 'raro', once: true, weight: 4,
     cond: { tierMin: 1, tierMax: 4, faction: ['seita'], flags: ['discipulo_interno'], noFlags: ['mestre_protetor'] },
     text: 'O Mestre {mentor} passa por você no pátio e para. "Você tem algo", diz, e o olha como quem avalia uma espada.',
     choices: [
