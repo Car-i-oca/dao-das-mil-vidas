@@ -99,7 +99,7 @@ for (const ev of EVENTS) {
 }
 for (const i of ITEMS) lintText(`item ${i.id}`, i.desc, 120);
 for (const t of TECHNIQUES) lintText(`técnica ${t.id}`, t.desc, 120);
-for (const e of ENDINGS) lintText(`final ${e.id}`, e.text, 400);
+for (const e of ENDINGS) { lintText(`final ${e.id}`, e.text, 400); (e.alt ?? []).forEach((a, i) => lintText(`final ${e.id} (variação ${i + 1})`, a, 400)); }
 const names = new Map<string, string>();
 for (const x of [...ITEMS.map((i) => ({ id: 'item ' + i.id, name: i.name })), ...TECHNIQUES.map((t) => ({ id: 'técnica ' + t.id, name: t.name }))]) {
   if (names.has(x.name)) warnings.push(`nome repetido: "${x.name}" (${names.get(x.name)} e ${x.id})`);

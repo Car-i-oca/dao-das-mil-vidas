@@ -152,6 +152,8 @@ export interface Ending {
   text: string;
   /** Multiplicador de pontos de Herança. */
   legacy: number;
+  /** Variações do epitáfio (uma é sorteada pelo nome e pela idade). */
+  alt?: string[];
 }
 
 export interface Origin {

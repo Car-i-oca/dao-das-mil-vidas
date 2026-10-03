@@ -187,7 +187,11 @@ function noteFound(s: State, kind: 'items' | 'techs', id: string) {
 export function endLife(s: State, id: string) {
   if (s.ending) return;
   s.ending = id;
-  s.endingText = fill(s, ENDING[id].text);
+  const end = ENDING[id];
+  const variants = [end.text, ...(end.alt ?? [])];
+  let h = 0;
+  for (const ch of `${s.name}${Math.floor(s.age)}${s.tier}`) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  s.endingText = fill(s, variants[h % variants.length]);
   s.current = null;
 }
 

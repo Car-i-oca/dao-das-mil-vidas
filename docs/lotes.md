@@ -154,3 +154,5 @@ Achados e correções:
 - **Onboarding** de primeira vez ("Como jogar", cinco linhas), que some ao tocar em "Entendi".
 - **Técnicas detalhadas** na aba Status: grau, descrição e efeitos (atributos, cultivo, bônus em testes).
 - **Marcos da vida** na tela final: nascimento, trilha e cada reino alcançado, com a idade.
+
+- **Epitáfios variados:** os finais mais comuns (velhice, combate, tribulação, desvio de Qi, vida comum) ganharam 2 a 4 variações de texto; a escolhida depende do nome e da idade do personagem, então a mesma vida sempre termina com o mesmo texto, mas vidas diferentes não repetem o epitáfio. O linter também confere as variações.

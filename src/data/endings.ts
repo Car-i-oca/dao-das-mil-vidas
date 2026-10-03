@@ -1,13 +1,30 @@
 import type { Ending, Achievement, State } from '../types';
 
 export const ENDINGS: Ending[] = [
-  { id: 'velhice', name: 'Fim em Paz', legacy: 1, text: 'Os anos acabaram como acabam todas as velas. {nome} fechou os olhos ouvindo o vento e entendeu que a chama era menos importante que a luz que deixou.' },
-  { id: 'combate', name: 'Morte em Combate', legacy: 0.8, text: 'A lâmina chegou antes da resposta. {nome} caiu com os olhos abertos, e o chão, que já bebeu mais sangue de gênios que de tolos, aceitou mais um nome.' },
-  { id: 'tribulacao', name: 'Cinzas da Tribulação', legacy: 1.2, text: 'O céu perguntou, {nome} respondeu, e o raio discordou. Restou apenas um clarão e um nome que professores usariam para assustar discípulos.' },
+  { id: 'velhice', name: 'Fim em Paz', legacy: 1, alt: [
+    'Nenhum raio, nenhuma lâmina, nenhum demônio. Apenas o tempo, que vence todos sem pressa. {nome} sorriu para o teto de madeira, lembrou do cheiro da chuva em {vila} e deixou de lembrar.',
+    'Os discípulos esperaram à porta, em silêncio. Dentro, {nome} terminou o chá, fechou os olhos e confiou o resto ao Céu. O chá ainda estava morno quando abriram a porta.',
+    'A última coisa que {nome} sentiu foi a respiração ficando mais longa, mais lenta, até se confundir com o vento. Estava, afinal, em harmonia com o que sempre buscou.',
+    'Antes do fim, {nome} contou a quem quis ouvir o que aprendeu: pouco, quase nada, e o suficiente. A velhice não foi derrota; foi o capítulo em que o livro se fechou sem se rasgar.',
+  ], text: 'Os anos acabaram como acabam todas as velas. {nome} fechou os olhos ouvindo o vento e entendeu que a chama era menos importante que a luz que deixou.' },
+  { id: 'combate', name: 'Morte em Combate', legacy: 0.8, alt: [
+    '{nome} ainda tentou levantar, mas as pernas já não pertenciam a este mundo. O último golpe veio de um inimigo que, anos depois, não saberia dizer por que o ódio não valeu a pena.',
+    'O silêncio depois da luta foi estranho. {nome} olhou o céu, viu uma nuvem passando, e achou que era uma boa nuvem para ser a última.',
+  ], text: 'A lâmina chegou antes da resposta. {nome} caiu com os olhos abertos, e o chão, que já bebeu mais sangue de gênios que de tolos, aceitou mais um nome.' },
+  { id: 'tribulacao', name: 'Cinzas da Tribulação', legacy: 1.2, alt: [
+    'O terceiro raio chegou antes do pensamento. Em volta do clarão, as nuvens se abriram, como quem espia, e se fecharam, como quem desiste. O vale guardou o cheiro de ozônio por um ano.',
+    '{nome} subiu ao cume com o coração firme, e ouviu uma pergunta no trovão. A resposta que deu foi sincera, e o Céu, que respeita sinceridade, não a perdoou.',
+  ], text: 'O céu perguntou, {nome} respondeu, e o raio discordou. Restou apenas um clarão e um nome que professores usariam para assustar discípulos.' },
   { id: 'ascensao', name: 'Ascensão', legacy: 3, text: 'As nuvens se abriram em degraus. {nome} subiu sem olhar para trás, deixando o mundo mortal com uma lenda a mais e um cultivador a menos.' },
   { id: 'demonio', name: 'Caminho Demoníaco', legacy: 1.3, text: 'O poder chegou antes do arrependimento. {nome} sorriu com dentes que já não eram seus, e o mundo passou a falar o seu nome em voz baixa.' },
-  { id: 'mortal', name: 'Vida Comum', legacy: 0.9, text: '{nome} nunca atravessou o portão, ou atravessou e voltou. Teve filhos, hortas e um chá quente. Quem sabe o Dao esteja justamente aí.' },
-  { id: 'desvio', name: 'Desvio de Qi', legacy: 0.9, text: 'O Qi quebrou as margens. {nome} sentiu cada meridiano virar rio e cada rio virar fogo, até o silêncio ser a única coisa estável.' },
+  { id: 'mortal', name: 'Vida Comum', legacy: 0.9, alt: [
+    'Dizem que {nome} sonhava, quando jovem, com espadas e nuvens. Aos oitenta, sonhava com a horta. Nenhum dos dois sonhos foi desperdício.',
+    'Quem passava pela casa de {nome}, em {vila}, via sempre uma panela no fogo e uma cadeira vazia para visitas. O Dao, talvez, passasse por ali mais vezes do que se imagina.',
+  ], text: '{nome} nunca atravessou o portão, ou atravessou e voltou. Teve filhos, hortas e um chá quente. Quem sabe o Dao esteja justamente aí.' },
+  { id: 'desvio', name: 'Desvio de Qi', legacy: 0.9, alt: [
+    'Havia um som, um zumbido, uma doçura quente subindo pelo braço. {nome} reconheceu os sinais tarde demais e, mesmo assim, ainda tentou respirar fundo.',
+    'O meridiano rompeu primeiro; o resto foi consequência. Os que encontraram {nome} disseram que o rosto estava calmo, o que talvez fosse o mais cruel de tudo.',
+  ], text: 'O Qi quebrou as margens. {nome} sentiu cada meridiano virar rio e cada rio virar fogo, até o silêncio ser a única coisa estável.' },
   { id: 'fundador', name: 'Fundador de Seita', legacy: 1.8, text: 'Séculos depois, discípulos que nunca viram {nome} ainda recitavam seus ensinamentos. A seita ergueu um pavilhão em seu nome e ninguém lembrava o rosto.' },
   { id: 'karma', name: 'A Dívida Cobrada', legacy: 1, text: 'Toda semente plantada em sangue dá fruto. {nome} descobriu, tarde demais, que o karma tem paciência e boa memória.' },
   { id: 'amor', name: 'Fio Vermelho', legacy: 1.3, text: '{nome} trocou a eternidade por uma casa pequena com uma pessoa dentro. Quando a vida acabou, não havia dúvida de que foi um bom negócio.' },
