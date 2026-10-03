@@ -91,13 +91,13 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
 
 /** Bônus de Herança do Dao compráveis. O preço sobe a cada nível (ver upgradePrice). */
 export const UPGRADES = [
-  { id: 'corpo', name: 'Alicerce Corporal', desc: '+1 Físico inicial por nível', max: 6, cost: 14 },
-  { id: 'mente', name: 'Mente Clara', desc: '+1 Compreensão inicial por nível', max: 6, cost: 14 },
-  { id: 'destino', name: 'Fio do Destino', desc: '+1 Sorte inicial por nível', max: 6, cost: 20 },
-  { id: 'ritmo', name: 'Ritmo do Dao', desc: '+3% de cultivo por nível', max: 8, cost: 18 },
+  { id: 'corpo', name: 'Alicerce Corporal', desc: '+1 Físico inicial por nível', max: 5, cost: 14 },
+  { id: 'mente', name: 'Mente Clara', desc: '+1 Compreensão inicial por nível', max: 5, cost: 14 },
+  { id: 'destino', name: 'Fio do Destino', desc: '+1 Sorte inicial por nível', max: 5, cost: 20 },
+  { id: 'ritmo', name: 'Ritmo do Dao', desc: '+2% de cultivo por nível', max: 6, cost: 18 },
   { id: 'bolso', name: 'Herança de Pedras', desc: '+10 Pedras Espirituais iniciais por nível', max: 10, cost: 8 },
   { id: 'sorteio', name: 'Mais Destinos', desc: '+1 re-sorteio na criação do personagem por nível', max: 3, cost: 80 },
-  { id: 'memoria', name: 'Memória de Vidas Passadas', desc: '+1% de chance em todos os testes por nível', max: 5, cost: 90 },
+  { id: 'memoria', name: 'Memória de Vidas Passadas', desc: '+0,8% de chance em todos os testes por nível', max: 4, cost: 90 },
 ] as const;
 
 /** Preço do próximo nível: cresce com o nível atual. */

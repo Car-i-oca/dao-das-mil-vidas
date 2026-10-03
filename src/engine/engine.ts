@@ -51,7 +51,7 @@ function xpMult(s: State): number {
   let m = PATH[s.path].xpMult * s.root.mult * (TALENT[s.talent].xpMult ?? 1) * (FLAW[s.flaw].xpMult ?? 1);
   if (s.constitution) m *= CONSTITUTION[s.constitution].xpMult ?? 1;
   for (const t of s.techniques) m *= TECH[t]?.xpMult ?? 1;
-  return m * (1 + 0.03 * s.legacyBonus.xp);
+  return m * (1 + 0.02 * s.legacyBonus.xp);
 }
 
 export function cultivationRate(s: State): number {
@@ -113,7 +113,7 @@ export function checkChance(s: State, ch: Check): number {
       if (tech?.tags?.includes(ch.tag)) total += tech.grade;
     }
   }
-  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.01;
+  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008;
   return Math.min(0.95, Math.max(0.05, p));
 }
 

@@ -110,4 +110,10 @@ export const ITEMS: Item[] = [
   // Lote 7: regressão, Registro Celeste e destino
   { id: 'pena_registro', name: 'Pena do Registro Celeste', kind: 'misc', grade: 3, desc: 'Leve como luz; anota o que você faz, e o que deixou de fazer.', use: { xp: 12, stats: { comp: 1 } }, value: 70 },
   { id: 'fio_destino_vermelho', name: 'Fio Dourado do Destino', kind: 'artefato', grade: 3, desc: 'Entrelaçado por um tecelão que nunca dorme.', passive: { sor: 2, car: 1 }, value: 170 },
+
+  // Lote 9: identidade das trilhas
+  { id: 'bastao_ferro_frio', name: 'Bastão de Chifre de Touro', kind: 'artefato', grade: 2, desc: 'Pesado, escuro, ótimo para temperar ossos.', passive: { fis: 2 }, value: 70 },
+  { id: 'lamina_vento_sul', name: 'Lâmina do Vento do Sul', kind: 'artefato', grade: 3, desc: 'Guarda a memória de um mestre que nunca perdeu um duelo.', passive: { fis: 1, dao: 1, esp: 1 }, value: 170 },
+  { id: 'cristal_formacao', name: 'Cristal de Formação', kind: 'artefato', grade: 2, desc: 'Presente de uma seita pequena: guarda um traço de formação.', passive: { comp: 1, esp: 1 }, value: 80 },
+  { id: 'frasco_antidotos', name: 'Frasco dos Nove Antídotos', kind: 'pilula', grade: 3, desc: 'Desfaz quase qualquer toxina, e cura o resto.', use: { ferida: -5, vida: 10 }, value: 90 },
 ];

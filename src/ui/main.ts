@@ -14,9 +14,9 @@ import { ENDINGS } from '../data/endings';
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number }
+interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1 };
+  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -200,11 +200,25 @@ function renderGame() {
 
 const RAR_LABEL: Record<string, string> = { raro: 'Raro', lendario: 'Lendário' };
 
+const INTRO_HTML = `<div class="card intro">
+  <b>Como jogar</b>
+  <ul>
+    <li>Cada acontecimento traz escolhas. Quando há uma porcentagem, é a <b>chance de sucesso</b>, influenciada pelos seus atributos.</li>
+    <li>Depois de escolher, as <b>etiquetas</b> mostram o que mudou: verde é bom, vermelho é ruim.</li>
+    <li>O tempo passa sozinho. Quando a barra de cultivo encher, você tentará <b>romper o gargalo</b>.</li>
+    <li>Abas: <b>Status</b> (atributos e técnicas), <b>Mochila</b> (itens), <b>Diário</b> (sua história).</li>
+    <li>Sua trilha de cultivo aparecerá na história, depois do despertar. Ao morrer, você ganha <b>Herança do Dao</b> para as próximas vidas.</li>
+  </ul>
+  <button class="btn" data-act="intro">Entendi</button>
+</div>`;
+
 function lifeHtml(s: State): string {
   const v = view(s);
+  const intro = !save.settings.intro && s.turn < 2 ? INTRO_HTML : '';
   if (v.kind === 'result' || v.kind === 'ending') {
     const chk = s.result?.check;
     return `
+      ${intro}
       <div class="card story" data-act="skip">
         ${chk ? `<span class="badge ${chk.success ? 'ok' : 'bad'}">${chk.success ? '✔ Sucesso' : '✘ Falha'} · ${pct(chk.chance)}</span>` : ''}
         <p class="story-text" id="typed"></p>
@@ -216,6 +230,7 @@ function lifeHtml(s: State): string {
       </div>`;
   }
   return `
+    ${intro}
     <div class="card story" data-act="skip">
       <div class="ev-title">${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
       <p class="story-text" id="typed"></p>
@@ -248,7 +263,13 @@ function statusHtml(s: State): string {
     const base = s.stats[k];
     return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
-  const techs = s.techniques.map((t) => `<span class="pill g${TECH[t].grade}" title="${esc(TECH[t].desc)}">${esc(TECH[t].name)}</span>`).join('') || '<span class="muted">Nenhuma</span>';
+  const GRADE = ['', 'Mortal', 'Terra', 'Céu', 'Divino'];
+  const techEffects = (t: (typeof TECH)[string]) => [
+    ...Object.entries(t.stats ?? {}).map(([k, v]) => `${(v as number) > 0 ? '+' : ''}${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`),
+    ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
+    ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
+  ].join(' · ');
+  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech"><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span><div class="small">${esc(t.desc)}</div><div class="muted small">${esc(techEffects(t))}</div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
   const fac: Record<string, string> = { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
@@ -293,6 +314,11 @@ function logHtml(s: State): string {
   return `<div class="card">${[...s.log].reverse().map((l) => `<div class="log-entry"><span class="a">${l.age}a</span><span>${esc(l.text)}</span></div>`).join('')}</div>`;
 }
 
+function milestones(s: State): string {
+  const rows = s.log.filter((l, i) => i === 0 || /^(Alcançou o reino|Encontrou seu método)/.test(l.text));
+  return rows.map((l) => `<div class="log-entry"><span class="a">${l.age}a</span><span>${esc(l.text)}</span></div>`).join('');
+}
+
 function renderEnd() {
   const s = save.run!;
   const meta = save.meta;
@@ -313,6 +339,7 @@ function renderEnd() {
         <span>Técnicas</span><b>${s.techniques.length}</b>
         <span>Herança do Dao</span><b style="color:var(--gold)">+${sm.legacy}</b>
       </div>
+      <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
       <details class="card"><summary>Diário da vida (${s.log.length})</summary>${logHtml(s).replace('class="card"', '')}</details>
       <button class="btn primary" data-act="new">Nova vida</button>
@@ -435,6 +462,7 @@ app.addEventListener('click', (ev) => {
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
     case 'font': save.settings.font = Number(target.dataset.i); applySettings(); persist(); render(); break;
+    case 'intro': save.settings.intro = true; persist(); render(); break;
     case 'share': {
       if (!s?.ending) break;
       const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Dao das Mil Vidas'].join('\n');

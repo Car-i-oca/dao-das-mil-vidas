@@ -66,4 +66,15 @@ export const TECHNIQUES: Technique[] = [
   { id: 'memoria_vida_passada', name: 'Memória de Mão Antiga', grade: 2, desc: 'Selos que o corpo lembra, mesmo quando a mente esquece.', stats: { comp: 1 }, tags: ['mente', 'formacao'] },
   { id: 'olho_registro', name: 'Olho do Registro', grade: 3, desc: 'Ler a anotação em branco ao lado do próprio nome.', stats: { comp: 2 }, tags: ['mente', 'formacao'] },
   { id: 'passo_destino', name: 'Passo Sem Fio', grade: 3, desc: 'Andar fora do traçado que alguém desenhou para você.', stats: { sor: 2 }, tags: ['fuga', 'mente'] },
+
+  // Lote 9: identidade das trilhas
+  { id: 'respiracao_cem_ciclos', name: 'Ciclo de Cem Respirações', grade: 3, desc: 'Cem respirações, nenhuma igual; um fôlego do tamanho de um rio.', stats: { esp: 1 }, xpMult: 1.06, tags: ['qi'] },
+  { id: 'pele_de_bronze', name: 'Pele de Bronze', grade: 2, desc: 'A pele escurece, brilha e aguenta golpes de tijolo.', stats: { fis: 2 }, tags: ['corpo', 'combate'] },
+  { id: 'intencao_lamina', name: 'Intenção da Lâmina', grade: 3, desc: 'Cortar a vontade do golpe antes de ele nascer.', stats: { dao: 2 }, tags: ['espada', 'combate'] },
+  { id: 'selo_da_consciencia', name: 'Selo da Consciência', grade: 3, desc: 'Ler e agir sobre almas, com cuidado e culpa.', stats: { esp: 2 }, tags: ['mente', 'combate'] },
+  { id: 'formacao_labirinto', name: 'Labirinto das Mil Voltas', grade: 3, desc: 'O mesmo caminho repetido até quem entra desistir.', stats: { comp: 1 }, tags: ['formacao', 'combate'] },
+  { id: 'sutra_coracao_diamante', name: 'Sutra do Coração de Diamante', grade: 3, desc: 'Tudo é ilusão, inclusive o sutra. E isso basta.', stats: { dao: 2 }, tags: ['mente'] },
+  { id: 'mestre_antidotos', name: 'Arte dos Antídotos', grade: 2, desc: 'Desfazer o que se sabe fazer.', stats: { comp: 1 }, tags: ['veneno', 'alquimia'] },
+  { id: 'voz_das_feras', name: 'Voz das Feras', grade: 3, desc: 'Uma voz baixa e vasta que lobos, pássaros e serpentes entendem.', stats: { esp: 1, car: 1 }, tags: ['besta'] },
+  { id: 'chama_sangue_negro', name: 'Chama do Sangue Negro', grade: 3, desc: 'Fogo preto que só acende em quem já passou do ponto sem volta.', xpMult: 1.1, tags: ['demonio', 'combate'] },
 ];

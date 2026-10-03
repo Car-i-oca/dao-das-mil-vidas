@@ -129,3 +129,28 @@ Achados e correções:
 - **Reino que "mudava de nome" depois da cena de trilha** (ex.: "Refinamento de Qi" virava "Terceira Classe"): quem despertou e ainda não tem trilha usa agora a escada neutra "Qi Despertado"; ao adotar a trilha, o reino ganha o nome definitivo e aparece um chip informativo.
 - **Textos de rompimento e de "acumular anos" repetidos palavra por palavra:** agora há 2 a 4 variações para sucesso, falha, falha com ferimento e espera.
 - `finalChance` ajustado de 0,05 para 0,055. Com 10.000 vidas: ascensão 0,6% (independente) e 1,8% (meta).
+
+---
+
+## Lote 8 — Infância e juventude mortal
+**Pesquisa:** inícios humildes (filho de camponeses, órfão), despertares súbitos, linhagens ocultas e marcas de nascença. Fontes: [Spirit Cultivation Genre (TV Tropes)](https://tvtropes.org/pmwiki/pmwiki.php/Main/SpiritCultivationGenre), [Top 10 Most Overused Xianxia Tropes](https://lightnovelsai.com/blog/most-overused-xianxia-tropes/), [The Xianxia Handbook](https://www.webnovel.com/book/the-xianxia-handbook-a-guide-to-cultivation-and-beyond_33320064000358805/basic-introduction-of-chinese-fantasy_89458315674840787).
+
+**Motivo:** a análise de cobertura mostrou só 30 eventos livres antes do despertar (a infância era a fase mais fina do jogo).
+
+**Entrou:** 25 eventos (`lote8_juventude.ts`), todos antes do despertar: colheita, o cão da estrada (→ `cao_envelhece`), estrela cadente, a respiração da avó, noite dos bandidos, aprendiz de curandeira, feira do templo, poço assombrado, carpa dourada, carta do pai, marca de nascença (→ `marca_desperta`, linhagem oculta), viajante hospedado, dia de mercado, casamento na vila, enchente, recrutador do exército, tio que não despertou, primeiro amor (→ `amor_decisao`), jogo de go, incêndio no celeiro, sonho de queda e tarefas da casa. Dois são repetíveis de propósito (dia de mercado, tarefas da casa) para reduzir a repetição de "Dias de Trabalho".
+
+## Lote 9 — Identidade das trilhas
+**Pesquisa:** caminhos clássicos (têmpera de ossos no corpo, intenção na espada, arranjos de formação, pactos com feras). Fontes: [Major Cultivation Paths & Martial Classes](https://cultivationgames.com/wiki/cultivation-path/), [Body Refinement](https://xiuxian0.com/cultivation/body-refinement-path/), [Extended Cultivation Encyclopedia](https://xianxialitrpgwiki.com/cultivation-encyclopedia/), [Cultivation Types & Techniques](https://www.novelupdatesforum.com/threads/cultivation-types-techniques.141079/).
+
+**Motivo:** a análise mostrou trilhas muito desiguais em eventos próprios (Alquimia 18; Sopro 4, Corpo 4, Bestas 3, Sangue 1).
+
+**Entrou:** 32 eventos (`lote9_trilhas.ts`), 9 técnicas, 4 itens. Sopro (ciclos do ano, mar de nuvens, tempestade interna, mestre do vento); Corpo (têmpera, nascente mineral, touro de ferro, pele de bronze); Espada (folha, duelo na neve, cemitério de espadas, intenção); Consciência (sonho lúcido, espírito visitante, selo); Formações (labirinto, nó do veio, torneio); Mérito (esmola, demônio no templo, sutra do diamante); Venenos (antídoto universal, banquete do barão, mestre dos antídotos); Bestas (ninhada de lobos, caça, evolução, voz das feras, Rei da Floresta); Sangue (irmãos de sangue, duelo do fraco, chama negra, trabalho sujo).
+
+**Calibração (os dois lotes juntos):** o modo meta subiu para 2,3% de ascensão. Em vez de mexer só no reino final, reduzi o poder das melhorias de Herança (cultivo +3% → +2% por nível; chance em testes +1% → +0,8%; níveis máximos 6→5, 8→6 e 5→4) e `finalChance` 0,065. Resultado (8.000 vidas): ascensão 0,6% (independente) e 1,9% (meta).
+
+**Resultado:** 397 eventos, 89 itens, 58 técnicas, 23 finais, 10 trilhas. No modo meta todos os eventos aparecem; no independente, ficam de fora apenas os que dependem de desbloqueio (Alma Reencarnada, Neto de Alquimista, Rebento Demoníaco, Regressor e a trilha do Sangue).
+
+## Ciclo de melhorias 3 (interface)
+- **Onboarding** de primeira vez ("Como jogar", cinco linhas), que some ao tocar em "Entendi".
+- **Técnicas detalhadas** na aba Status: grau, descrição e efeitos (atributos, cultivo, bônus em testes).
+- **Marcos da vida** na tela final: nascimento, trilha e cada reino alcançado, com a idade.
