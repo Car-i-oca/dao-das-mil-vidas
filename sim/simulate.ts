@@ -204,7 +204,7 @@ function formatRun(run: Run): string {
     const usedTalents = TALENTS.filter((t) => run.talentUse[t.id]).length;
     L.push('', `Origens usadas: ${usedOrigins}/${ORIGINS.length} · Talentos usados: ${usedTalents}/${TALENTS.length}`);
   }
-  const GATED_FLAGS = ['reencarnado', 'regressor', 'sangue_demoniaco', 'avo_alquimista'];
+  const GATED_FLAGS = ['reencarnado', 'regressor', 'sangue_demoniaco', 'avo_alquimista', 'tem_eco'];
   const gated = EVENTS.filter((e) => e.cond?.flags?.some((f) => GATED_FLAGS.includes(f))).map((e) => e.id);
   L.push('', `**Eventos que dependem de desbloqueio** (ocorrências): ${gated.map((id) => `${id} (${run.events[id] ?? 0})`).join(', ')}.`);
   {

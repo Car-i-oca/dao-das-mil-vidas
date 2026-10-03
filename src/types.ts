@@ -241,6 +241,8 @@ export interface State {
   current: { id: string; breakthrough?: boolean } | null;
   /** Resultado exibido após uma escolha. */
   result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[] } | null;
+  /** Dificuldade escolhida: -1 calmo, 0 normal, 1 desafio. */
+  dif?: number;
   /** Técnicas e itens já obtidos nesta vida (alimenta o Códice). */
   found?: { items: string[]; techs: string[] };
   ending: string | null;
@@ -265,5 +267,5 @@ export interface Meta {
   lives: number;
   best: { tier: number; age: number; ending: string } | null;
   endingsSeen: string[];
-  history: { name: string; path: string; tierName: string; age: number; ending: string }[];
+  history: { name: string; path: string; tierName: string; age: number; ending: string; techName?: string }[];
 }

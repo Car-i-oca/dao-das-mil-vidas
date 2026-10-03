@@ -14,9 +14,9 @@ import { ENDINGS } from '../data/endings';
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean }
+interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false };
+  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -68,6 +68,7 @@ const SPEED_NAMES = ['Instantâneo', 'Rápido', 'Normal', 'Lento'];
 const PLACE_NAMES: Record<string, string> = { vilarejo: 'Vilarejo', cidade: 'Cidade', seita: 'Seita', selva: 'Selva espiritual', montanha: 'Montanhas sagradas', ruinas: 'Ruínas', deserto: 'Deserto do Vento Cego', gelo: 'Planície de Gelo Silencioso', mar: 'Mar das Mil Ilhas' };
 const THEME_NAMES: [Settings['theme'], string][] = [['auto', 'Automático'], ['claro', 'Claro'], ['escuro', 'Escuro']];
 const FONT_NAMES = ['Pequena', 'Média', 'Grande'];
+const DIFFICULTIES: [number, string, string][] = [[-1, 'Calma', 'Mais chance nos testes; menos Herança'], [0, 'Normal', 'Equilíbrio padrão'], [1, 'Desafio', 'Menos chance nos testes; mais Herança']];
 
 function applySettings() {
   const r = document.documentElement;
@@ -166,6 +167,7 @@ function renderCreate() {
         <div class="k">Defeito</div><div class="v"><b>${esc(f.name)}</b><br><span class="muted small">${esc(f.desc)}</span></div>
       </div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
+      <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
       <p class="muted small">Sua trilha de cultivo não é escolhida agora: um mestre, um manual ou um acaso a revelará depois que o Qi despertar. Você decide dentro da história.</p>
       <button class="btn primary" data-act="start">Iniciar vida</button>
     </div>`;
@@ -284,6 +286,7 @@ function statusHtml(s: State): string {
         <div class="k">Talento</div><div class="v">${esc(TALENT[s.talent].name)}</div>
         <div class="k">Defeito</div><div class="v">${esc(FLAW[s.flaw].name)}</div>
         <div class="k">Facção</div><div class="v">${fac[s.faction]}</div>
+        <div class="k">Dificuldade</div><div class="v">${(DIFFICULTIES.find(([v]) => v === (s.dif ?? 0)) ?? DIFFICULTIES[1])[1]}</div>
         <div class="k">Local</div><div class="v">${PLACE_NAMES[s.place] ?? s.place}</div>
       </div>
     </div>
@@ -405,6 +408,7 @@ function startRun() {
   if (!creation) return;
   const seed = (Math.random() * 4294967295) >>> 0;
   save.run = startLife(save.meta, creation.c, '', seed);
+  save.run.dif = save.settings.difficulty;
   creation = null;
   tab = 'vida';
   screen = 'game';
@@ -464,6 +468,7 @@ app.addEventListener('click', (ev) => {
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
     case 'font': save.settings.font = Number(target.dataset.i); applySettings(); persist(); render(); break;
+    case 'dif': save.settings.difficulty = Number(target.dataset.i); persist(); render(); break;
     case 'intro': save.settings.intro = true; persist(); render(); break;
     case 'share': {
       if (!s?.ending) break;

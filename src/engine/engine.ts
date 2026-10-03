@@ -72,7 +72,11 @@ export function fill(s: State, text: string): string {
     .replace(/\{cla\}/g, s.names.cla)
     .replace(/\{vila\}/g, s.names.vila)
     .replace(/\{idade\}/g, String(Math.floor(s.age)))
-    .replace(/\{reino\}/g, realmName(s));
+    .replace(/\{reino\}/g, realmName(s))
+    .replace(/\{eco_final\}/g, s.names.eco_final ?? '')
+    .replace(/\{eco_trilha\}/g, s.names.eco_trilha ?? '')
+    .replace(/\{eco_tecnica\}/g, s.names.eco_tecnica ?? '')
+    .replace(/\{eco\}/g, s.names.eco ?? '');
 }
 
 export function condMet(s: State, c?: Cond): boolean {
@@ -113,7 +117,7 @@ export function checkChance(s: State, ch: Check): number {
       if (tech?.tags?.includes(ch.tag)) total += tech.grade;
     }
   }
-  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008;
+  const p = 0.5 + (total - checkDifficulty(s, ch)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
   return Math.min(0.95, Math.max(0.05, p));
 }
 
@@ -158,12 +162,20 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     rival: personName(rng), mentor: personName(rng), amigo: personName(rng), noivo: personName(rng),
     seita: sectName(rng), cla: clanName(rng), vila: villageName(rng),
   };
+  // Eco da vida anterior: quem você foi vira lenda neste mundo.
+  const last = meta.history[0];
+  if (last) {
+    names.eco = last.name;
+    names.eco_final = last.ending;
+    names.eco_trilha = last.path;
+    names.eco_tecnica = last.techName ?? 'um método simples de respiração';
+  }
   const s: State = {
     v: 1, seed: rng.seed, name: personName(rng), path: pathId, origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
     maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
-    place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? [])],
+    place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? []), ...(last ? ['tem_eco'] : [])],
     items: [], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
     turn: 0, current: null, result: null, ending: null, endingText: null,
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
@@ -283,7 +295,7 @@ export function breakChance(s: State, pill?: Item): number {
   const statFactor = Math.min(1.7, Math.max(0.6, 1 + (eff(s, 'comp') - 15) * 0.01 + (eff(s, 'dao') - 12) * 0.014));
   const p =
     base * statFactor + (FLAW[s.flaw].breakMod ?? 0) + cons +
-    Math.min(0.15, Math.max(0, (s.xp - 100) * 0.005)) - s.wounds * 0.04 + (pill?.breakBonus?.bonus ?? 0);
+    Math.min(0.15, Math.max(0, (s.xp - 100) * 0.005)) - s.wounds * 0.04 + (pill?.breakBonus?.bonus ?? 0) - (s.dif ?? 0) * 0.05;
   return Math.min(0.95, Math.max(0.03, p));
 }
 
@@ -591,7 +603,8 @@ export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;
   const end = ENDING[s.ending];
   const raw = s.tier * 5 + Math.min(10, s.age / 40) + s.fama / 15 + Math.max(0, s.karma) / 25;
-  let gain = Math.max(1, Math.floor(raw * end.legacy));
+  const difMult = s.dif === 1 ? 1.3 : s.dif === -1 ? 0.8 : 1; // desafio rende mais Herança; calmo, menos
+  let gain = Math.max(1, Math.floor(raw * end.legacy * difMult));
   const newAch: string[] = [];
   for (const a of ACHIEVEMENTS) {
     if (meta.achievements.includes(a.id)) continue;
@@ -609,7 +622,8 @@ export function finalizeLife(meta: Meta, s: State): void {
   if (!meta.endingsSeen.includes(s.ending)) meta.endingsSeen.push(s.ending);
   const score = s.tier * 1000 + s.age;
   if (!meta.best || score > meta.best.tier * 1000 + meta.best.age) meta.best = { tier: s.tier, age: Math.floor(s.age), ending: s.ending };
-  meta.history.unshift({ name: s.name, path: PATH[s.path].name, tierName: realmName(s), age: Math.floor(s.age), ending: end.name });
+  const topTech = [...s.techniques].sort((a, b) => (TECH[b]?.grade ?? 0) - (TECH[a]?.grade ?? 0))[0];
+  meta.history.unshift({ name: s.name, path: PATH[s.path].name, tierName: realmName(s), age: Math.floor(s.age), ending: end.name, techName: topTech ? TECH[topTech]?.name : undefined });
   if (meta.history.length > 30) meta.history.pop();
   s.summary = { legacy: gain, ach: newAch, tierName: realmName(s) };
 }

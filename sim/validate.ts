@@ -21,7 +21,7 @@ function dupes(label: string, list: { id: string }[]) {
 }
 dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS);
 
-const setFlags = new Set<string>();
+const setFlags = new Set<string>(['tem_eco', 'trilha_definida']); // flags definidas pelo motor
 const needFlags = new Map<string, string>();
 
 function fx(where: string, e?: Effects) {
@@ -68,7 +68,7 @@ for (const a of ACHIEVEMENTS) if (!ACH_CHECKS[a.id]) errors.push(`conquista ${a.
 
 
 /* ---------- Linter de texto e estrutura ---------- */
-const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'seita', 'cla', 'vila', 'idade', 'reino']);
+const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
 function lintText(where: string, text: string | undefined, max = 700) {
   if (text === undefined) return;
   if (!text.trim()) { errors.push(`${where}: texto vazio`); return; }

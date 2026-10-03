@@ -178,3 +178,15 @@ Achados e correções:
 **Resultado (8.000 vidas):** ascensão 0,9% (independente) e 1,7% (meta); todos os eventos aparecem no modo meta; fuzzer e teste de finais passam.
 
 Totais agora: **414 eventos, 92 itens, 59 técnicas, 23 finais, 10 trilhas**.
+
+---
+
+## Lote 11 — Ecos das vidas passadas
+O jogo se chama "mil vidas", então cada vida deixa rastros na seguinte. O motor guarda, no histórico, o nome, o final, a trilha e a técnica mais alta da vida anterior; ao começar uma nova vida (se houver histórico), a flag `tem_eco` é marcada e os marcadores `{eco}`, `{eco_final}`, `{eco_trilha}` e `{eco_tecnica}` ficam disponíveis nos textos.
+
+**Entrou:** 6 eventos (`lote11_ecos.ts`): a lápide de {eco}, as notas de {eco} (técnica), os órfãos de {eco} (discípulos), a balada de {eco}, o velho inimigo de {eco} e o lago que mostra quem você foi (lendário).
+
+## Dificuldade
+Na criação do personagem: **Calma** (+6 pontos de chance em testes, +5 no rompimento, Herança ×0,8), **Normal** e **Desafio** (−6 em testes, −5 no rompimento, Herança ×1,3). O balanceamento do relatório vale para o Normal.
+
+**Resultado (8.000 vidas):** ascensão 0,9% (independente) e 1,8% (meta). Totais: **420 eventos, 92 itens, 59 técnicas, 23 finais, 10 trilhas**. O linter conhece os novos marcadores; o fuzzer e o teste de finais continuam passando.
