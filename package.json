@@ -11,6 +11,7 @@
     "validate": "tsx sim/validate.ts",
     "fuzz": "tsx sim/fuzz.ts",
     "endings": "tsx sim/endings.ts",
+    "variedade": "tsx sim/variedade.ts",
     "icons": "node scripts/gen-icons.mjs"
   },
   "devDependencies": {

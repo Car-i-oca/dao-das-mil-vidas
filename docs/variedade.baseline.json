@@ -1,0 +1,14 @@
+{
+  "eventosPorVida": 58.09766666666667,
+  "distintosPorVida": 49.293,
+  "repeticao": 0.15154940244301263,
+  "genericosNosTurnos": 0.42423390497610347,
+  "distintosEm10Vidas": 210.64774624373956,
+  "similaridadeVidasSeguidas": 0.16236768873585558,
+  "finalMaisComum": 0.7183333333333334,
+  "finalMaisComumNome": "Fim em Paz",
+  "entropiaFinais": 1.4755082875956458,
+  "finaisAcima1pct": 5,
+  "idadeMedia": 633.5833333333334,
+  "totalEventos": 427
+}
