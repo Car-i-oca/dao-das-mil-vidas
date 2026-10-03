@@ -1,0 +1,91 @@
+name: APK Android
+
+# Compila o jogo como app Android (Capacitor) e publica o APK na Release "android-latest".
+# Assinatura: usa os segredos ANDROID_KEYSTORE_B64 e ANDROID_KEYSTORE_PASSWORD (alias "cultivo").
+# Sem os segredos, gera uma chave temporária (o APK funciona, mas não atualiza por cima de outro).
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'sim/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      APK_NAME: dao-das-mil-vidas.apk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm run validate
+      - run: npm run build
+
+      - name: Criar o projeto Android
+        run: |
+          npx cap add android
+          npx @capacitor/assets generate --android
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+          npx cap sync android
+
+      - name: Compilar (release sem assinatura)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Assinar o APK
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -e
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > ks.jks
+            PASS="$KS_PASS"
+            NOTE="Assinatura fixa: pode ser instalado por cima da versão anterior."
+          else
+            PASS=temporaria
+            keytool -genkeypair -keystore ks.jks -storetype PKCS12 -storepass "$PASS" -keypass "$PASS" -alias cultivo -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=temp"
+            NOTE="ATENÇÃO: chave temporária. Desinstale a versão anterior antes de instalar esta."
+          fi
+          echo "NOTE=$NOTE" >> "$GITHUB_ENV"
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          UNSIGNED=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          "$BT/zipalign" -f -p 4 "$UNSIGNED" aligned.apk
+          "$BT/apksigner" sign --ks ks.jks --ks-pass "pass:$PASS" --ks-key-alias cultivo --out "$APK_NAME" aligned.apk
+          "$BT/apksigner" verify --print-certs "$APK_NAME" | head -3
+          ls -la "$APK_NAME"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: ${{ env.APK_NAME }}
+
+      - name: Publicar na Release android-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest "$APK_NAME" \
+            --title "App Android (APK)" \
+            --notes "APK do build ${{ github.run_number }} (commit ${GITHUB_SHA::7}). $NOTE Para instalar: abra esta página no celular Android, baixe o APK e permita a instalação de apps desta fonte."
