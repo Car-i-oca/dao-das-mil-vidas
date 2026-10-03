@@ -1,19 +1,19 @@
 # Sensação de poder — verificação
 
-Gerado por `npm run poder -- 400` (400 vidas por trilha, bot jogando).
+Gerado por `npm run poder -- 300` (300 vidas por trilha, bot jogando).
 
 ## Chance média de sucesso dos testes por reino
 
 | Reino (índice) | Testes | Chance média | Contra ameaça ≥2 reinos abaixo | Contra ameaça do próprio reino |
 |---|---|---|---|---|
-| 1 | 7297 | 59% | — | 59% (7297) |
-| 2 | 11618 | 48% | — | 48% (11618) |
-| 3 | 18151 | 46% | — | 44% (15463) |
-| 4 | 14455 | 50% | 81% (2860) | 43% (11017) |
-| 5 | 7298 | 55% | 86% (1699) | 46% (5459) |
-| 6 | 2838 | 55% | 89% (466) | 49% (2321) |
-| 7 | 908 | 57% | 88% (166) | 50% (740) |
-| 8 | 241 | 56% | 91% (33) | 50% (208) |
+| 1 | 4393 | 57% | — | 57% (4393) |
+| 2 | 7847 | 45% | — | 45% (7847) |
+| 3 | 12886 | 48% | — | 46% (10969) |
+| 4 | 14284 | 55% | 83% (2593) | 49% (11145) |
+| 5 | 8102 | 59% | 88% (1739) | 51% (6237) |
+| 6 | 2730 | 61% | 89% (413) | 56% (2270) |
+| 7 | 704 | 60% | 90% (135) | 53% (568) |
+| 8 | 203 | 60% | 92% (30) | 55% (173) |
 
 ## Eventos específicos de cada reino
 
@@ -21,40 +21,41 @@ Específico = vale para no máximo 3 reinos seguidos, a partir do 2º reino (sem
 
 | Reino | Eventos disponíveis | Específicos | Exclusivos | Específicos + exclusivos em % |
 |---|---|---|---|---|
-| 1 | 206 | 0 | 2 | 0% |
-| 2 | 324 | 12 | 2 | 4% |
-| 3 | 415 | 33 | 2 | 8% |
-| 4 | 432 | 39 | 1 | 9% |
-| 5 | 432 | 42 | 1 | 10% |
-| 6 | 343 | 34 | 1 | 10% |
-| 7 | 291 | 32 | 1 | 11% |
+| 1 | 284 | 0 | 2 | 0% |
+| 2 | 348 | 13 | 2 | 4% |
+| 3 | 446 | 35 | 2 | 8% |
+| 4 | 459 | 41 | 1 | 9% |
+| 5 | 453 | 43 | 1 | 9% |
+| 6 | 353 | 34 | 1 | 10% |
+| 7 | 293 | 32 | 1 | 11% |
 | 8 | 233 | 28 | 8 | 12% |
 
-Eventos que valem para 6 reinos ou mais: 207 de 590.
+Eventos que valem para 6 reinos ou mais: 231 de 714.
 
 ## Comparação entre trilhas
 
 | Trilha | Reino máx. médio | Idade média | Ascensão | Final mais comum | FIS | ESP | COMP | SOR | CAR | DAO | Recurso médio |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Caminho do Sopro | 4.91 | 763 | 1.3% | Mestre Respeitado 33% | 18 | 30 | 53 | 12 | 20 | 37 | 7.0 |
-| Caminho da Espada | 4.18 | 249 | 1.3% | Fim em Paz 32% | 23 | 12 | 40 | 16 | 18 | 37 | 5.9 |
-| Caminho da Alquimia | 4.11 | 488 | 0.0% | Cinzas da Tribulação 37% | 13 | 20 | 49 | 21 | 19 | 31 | 6.1 |
-| Caminho do Corpo | 3.83 | 215 | 0.0% | Fim em Paz 39% | 33 | 11 | 33 | 15 | 17 | 29 | 5.8 |
-| Caminho da Consciência | 4.88 | 795 | 1.8% | Mestre Respeitado 42% | 12 | 37 | 47 | 17 | 16 | 41 | 8.7 |
-| Caminho das Formações | 4.18 | 518 | 0.5% | Cinzas da Tribulação 37% | 13 | 21 | 54 | 21 | 15 | 30 | 6.2 |
-| Caminho do Mérito | 4.20 | 255 | 0.3% | O Sábio da Montanha 36% | 23 | 16 | 33 | 12 | 18 | 42 | 5.5 |
-| Caminho dos Venenos | 3.87 | 193 | 0.0% | Fim em Paz 45% | 16 | 15 | 43 | 24 | 16 | 21 | 5.0 |
-| Caminho das Bestas | 4.23 | 567 | 0.0% | Mestre Respeitado 27% | 22 | 28 | 39 | 17 | 29 | 27 | 6.6 |
+| Caminho do Sopro | 4.67 | 758 | 3.0% | Mestre Respeitado 39% | 18 | 29 | 50 | 13 | 21 | 42 | 6.6 |
+| Caminho da Espada | 4.11 | 244 | 1.0% | O Sábio da Montanha 36% | 22 | 11 | 40 | 16 | 19 | 41 | 6.0 |
+| Caminho da Alquimia | 4.25 | 573 | 0.3% | Mestre Respeitado 32% | 13 | 20 | 49 | 22 | 20 | 38 | 6.3 |
+| Caminho do Corpo | 3.88 | 228 | 0.7% | Fim em Paz 21% | 33 | 11 | 33 | 16 | 18 | 34 | 6.2 |
+| Caminho da Consciência | 4.61 | 725 | 3.0% | Mestre Respeitado 37% | 13 | 35 | 43 | 17 | 17 | 45 | 8.7 |
+| Caminho das Formações | 4.19 | 563 | 0.7% | Cinzas da Tribulação 28% | 13 | 20 | 53 | 22 | 16 | 36 | 6.0 |
+| Caminho do Mérito | 4.20 | 255 | 0.7% | O Sábio da Montanha 46% | 23 | 16 | 35 | 12 | 19 | 46 | 5.6 |
+| Caminho dos Venenos | 3.83 | 204 | 0.7% | Fim em Paz 40% | 16 | 15 | 43 | 24 | 17 | 26 | 5.2 |
+| Caminho das Bestas | 4.35 | 638 | 0.3% | Mestre Respeitado 36% | 22 | 28 | 37 | 17 | 31 | 35 | 7.1 |
 
 Escadas: Caminho do Sopro → xianxia; Caminho da Espada → murim; Caminho da Alquimia → xianxia; Caminho do Corpo → murim; Caminho da Consciência → xianxia; Caminho das Formações → xianxia; Caminho do Mérito → murim; Caminho dos Venenos → murim; Caminho das Bestas → xianxia.
 
 ## Uma vida no 6º reino (Caminho do Sopro): eventos de cada reino
 
-- **Reino 0** (8 eventos): O Arquivo Empoeirado; A Respiração da Avó; O Melhor Amigo; O Jovem Mestre Arrogante; Olhos na Floresta; O Manual do Cofre; O Velho Soldado; O Despertar Tardio
-- **Reino 1** (6 eventos): Cem Mil Recitações; O Primeiro Sinal; O Estudo das Formações; Uma Proposta de Companhia; Comércio de Ervas; A Oferta do Mestre Sombrio
-- **Reino 2** (7 eventos): O Amigo de Infância; O Rival do Passado; O Concurso de Pílulas; A Reação da Seita; O Juiz do Vilarejo; Uma Aposta Perigosa; A Maré de Bestas
-- **Reino 3** (23 eventos): A Vila Cercada; O Cavaleiro Andante; O Caçador e a Fera Ferida; A Estação de Secar Ervas; A Tribulação do Coração; O Método do Sopro; O Ritual do Lago de Sangue; Meditação Profunda; Os Quatro Ciclos do Ano; Além das Fronteiras; O Acerto de Contas; A Disputa pelo Veio Espiritual; Para Onde o Vento Leva; O Altar do Sacrifício…
-- **Reino 4** (12 eventos): A Chuva de Qi; A Prova das Três Portas; Seu Nome na Parede dos Procurados; A Consciência Sobre a Cidade; A Praga Chega; A Carta Sem Remetente; A Aldeia em Quarentena; A Casa na Encosta; Dois Caminhos, Uma Discussão; Os Olhos que Se Voltam; O Caminho de Volta; Bandidos na Estrada
-- **Reino 5** (5 eventos): O Pico dos Imortais; Os Caçadores de Demônios; A Dinastia Cai; A Ordem do Mestre Demoníaco; Demônios Menores na Cidade
-- **Reino 6** (8 eventos): Retiro Fechado; O Altar do Sol Quebrado; O Cometa Rasga o Céu; O Altar do Sol Quebrado; A Guerra Entre as Seitas; O Duelista da Estalagem; O Rival Que Ficou para Trás; Os Caçadores de Demônios
-- **Reino 7** (16 eventos): A Dívida de Vida; A Praga Chega; O Demônio do Vazio; Os Órfãos da Febre; O Mestre do Vento; A Casa na Encosta; Chuva de Estrelas Espirituais; O Testamento do Imortal Quase; O Imortal Exilado; A Fera Que Não Reconhece Você; Preparar-se para o Raio; A Montanha que Anda; O Rei Mortal Pede Ajuda; A Fé dos Mortais…
+- **Reino 0** (12 eventos): O Melhor Amigo; O Cofre Vazio; A Colheita do Arroz; O Jovem Mestre Arrogante; A Sala Esquecida do Clã; O Sonho da Queda; O Credor Visita a Casa; O Casamento na Vila; O Avô e as Glórias de Antigamente; O Viajante na Porta; Lanternas no Rio; O Despertar Tardio
+- **Reino 1** (5 eventos): O Qi Perde o Rumo; O Item Roubado; Rumor na Estalagem; O Amigo de Infância; O Rival do Passado
+- **Reino 2** (15 eventos): A Reação da Seita; {rival} Entra na Sua Vida; O Fio Vermelho; A Carta de {amigo}; A Respiração das Manhãs; O Duelo com {rival}; O Concurso de Pílulas; O Método do Sopro; O Juiz do Vilarejo; O Sono Sem Qi; {amigo} Pede Ajuda; Quando {rival} Fica Forte; A Barraca do Mercado Negro; O Selo do Clã Perdido…
+- **Reino 3** (13 eventos): Um Portão Entreaberto; O Espadachim da Estalagem; O Que {amigo} Se Tornou; A Aliança Impossível com {rival}; A Era dos Grandes Festivais; O Acerto de Contas; Quando {amigo} Fica em Perigo; Veio Espiritual Escondido; Um Pavilhão Só Seu; O Gargalo Teimoso; O Monge Que Não Tinha Pressa; Comércio de Ervas; Os Convites Chegam
+- **Reino 4** (23 eventos): O Último Duelo com {rival}; O Reencontro Final com {amigo}; {discipulo} Pede para Aprender; O Cultivador de Pacto Sujo; Os Olhos que Se Voltam; O Olhar do Céu Sobre Você; A Disputa pelo Veio Espiritual; A Oferenda ao Templo; Duelo na Praça; O Erro de {discipulo}; O Vendedor de Mapas; Onde o X Marca; A Maré de Bestas; O Caçador e a Fera Ferida…
+- **Reino 5** (6 eventos): O Macaco de Pedra; Emissários dos Quatro Cantos; A Escassez; A Noiva de Vermelho; Cem Mil Recitações; A Guerra Entre as Seitas
+- **Reino 6** (4 eventos): A Era dos Grandes Festivais; A Casa dos Ancestrais; Um Passo, Mil Li; A Porta do Reino Oculto
+- **Reino 7** (9 eventos): A Guerra Entre as Seitas; O Pagode de Sete Andares; O Chamado do Templo do Oeste; O Refúgio Dentro da Montanha; A Maré de Bestas; O Eco da Guerra dos Céus; A Guerra Entre as Seitas; A Prova das Três Portas; A Estátua na Praça
+- **Reino 8** (16 eventos): Qual Lei Você Escolhe; O Último Olhar Sobre o Mundo; A Praga Chega; A Erveira do Mercado; O Culto do Demônio Celestial; O Cultivador de Pacto Sujo; A Travessia dos Mares Sem Fim; A Tempestade no Vazio; O Duelista da Estalagem; Um Amigo na Tribulação; A Fera Que Não Reconhece Você; Para Onde o Vento Leva; A Dinastia Cai; O Céu Pergunta…

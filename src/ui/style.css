@@ -167,7 +167,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .end-pt svg { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 2px 8px #0008; }
 
 /* ---------- Duelo animado ---------- */
-.duel { position: fixed; inset: 0; z-index: 50; background: rgba(10, 8, 6, 0.92); display: flex; flex-direction: column; gap: 10px; padding: calc(12px + var(--safe-t)) 12px calc(12px + var(--safe-b)); animation: fade 0.25s ease; max-width: 640px; margin: 0 auto; }
+.duel { position: fixed; inset: 0; z-index: 50; background: #0e0b09; display: flex; flex-direction: column; gap: 10px; padding: calc(12px + var(--safe-t)) 12px calc(12px + var(--safe-b)); animation: fade 0.25s ease; max-width: 640px; margin: 0 auto; }
 .duel.out { opacity: 0; transition: opacity 0.2s; }
 .duel-hud { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; color: var(--ink); font-size: 0.85rem; }
 .duel-hp span { display: block; margin-bottom: 3px; color: #e8dec8; }
