@@ -95,3 +95,22 @@ Exemplo real: `rival_aparece_crianca` → `rival_reaparece` → `rival_vinganca_
 
 ## Trilha por eventos
 O personagem não escolhe a trilha na criação. Depois do despertar, o motor só sorteia eventos com `noFlags: ["trilha_definida"]` até que uma escolha aplique o efeito `trilha: "<id>"` (ver `src/data/events/trilha_inicial.ts`). O efeito aplica os bônus de atributos e a técnica inicial da trilha e marca a flag `trilha_definida`. Para criar uma cena nova de primeiro método, copie uma das existentes e exija `...SEM_TRILHA` em `cond`. Antes de ter trilha, `path` vale "" e eventos com `cond.path` não aparecem.
+
+## Combate visual (campo `combate`)
+
+Qualquer teste com `tag: 'combate'` (ou qualquer teste de um evento com `combate`) gera um **roteiro de combate** (`src/engine/combate.ts`) guardado em `state.result.combate`. A interface (`src/ui/duelo.ts`) encena o roteiro como uma cena de 5 a 15 segundos; o **resultado já foi decidido pelo motor**, então o equilíbrio não muda.
+
+```ts
+{
+  id: 'emboscada_x', title: '...', text: '...',
+  combate: { oponente: 'bandido', cenario: 'selva' },   // opcional
+  choices: [{ text: '...', check: { stat: ['fis'], tag: 'combate' }, ok: {...}, fail: {...} }],
+}
+```
+
+- `oponente`: um dos 12 tipos de `src/data/combates.ts` (bandido, assassino, cultivador, monge, demonio, espectro, lobo, serpente, golem, tigre, dragao, raio). Sem o campo, o tipo vem da tabela `COMBATE_EVENTOS` e, depois, de palavras-chave no id/título/texto.
+- `cenario`: um dos cenários de `src/ui/art/scenes.ts` (padrão: o do oponente).
+- O roteiro tem 3 a 7 golpes (nomes de técnicas do jogador e do oponente, dano em %, crítico, desvio), vida final de cada lado e a frase de derrota do oponente. Vitória termina com golpe final do jogador; derrota, com o do oponente.
+- A cena mostra HP, nome da técnica, números de dano, tremor de tela, botões **Pular** e **Acelerar x2**. O visual do jogador muda com a trilha (roupa, arma, cor do golpe, companheiro) e com o reino (anéis de aura, halo).
+- Desligar: **Herança do Dao → Opções → Duelos animados**.
+- Teste manual: `?duelo=bandido&trilha=espada&reino=3` (e `&derrota=1`) toca um duelo de exemplo. `npx tsx sim/lutas.ts 500` conta lutas por vida e por tipo.

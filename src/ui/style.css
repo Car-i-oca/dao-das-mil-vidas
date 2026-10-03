@@ -165,3 +165,33 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .end-card .art-ending { width: 100%; height: auto; border-radius: 14px; }
 .end-pt { position: absolute; left: 12px; bottom: -22px; }
 .end-pt svg { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 2px 8px #0008; }
+
+/* ---------- Duelo animado ---------- */
+.duel { position: fixed; inset: 0; z-index: 50; background: rgba(10, 8, 6, 0.92); display: flex; flex-direction: column; gap: 10px; padding: calc(12px + var(--safe-t)) 12px calc(12px + var(--safe-b)); animation: fade 0.25s ease; max-width: 640px; margin: 0 auto; }
+.duel.out { opacity: 0; transition: opacity 0.2s; }
+.duel-hud { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; color: var(--ink); font-size: 0.85rem; }
+.duel-hp span { display: block; margin-bottom: 3px; color: #e8dec8; }
+.duel-hp.foe { text-align: right; }
+.hpbar { height: 12px; border-radius: 8px; background: #2a231d; border: 1px solid #5a4a3a; overflow: hidden; }
+.hpbar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #4f9b72, #9bc46a); transition: width 0.45s ease; }
+.hpbar i.low { background: linear-gradient(90deg, #a63a2a, #d9742f); }
+.duel-hp.foe .hpbar i { margin-left: auto; background: linear-gradient(90deg, #d9742f, #a63a2a); }
+.duel-stage { position: relative; flex: 0 0 auto; width: 100%; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; border: 1px solid #5a4a3a; will-change: transform; }
+.duel-stage > svg.art-scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fighter { position: absolute; bottom: 4%; width: 34%; height: auto; will-change: transform; }
+.fighter.p { left: 8%; }
+.fighter.f { right: 8%; }
+.fighter.f.wide { width: 40%; right: 4%; }
+.duel-fx { position: absolute; inset: 0; pointer-events: none; }
+.duel-fx .dmg { position: absolute; top: 28%; font-weight: 700; font-size: 1.15rem; text-shadow: 0 1px 3px #000; white-space: nowrap; transform: translateX(-30%); }
+.duel-fx .dmg.crit { font-size: 1.45rem; }
+.duel-fx .slash { position: absolute; top: 34%; width: 36%; height: auto; }
+.duel-banner { position: absolute; left: 0; right: 0; top: 6px; text-align: center; font-weight: 600; color: #fff; text-shadow: 0 1px 4px #000; opacity: 0; transition: opacity 0.15s; padding: 0 8px; font-size: 1rem; }
+.duel-banner.show { opacity: 1; }
+.duel-banner.tec { color: var(--gold); font-size: 1.2rem; letter-spacing: 0.04em; }
+.duel-banner.theirs { color: #ffb2a0; }
+.duel-banner.win { color: #bfe8a8; font-size: 1.6rem; letter-spacing: 0.12em; }
+.duel-banner.lose { color: #f3a08c; font-size: 1.6rem; letter-spacing: 0.12em; }
+.duel-btns { display: flex; gap: 10px; margin-top: auto; }
+.duel-btns .btn { flex: 1; }
+@media (prefers-reduced-motion: reduce) { .duel-stage { transition: none; } }

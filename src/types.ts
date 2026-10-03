@@ -104,6 +104,8 @@ export interface GameEvent {
   /** Reino natural da ameaça deste evento (vale para todos os testes dele). `escala` desliga a regra automática. */
   amea?: number;
   escala?: boolean;
+  /** Marca o evento como luta: tipo de oponente e cenário do duelo animado (opcionais; há inferência). */
+  combate?: { oponente?: string; cenario?: string };
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
   cond?: Cond;
@@ -265,7 +267,7 @@ export interface State {
   /** Evento atual (null quando em resultado/final). */
   current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number } | null;
   /** Resultado exibido após uma escolha. */
-  result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[] } | null;
+  result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
   /** Pontos do recurso próprio da trilha. */

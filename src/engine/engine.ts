@@ -10,6 +10,7 @@ import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
+import { buildCombat } from './combate';
 import { WORLDS, WORLD } from '../data/mundo';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from '../data/retiros';
 
@@ -661,6 +662,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
   s.result = { text: txt, check };
+  if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0);
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
 }

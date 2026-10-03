@@ -18,12 +18,15 @@ import { itemIcon, techIcon, pathIcon, realmIcon } from './art/icons';
 import { sceneSvg, endingCard, type SceneKind } from './art/scenes';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art/portrait';
 import { hash } from './art/core';
+import { playDuel } from './duelo';
+import { FOES } from '../data/combates';
+const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
+interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
+  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -481,6 +484,7 @@ function renderMeta() {
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${FONT_NAMES.map((n, i) => `<button class="btn ${save.settings.font === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="font" data-i="${i}">${n}</button>`).join('')}</div></div>
       <div class="card"><div class="muted small">VELOCIDADE DO TEXTO</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${SPEED_NAMES.map((n, i) => `<button class="btn ${save.settings.speed === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="speed" data-i="${i}">${n}</button>`).join('')}</div></div>
+      <div class="card"><div class="muted small">DUELOS ANIMADOS</div><div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn ${save.settings.duelos ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="duelos" data-i="1">Ligados</button><button class="btn ${!save.settings.duelos ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="duelos" data-i="0">Desligados</button></div><div class="muted small" style="margin-top:6px">Uma cena curta que encena as lutas. Não muda o resultado; dá para pular a qualquer momento.</div></div>
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
@@ -533,7 +537,8 @@ app.addEventListener('click', (ev) => {
       if (!s) break;
       withRng(s, (r) => choose(s, Number(target.dataset.i), r));
       persist();
-      render();
+      if (s.result?.combate && save.settings.duelos) playDuel(s.result.combate, { nome: s.name, onDone: () => render() });
+      else render();
       break;
     case 'next':
       if (!s) break;
@@ -556,6 +561,7 @@ app.addEventListener('click', (ev) => {
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }
+    case 'duelos': save.settings.duelos = target.dataset.i === '1'; persist(); render(); break;
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
     case 'font': save.settings.font = Number(target.dataset.i); applySettings(); persist(); render(); break;
@@ -601,4 +607,17 @@ render();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+
+/** Depuração: ?duelo=<oponente>&trilha=<id>&reino=<n>&derrota=1 toca um duelo de exemplo. */
+{
+  const q = new URLSearchParams(location.search);
+  const f = q.get('duelo');
+  if (f) {
+    const win = !q.get('derrota');
+    const beats = win
+      ? [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 20 }, { a: 'p' as const, mov: 'Técnica Secreta', tec: true, dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 0, esq: true }, { a: 'p' as const, mov: 'Golpe Final', dano: 40, crit: true }]
+      : [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 25 }, { a: 'f' as const, mov: 'Ataque', dano: 35 }, { a: 'f' as const, mov: 'Golpe Final', dano: 45, crit: true }];
+    setTimeout(() => playDuel({ foe: f, foeName: (FOE_NAMES[f] ?? f), scene: q.get('cenario') ?? 'selva', vitoria: win, beats, fim: win ? { p: 50, f: 0 } : { p: 20, f: 45 }, fraseFim: 'tomba', path: q.get('trilha') ?? 'espada', tier: Number(q.get('reino') ?? 2) }, { nome: 'Teste', onDone: () => { document.title = 'duelo-fim'; } }), 300);
+  }
 }
