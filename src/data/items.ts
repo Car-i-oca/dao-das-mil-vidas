@@ -116,4 +116,9 @@ export const ITEMS: Item[] = [
   { id: 'lamina_vento_sul', name: 'Lâmina do Vento do Sul', kind: 'artefato', grade: 3, desc: 'Guarda a memória de um mestre que nunca perdeu um duelo.', passive: { fis: 1, dao: 1, esp: 1 }, value: 170 },
   { id: 'cristal_formacao', name: 'Cristal de Formação', kind: 'artefato', grade: 2, desc: 'Presente de uma seita pequena: guarda um traço de formação.', passive: { comp: 1, esp: 1 }, value: 80 },
   { id: 'frasco_antidotos', name: 'Frasco dos Nove Antídotos', kind: 'pilula', grade: 3, desc: 'Desfaz quase qualquer toxina, e cura o resto.', use: { ferida: -5, vida: 10 }, value: 90 },
+
+  // Lote 10: regiões distantes
+  { id: 'cantil_oasis', name: 'Cantil do Oásis', kind: 'misc', grade: 2, desc: 'Nunca esvazia por completo; sempre tem um gole.', use: { ferida: -2, xp: 5 }, value: 40 },
+  { id: 'cristal_inverno', name: 'Cristal do Inverno', kind: 'misc', grade: 3, desc: 'Azul, frio, calmo. Aquieta o Qi ao toque.', use: { xp: 18, stats: { esp: 1 } }, value: 100 },
+  { id: 'perola_abismo', name: 'Pérola do Abismo', kind: 'artefato', grade: 4, desc: 'Cintila como a lua cheia sob a água.', passive: { esp: 2, sor: 1 }, value: 280 },
 ];

@@ -65,6 +65,7 @@ const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const SPEEDS = [0, 8, 18, 34]; // ms por caractere (0 = instantâneo)
 const SPEED_NAMES = ['Instantâneo', 'Rápido', 'Normal', 'Lento'];
+const PLACE_NAMES: Record<string, string> = { vilarejo: 'Vilarejo', cidade: 'Cidade', seita: 'Seita', selva: 'Selva espiritual', montanha: 'Montanhas sagradas', ruinas: 'Ruínas', deserto: 'Deserto do Vento Cego', gelo: 'Planície de Gelo Silencioso', mar: 'Mar das Mil Ilhas' };
 const THEME_NAMES: [Settings['theme'], string][] = [['auto', 'Automático'], ['claro', 'Claro'], ['escuro', 'Escuro']];
 const FONT_NAMES = ['Pequena', 'Média', 'Grande'];
 
@@ -283,6 +284,7 @@ function statusHtml(s: State): string {
         <div class="k">Talento</div><div class="v">${esc(TALENT[s.talent].name)}</div>
         <div class="k">Defeito</div><div class="v">${esc(FLAW[s.flaw].name)}</div>
         <div class="k">Facção</div><div class="v">${fac[s.faction]}</div>
+        <div class="k">Local</div><div class="v">${PLACE_NAMES[s.place] ?? s.place}</div>
       </div>
     </div>
     <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>

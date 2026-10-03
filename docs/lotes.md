@@ -163,3 +163,18 @@ Achados e correções:
 - Os dois testes entram no workflow de publicação do site: conteúdo quebrado não vai ao ar.
 - **Service worker:** páginas e manifesto vêm da rede primeiro (atualização aparece na hora quando há internet) e do cache quando offline; os arquivos com hash continuam cache-first.
 - `realmOf` ficou robusto a números de reino fora da escada.
+
+---
+
+## Lote 10 — Regiões distantes (deserto, gelo e mar)
+**Pesquisa:** geografia típica do gênero, com um centro próspero e fronteiras perigosas (planície gelada ao norte, deserto a oeste, oceano a leste). Fonte: [Zhu Xian: Locations](https://zhu-xian.fandom.com/wiki/Locations). Só a ideia geral foi aproveitada; nomes e cenas são originais.
+
+**Entrou:** 17 eventos (`lote10_regioes.ts`), 1 técnica, 3 itens e 3 locais novos (`deserto`, `gelo`, `mar`). Duas portas de entrada e saída: `expedicao_longe` (tier ≥ 2) leva às bordas e `caminho_de_volta` ("A Volta das Fronteiras") traz de volta.
+- Deserto do Vento Cego: miragem de oásis, tempestade de areia, cidade sob as dunas, nômades do vento.
+- Planície de Gelo Silencioso: planície branca, aurora do norte, palácio de gelo, urso branco ancestral, viajante na neve.
+- Mar das Mil Ilhas: tempestade, ilha que some, serpente marinha, barco fantasma, ilha dos pescadores, pérolas do abismo.
+- A aba Status mostra o **Local** atual.
+
+**Resultado (8.000 vidas):** ascensão 0,9% (independente) e 1,7% (meta); todos os eventos aparecem no modo meta; fuzzer e teste de finais passam.
+
+Totais agora: **414 eventos, 92 itens, 59 técnicas, 23 finais, 10 trilhas**.

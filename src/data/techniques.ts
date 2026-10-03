@@ -77,4 +77,7 @@ export const TECHNIQUES: Technique[] = [
   { id: 'mestre_antidotos', name: 'Arte dos Antídotos', grade: 2, desc: 'Desfazer o que se sabe fazer.', stats: { comp: 1 }, tags: ['veneno', 'alquimia'] },
   { id: 'voz_das_feras', name: 'Voz das Feras', grade: 3, desc: 'Uma voz baixa e vasta que lobos, pássaros e serpentes entendem.', stats: { esp: 1, car: 1 }, tags: ['besta'] },
   { id: 'chama_sangue_negro', name: 'Chama do Sangue Negro', grade: 3, desc: 'Fogo preto que só acende em quem já passou do ponto sem volta.', xpMult: 1.1, tags: ['demonio', 'combate'] },
+
+  // Lote 10: regiões distantes
+  { id: 'passo_areia', name: 'Passo Sobre a Areia', grade: 2, desc: 'Andar sobre dunas sem afundar, e ler o vento como um livro.', stats: { sor: 1 }, tags: ['fuga'] },
 ];

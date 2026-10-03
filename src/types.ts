@@ -2,7 +2,7 @@ export type StatKey = 'fis' | 'esp' | 'comp' | 'sor' | 'car' | 'dao';
 export type Stats = Record<StatKey, number>;
 export type Rarity = 'comum' | 'raro' | 'lendario';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
-export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas';
+export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 
 /** Efeitos aplicados quando uma escolha (ou resultado) acontece. */
 export interface Effects {
