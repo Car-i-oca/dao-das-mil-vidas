@@ -92,3 +92,6 @@ Exemplo real: `rival_aparece_crianca` → `rival_reaparece` → `rival_vinganca_
 
 ## Balanceamento
 `npm run sim -- 2000` simula 2.000 vidas com um bot e mostra mortes por idade, finais e reino máximo. Metas atuais: ascender é raro (cerca de 1%), mas possível; a maioria das vidas termina entre o 3º e o 5º reino.
+
+## Trilha por eventos
+O personagem não escolhe a trilha na criação. Depois do despertar, o motor só sorteia eventos com `noFlags: ["trilha_definida"]` até que uma escolha aplique o efeito `trilha: "<id>"` (ver `src/data/events/trilha_inicial.ts`). O efeito aplica os bônus de atributos e a técnica inicial da trilha e marca a flag `trilha_definida`. Para criar uma cena nova de primeiro método, copie uma das existentes e exija `...SEM_TRILHA` em `cond`. Antes de ter trilha, `path` vale "" e eventos com `cond.path` não aparecem.

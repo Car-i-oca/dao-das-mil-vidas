@@ -5,7 +5,6 @@ import {
   realmOf, ladderOf, eff, cultivationRate, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
   type Creation,
 } from '../engine/engine';
-import { PATHS } from '../data/paths';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
 import type { Meta, State } from '../types';
@@ -42,11 +41,20 @@ type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
 let tab: 'vida' | 'status' | 'mochila' | 'diario' = 'vida';
 let metaTab: 'heranca' | 'conquistas' | 'historico' | 'opcoes' = 'heranca';
-let creation: { c: Creation; seed: number; rerolls: number; path: string } | null = null;
+let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 
 const app = document.getElementById('app')!;
-const availablePaths = () => PATHS.filter((p) => !p.unlock || save.meta.achievements.includes(p.unlock));
+
+/* ---------- Instalação como app (PWA) ---------- */
+let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  installEvt = e as typeof installEvt;
+  if (screen === 'home') render();
+});
+window.addEventListener('appinstalled', () => { installEvt = null; if (screen === 'home') render(); });
 const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const SPEEDS = [0, 8, 18, 34]; // ms por caractere (0 = instantâneo)
@@ -107,6 +115,7 @@ function renderHome() {
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
         <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
+        ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
       <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/10${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
     </div>`;
@@ -117,15 +126,15 @@ function bestName(m: Meta): string {
   return `reino ${b.tier}, ${b.age} anos`;
 }
 
-function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0), prevPath?: string) {
+function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0)) {
   const seed = (Math.random() * 4294967295) >>> 0;
   const rng = new Rng(seed);
-  creation = { c: rollCreation(save.meta, rng), seed: rng.seed, rerolls: prevRerolls, path: prevPath ?? PATHS[0].id };
+  creation = { c: rollCreation(save.meta, rng), seed: rng.seed, rerolls: prevRerolls };
 }
 
 function renderCreate() {
   if (!creation) newCreation();
-  const { c, rerolls, path } = creation!;
+  const { c, rerolls } = creation!;
   const o = ORIGIN[c.origin], t = TALENT[c.talent], f = FLAW[c.flaw];
   const cons = c.constitution ? CONSTITUTION[c.constitution] : null;
   app.innerHTML = `
@@ -139,10 +148,7 @@ function renderCreate() {
         <div class="k">Defeito</div><div class="v"><b>${esc(f.name)}</b><br><span class="muted small">${esc(f.desc)}</span></div>
       </div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
-      <h3>Escolha sua trilha</h3>
-      <div class="paths">
-        ${availablePaths().map((p) => `<button class="path ${p.id === path ? 'sel' : ''}" data-act="path" data-id="${p.id}"><b>${esc(p.name)}</b><span>${esc(p.desc)}</span></button>`).join('')}
-      </div>
+      <p class="muted small">Sua trilha de cultivo não é escolhida agora: um mestre, um manual ou um acaso a revelará depois que o Qi despertar. Você decide dentro da história.</p>
       <button class="btn primary" data-act="start">Iniciar vida</button>
     </div>`;
 }
@@ -339,7 +345,7 @@ function renderMeta() {
 function startRun() {
   if (!creation) return;
   const seed = (Math.random() * 4294967295) >>> 0;
-  save.run = startLife(save.meta, creation.c, creation.path, seed);
+  save.run = startLife(save.meta, creation.c, '', seed);
   creation = null;
   tab = 'vida';
   screen = 'game';
@@ -358,12 +364,15 @@ app.addEventListener('click', (ev) => {
     case 'new': newCreation(); screen = 'create'; render(); break;
     case 'continue': screen = save.run?.ending ? 'end' : 'game'; render(); break;
     case 'meta': screen = 'meta'; render(); break;
+    case 'install':
+      if (installEvt) { void installEvt.prompt(); installEvt = null; }
+      else toast(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'No Safari: Compartilhar → Adicionar à Tela de Início' : 'No menu do navegador: Instalar app / Adicionar à tela inicial');
+      break;
     case 'mtab': metaTab = target.dataset.id as typeof metaTab; render(); break;
     case 'reroll':
-      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1, creation.path);
+      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1);
       render();
       break;
-    case 'path': creation!.path = target.dataset.id!; render(); break;
     case 'start': startRun(); break;
     case 'tab': tab = target.dataset.id as typeof tab; render(); break;
     case 'choose':

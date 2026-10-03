@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item,
+  Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, Path,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -13,7 +13,9 @@ import { EVENTS } from '../data/events';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
-export const PATH = byId(PATHS);
+/** Enquanto o personagem não encontra um método, usa-se uma trilha neutra (escada xianxia, sem bônus). */
+const NO_PATH: Path = { id: '', name: 'Sem trilha ainda', ladder: 'xianxia', desc: 'O método ainda será encontrado.', stats: {}, xpMult: 1, tags: [] };
+export const PATH: Record<string, Path> = { ...byId(PATHS), '': NO_PATH };
 export const ORIGIN = byId(ORIGINS);
 export const TALENT = byId(TALENTS);
 export const FLAW = byId(FLAWS);
@@ -189,10 +191,6 @@ function tierUp(s: State, delta: number) {
   const t = Math.min(max, Math.max(0, s.tier + delta));
   if (t === s.tier) return;
   if (delta > 0) {
-    if (s.tier === 0 && s.path === 'demoniaca') {
-      s.faction = 'demoniaca';
-      if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
-    }
     for (const k of STAT_KEYS) s.stats[k] += 2;
     s.fama += t * 2;
   }
@@ -203,8 +201,25 @@ function tierUp(s: State, delta: number) {
   addLog(s, `Alcançou o reino: ${realmName(s)}.`);
 }
 
+/** Adota uma trilha: aplica bônus de atributos, a técnica inicial e a corrupção/facção da trilha do Sangue. */
+function setPath(s: State, id: string) {
+  const p = PATH[id];
+  if (!p || !id || s.path) return;
+  s.path = id;
+  for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.max(1, s.stats[k] + (p.stats[k] ?? 0));
+  if (p.tecnica && !s.techniques.includes(p.tecnica)) s.techniques.push(p.tecnica);
+  if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
+  if (id === 'demoniaca') {
+    s.faction = 'demoniaca';
+    if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
+  }
+  if (!s.flags.includes('trilha_definida')) s.flags.push('trilha_definida');
+  addLog(s, `Encontrou seu método: ${p.name}.`);
+}
+
 export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (!fx) return;
+  if (fx.trilha) setPath(s, fx.trilha);
   if (fx.stats) for (const k of Object.keys(fx.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (fx.stats[k] ?? 0)));
   if (fx.pedras) s.pedras = Math.max(0, s.pedras + fx.pedras);
   if (fx.karma) s.karma += fx.karma;
@@ -485,7 +500,12 @@ export function pickNext(s: State, rng: Rng) {
     s.current = { id: 'vida_comum' };
     return;
   }
-  const pool = eligibleEvents(s);
+  let pool = eligibleEvents(s);
+  // Despertou mas ainda sem método: só as cenas que apresentam um caminho (ver trilha_inicial.ts).
+  if (!s.path && s.tier >= 1) {
+    const scenes = pool.filter((e) => e.cond?.noFlags?.includes('trilha_definida'));
+    if (scenes.length) pool = scenes;
+  }
   const luck = 1 + eff(s, 'sor') / 50;
   const ev = rng.weighted(pool, (e) => RARITY_W[e.rarity] * (e.weight ?? 1) * (e.rarity === 'comum' ? 1 : luck));
   s.current = { id: ev ? ev.id : 'dia_comum' };

@@ -20,6 +20,8 @@ export interface Effects {
   corr?: number;
   /** Sobe (+1) ou desce (-1) de reino imediatamente. */
   tier?: number;
+  /** Define a trilha de cultivo (só vale se o personagem ainda não tem uma). */
+  trilha?: string;
   setFlags?: string[];
   clearFlags?: string[];
   item?: string[];

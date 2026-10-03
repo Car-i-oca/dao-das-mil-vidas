@@ -102,3 +102,14 @@ Faixas de aceitação: ascensão entre 0,5% e 2% (nos dois modos); nenhum evento
 **Calibração:** `finalChance` 0,05 (o modo meta passou de 2,0% de ascensão com os lotes 6–7). Pesos de `ruptura_do_tempo`, `mestre_ve_talento` e `mestre_pede_favor` aumentados.
 
 **Resultado (4.000 vidas):** ascensão 0,8% (independente) e 1,8% (meta; 1,8% também com 8.000 vidas). Eventos que dependem de desbloqueio (origens Alma Reencarnada, Neto de Alquimista, Rebento Demoníaco, Regressor) aparecem centenas de vezes no modo meta e, por definição, não aparecem no modo independente, que não tem desbloqueios.
+
+---
+
+## Mudança de design — a trilha nasce de eventos
+A trilha de cultivo deixou de ser escolhida na criação do personagem.
+- O personagem começa **sem trilha**. Depois do despertar do Qi, o motor só sorteia as **cenas de primeiro método** (`src/data/events/trilha_inicial.ts`) até que uma escolha aplique o efeito `trilha`.
+- Cada cena oferece trilhas que combinam com os atributos e a origem: viajante (Sopro, Formações), espadachim (Espada, Corpo), erveira (Alquimia, Venenos), monge (Mérito, Consciência), caçador (Bestas) e o sussurro do sangue (Caminho do Sangue, só para quem tem o sangue demoníaco). Sempre dá para recusar e esperar outra cena; se todas forem recusadas, `caminho_do_acaso` entrega o Sopro.
+- Efeito novo `trilha: "<id>"`: aplica os bônus de atributos e a técnica inicial da trilha, a corrupção e a facção da trilha do Sangue, e marca `trilha_definida`.
+- Os bônus de trilha passam a valer só depois do despertar (antes valiam desde o nascimento).
+
+**Resultado (4.000 vidas):** ascensão 0,7% (independente) e 1,4% (meta); as 9 trilhas comuns aparecem naturalmente (Bestas e Sopro são as mais frequentes, por terem cenas com requisitos mais fáceis). No modo meta, o único evento que não apareceu em 4.000 vidas foi o lendário `senhor_do_sangue`; no independente, `mestre_em_perigo` (cadeia longa) e os eventos que dependem de desbloqueios.

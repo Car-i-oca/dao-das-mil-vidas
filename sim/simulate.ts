@@ -3,7 +3,6 @@
  *
  *   npm run sim -- 4000                 vidas independentes (meta vazia), todas as trilhas
  *   npm run sim -- 4000 --meta          vidas em sequência: conquistas, origens, talentos e trilhas vão sendo liberados
- *   npm run sim -- 4000 --path=sopro    só uma trilha (modo normal)
  *   npm run sim -- 4000 --report        roda os dois modos e grava docs/balanceamento.md
  */
 import { writeFileSync } from 'node:fs';
@@ -22,14 +21,13 @@ import type { Meta, Outcome, State } from '../src/types';
 
 const args = process.argv.slice(2);
 const N = Number(args.find((a) => /^\d+$/.test(a)) ?? 1000);
-const onlyPath = args.find((a) => a.startsWith('--path='))?.split('=')[1];
 const verbose = args.includes('--verbose');
 const metaMode = args.includes('--meta');
 const report = args.includes('--report');
 
 /* ---------- Bot ---------- */
 /** Eventos em que um jogador que busca o caminho demoníaco aceita a oferta. */
-const DEMON_EVENTS = new Set(['oferta_demoniaca', 'sacrificio_sangue', 'pacto_sangue_antigo', 'banquete_de_sangue']);
+const DEMON_EVENTS = new Set(['cena_sombra_sangue', 'oferta_demoniaca', 'sacrificio_sangue', 'pacto_sangue_antigo', 'banquete_de_sangue']);
 
 function endRisk(c: Visible['choice'], chance: number | undefined): number {
   if (!c) return 0;
@@ -40,7 +38,7 @@ function endRisk(c: Visible['choice'], chance: number | undefined): number {
 
 function demonScore(c: Visible['choice']): number {
   const o = c?.res ?? c?.ok;
-  return (o?.fx?.corr ?? 0) + (o?.fx?.fim === 'demonio' ? 100 : 0);
+  return (o?.fx?.corr ?? 0) + (o?.fx?.fim === 'demonio' ? 100 : 0) + (o?.fx?.trilha === 'demoniaca' ? 50 : 0);
 }
 
 function botPick(s: State, rng: Rng, seekDemon: boolean): number {
@@ -131,15 +129,11 @@ function record(run: Run, s: State) {
 }
 
 function runIndependent(): Run {
-  const run = emptyRun('Vidas independentes (meta vazia, todas as trilhas)');
-  const paths = PATHS.filter((p) => !onlyPath || p.id === onlyPath);
-  const per = Math.floor(N / paths.length);
-  for (const p of paths) {
-    for (let i = 0; i < per; i++) {
-      const meta = newMeta();
-      const s = playLife(meta, 1000 + i * 7919 + p.id.length, p.id, false, run.events, run.tierAges);
-      record(run, s);
-    }
+  const run = emptyRun('Vidas independentes (meta vazia; a trilha nasce dos eventos)');
+  for (let i = 0; i < N; i++) {
+    const meta = newMeta();
+    const s = playLife(meta, 1000 + i * 7919, '', false, run.events, run.tierAges);
+    record(run, s);
   }
   return run;
 }
@@ -151,12 +145,10 @@ function runMeta(): Run {
   const meta = newMeta();
   const rng = new Rng(424242);
   for (let i = 0; i < N; i++) {
-    const unlocked = PATHS.filter((p) => !p.unlock || meta.achievements.includes(p.unlock));
-    const path = rng.pick(unlocked);
     // Busca o caminho demoníaco em metade das vidas até desbloquear a conquista.
     const seekDemon = !meta.achievements.includes('ach_demonio') && rng.chance(0.5);
     const before = new Set(meta.achievements);
-    const s = playLife(meta, 5000 + i * 104729, path.id, seekDemon, run.events, run.tierAges);
+    const s = playLife(meta, 5000 + i * 104729, '', seekDemon, run.events, run.tierAges);
     finalizeLife(meta, s);
     for (const a of meta.achievements) if (!before.has(a)) run.timeline.push({ id: a, life: i + 1 });
     run.pathUse[s.path] = (run.pathUse[s.path] ?? 0) + 1;
@@ -195,7 +187,7 @@ function formatRun(run: Run): string {
     for (const [k, n] of rows) L.push(`| ${ladderOf({ path: probe.id } as State).realms[Number(k.split(':')[1])].name} | ${n} | ${pc(n, tot)} |`);
   }
   L.push('', '**Por trilha**', '', '| Trilha | Vidas | Reino médio | Idade média | Ascensões |', '|---|---:|---:|---:|---:|');
-  for (const p of PATHS) {
+  for (const p of [{ id: '', name: 'Sem trilha (não despertou)' }, ...PATHS]) {
     const b = run.byPath[p.id];
     if (b) L.push(`| ${p.name} | ${b.n} | ${(b.tierSum / b.n).toFixed(2)} | ${(b.ageSum / b.n).toFixed(0)} | ${b.asc} |`);
   }

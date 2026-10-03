@@ -8,7 +8,7 @@ Jogo de texto de cultivação, mobile-first, instalável (PWA), 100% em PT-BR. C
 - **Flags**: marcam escolhas (ex.: `humilhou_jovem_mestre`) e alimentam cadeias de eventos.
 
 ## Criação de personagem
-Sorteados: **origem**, **Raiz Espiritual** (e, raramente, constituição especial), **1 talento** e **1 defeito**. O jogador pode re-sortear 3 vezes e escolhe a **trilha**: Sopro (Qi), Espada, Alquimia ou Corpo. Origens/talentos extras são desbloqueados por conquistas; a Herança do Dao compra bônus permanentes.
+Sorteados: **origem**, **Raiz Espiritual** (e, raramente, constituição especial), **1 talento** e **1 defeito**. O jogador pode re-sortear (3 vezes, mais com a Herança). A **trilha não é escolhida na criação**: depois do despertar do Qi, uma cena (mestre, manual, fera, acaso) apresenta trilhas que combinam com o personagem e ele decide dentro da história. Origens/talentos extras são desbloqueados por conquistas; a Herança do Dao compra bônus permanentes.
 
 ## Reinos
 - Escada **xianxia** (Sopro, Alquimia): Refinamento de Qi → Fundação → Núcleo Dourado → Alma Nascente → Transformação Divina → Refino do Vazio → Integração Corporal → Grande Ascensão → Ascensão.
