@@ -10,6 +10,8 @@ import { ORIGINS, TALENTS } from '../data/character';
 import type { Change, Meta, State } from '../types';
 import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
+import { EVENTS } from '../data/events';
+import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
 
 /* ---------- Persistência ---------- */
@@ -426,7 +428,8 @@ function renderMeta() {
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${SPEED_NAMES.map((n, i) => `<button class="btn ${save.settings.speed === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="speed" data-i="${i}">${n}</button>`).join('')}</div></div>
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
-      <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>`;
+      <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
+      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.</div>`;
   }
   app.innerHTML = `
     <div class="screen">
