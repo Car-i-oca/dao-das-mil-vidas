@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, Path,
+  Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, Path,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -31,7 +31,7 @@ export const STAT_NAMES: Record<StatKey, string> = {
 export const STAT_KEYS: StatKey[] = ['fis', 'esp', 'comp', 'sor', 'car', 'dao'];
 
 export function newMeta(): Meta {
-  return { legacy: 0, achievements: [], upgrades: {}, lives: 0, best: null, endingsSeen: [], history: [] };
+  return { legacy: 0, achievements: [], upgrades: {}, lives: 0, best: null, endingsSeen: [], history: [], codex: { items: [], techs: [] } };
 }
 
 /* ---------- Consultas ---------- */
@@ -179,6 +179,11 @@ function addLog(s: State, text: string) {
   if (s.log.length > 400) s.log.shift();
 }
 
+function noteFound(s: State, kind: 'items' | 'techs', id: string) {
+  s.found ??= { items: [], techs: [] };
+  if (!s.found[kind].includes(id)) s.found[kind].push(id);
+}
+
 export function endLife(s: State, id: string) {
   if (s.ending) return;
   s.ending = id;
@@ -207,7 +212,7 @@ function setPath(s: State, id: string) {
   if (!p || !id || s.path) return;
   s.path = id;
   for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.max(1, s.stats[k] + (p.stats[k] ?? 0));
-  if (p.tecnica && !s.techniques.includes(p.tecnica)) s.techniques.push(p.tecnica);
+  if (p.tecnica && !s.techniques.includes(p.tecnica)) { s.techniques.push(p.tecnica); noteFound(s, 'techs', p.tecnica); }
   if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
   if (id === 'demoniaca') {
     s.faction = 'demoniaca';
@@ -232,14 +237,14 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + (fx.corr > 0 && s.path === 'demoniaca' ? fx.corr * 0.6 : fx.corr)));
   if (fx.setFlags) for (const f of fx.setFlags) if (!s.flags.includes(f)) s.flags.push(f);
   if (fx.clearFlags) s.flags = s.flags.filter((f) => !fx.clearFlags!.includes(f));
-  if (fx.item) for (const i of fx.item) if (s.items.length < 40) s.items.push(i);
+  if (fx.item) for (const i of fx.item) if (s.items.length < 40) { s.items.push(i); noteFound(s, 'items', i); }
   if (fx.removeItem) {
     for (const i of fx.removeItem) {
       const idx = s.items.indexOf(i);
       if (idx >= 0) s.items.splice(idx, 1);
     }
   }
-  if (fx.tecnica) for (const t of fx.tecnica) if (!s.techniques.includes(t)) s.techniques.push(t);
+  if (fx.tecnica) for (const t of fx.tecnica) if (!s.techniques.includes(t)) { s.techniques.push(t); noteFound(s, 'techs', t); }
   if (fx.agenda) for (const a of fx.agenda) s.scheduled.push({ event: a.event, at: s.age + rng.int(a.em[0], a.em[1]) });
   if (fx.local) s.place = fx.local;
   if (fx.faccao) s.faction = fx.faccao;
@@ -411,7 +416,52 @@ export function view(s: State): View {
 }
 
 /* ---------- Escolhas ---------- */
+interface Snap { stats: Stats; pedras: number; karma: number; fama: number; corr: number; wounds: number; tier: number; xp: number; maxAge: number; items: string[]; techs: string[]; path: string }
+const snap = (s: State): Snap => ({ stats: { ...s.stats }, pedras: s.pedras, karma: s.karma, fama: s.fama, corr: s.corr, wounds: s.wounds, tier: s.tier, xp: s.xp, maxAge: s.maxAge, items: [...s.items], techs: [...s.techniques], path: s.path });
+
+/** Compara o estado antes e depois de uma escolha e lista o que mudou, para o jogador enxergar a consequência. */
+function diffSnap(b: Snap, s: State): Change[] {
+  const out: Change[] = [];
+  const sign = (n: number) => (n > 0 ? '+' : '−') + Math.abs(n);
+  if (s.tier !== b.tier) out.push({ t: `Reino: ${realmName(s)}`, k: s.tier > b.tier ? 'up' : 'down' });
+  if (s.path !== b.path && s.path) out.push({ t: `Trilha: ${PATH[s.path].name}`, k: 'up' });
+  const lvl = s.tier > b.tier ? 2 : 0; // o ganho fixo de +2 por reino já está no aviso de reino
+  for (const k of STAT_KEYS) {
+    const d = s.stats[k] - b.stats[k] - lvl;
+    if (d) out.push({ t: `${sign(d)} ${STAT_NAMES[k]}`, k: d > 0 ? 'up' : 'down' });
+  }
+  const num = (label: string, d: number, goodUp = true) => { if (d) out.push({ t: `${sign(d)} ${label}`, k: (d > 0) === goodUp ? 'up' : 'down' }); };
+  num('pedras', s.pedras - b.pedras);
+  num('karma', s.karma - b.karma);
+  num('fama', s.fama - b.fama);
+  num('corrupção', s.corr - b.corr, false);
+  const dw = Math.round((s.wounds - b.wounds) * 10) / 10;
+  if (dw) out.push({ t: dw > 0 ? `+${dw} ferimento${dw > 1 ? 's' : ''}` : `Ferimentos ${sign(dw)}`, k: dw > 0 ? 'down' : 'up' });
+  if (s.tier === b.tier && s.tier > 0) {
+    const dx = Math.round(s.xp - b.xp);
+    if (dx) out.push({ t: `${sign(dx)}% de cultivo`, k: dx > 0 ? 'up' : 'down' });
+  }
+  if (s.maxAge !== b.maxAge && s.tier === b.tier) num('anos de vida', s.maxAge - b.maxAge);
+  const gained = s.items.slice();
+  for (const id of b.items) { const i = gained.indexOf(id); if (i >= 0) gained.splice(i, 1); }
+  for (const id of gained) out.push({ t: `Item: ${ITEM[id]?.name ?? id}`, k: 'up' });
+  const lost = b.items.slice();
+  for (const id of s.items) { const i = lost.indexOf(id); if (i >= 0) lost.splice(i, 1); }
+  for (const id of lost) out.push({ t: `Usou: ${ITEM[id]?.name ?? id}`, k: 'neutral' });
+  for (const id of s.techniques) if (!b.techs.includes(id)) out.push({ t: `Técnica: ${TECH[id]?.name ?? id}`, k: 'up' });
+  return out;
+}
+
 export function choose(s: State, idx: number, rng: Rng) {
+  const before = snap(s);
+  chooseCore(s, idx, rng);
+  if (s.result && !s.result.changes) {
+    const ch = diffSnap(before, s);
+    if (ch.length) s.result.changes = ch;
+  }
+}
+
+function chooseCore(s: State, idx: number, rng: Rng) {
   if (s.ending && s.result) return;
   const vis = visibleChoices(s);
   const v = vis[idx];
@@ -528,6 +578,9 @@ export function finalizeLife(meta: Meta, s: State): void {
       gain += ACH_POINTS[a.id] ?? 0;
     }
   }
+  meta.codex ??= { items: [], techs: [] };
+  for (const id of s.found?.items ?? []) if (!meta.codex.items.includes(id)) meta.codex.items.push(id);
+  for (const id of [...(s.found?.techs ?? []), ...s.techniques]) if (!meta.codex.techs.includes(id)) meta.codex.techs.push(id);
   meta.legacy += gain;
   meta.lives++;
   if (!meta.endingsSeen.includes(s.ending)) meta.endingsSeen.push(s.ending);

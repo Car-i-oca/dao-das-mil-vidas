@@ -113,3 +113,13 @@ A trilha de cultivo deixou de ser escolhida na criação do personagem.
 - Os bônus de trilha passam a valer só depois do despertar (antes valiam desde o nascimento).
 
 **Resultado (4.000 vidas):** ascensão 0,7% (independente) e 1,4% (meta); as 9 trilhas comuns aparecem naturalmente (Bestas e Sopro são as mais frequentes, por terem cenas com requisitos mais fáceis). No modo meta, o único evento que não apareceu em 4.000 vidas foi o lendário `senhor_do_sangue`; no independente, `mestre_em_perigo` (cadeia longa) e os eventos que dependem de desbloqueios.
+
+---
+
+## Ciclo de melhorias 1 (UX, avaliação e ferramentas)
+Feito como designer, jogador e avaliador, sem mexer no balanceamento.
+- **Resumo das mudanças:** depois de cada escolha aparecem "chips" com o que mudou (atributos, pedras, karma, fama, corrupção, ferimentos, cultivo, itens, técnicas, reino, trilha). Verde = bom, vermelho = ruim, cinza = informativo.
+- **Tema e fonte:** Opções → tema (automático, claro, escuro) e tamanho do texto (pequena, média, grande).
+- **Códice:** coleção de finais, técnicas e itens descobertos em qualquer vida; o que falta aparece como "???".
+- **Copiar resumo da vida:** botão na tela final.
+- **Linter de conteúdo** (`npm run validate`): marcadores desconhecidos como `{foo}`, textos vazios ou longos, opções repetidas, atributos ou xp exagerados, nomes e títulos repetidos, eventos cujas opções todas têm condição. Resultado: o conteúdo está limpo; só renomeei três eventos com o mesmo título ("Refinar Pílula de Passagem").

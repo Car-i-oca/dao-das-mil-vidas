@@ -238,7 +238,9 @@ export interface State {
   /** Evento atual (null quando em resultado/final). */
   current: { id: string; breakthrough?: boolean } | null;
   /** Resultado exibido após uma escolha. */
-  result: { text: string; check?: { chance: number; success: boolean } } | null;
+  result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[] } | null;
+  /** Técnicas e itens já obtidos nesta vida (alimenta o Códice). */
+  found?: { items: string[]; techs: string[] };
   ending: string | null;
   endingText: string | null;
   /** Preenchido quando a vida é encerrada (finalizeLife). */
@@ -246,7 +248,15 @@ export interface State {
   legacyBonus: { stats: number; xp: number; luck: number; pedras: number };
 }
 
+/** Mudança exibida como "chip" depois de uma escolha (up = bom, down = ruim, neutral = informativo). */
+export interface Change {
+  t: string;
+  k: 'up' | 'down' | 'neutral';
+}
+
 export interface Meta {
+  /** Códice: técnicas e itens já descobertos em qualquer vida. */
+  codex?: { items: string[]; techs: string[] };
   legacy: number;
   achievements: string[];
   upgrades: Record<string, number>;

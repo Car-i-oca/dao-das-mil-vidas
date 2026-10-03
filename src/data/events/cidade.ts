@@ -40,7 +40,7 @@ export const cidade: GameEvent[] = [
     ],
   },
   {
-    id: 'refinar_passagem_1', title: 'Refinar Pílula de Passagem', rarity: 'raro', cooldown: 30,
+    id: 'refinar_passagem_1', title: 'Refinar a Pílula da Fundação Serena', rarity: 'raro', cooldown: 30,
     cond: { tierMin: 1, tierMax: 1, path: ['alquimia'], pedrasMin: 20 },
     text: 'Você tem a receita da Pílula da Fundação Serena. Faltam recursos e coragem para tentar o refinamento.',
     choices: [
@@ -48,7 +48,7 @@ export const cidade: GameEvent[] = [
     ],
   },
   {
-    id: 'refinar_passagem_2', title: 'Refinar Pílula de Passagem', rarity: 'raro', cooldown: 30,
+    id: 'refinar_passagem_2', title: 'Refinar a Pílula do Núcleo Luminoso', rarity: 'raro', cooldown: 30,
     cond: { tierMin: 2, tierMax: 2, path: ['alquimia'], pedrasMin: 40 },
     text: 'O Núcleo Luminoso exige ingredientes difíceis. Você tem uma receita parcial e um forno de confiança.',
     choices: [
@@ -56,7 +56,7 @@ export const cidade: GameEvent[] = [
     ],
   },
   {
-    id: 'refinar_passagem_3', title: 'Refinar Pílula de Passagem', rarity: 'raro', cooldown: 30,
+    id: 'refinar_passagem_3', title: 'Refinar a Pílula da Alma Tranquila', rarity: 'raro', cooldown: 30,
     cond: { tierMin: 3, tierMax: 3, path: ['alquimia'], pedrasMin: 90 },
     text: 'A Pílula da Alma Tranquila é um desafio de mestre. Requer uma erva de mil anos e fogo estável por sete dias.',
     choices: [

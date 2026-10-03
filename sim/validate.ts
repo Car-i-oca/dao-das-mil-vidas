@@ -66,6 +66,51 @@ for (const o of ORIGINS) {
 for (const t of TALENTS) if (t.unlock && !achIds.has(t.unlock)) errors.push(`talento ${t.id}: conquista inexistente "${t.unlock}"`);
 for (const a of ACHIEVEMENTS) if (!ACH_CHECKS[a.id]) errors.push(`conquista ${a.id}: sem regra em ACH_CHECKS`);
 
+
+/* ---------- Linter de texto e estrutura ---------- */
+const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'seita', 'cla', 'vila', 'idade', 'reino']);
+function lintText(where: string, text: string | undefined, max = 700) {
+  if (text === undefined) return;
+  if (!text.trim()) { errors.push(`${where}: texto vazio`); return; }
+  for (const m of text.matchAll(/{([a-z_]+)}/g)) if (!PLACEHOLDERS.has(m[1])) errors.push(`${where}: marcador desconhecido {${m[1]}}`);
+  if (/{[^}]*$/.test(text) || /^[^{]*}/.test(text)) errors.push(`${where}: chave solta`);
+  if (text.length > max) warnings.push(`${where}: texto longo (${text.length} caracteres)`);
+  if (/  +/.test(text)) warnings.push(`${where}: espaços duplos`);
+  if (!where.includes('(título)') && !/[.!?…"”)]$/.test(text.trim())) warnings.push(`${where}: não termina com pontuação`);
+}
+for (const ev of EVENTS) {
+  lintText(`evento ${ev.id} (título)`, ev.title, 80);
+  lintText(`evento ${ev.id}`, ev.text);
+  const seenTexts = new Set<string>();
+  ev.choices.forEach((c, i) => {
+    const w = `evento ${ev.id}#${i + 1}`;
+    lintText(w + ' (opção)', c.text, 140);
+    if (seenTexts.has(c.text)) warnings.push(`${w}: opção repetida no mesmo evento`);
+    seenTexts.add(c.text);
+    for (const o of [c.res, c.ok, c.fail]) lintText(w, o?.text);
+    for (const o of [c.res, c.ok, c.fail]) {
+      const f = o?.fx;
+      if (f?.stats) for (const [k, v] of Object.entries(f.stats)) if (Math.abs(v as number) > 6) warnings.push(`${w}: atributo ${k} muda ${v} de uma vez`);
+      if (f?.xp && f.xp > 60) warnings.push(`${w}: xp muito alto (${f.xp})`);
+      if (f?.pedras && f.pedras > 600) warnings.push(`${w}: pedras muito altas (${f.pedras})`);
+    }
+  });
+  if (!ev.choices.some((c) => !c.cond)) warnings.push(`evento ${ev.id}: todas as opções têm condição (pode ficar sem saída)`);
+}
+for (const i of ITEMS) lintText(`item ${i.id}`, i.desc, 120);
+for (const t of TECHNIQUES) lintText(`técnica ${t.id}`, t.desc, 120);
+for (const e of ENDINGS) lintText(`final ${e.id}`, e.text, 400);
+const names = new Map<string, string>();
+for (const x of [...ITEMS.map((i) => ({ id: 'item ' + i.id, name: i.name })), ...TECHNIQUES.map((t) => ({ id: 'técnica ' + t.id, name: t.name }))]) {
+  if (names.has(x.name)) warnings.push(`nome repetido: "${x.name}" (${names.get(x.name)} e ${x.id})`);
+  names.set(x.name, x.id);
+}
+const titles = new Map<string, string>();
+for (const ev of EVENTS) {
+  if (titles.has(ev.title)) warnings.push(`título repetido: "${ev.title}" (${titles.get(ev.title)} e ${ev.id})`);
+  titles.set(ev.title, ev.id);
+}
+
 for (const [f, where] of needFlags) if (!setFlags.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
 
 console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${TECHNIQUES.length} técnicas, ${ENDINGS.length} finais, ${PATHS.length} trilhas.`);

@@ -7,11 +7,17 @@ import {
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
-import type { Meta, State } from '../types';
+import type { Change, Meta, State } from '../types';
+import { TECHNIQUES } from '../data/techniques';
+import { ITEMS } from '../data/items';
+import { ENDINGS } from '../data/endings';
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { speed: number }
+interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number }
+function normSettings(x?: Partial<Settings>): Settings {
+  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1 };
+}
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
 function load(): Save {
@@ -19,10 +25,10 @@ function load(): Save {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const p = JSON.parse(raw) as Save;
-      if (p?.meta) return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: { ...p.settings, speed: p.settings?.speed ?? 2 } };
+      if (p?.meta) return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
     }
   } catch { /* save corrompido ou indisponível */ }
-  return { meta: newMeta(), run: null, settings: { speed: 2 } };
+  return { meta: newMeta(), run: null, settings: normSettings() };
 }
 let save = load();
 function persist() {
@@ -40,7 +46,7 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
 let tab: 'vida' | 'status' | 'mochila' | 'diario' = 'vida';
-let metaTab: 'heranca' | 'conquistas' | 'historico' | 'opcoes' = 'heranca';
+let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 
@@ -59,6 +65,17 @@ const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const SPEEDS = [0, 8, 18, 34]; // ms por caractere (0 = instantâneo)
 const SPEED_NAMES = ['Instantâneo', 'Rápido', 'Normal', 'Lento'];
+const THEME_NAMES: [Settings['theme'], string][] = [['auto', 'Automático'], ['claro', 'Claro'], ['escuro', 'Escuro']];
+const FONT_NAMES = ['Pequena', 'Média', 'Grande'];
+
+function applySettings() {
+  const r = document.documentElement;
+  if (save.settings.theme === 'auto') r.removeAttribute('data-theme');
+  else r.setAttribute('data-theme', save.settings.theme === 'claro' ? 'light' : 'dark');
+  r.setAttribute('data-font', String(save.settings.font));
+}
+
+const chipsHtml = (ch?: Change[]) => (ch?.length ? `<div class="chips">${ch.map((c) => `<span class="chip ${c.k}">${esc(c.t)}</span>`).join('')}</div>` : '');
 
 function toast(msg: string) {
   const el = document.createElement('div');
@@ -194,6 +211,7 @@ function lifeHtml(s: State): string {
         <div class="hint" id="hint">toque para pular</div>
       </div>
       <div class="choices" id="choices">
+        ${chipsHtml(s.result?.changes)}
         <button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>
       </div>`;
   }
@@ -298,6 +316,7 @@ function renderEnd() {
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
       <details class="card"><summary>Diário da vida (${s.log.length})</summary>${logHtml(s).replace('class="card"', '')}</details>
       <button class="btn primary" data-act="new">Nova vida</button>
+      <button class="btn" data-act="share">Copiar resumo da vida</button>
       <button class="btn" data-act="meta">Herança do Dao</button>
       <button class="btn ghost" data-act="home">Início</button>
     </div>`;
@@ -305,7 +324,7 @@ function renderEnd() {
 
 function renderMeta() {
   const m = save.meta;
-  const tabs: [typeof metaTab, string][] = [['heranca', 'Herança'], ['conquistas', 'Conquistas'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
+  const tabs: [typeof metaTab, string][] = [['heranca', 'Herança'], ['conquistas', 'Conquistas'], ['codice', 'Códice'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
   let body = '';
   if (metaTab === 'heranca') {
     body = `<div class="card row between"><span>Pontos disponíveis</span><b style="color:var(--gold);font-size:1.3rem">${m.legacy}</b></div>
@@ -322,12 +341,23 @@ function renderMeta() {
       return `<div style="opacity:${got ? 1 : 0.55}"><b>${got ? '✔ ' : '○ '}${esc(a.name)}</b><div class="muted small">${esc(a.desc)}</div><div class="small" style="color:var(--gold)">${esc(a.reward)}</div></div>`;
     }).join('')}</div>
     <div class="card muted small">Origens liberadas: ${ORIGINS.filter((o) => !o.unlock || m.achievements.includes(o.unlock)).length}/${ORIGINS.length} · Talentos liberados: ${TALENTS.filter((t) => !t.unlock || m.achievements.includes(t.unlock)).length}/${TALENTS.length}</div>`;
+  } else if (metaTab === 'codice') {
+    const cx = m.codex ?? { items: [], techs: [] };
+    const pill = (name: string, ok: boolean, grade?: number) => `<span class="pill ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${ok ? esc(name) : '???'}</span>`;
+    body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${ENDINGS.length}</div>${ENDINGS.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
+      <div class="card"><div class="muted small">TÉCNICAS · ${cx.techs.length}/${TECHNIQUES.length}</div>${TECHNIQUES.map((t) => pill(t.name, cx.techs.includes(t.id), t.grade)).join('')}</div>
+      <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${ITEMS.length}</div>${ITEMS.map((i) => pill(i.name, cx.items.includes(i.id), i.grade)).join('')}</div>
+      <div class="card muted small">O Códice guarda tudo o que você já encontrou em qualquer vida. Os nomes escondidos (???) esperam ser descobertos.</div>`;
   } else if (metaTab === 'historico') {
     body = m.history.length
       ? `<div class="card list">${m.history.map((h) => `<div><b>${esc(h.name)}</b> <span class="muted small">${esc(h.path)}</span><div class="small">${esc(h.tierName)} · ${h.age} anos · ${esc(h.ending)}</div></div>`).join('')}</div>`
       : '<div class="card muted">Nenhuma vida encerrada ainda.</div>';
   } else {
-    body = `<div class="card"><div class="muted small">VELOCIDADE DO TEXTO</div>
+    body = `<div class="card"><div class="muted small">TEMA</div>
+      <div class="row" style="flex-wrap:wrap;margin-top:8px">${THEME_NAMES.map(([id, n]) => `<button class="btn ${save.settings.theme === id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="theme" data-id="${id}">${n}</button>`).join('')}</div>
+      <div class="muted small" style="margin-top:12px">TAMANHO DO TEXTO</div>
+      <div class="row" style="flex-wrap:wrap;margin-top:8px">${FONT_NAMES.map((n, i) => `<button class="btn ${save.settings.font === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="font" data-i="${i}">${n}</button>`).join('')}</div></div>
+      <div class="card"><div class="muted small">VELOCIDADE DO TEXTO</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${SPEED_NAMES.map((n, i) => `<button class="btn ${save.settings.speed === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="speed" data-i="${i}">${n}</button>`).join('')}</div></div>
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
@@ -403,6 +433,14 @@ app.addEventListener('click', (ev) => {
       break;
     }
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
+    case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
+    case 'font': save.settings.font = Number(target.dataset.i); applySettings(); persist(); render(); break;
+    case 'share': {
+      if (!s?.ending) break;
+      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Dao das Mil Vidas'].join('\n');
+      navigator.clipboard?.writeText(txt).then(() => toast('Resumo copiado'), () => toast('Não foi possível copiar'));
+      break;
+    }
     case 'export':
       navigator.clipboard?.writeText(JSON.stringify(save)).then(() => toast('Save copiado para a área de transferência'), () => toast('Não foi possível copiar'));
       break;
@@ -412,7 +450,7 @@ app.addEventListener('click', (ev) => {
       try {
         const p = JSON.parse(txt) as Save;
         if (!p.meta) throw new Error('inválido');
-        save = { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: { ...p.settings, speed: p.settings?.speed ?? 2 } };
+        save = { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
         persist(); render(); toast('Save importado');
       } catch { toast('Save inválido'); }
       break;
@@ -432,6 +470,7 @@ if (save.run && save.run.ending && !save.run.summary) {
   finalizeLife(save.meta, save.run);
   persist();
 }
+applySettings();
 render();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
