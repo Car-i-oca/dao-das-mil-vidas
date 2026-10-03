@@ -60,10 +60,8 @@ jobs:
         run: |
           set -e
           if [ -n "$KS_B64" ]; then
-            printf %s "$KS_B64" | tr -d '
- ' | base64 -d > ks.jks
-            PASS=$(printf %s "$KS_PASS" | tr -d '
- ')
+            printf %s "$KS_B64" | tr -d '[:space:]' | base64 -d > ks.jks
+            PASS=$(printf %s "$KS_PASS" | tr -d '[:space:]')
             NOTE="Assinatura fixa: pode ser instalado por cima da versão anterior."
           else
             PASS=temporaria
