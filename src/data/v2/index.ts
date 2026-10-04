@@ -36,7 +36,7 @@ const TODOS: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_AR
 /** Prefixo de "segunda vez" para moldes soltos que podem voltar. */
 const REPETE: Record<string, string> = {
   desp_mestre_caminho: 'Anos depois, o mesmo convite aparece de novo, num outro ponto da estrada. ', troca_ambicao: 'De novo a sensação de que o centro da vida mudou de lugar. ',
-  reacao_rompimento: 'Mais um rompimento, e o mundo repara outra vez, com menos surpresa. ', reencontro_antigo: 'Mais uma vez, um rosto do passado. ',
+  reacao_rompimento: 'Mais um rompimento, e o mundo repara outra vez, com menos surpresa. ', reencontro_antigo: 'Mais um rosto do passado, e o tempo, dessa vez, trouxe outro assunto. ',
 };
 function repetir(m: Molde): Molde {
   const pre = REPETE[m.id];

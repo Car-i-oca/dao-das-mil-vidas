@@ -23,3 +23,12 @@ Itens: moldura por grau (1 cinza, 2 bronze, 3 jade, 4 azul, 5 ouro; no tinta, o 
 
 ## Onde aparece
 HUD (retrato), cartão do evento (cenário + retrato do NPC citado), Status (emblemas, técnicas), Mochila e Códice (ícones), tela final (cartão + retrato) e duelos (cenário, lutadores e efeitos).
+
+## Pixel art 16-bit da nova geração (amostra, `src/ui/art/pixel2/`)
+O pixel passou a ser o estilo padrão (quem nunca escolheu estilo vê o pixel; quem escolheu antes mantém a escolha). A nova geração é desenhada por **campos de distância (SDF)**: cada forma tem uma normal calculada, a luz vem sempre do canto superior esquerdo e o resultado é quantizado em 5 tons de uma rampa fixa, com **contorno seletivo** (cor da própria rampa, mais claro do lado da luz) e brilho especular em metal, jade e pílulas.
+- **Paleta fixa**: 18 rampas de 5 tons (90 cores, `pal.ts`). O pedido sugeria 32 a 48 cores; fiquei em 90 porque cada matiz precisa de 5 tons e o jogo tem muitos materiais. Dá para reduzir juntando rampas parecidas, se você preferir.
+- **Resolução**: itens 32x32, retratos 64x64, cenários 320x180 em camadas, lutadores 48x64 com 11 quadros (parado 2, ataque 3, técnica 3, dano, vitória, derrota) e efeitos de técnica 48x48.
+- **Cenários**: céu, nuvens, longe, meio, água, perto e luzes saem em camadas separadas; no app as nuvens deslizam, a água cintila e as lanternas piscam (SMIL), com versão de dia e de noite.
+- **Pessoas**: o retrato mostra idade (criança a ancião), trilha (roupa), reino (aura e anéis), gênero, corrupção (olhos e veias) e papel (rival, mestre, amigo...).
+- **Feito na amostra**: 6 itens (espada, pílula, manual, talismã, jade, bolsa), 4 retratos, 2 cenários (vilarejo e montanha, dia e noite) e o duelo animado com 5 tipos de oponente humano. Os outros itens, técnicas, trilhas, reinos, cenários, oponentes e cartões de final **ainda usam o pixel anterior** até você aprovar o padrão.
+- **Como ver**: `npm run arte:amostra` salva folhas em `.tmp/art/` (o repositório guarda cópias em `docs/arte-pixel-amostra/`); `npm run e2e:pixel` tira prints no app (precisa do preview v2 na porta 4174).
