@@ -2,6 +2,7 @@ import { Rng } from '../rng';
 import { LADDERS } from '../../data/realms';
 import { PATHS } from '../../data/paths';
 import { clanName, generoDoNome, personName, sectName, villageName } from '../../data/names';
+import { gerarAparencia } from '../../ui/art/pintura/aparencia';
 import type { Faccao, FaccaoTipo, Fato, FeridaTipo, Id, Lugar, Mundo, Objetivo, Papel, Pessoa, PapelPessoa, Traco } from './tipos';
 import { TRACOS } from './tipos';
 
@@ -55,12 +56,19 @@ export function novaPessoa(m: Mundo, rng: Rng, ano: number, o: { idade: number; 
     faccao: o.faccao, lugar: o.lugar, opiniao: o.opiniao ?? 0, memoria: [], vivo: true, ultima: ano,
   };
   if (p.tracos.includes('ambicioso')) p.ritmo *= 1.1;
-  if (inserir) m.pessoas[id] = p;
+  if (inserir) { darVisual(m, p); m.pessoas[id] = p; }
   return p;
 }
 
+/** Dá à pessoa um rosto próprio, diferente do das outras pessoas vivas do mundo. */
+export function darVisual(m: Mundo, p: Pessoa) {
+  if (p.visual) return;
+  const outros = Object.values(m.pessoas).filter((o) => o.vivo && o.visual && o.id !== p.id).map((o) => o.visual!);
+  p.visual = gerarAparencia(`${p.nome}|${m.semente}|${p.id}`, generoDoNome(p.nome), outros);
+}
+
 /** Insere no mundo uma pessoa criada solta (só acontece se a cena for escolhida). */
-export function inserirPessoa(m: Mundo, p: Pessoa): Pessoa { p.id = `p${m.proxId++}`; m.pessoas[p.id] = p; return p; }
+export function inserirPessoa(m: Mundo, p: Pessoa): Pessoa { p.id = `p${m.proxId++}`; darVisual(m, p); m.pessoas[p.id] = p; return p; }
 
 /** Cria uma pessoa solta (fora do mundo) a partir da especificação `criar` de um papel. */
 export function criarSolta(m: Mundo, rng: Rng, ano: number, reinoJog: number, c: NonNullable<PapelPessoa['criar']>): Pessoa {
@@ -245,6 +253,7 @@ export function promover(m: Mundo, c: CandidatoReserva, ano: number, rng: Rng, p
     id, nome: sp.nome, nasc: sp.nasc, reino: c.reino, xp: 0, ritmo: sp.ritmo, teto: sp.teto, trilha: sp.trilha, tracos: sp.tracos, objetivo: OBJ_PADRAO,
     papeis: [...papeis], faccao: f?.id, opiniao: 0, memoria: [], vivo: true, ultima: ano,
   };
+  darVisual(m, p);
   m.pessoas[id] = p;
   return p;
 }

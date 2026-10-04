@@ -1,0 +1,1 @@
+Continue e finalize a escrita dos ficheiros cenarios.ts e lutadores.ts que estavam pela metade. No cenarios.ts, termine a função 'cadeia' usando ruído ridged. No lutadores.ts, crie os 4 quadros de animação do lutador usando as primitivas capsula e circulo.

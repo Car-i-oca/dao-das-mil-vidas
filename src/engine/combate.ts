@@ -40,6 +40,8 @@ export interface CombatScript {
   fraseFim: string;
   path: string;
   tier: number;
+  /** Pessoa do mundo contra quem se luta (v2): o duelo usa a aparência dela. */
+  pessoa?: string;
   /** Selo da opção exclusiva que levou à luta (trilha, talento, defeito, técnica...), se houver. */
   selo?: string;
 }

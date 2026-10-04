@@ -1,4 +1,5 @@
 import type { Effects, StatKey } from '../../types';
+import type { Aparencia } from '../../ui/art/pintura/aparencia';
 
 /**
  * Tipos da v2 (ver docs/design-v2.md e docs/eventos-v2.md).
@@ -44,6 +45,8 @@ export interface Pessoa {
   importante?: boolean;
   /** Ligações de parentesco ou ensino: { mestre: id, filho: id... }. */
   lig?: Record<string, Id>;
+  /** Aparência (traços do rosto, cabelo, marcas): fixa para a pessoa ser reconhecível a vida inteira. */
+  visual?: Aparencia;
   /** Situação social depois de algo grande (expulso, caido, foragido, vingativo, preso, partiu...). */
   situacao?: string;
 }

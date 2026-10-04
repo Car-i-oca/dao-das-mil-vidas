@@ -268,6 +268,8 @@ export interface Root {
 }
 
 export interface State {
+  /** Aparência do jogador (sorteada na criação). */
+  look?: import('./ui/art/pintura/aparencia').Aparencia;
   v: 1;
   seed: number;
   name: string;

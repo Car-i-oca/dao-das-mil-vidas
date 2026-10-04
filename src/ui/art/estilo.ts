@@ -32,6 +32,6 @@ export interface Pacote {
   portrait(look: Look, size: number): string;
   scene(kind: string, seed: string, night: boolean): string;
   ending(id: string, title: string): string;
-  player(path: string, tier: number): string;
-  foe(id: string): string;
+  player(path: string, tier: number, look?: Look): string;
+  foe(id: string, look?: Look, semente?: string): string;
 }

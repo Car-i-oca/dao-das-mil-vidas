@@ -245,3 +245,14 @@ img, svg, canvas, video { max-width: 100%; }
 .tabs { padding-bottom: var(--safe-b); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 @media (max-width: 360px) { .kv { grid-template-columns: 1fr; } .kv .k { margin-top: 6px; } }
 @media (orientation: landscape) and (max-height: 480px) { .scene svg { max-height: 36vh; } .duel-stage { max-height: 62vh; } }
+.pessoa-linha { display: flex; gap: 10px; align-items: flex-start; }
+.pessoa-ret { flex: 0 0 56px; }
+.pessoa-ret svg { width: 56px; height: 56px; border-radius: 8px; display: block; }
+.pessoa-txt { flex: 1 1 auto; min-width: 0; }
+/* duelo opaco: o resto do app some enquanto o duelo toca */
+body.em-duelo #app { visibility: hidden; }
+.duel { background: #0e0b09; isolation: isolate; }
+.duel.px .duel-stage { aspect-ratio: 4 / 3; background: #0e0b09; }
+.duel.px .fighter { width: 40%; height: auto; bottom: 2%; }
+.duel.px .fighter.f.wide { width: 46%; }
+.duel-fx .vfxpx { position: absolute; top: 16%; width: 34%; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; }

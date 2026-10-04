@@ -12,6 +12,6 @@ export const pacote: Partial<Pacote> = {
   portrait: (look, size) => pp.retratoSvg(look, size),
   scene: (kind, seed, noite) => pp.cenarioSvg(kind, seed, noite) ?? cenario(kind, seed, noite),
   ending: final,
-  player: (path) => pp.jogadorSvg(path),
-  foe: (id) => pp.inimigoSvg(id) ?? inimigo(id),
+  player: (path, _tier, look) => pp.jogadorSvg(path, look),
+  foe: (id, look, semente) => pp.inimigoSvg(id, look, semente) ?? inimigo(id),
 };

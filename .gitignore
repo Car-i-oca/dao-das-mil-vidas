@@ -5,3 +5,4 @@ dist/
 .tmp/
 registro/
 dist-v2/
+.aider*

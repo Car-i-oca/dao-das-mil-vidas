@@ -17,10 +17,11 @@ import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
 import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
-import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
+import { portraitSvg, lookFromState, lookForNpc, type Role, type Look } from './art';
+import { gerarAparencia, type Aparencia } from './art/pintura/aparencia';
 import { hash } from './art';
 import { playDuel } from './duelo';
-import { mundoHtml, resumoV2Html, npcV2, cenaV2, noiteV2 } from './mundo';
+import { mundoHtml, resumoV2Html, npcV2, cenaV2, noiteV2, lookDePessoa } from './mundo';
 import { FOES } from '../data/combates';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
@@ -61,6 +62,20 @@ let tab: 'vida' | 'status' | 'mochila' | 'diario' | 'mundo' = 'vida';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let generoEscolha: 'sorteio' | 'm' | 'f' = 'sorteio';
+let lookN = 0;
+let lookOv: { cabelo?: number; cor?: number } = {};
+const ESTILOS_PT = ['curto bagunçado', 'liso com franja', 'médio ondulado', 'longo solto', 'coque alto', 'coque baixo', 'trança', 'topete', 'raspado', 'rabo de cavalo', 'ralo e comprido', 'repartido'];
+const OLHOS_PT = ['castanhos', 'pretos', 'azuis', 'verdes', 'cinzentos', 'âmbar'];
+/** Aparência do jogador na criação: sorteada pela semente, com o gênero e (se o jogador quiser) o cabelo e a cor dos olhos escolhidos. */
+function lookAtual(): Aparencia {
+  const seed = creation?.seed ?? 1;
+  const g: 'm' | 'f' = generoEscolha === 'sorteio' ? (seed % 2 ? 'm' : 'f') : generoEscolha;
+  const ap = gerarAparencia(`jogador|${seed}|${lookN}|${g}`, g);
+  if (lookOv.cabelo !== undefined) ap.cabelo = lookOv.cabelo;
+  if (lookOv.cor !== undefined) ap.cor = lookOv.cor;
+  return ap;
+}
+function lookCriacao(): Look { return { seed: 'previa', stage: 2, path: '', tier: 0, corr: 0, role: 'jogador', items: [], ap: lookAtual(), fundo: 'floresta' }; }
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 
 const app = document.getElementById('app')!;
@@ -182,7 +197,8 @@ function renderCreate() {
         <div class="k">Talento</div><div class="v"><b>${esc(t.name)}</b><br><span class="muted small">${esc(t.desc)}</span></div>
         <div class="k">Defeito</div><div class="v"><b>${esc(f.name)}</b><br><span class="muted small">${esc(f.desc)}</span></div>
       </div>
-      <div class="card"><div class="muted small">VOCÊ É</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${([['sorteio', 'Sorteio'], ['m', 'Homem'], ['f', 'Mulher']] as const).map(([v, n]) => `<button class="btn ${generoEscolha === v ? 'primary' : ''}" style="width:auto;flex:1 1 90px" data-act="genero" data-id="${v}">${n}</button>`).join('')}</div></div>
+      <div class="card"><div class="muted small">VOCÊ É</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${([['sorteio', 'Sorteio'], ['m', 'Homem'], ['f', 'Mulher']] as const).map(([v, n]) => `<button class="btn ${generoEscolha === v ? 'primary' : ''}" style="width:auto;flex:1 1 90px" data-act="genero" data-id="${v}">${n}</button>`).join('')}</div>
+        <div class="row" style="gap:12px;margin-top:10px;align-items:center"><div style="flex:0 0 96px">${portraitSvg(lookCriacao(), 96)}</div><div class="stack" style="flex:1;min-width:0;gap:6px"><button class="btn" data-act="lookroll">Sortear aparência</button><button class="btn" data-act="lookcabelo">Cabelo: ${ESTILOS_PT[lookAtual().cabelo]} ›</button><button class="btn" data-act="lookolho">Olhos: ${OLHOS_PT[lookAtual().cor]} ›</button></div></div></div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
       <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
       <p class="muted small">Sua trilha de cultivo não é escolhida agora: um mestre, um manual ou um acaso a revelará depois que o Qi despertar. Você decide dentro da história.</p>
@@ -216,7 +232,7 @@ function sceneFor(s: State, eventId: string): string {
 function npcFor(s: State, eventId: string): string {
   if (s.current?.v2) {
     const n = npcV2(s);
-    return n ? `<div class="npc">${portraitSvg(lookForNpc(n.role, n.nome, Math.max(1, n.reino)), 54)}<div class="small muted">${esc(n.nome)}</div></div>` : '';
+    return n ? `<div class="npc">${portraitSvg(lookDePessoa(s, n.pessoa, n.role), 54)}<div class="small muted">${esc(n.nome)}</div></div>` : '';
   }
   const raw = EVENT[eventId]?.text ?? '';
   const roles: Role[] = ['mentor', 'rival', 'amigo', 'noivo', 'discipulo', 'inimigo'];
@@ -547,7 +563,9 @@ function renderMeta() {
 function startRun() {
   if (!creation) return;
   const seed = (Math.random() * 4294967295) >>> 0;
-  save.run = startLife(save.meta, creation.c, '', seed, { v2: __V2__, genero: generoEscolha === 'sorteio' ? undefined : generoEscolha });
+  const ap = lookAtual();
+  save.run = startLife(save.meta, creation.c, '', seed, { v2: __V2__, genero: ap.g, look: ap });
+  lookN = 0; lookOv = {};
   save.run.dif = save.settings.difficulty;
   creation = null;
   tab = 'vida';
@@ -577,14 +595,17 @@ app.addEventListener('click', (ev) => {
       if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1);
       render();
       break;
-    case 'genero': generoEscolha = target.dataset.id as typeof generoEscolha; render(); break;
+    case 'genero': generoEscolha = target.dataset.id as typeof generoEscolha; lookOv = {}; render(); break;
+    case 'lookroll': lookN++; lookOv = {}; render(); break;
+    case 'lookcabelo': lookOv.cabelo = ((lookOv.cabelo ?? lookAtual().cabelo) + 1) % ESTILOS_PT.length; render(); break;
+    case 'lookolho': lookOv.cor = ((lookOv.cor ?? lookAtual().cor) + 1) % OLHOS_PT.length; render(); break;
     case 'start': startRun(); break;
     case 'tab': tab = target.dataset.id as typeof tab; render(); break;
     case 'choose':
       if (!s) break;
       withRng(s, (r) => choose(s, Number(target.dataset.i), r));
       persist();
-      if (s.result?.combate && save.settings.duelos) playDuel(s.result.combate, { nome: s.name, onDone: () => render() });
+      if (s.result?.combate && save.settings.duelos) playDuel(s.result.combate, { nome: s.name, playerLook: lookFromState(s), foeLook: s.v2 && s.result.combate.pessoa && s.v2.mundo.pessoas[s.result.combate.pessoa] ? lookDePessoa(s, s.v2.mundo.pessoas[s.result.combate.pessoa]) : undefined, onDone: () => render() });
       else render();
       break;
     case 'next':

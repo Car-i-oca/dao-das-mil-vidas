@@ -18,6 +18,13 @@ export interface Look {
   corr: number;
   role: Role;
   items: string[];
+  /** Pixel pintado: aparência própria da pessoa e o contexto que decide roupa e fundo. */
+  ap?: import('./pintura/aparencia').Aparencia;
+  estatuto?: string;
+  faccaoTipo?: string;
+  fundo?: string;
+  feridas?: number;
+  expr?: string;
 }
 
 const ROBE: Record<string, [string, string]> = {
@@ -37,8 +44,13 @@ export function stageFor(age: number, tier: number): number {
   return apparent < 13 ? 0 : apparent < 28 ? 1 : apparent < 50 ? 2 : apparent < 72 ? 3 : 4;
 }
 
+const FUNDO_LUGAR: Record<string, string> = { vilarejo: 'vila', cidade: 'cidade', seita: 'seita', selva: 'floresta', montanha: 'montanha', ruinas: 'noite', deserto: 'deserto', gelo: 'gelo', mar: 'mar' };
 export function lookFromState(s: State): Look {
-  return { seed: s.name, stage: apparentStage(s), path: s.path, tier: s.tier, corr: s.corr, role: 'jogador', items: s.items };
+  const faccaoTipo = s.faction === 'seita' ? 'seita' : s.faction === 'cla' ? 'cla' : s.faction === 'demoniaca' ? 'culto' : undefined;
+  return {
+    seed: s.name, stage: apparentStage(s), path: s.path, tier: s.tier, corr: s.corr, role: 'jogador', items: s.items,
+    ap: s.look, faccaoTipo, fundo: s.corr >= 30 ? 'culto' : FUNDO_LUGAR[s.place] ?? 'floresta', feridas: s.wounds >= 6 ? 3 : s.wounds >= 4 ? 2 : s.wounds >= 2 ? 1 : 0,
+  };
 }
 
 export function lookForNpc(role: Role, name: string, tier = 2): Look {

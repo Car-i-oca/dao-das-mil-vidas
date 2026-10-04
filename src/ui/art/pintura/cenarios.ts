@@ -56,7 +56,7 @@ function cume(t: Tela, base: number, amp: number, esc: number, seed: number, top
     if (y2 > y + 1.6) t.mancha([[x, y], [x + 9, y2 + 6], [x + 5, y2 + 22], [x - 5, y + 14]], topo, { seed: seed + i, tremor: 0.4, alpha: 0.35, borrao: 1.2 });
     else if (y2 < y - 1.6) t.mancha([[x, y], [x + 10, y + 12], [x + 6, y + 26], [x - 4, y + 10]], fundo, { seed: seed + i, tremor: 0.4, alpha: 0.35, borrao: 1.2 });
   }
-  if (o.neve) for (let i = 1; i < pts.length - 1; i++) { const [x, y] = pts[i]; if (y < base - amp * 0.7) { const d = 3 + (base - amp * 0.7 - y) * 0.32 + fbm(i * 0.6, seed, 4) * 5; t.mancha([[x - 3, y], [x + 3, y], [x + 3.5, y + d], [x - 3.5, y + d * 0.8]], PAL.cinza[4], { seed: i, tremor: 0.3 }); t.mancha([[x - 3, y + d * 0.5], [x + 3, y + d * 0.5], [x + 3.5, y + d], [x - 3.5, y + d * 0.8]], PAL.ceu[4], { seed: i + 3, tremor: 0.3, alpha: 0.8 }); } }
+  if (o.neve) for (let i = 1; i < pts.length - 1; i++) { const [x, y] = pts[i]; if (y < base - amp * 0.82) { const d = 2 + (base - amp * 0.82 - y) * 0.3 + fbm(i * 0.6, seed, 4) * 3; t.mancha([[x - 3, y], [x + 3, y], [x + 3.5, y + d], [x - 3.5, y + d * 0.8]], PAL.cinza[4], { seed: i, tremor: 0.3 }); t.mancha([[x - 3, y + d * 0.5], [x + 3, y + d * 0.5], [x + 3.5, y + d], [x - 3.5, y + d * 0.8]], PAL.ceu[4], { seed: i + 3, tremor: 0.3, alpha: 0.8 }); } }
   return pts;
 }
 
@@ -98,7 +98,7 @@ export function vilarejo(noite: boolean, seed: number): Camadas {
   for (const [x, y, s] of [[70, 20, 1], [190, 46, 1.2], [340, 24, 1.1], [470, 50, 1.2], [590, 22, 1]] as [number, number, number][]) nuvem(nuv, x, y, s, noite, r);
   const terra = nova(), brilhos = nova();
   // montanhas distantes e colinas
-  cume(terra, 106, 46, 52, seed + 1, noite ? PAL.azul[1] : PAL.azul[3], noite ? PAL.noite[2] : PAL.azul[2], { picos: true, neve: !noite, ate: 138 });
+  cume(terra, 106, 46, 52, seed + 1, noite ? PAL.azul[1] : PAL.azul[2], noite ? PAL.noite[2] : PAL.azul[1], { picos: true, ate: 138 });
   cume(terra, 118, 24, 34, seed + 5, noite ? PAL.noite[2] : PAL.ceu[2], noite ? PAL.noite[1] : PAL.jade[2], { ate: 144 });
   cume(terra, 130, 12, 60, seed + 9, noite ? PAL.folha[1] : PAL.folha[4], noite ? PAL.folha[0] : PAL.folha[2], { ate: 156 });
   const arv = noite ? [PAL.folha[0], PAL.folha[0], PAL.folha[1], PAL.folha[2]] : [PAL.folha[1], PAL.folha[2], PAL.folha[3], PAL.folha[4]];
@@ -135,7 +135,7 @@ export function montanha(noite: boolean, seed: number): Camadas {
   const nuv = nova(640, 80);
   for (const [x, y, s] of [[90, 26, 1.2], [260, 14, 1], [430, 34, 1.3], [590, 20, 1]] as [number, number, number][]) nuvem(nuv, x, y, s, noite, r);
   const terra = nova(), brilhos = nova();
-  cume(terra, 92, 70, 40, seed + 2, noite ? PAL.azul[1] : PAL.azul[3], noite ? PAL.noite[2] : PAL.azul[1], { picos: true, neve: true, ate: 140 });
+  cume(terra, 92, 70, 40, seed + 2, noite ? PAL.azul[1] : PAL.azul[2], noite ? PAL.noite[2] : PAL.azul[0], { picos: true, neve: true, ate: 140 });
   cume(terra, 126, 46, 30, seed + 6, noite ? PAL.pedra[0] : PAL.pedra[3], noite ? PAL.noite[1] : PAL.pedra[1], { picos: true, ate: 172 });
   // penhasco com templo
   const tx = 216, ty = 98;

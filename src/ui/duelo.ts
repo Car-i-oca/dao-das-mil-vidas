@@ -1,7 +1,8 @@
 import type { CombatScript } from '../engine/combate';
 import { FOE } from '../data/combates';
 import { sceneSvg, type SceneKind } from './art';
-import { foeFighter, pathColor, playerFighter } from './art';
+import { foeFighter, pathColor, playerFighter, estiloAtual, type Look } from './art';
+import { efeitoUrl } from './art/pintura';
 
 /**
  * Cena animada do duelo (lado a lado). Só encena o roteiro `CombatScript` que o motor já decidiu.
@@ -10,6 +11,9 @@ import { foeFighter, pathColor, playerFighter } from './art';
 export interface DuelOptions {
   /** Nome do jogador, mostrado na barra de vida. */
   nome: string;
+  /** Aparência do jogador e do oponente (quando é uma pessoa do mundo): os lutadores usam a cara do retrato. */
+  playerLook?: Look;
+  foeLook?: Look;
   /** Chamado ao terminar ou pular. */
   onDone: () => void;
 }
@@ -20,7 +24,10 @@ const esc = (t: string) => t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt
 export function playDuel(script: CombatScript, opts: DuelOptions): void {
   const foe = FOE[script.foe];
   const root = document.createElement('div');
-  root.className = 'duel';
+  const px = estiloAtual() === 'pixel';
+  root.className = 'duel' + (px ? ' px' : '');
+  document.body.classList.add('em-duelo');
+  const vb = px ? '0 0 120 168' : '0 0 120 140';
   const wide = foe.id === 'serpente' || foe.id === 'dragao' || foe.id === 'lobo' || foe.id === 'tigre';
   root.innerHTML = `
     <div class="duel-hud">
@@ -29,8 +36,8 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
     </div>
     <div class="duel-stage" id="stage">
       ${sceneSvg(script.scene as SceneKind, script.foe).replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ')}
-      <svg class="fighter p" id="fp" viewBox="0 0 120 140" width="120" height="140">${playerFighter(script.path, script.tier)}</svg>
-      <svg class="fighter f ${wide ? 'wide' : ''}" id="ff" viewBox="0 0 120 140" width="120" height="140"><g transform="translate(120 0) scale(-1 1)">${foeFighter(script.foe)}</g></svg>
+      <svg class="fighter p" id="fp" viewBox="${vb}">${playerFighter(script.path, script.tier, opts.playerLook)}</svg>
+      <svg class="fighter f ${wide ? 'wide' : ''}" id="ff" viewBox="${vb}"><g transform="translate(120 0) scale(-1 1)">${foeFighter(script.foe, opts.foeLook, script.foeName)}</g></svg>
       <div class="duel-fx" id="fx"></div>
       <div class="duel-banner" id="banner"></div>
     </div>
@@ -75,6 +82,7 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
     timers.forEach(clearTimeout); clearInterval(idle);
     anims.forEach((a) => { try { a.cancel(); } catch { /* ignora */ } });
     root.classList.add('out');
+    document.body.classList.remove('em-duelo');
     window.setTimeout(() => { root.remove(); opts.onDone(); }, 220);
   };
 
@@ -104,6 +112,15 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
   /** Efeito visual próprio de cada técnica (etiqueta): projétil, onda, glifo, veneno, garras... */
   const effect = (b: { fx?: string; tid?: string }, toFoe: boolean, base: string) => {
     const kind = b.fx ?? 'golpe';
+    if (px) {
+      const im = document.createElement('img');
+      im.src = efeitoUrl(kind === 'espada' ? 'espada' : kind);
+      im.className = 'vfx vfxpx';
+      im.style.left = (toFoe ? 56 : 8) + '%';
+      fx.appendChild(im);
+      anim(im, [{ opacity: 0, transform: `scale(${toFoe ? 0.6 : -0.6}, 0.6)` }, { opacity: 1, transform: `scale(${toFoe ? 1 : -1}, 1)`, offset: 0.35 }, { opacity: 0, transform: `scale(${toFoe ? 1.2 : -1.2}, 1.2)` }], 560).onfinish = () => im.remove();
+      return;
+    }
     const hue = b.tid ? hashStr(b.tid) % 360 : -1;
     const col = hue >= 0 && kind !== 'espada' ? `hsl(${hue} 80% 62%)` : base;
     const x = toFoe ? 62 : 22;
@@ -159,7 +176,7 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
         await sleep(620);
         continue;
       }
-      if (b.a === 'p') effect(b, true, pc); else slash(false, 'var(--red)');
+      if (b.a === 'p') effect(b, true, pc); else if (px) effect({ fx: 'golpe' }, false, 'var(--red)'); else slash(false, 'var(--red)');
       quadro(def, 'dano0', 520);
       anim(def, [{ transform: 'translateX(0) rotate(0)', filter: 'brightness(1)' }, { transform: `translateX(${18 * dir}px) rotate(${4 * dir}deg)`, filter: 'brightness(2.4)', offset: 0.3 }, { transform: 'translateX(0) rotate(0)', filter: 'brightness(1)' }], 380, { fill: 'none' });
       shakeStage(b.crit ? 9 : 4);

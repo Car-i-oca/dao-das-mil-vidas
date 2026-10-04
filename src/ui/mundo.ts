@@ -3,7 +3,10 @@ import { nomeDoReino } from '../engine/v2/mundo';
 import { AMBICOES } from '../engine/v2/moldes';
 import { CAPITULO_NOME, CONTADOR_NOME } from '../engine/v2/diretor';
 import type { Pessoa } from '../engine/v2/tipos';
-import type { Role } from './art';
+import { portraitSvg, type Role, type Look } from './art';
+import { stageFor } from './art/portrait';
+import { gerarAparencia } from './art/pintura/aparencia';
+import { generoDoNome } from '../data/names';
 
 /** Partes da interface que só existem na v2 (mundo com memória). */
 const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
@@ -26,14 +29,30 @@ const FIO_NOME: Record<string, string> = {
   cla: 'O nome do clã', rival: 'A rivalidade', seita: 'A ascensão na seita', amigo: 'O juramento do amigo', mestre: 'O mestre', discipulo: 'O discípulo', herdeiro: 'O herdeiro do rival',
 };
 
+const ROLE_DE_PAPEL: Record<string, Role> = { mestre: 'mentor', rival: 'rival', amigo: 'amigo', noivo: 'noivo', companheiro: 'noivo', discipulo: 'discipulo', inimigo: 'inimigo', culpado: 'inimigo', credor: 'inimigo', tentador: 'inimigo', parente: 'amigo' };
+/** O olhar de uma pessoa do mundo: a aparência dela (fixa), a idade, a facção, o reino e como ela se sente em relação ao jogador. */
+export function lookDePessoa(s: State, p: Pessoa, role?: Role): Look {
+  const r: Role = role ?? p.papeis.map((x) => ROLE_DE_PAPEL[x]).find(Boolean) ?? 'amigo';
+  const faccao = p.faccao ? s.v2?.mundo.faccoes[p.faccao] : undefined;
+  const idade = Math.floor(s.age) - p.nasc;
+  const caiu = ['expulso', 'foragido', 'partiu', 'preso', 'caido'].includes(p.situacao ?? '');
+  const lugar = p.lugar ? s.v2?.mundo.lugares[p.lugar]?.tipo : undefined;
+  return {
+    seed: p.nome, stage: stageFor(idade, p.reino), path: p.trilha, tier: p.reino, corr: faccao?.tipo === 'culto' || r === 'inimigo' && p.opiniao < -40 ? 40 : 0, role: r, items: [],
+    ap: p.visual ?? gerarAparencia(`${p.nome}|${p.id}`, generoDoNome(p.nome)), faccaoTipo: caiu ? undefined : faccao?.tipo, estatuto: caiu ? 'errante' : undefined,
+    expr: p.opiniao >= 40 ? 'sorriso' : p.opiniao <= -40 ? 'raiva' : p.opiniao <= -15 ? 'canto' : idade >= 60 ? 'cansaco' : 'serio',
+    fundo: lugar && ['deserto', 'gelo', 'mar', 'templo', 'mercado'].includes(lugar) ? lugar : undefined,
+  };
+}
+
 /** Quem aparece no retrato da cena atual, e com que papel de retrato. */
-export function npcV2(s: State): { role: Role; nome: string; reino: number } | null {
+export function npcV2(s: State): { role: Role; nome: string; reino: number; pessoa: Pessoa } | null {
   const v = s.current?.v2;
   if (!v || !s.v2) return null;
   const ordem: [string, Role][] = [['mestre', 'mentor'], ['rival', 'rival'], ['amigo', 'amigo'], ['discipulo', 'discipulo'], ['jovem', 'discipulo'], ['herdeiro', 'inimigo'], ['culpado', 'inimigo'], ['lider', 'inimigo'], ['capanga', 'inimigo'], ['anciao', 'mentor'], ['parente', 'amigo'], ['morto', 'amigo']];
   for (const [r, role] of ordem) {
     const p = s.v2.mundo.pessoas[v.bind[r]];
-    if (p) return { role, nome: p.nome, reino: p.reino };
+    if (p) return { role, nome: p.nome, reino: p.reino, pessoa: p };
   }
   return null;
 }
@@ -75,11 +94,11 @@ function pessoaHtml(s: State, p: Pessoa): string {
   const o = opiniaoTexto(p.opiniao);
   const papeis = p.papeis.map((x) => PAPEL_NOME[x] ?? x).join(', ');
   const fatos = [...p.memoria].sort((a, b) => b.peso - a.peso).slice(0, 2).map((f) => legivel(f.tipo)).join(' · ');
-  return `<div class="pessoa ${p.vivo ? '' : 'morta'}">
+  return `<div class="pessoa ${p.vivo ? '' : 'morta'}"><div class="pessoa-linha"><div class="pessoa-ret">${portraitSvg(lookDePessoa(s, p), 56)}</div><div class="pessoa-txt">
     <div class="row between"><b>${esc(p.nome)}${p.vivo ? '' : ' †'}</b><span class="opi ${o.cls}">${o.txt}</span></div>
     <div class="small muted">${esc(papeis || 'conhecido')} · ${esc(nomeDoReino(p.trilha, p.reino))}${p.vivo ? '' : ` · morreu aos ${(p.morte?.ano ?? 0) - p.nasc} anos`}</div>
     ${fatos ? `<div class="small">Lembra: ${esc(fatos)}</div>` : ''}
-  </div>`;
+  </div></div></div>`;
 }
 
 export function mundoHtml(s: State): string {

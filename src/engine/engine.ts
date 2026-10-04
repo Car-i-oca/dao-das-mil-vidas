@@ -8,7 +8,8 @@ import { ORIGINS, TALENTS, FLAWS } from '../data/character';
 import { ITEMS } from '../data/items';
 import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
-import { CONSTITUTIONS, personName, personNameG, sectName, clanName, villageName, rollRoot } from '../data/names';
+import { gerarAparencia } from '../ui/art/pintura/aparencia';
+import { CONSTITUTIONS, generoDoNome, personName, personNameG, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { eventoV2, MOLDE, aplicarEfeitosMundo } from './v2/moldes';
 import { iniciarV2, pickNextV2, depoisDaCena, sincronizarMundo, finalDeVelhiceV2 } from './v2/diretor';
 import { EVENTS } from '../data/events';
@@ -279,7 +280,7 @@ export function rollCreation(meta: Meta, rng: Rng): Creation {
   return { origin: origin.id, talent: talent.id, flaw: flaw.id, root, constitution };
 }
 
-export function startLife(meta: Meta, c: Creation, pathId: string, seed: number, opts?: { v2?: boolean; genero?: 'm' | 'f' }): State {
+export function startLife(meta: Meta, c: Creation, pathId: string, seed: number, opts?: { v2?: boolean; genero?: 'm' | 'f'; look?: import('../ui/art/pintura/aparencia').Aparencia }): State {
   const rng = new Rng(seed);
   const path = PATH[pathId];
   const origin = ORIGIN[c.origin];
@@ -328,6 +329,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number,
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
+  s.look = opts?.look ?? gerarAparencia(`${s.name}|${s.seed}`, generoDoNome(s.name));
   if (opts?.v2) s.v2 = iniciarV2(s, rng);
   pickNext(s, rng);
   return s;
@@ -829,8 +831,8 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.result = { text: txt, check };
   if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c));
   if (s.v2 && s.current?.v2 && s.result.combate) {
-    const alvo = ['rival', 'culpado', 'lider', 'capanga', 'herdeiro', 'discipulo', 'jovem'].map((r) => s.v2!.mundo.pessoas[s.current!.v2!.bind[r]]).find(Boolean);
-    if (alvo) s.result.combate.foeName = alvo.nome;
+    const alvo = ['rival', 'culpado', 'lider', 'capanga', 'herdeiro', 'discipulo', 'jovem', 'alvo', 'cacador', 'tentador', 'campeao', 'chefe', 'cultivador'].map((r) => s.v2!.mundo.pessoas[s.current!.v2!.bind[r]]).find(Boolean);
+    if (alvo) { s.result.combate.foeName = alvo.nome; s.result.combate.pessoa = alvo.id; }
   }
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);

@@ -29,8 +29,8 @@ export const realmIcon = (ladder: string, tier: number, size = 56) => usar('real
 export const portraitSvg = (look: Look, size = 96) => usar('portrait')(look, size);
 export const sceneSvg = (kind: string, seed = 'x', night = false) => usar('scene')(kind, seed, night);
 export const endingCard = (id: string, title: string) => usar('ending')(id, title);
-export const playerFighter = (path: string, tier: number) => usar('player')(path, tier);
-export const foeFighter = (id: string) => usar('foe')(id);
+export const playerFighter = (path: string, tier: number, look?: Look) => usar('player')(path, tier, look);
+export const foeFighter = (id: string, look?: Look, semente?: string) => usar('foe')(id, look, semente);
 
 /** Amostra de um estilo (retrato, item e cenário) sem trocar o estilo ativo: serve ao seletor das opções. */
 export function amostraDe(e: Estilo, look: Look, item: Item) {
