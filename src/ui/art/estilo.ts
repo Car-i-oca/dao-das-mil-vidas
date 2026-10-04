@@ -1,7 +1,7 @@
 import type { Item, Technique } from '../../types';
 import type { Look } from './portrait';
 
-/** Os três estilos de arte do jogo. O padrão é o manhwa. */
+/** Os três estilos de arte do jogo. O padrão é o pixel art 16-bit. */
 export type Estilo = 'pixel' | 'manhwa' | 'tinta';
 
 export const ESTILOS: { id: Estilo; nome: string; desc: string }[] = [
@@ -10,7 +10,7 @@ export const ESTILOS: { id: Estilo; nome: string; desc: string }[] = [
   { id: 'pixel', nome: 'Pixel 16-bit', desc: 'RPG de 16 bits: sprites, sombreamento por faixas e cenários em camadas.' },
 ];
 
-let atual: Estilo = 'manhwa';
+let atual: Estilo = 'pixel';
 const ouvintes: (() => void)[] = [];
 
 export const estiloAtual = (): Estilo => atual;

@@ -26,9 +26,9 @@ const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.
 
 /* ---------- Persistência ---------- */
 const KEY = __V2__ ? 'dao-mil-vidas-save-v2' : 'dao-mil-vidas-save-v1';
-interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
+interface Settings { estilo: Estilo; estiloManual?: boolean; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
+  return { estilo: estiloValido(x?.estilo) && x?.estiloManual ? x.estilo : 'pixel', estiloManual: !!x?.estiloManual, speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -608,7 +608,7 @@ app.addEventListener('click', (ev) => {
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }
-    case 'estilo': if (estiloValido(target.dataset.id)) { save.settings.estilo = target.dataset.id; applySettings(); persist(); render(); } break;
+    case 'estilo': if (estiloValido(target.dataset.id)) { save.settings.estilo = target.dataset.id; save.settings.estiloManual = true; applySettings(); persist(); render(); } break;
     case 'duelos': save.settings.duelos = target.dataset.i === '1'; persist(); render(); break;
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;

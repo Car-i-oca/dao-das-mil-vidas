@@ -54,6 +54,13 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
     return a;
   };
 
+  /** Quadros de animação dos lutadores em pixel art (se o estilo tiver). */
+  const setQ = (svg: Element, nome: string) => { svg.querySelectorAll<SVGElement>('image[data-q]').forEach((im) => { im.style.display = im.dataset.q === nome ? '' : 'none'; }); };
+  const temQ = (svg: Element) => !!svg.querySelector('image[data-q]');
+  let ocioso = 0;
+  const idle = window.setInterval(() => { ocioso ^= 1; for (const s of [fp, ff]) if (temQ(s) && !s.dataset.fixo) setQ(s, 'parado' + ocioso); }, 520);
+  timers.push(idle);
+  const quadro = (svg: Element, nome: string, ms = 0) => { if (!temQ(svg)) return; (svg as unknown as HTMLElement).dataset.fixo = '1'; setQ(svg, nome); if (ms) window.setTimeout(() => { delete (svg as unknown as HTMLElement).dataset.fixo; setQ(svg, 'parado0'); }, ms / speed); };
   let hpP = 100, hpF = 100;
   const setHp = (who: 'p' | 'f', v: number) => {
     const el = $(who === 'p' ? 'hp-p' : 'hp-f');
@@ -65,7 +72,7 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
   const finish = () => {
     if (finished) return;
     finished = true;
-    timers.forEach(clearTimeout);
+    timers.forEach(clearTimeout); clearInterval(idle);
     anims.forEach((a) => { try { a.cancel(); } catch { /* ignora */ } });
     root.classList.add('out');
     window.setTimeout(() => { root.remove(); opts.onDone(); }, 220);
@@ -141,6 +148,8 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
       const def = b.a === 'p' ? ff : fp;
       const dir = b.a === 'p' ? 1 : -1;
       say(b.mov, b.a === 'p' ? (b.tec ? 'tec' : 'mine') : 'theirs');
+      const pref = b.tec ? 'tecnica' : 'ataque';
+      quadro(atk, pref + '0'); window.setTimeout(() => quadro(atk, pref + '1'), 160 / speed); window.setTimeout(() => quadro(atk, pref + '2', 420), 340 / speed);
       anim(atk, [{ transform: 'translateX(0) scale(1)' }, { transform: `translateX(${-8 * dir}px) scale(1.04)`, offset: 0.25 }, { transform: `translateX(${52 * dir}px) scale(1.08)`, offset: 0.55 }, { transform: 'translateX(0) scale(1)' }], 620, { fill: 'none' });
       await sleep(340);
       if (skipped) return;
@@ -151,6 +160,7 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
         continue;
       }
       if (b.a === 'p') effect(b, true, pc); else slash(false, 'var(--red)');
+      quadro(def, 'dano0', 520);
       anim(def, [{ transform: 'translateX(0) rotate(0)', filter: 'brightness(1)' }, { transform: `translateX(${18 * dir}px) rotate(${4 * dir}deg)`, filter: 'brightness(2.4)', offset: 0.3 }, { transform: 'translateX(0) rotate(0)', filter: 'brightness(1)' }], 380, { fill: 'none' });
       shakeStage(b.crit ? 9 : 4);
       if (b.a === 'p') { hpF = Math.max(script.fim.f, hpF - b.dano); setHp('f', hpF); } else { hpP = Math.max(script.fim.p, hpP - b.dano); setHp('p', hpP); }
@@ -159,12 +169,12 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
     }
     if (skipped) return;
     if (script.desfecho === 'vitoria') {
-      say(`${script.foeName} ${script.fraseFim}.`);
+      say(`${script.foeName} ${script.fraseFim}.`); quadro(ff, 'derrota0');
       anim(ff, [{ transform: 'rotate(0)', opacity: 1 }, { transform: 'translateX(24px) rotate(78deg)', opacity: 0.2 }], 900);
       await sleep(1000);
-      say('VITÓRIA', 'win');
+      say('VITÓRIA', 'win'); quadro(fp, 'vitoria0');
     } else if (script.desfecho === 'derrota') {
-      say('Seus joelhos cedem. A vida se esvai...');
+      say('Seus joelhos cedem. A vida se esvai...'); quadro(fp, 'derrota0');
       anim(fp, [{ transform: 'rotate(0)', opacity: 1 }, { transform: 'translateX(-24px) rotate(-78deg)', opacity: 0.35 }], 900);
       await sleep(1000);
       say('DERROTA', 'lose');
