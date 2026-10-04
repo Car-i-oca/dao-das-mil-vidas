@@ -14,7 +14,7 @@ Comparação **antes → depois** em relação ao baseline (`docs/variedade.base
 | Parcela dos turnos ocupada por eventos genéricos | 42.4% → **27.8%** |
 | Eventos distintos em 10 vidas seguidas | 211 → **372** |
 | Semelhança entre vidas seguidas (Jaccard, 0 a 1) | 0.162 → **0.182** |
-| Final mais comum | Mestre Respeitado: 71.8% → **28.7%** |
+| Final mais comum | Fim em Paz: 71.8% → **Mestre Respeitado: 28.7%** |
 | Entropia dos finais (bits; maior = mais variado) | 1.48 → **3.28** |
 | Finais com 1% ou mais das vidas | 5 → **11** |
 | Idade média ao morrer | 634 → **501** anos |
