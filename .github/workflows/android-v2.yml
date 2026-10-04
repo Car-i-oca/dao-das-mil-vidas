@@ -43,14 +43,14 @@ jobs:
       - name: Criar o projeto Android
         run: |
           # outro app: nome e identificador próprios (o nome definitivo sai de docs/nomes-v2.md)
-          sed -i 's#"appId": "app.cultivo.jogo"#"appId": "app.cultivo.v2teste"#; s#"appName": "Dao das Mil Vidas"#"appName": "Dao v2 (teste)"#; s#"webDir": "dist"#"webDir": "dist-v2"#' capacitor.config.json
+          sed -i 's#"appId": "app.cultivo.jogo"#"appId": "app.cultivo.v2teste"#; s#"appName": "Murim Quest"#"appName": "Murim Quest (teste)"#; s#"webDir": "dist"#"webDir": "dist-v2"#' capacitor.config.json
           cat capacitor.config.json
           npx cap add android
           npx @capacitor/assets generate --android
           sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
           sed -i "s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
           # Metadados de autoria no APK (AndroidManifest)
-          sed -z -i 's#\(<application[^>]*>\)#\1\n        <meta-data android:name="copyright" android:value="Dao das Mil Vidas (c) 2026 Andre Barbosa Vieira. Todos os direitos reservados." />#' android/app/src/main/AndroidManifest.xml
+          sed -z -i 's#\(<application[^>]*>\)#\1\n        <meta-data android:name="copyright" android:value="Murim Quest (c) 2026 Andre Barbosa Vieira. Todos os direitos reservados." />#' android/app/src/main/AndroidManifest.xml
           grep -c 'name="copyright"' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 

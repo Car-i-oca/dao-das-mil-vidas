@@ -2,9 +2,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 const pasta = process.argv[2] ?? 'dist-v2';
 const mf = JSON.parse(readFileSync(`${pasta}/manifest.webmanifest`, 'utf8'));
-mf.name = 'Dao v2 (teste)';
-mf.short_name = 'Dao v2';
+mf.name = 'Murim Quest (teste)';
+mf.short_name = 'Murim Quest v2';
 writeFileSync(`${pasta}/manifest.webmanifest`, JSON.stringify(mf, null, 2));
-const html = readFileSync(`${pasta}/index.html`, 'utf8').replace('<title>Dao das Mil Vidas</title>', '<title>Dao v2 (teste)</title>');
+const html = readFileSync(`${pasta}/index.html`, 'utf8').replace('<title>Murim Quest</title>', '<title>Murim Quest (teste)</title>');
 writeFileSync(`${pasta}/index.html`, html);
 console.log('v2: nome ajustado em', pasta);

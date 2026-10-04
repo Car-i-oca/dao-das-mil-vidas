@@ -1,8 +1,8 @@
-# Dao das Mil Vidas
+# Murim Quest
 
 Jogo de texto de cultivação (xianxia / wuxia / murim) em português do Brasil.
 
-> **Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.** O repositório é público para consulta e para distribuir o jogo; não há licença aberta (ver `LICENSE`, `docs/autoria.md` e `docs/licencas.md`).
+> **Murim Quest © 2026 Andre Barbosa Vieira. Todos os direitos reservados.** O repositório é público para consulta e para distribuir o jogo; não há licença aberta (ver `LICENSE`, `docs/autoria.md` e `docs/licencas.md`).
  Sua vida avança por eventos aleatórios; escolhas e testes de sorte decidem o rumo; sua trilha de cultivo nasce de cenas da própria história; você envelhece, morre e herda algo para a próxima vida.
 
 ## Rodar no computador

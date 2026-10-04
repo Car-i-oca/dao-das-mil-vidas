@@ -1,4 +1,4 @@
-# Pesquisa de anterioridade da marca "Dao das Mil Vidas"
+# Pesquisa de anterioridade da marca "Murim Quest" (antes "Dao das Mil Vidas")
 
 Pesquisa feita na web (busca aberta, 2026-10-03). **Não substitui a busca oficial no INPI**: a base de marcas do INPI (busca por "Dao", "Mil Vidas", "Thousand Lives", classe 9 e classe 41) precisa ser consultada por você antes do pedido.
 
@@ -25,3 +25,6 @@ Pesquisa feita na web (busca aberta, 2026-10-03). **Não substitui a busca ofici
 - Xianxia Simulator: https://captainwabbit.itch.io/xianxia-simulator
 - Ten Thousand Realms: https://acelydev.itch.io/ten-thousand-realms
 - Lista de jogos de cultivação em texto: https://www.bladerpg.com/en/text-based-cultivation-game/
+
+## Murim Quest (nome atual, 2026-10-04)
+Busca rápida (aberta, não oficial): não encontrei jogo com o nome exato "Murim Quest". Há nomes vizinhos: **Murim Madness**, **Murim Online**, **Murim Clan Wars**. "Murim" é termo comum do gênero (artes marciais coreanas / webnovels e manhwas), então **isolado tem baixa distintividade**; a marca está no conjunto "Murim Quest". O subtítulo "O Caminho do Dao" é só visual da tela inicial e não faz parte do título, do manifest, do nome do app nem de metadados. A busca oficial no INPI (classes 9 e 41) continua pendente.

@@ -1,6 +1,6 @@
 # Autoria e direção criativa
 
-**Dao das Mil Vidas** é obra de **Andre Barbosa Vieira** (© 2026, todos os direitos reservados; ver `LICENSE`). Este documento registra, em ordem cronológica, a direção criativa dele: o conceito, as decisões de design, os pedidos e os feedbacks que moldaram o jogo, a partir dos arquivos de pedidos do projeto (`manwhua.md`, `expandirjg.md`, `proximopasso.md`, `sensacaodepoder.md`, `prompt-dao-v2.md`) e do histórico de commits.
+**Murim Quest** é obra de **Andre Barbosa Vieira** (© 2026, todos os direitos reservados; ver `LICENSE`). Este documento registra, em ordem cronológica, a direção criativa dele: o conceito, as decisões de design, os pedidos e os feedbacks que moldaram o jogo, a partir dos arquivos de pedidos do projeto (`manwhua.md`, `expandirjg.md`, `proximopasso.md`, `sensacaodepoder.md`, `prompt-dao-v2.md`) e do histórico de commits.
 
 > **Nota sobre ferramentas.** O desenvolvimento (código, textos, dados e arte gerada por código) usou o assistente de IA **Claude** (Anthropic) como ferramenta de escrita e programação, **sob a direção do autor**: foi o autor quem definiu o conceito, os requisitos, as regras de equilíbrio, as prioridades e quem aceitou ou rejeitou cada rumo do projeto. As decisões abaixo são dele.
 
@@ -11,7 +11,7 @@
 - Fase 3, implementação: web mobile-first, PWA, conteúdo separado do código, simulador de 1.000 vidas para balancear ("chegar ao topo deve ser raro, mas possível").
 
 ## 2. Primeiros pedidos de produto
-- **Dar nome ao jogo** e renomear a pasta (nasce "Dao das Mil Vidas"); jogar no **celular**, como no Life in Adventure.
+- **Dar nome ao jogo** e renomear a pasta (nasce "Murim Quest"); jogar no **celular**, como no Life in Adventure.
 - **Liberdade total** para o desenvolvedor decidir, "apenas conclua o jogo"; depois do plano, **ampliar** trilhas, finais, itens, técnicas e eventos **sem perder o balanceamento**.
 - **A trilha não é escolhida no início**: ela nasce de **eventos** (cenas de primeiro método), dentro da história.
 - **Rodar como aplicativo no celular**: PWA publicado na web e, depois, **APK instalável** gerado e atualizado automaticamente. Decisão: **não renomear** o jogo por ora.

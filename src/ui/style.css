@@ -65,6 +65,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .home { justify-content: center; text-align: center; gap: 18px; }
 .seal { font-size: 5.5rem; line-height: 1; color: var(--red); font-weight: 700; margin-bottom: -6px; text-shadow: 0 0 40px rgba(196, 81, 61, 0.35); }
 .home h1 { font-size: 1.9rem; }
+.home .subtitulo { font-size: .95rem; letter-spacing: .12em; color: var(--muted); margin-top: -10px; }
 .home .tag { color: var(--muted); font-style: italic; margin-top: -8px; }
 .home .stack { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
 

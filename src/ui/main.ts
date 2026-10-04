@@ -142,7 +142,7 @@ function renderHome() {
   app.innerHTML = `
     <div class="screen home">
       <div class="seal">道</div>
-      <div><h1>Dao das Mil Vidas</h1><div class="tag">Viva. Cultive. Morra. Lembre.</div>${__V2__ ? '<div class="muted small" style="margin-top:6px">Versão de teste: mundo com memória. O save é separado do jogo original.</div>' : ''}</div>
+      <div><h1>Murim Quest</h1><div class="subtitulo">O Caminho do Dao</div><div class="tag">Viva. Cultive. Morra. Lembre.</div>${__V2__ ? '<div class="muted small" style="margin-top:6px">Versão de teste: mundo com memória. O save é separado do jogo original.</div>' : ''}</div>
       <div class="stack">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
@@ -151,7 +151,7 @@ function renderHome() {
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
       <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/${ENDINGS.length}${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
-      <p class="muted small copy">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
+      <p class="muted small copy">Murim Quest © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
     </div>`;
 }
 
@@ -531,7 +531,7 @@ function renderMeta() {
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
+      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Murim Quest © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
   }
   app.innerHTML = `
     <div class="screen">
@@ -614,7 +614,7 @@ app.addEventListener('click', (ev) => {
     case 'intro': save.settings.intro = true; persist(); render(); break;
     case 'share': {
       if (!s?.ending) break;
-      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Dao das Mil Vidas'].join('\n');
+      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Murim Quest'].join('\n');
       navigator.clipboard?.writeText(txt).then(() => toast('Resumo copiado'), () => toast('Não foi possível copiar'));
       break;
     }
