@@ -2,6 +2,7 @@ import type { GameEvent, State } from '../types';
 import { FOE, PATH_MOVES, foeFor } from '../data/combates';
 import { TECHNIQUES } from '../data/techniques';
 import { Rng } from './rng';
+import type { Pessoa } from './v2/tipos';
 
 /**
  * Roteiro de combate: encena, em golpes, um teste de combate que o motor JÁ resolveu.
@@ -42,19 +43,32 @@ export interface CombatScript {
   tier: number;
   /** Pessoa do mundo contra quem se luta (v2): o duelo usa a aparência dela. */
   pessoa?: string;
+  /** Objeto pessoa da v2 se combateu um NPC do mundo vivo. */
+  oponenteV2?: Pessoa;
   /** Selo da opção exclusiva que levou à luta (trilha, talento, defeito, técnica...), se houver. */
   selo?: string;
 }
 
 const TECH = Object.fromEntries(TECHNIQUES.map((t) => [t.id, t]));
 const FX_TAGS = ['espada', 'corpo', 'veneno', 'demonio', 'besta', 'formacao', 'mente', 'alquimia', 'forja', 'fuga', 'qi', 'combate'];
-const PATH_FX: Record<string, string> = { espada: 'espada', corpo: 'corpo', sopro: 'qi', alquimia: 'alquimia', alma: 'mente', formacoes: 'formacao', budista: 'corpo', venenos: 'veneno', bestas: 'besta', demoniaca: 'demonio' };
+const PATH_FX: Record<string, string> = {
+  espada: 'espada',
+  corpo: 'corpo',
+  sopro: 'qi',
+  alquimia: 'alquimia',
+  alma: 'mente',
+  formacoes: 'formacao',
+  budista: 'corpo',
+  venenos: 'veneno',
+  bestas: 'besta',
+  demoniaca: 'demonio',
+};
 
 interface Move { name: string; tec: boolean; tid?: string; fx: string }
 
 /** Golpes do jogador: técnicas que ele realmente tem (cada uma com efeito próprio) e, depois, os da trilha. */
 function playerMoves(s: State): Move[] {
-  const tec: Move[] = s.techniques
+  const tec: Move[] = (s.techniques || [])
     .map((id) => TECH[id])
     .filter((t) => t && t.tags?.some((x) => FX_TAGS.includes(x)))
     .map((t) => ({ name: t.name, tec: true, tid: t.id, fx: FX_TAGS.find((x) => t.tags!.includes(x) && x !== 'combate') ?? 'golpe' }));
@@ -62,10 +76,20 @@ function playerMoves(s: State): Move[] {
   return [...tec, ...base];
 }
 
-export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: number, selo?: string): CombatScript {
+export function buildCombat(
+  s: State,
+  ev: GameEvent,
+  success: boolean,
+  ferida: number,
+  selo?: string,
+  oponenteV2?: Pessoa
+): CombatScript {
   const rng = new Rng((s.seed ^ (s.turn * 2654435761)) >>> 0);
-  const foeId = foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente);
-  const foe = FOE[foeId];
+  const foeId = oponenteV2
+    ? (oponenteV2.trilha === 'demoniaca' ? 'demonio' : 'cultivador')
+    : foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente);
+  const foe = FOE[foeId] ?? FOE.cultivador;
+  const foeName = oponenteV2 ? oponenteV2.nome : foe.name;
   const mine = playerMoves(s);
   const tecs = mine.filter((m) => m.tec);
   const bases = mine.filter((m) => !m.tec);
@@ -78,6 +102,7 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
   // Desfecho coerente com o resultado do teste e com os ferimentos.
   let desfecho: Desfecho = 'vitoria';
   if (!success) desfecho = ferida >= 3 ? (rng.chance(0.55) ? 'derrota' : 'salvo') : ferida >= 1 ? (rng.chance(0.6) ? 'fuga' : 'derrota') : 'fuga';
+
   // Vida final: vencedor termina com o que sobrou; perdedor cai até um ponto baixo que justifica o recuo.
   const pFim = success ? Math.max(18, 100 - Math.round(ferida * 13) - rng.int(4, 24)) : desfecho === 'derrota' ? rng.int(0, 6) : rng.int(7, 20);
   const fFim = success ? 0 : rng.int(20, 70);
@@ -108,7 +133,13 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
     if (wantF) { seq.push('f'); iF++; } else { seq.push('p'); ip++; }
   }
   const wantLast = success ? 'p' : 'f';
-  if (seq[seq.length - 1] !== wantLast) { const k = seq.lastIndexOf(wantLast); if (k >= 0) { seq.splice(k, 1); seq.push(wantLast); } }
+  if (seq[seq.length - 1] !== wantLast) {
+    const k = seq.lastIndexOf(wantLast);
+    if (k >= 0) {
+      seq.splice(k, 1);
+      seq.push(wantLast);
+    }
+  }
 
   // Escolhe quais golpes do oponente serão desviados (nunca o último).
   const fIdx = seq.map((a, i) => (a === 'f' && i < seq.length - 1 ? i : -1)).filter((i) => i >= 0);
@@ -130,7 +161,18 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
   });
 
   return {
-    foe: foeId, foeName: foe.name, scene: ev.combate?.cenario ?? foe.scene, vitoria: success, desfecho, beats,
-    fim: { p: pFim, f: fFim }, fraseFim: foe.down, path: s.path, tier: s.tier, selo,
+    foe: foeId,
+    foeName,
+    scene: ev.combate?.cenario ?? foe.scene,
+    vitoria: success,
+    desfecho,
+    beats,
+    fim: { p: pFim, f: fFim },
+    fraseFim: foe.down,
+    path: s.path,
+    tier: s.tier,
+    pessoa: oponenteV2?.id,
+    oponenteV2,
+    selo,
   };
 }
