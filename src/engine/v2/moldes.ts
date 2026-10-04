@@ -39,7 +39,7 @@ function jogadorOk(s: State, c: NonNullable<Cond2['jogador']>): boolean {
   const k: Cond = {
     tierMin: c.reinoMin, tierMax: c.reinoMax, ageMin: c.idadeMin, ageMax: c.idadeMax, path: c.trilha, origin: c.origem, flags: c.flag, noFlags: c.semFlag,
     talent: c.talento, flaw: c.defeito, root: c.raiz, tecnicas: c.tecnica, mestria: c.mestria, item: c.item, perfil: c.perfilMin,
-    pedrasMin: c.pedrasMin, karmaMin: c.karmaMin, karmaMax: c.karmaMax, fameMin: c.famaMin, constitution: c.constituicao,
+    pedrasMin: c.pedrasMin, karmaMin: c.karmaMin, karmaMax: c.karmaMax, fameMin: c.famaMin, constitution: c.constituicao, corrMin: c.corrMin,
   };
   return condMet(s, k);
 }

@@ -159,7 +159,7 @@ export interface CondJogador {
   trilha?: string[]; semTrilha?: boolean; talento?: string[]; defeito?: string[]; defeitoNao?: string[];
   origem?: string[]; raiz?: string[]; tecnica?: string[]; mestria?: number; item?: string;
   flag?: string[]; semFlag?: string[]; perfilMin?: Record<string, number>; pedrasMin?: number;
-  karmaMin?: number; karmaMax?: number; famaMin?: number; constituicao?: string[];
+  karmaMin?: number; karmaMax?: number; famaMin?: number; constituicao?: string[]; corrMin?: number;
 }
 export interface CondPapel {
   opiniaoMin?: number; opiniaoMax?: number; reinoMin?: number; reinoMax?: number;

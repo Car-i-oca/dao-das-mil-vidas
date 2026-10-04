@@ -5,6 +5,12 @@ import type { Ending } from '../../types';
  * São escolhidos por `finalDeVelhiceV2` quando a vida termina por idade.
  */
 export const FINAIS_V2: Ending[] = [
+  { id: 'v2_dem_redimido', name: 'A Voz Que Calou', legacy: 1.7,
+    text: '{nome} passou a vida inteira ouvindo uma voz que ninguém mais ouvia, e passou a segunda metade aprendendo a não responder. Quando morreu, os que estavam perto contam que o rosto estava calmo de um modo que não era de quem dorme, e sim de quem, finalmente, terminou uma conversa.',
+    alt: ['Houve quem dissesse que {nome} nunca foi tentado. Quem conviveu sabia: foi tentado todos os dias, e disse não em cada um, em silêncio, sem plateia.'] },
+  { id: 'v2_dem_trono', name: 'O Trono de Sombra', legacy: 1.1,
+    text: '{nome} chegou aonde poucos chegam, pagando um preço que ninguém viu e todo mundo sentiu. Não houve funeral: houve um silêncio longo na seita, e depois alívio, e depois uma coisa pior, que ninguém soube nomear. Na lápide, nada. Na memória dos que ficaram, uma sombra que andava meio passo adiante do corpo.',
+    alt: ['O poder de {nome} sobreviveu a {nome}. Houve quem herdasse a técnica, e quem herdasse a voz. A segunda dava mais trabalho.'] },
   { id: 'v2_comp_unidos', name: 'Dois no Mesmo Caminho', legacy: 1.8,
     text: '{nome} morreu como cultivou nos últimos anos: ao lado de alguém. Os que viram os dois juntos contam que não conversavam muito, e que não precisavam. No dia da tribulação final, dizem, a luz se dividiu em duas, e a montanha guardou o resto em silêncio.',
     alt: ['O juramento sob a lua não ficou escrito em nenhum livro. Ficou nos hábitos: o chá servido sem pedir, a palavra que se completa sozinha. {nome} deixou mais do que técnicas: deixou o exemplo de uma aposta que deu certo.'] },

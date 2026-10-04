@@ -11,6 +11,9 @@ import { PERIGOS } from './moldes/perigos';
 import { HERANCA } from './moldes/heranca';
 import { COMPANHEIRO } from './moldes/companheiro';
 import { DISCIPULO } from './moldes/discipulo';
+import { DEMONIO } from './moldes/demonio';
+import { GUERRA } from './moldes/guerra';
+import { ORIGEM } from './moldes/origem';
 
 /** Todos os moldes da v2 (ver docs/eventos-v2.md). */
-export const MOLDES: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO];
+export const MOLDES: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO, ...DEMONIO, ...GUERRA, ...ORIGEM];
