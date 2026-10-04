@@ -226,3 +226,22 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .opi.pos, .opi.pos2 { color: var(--jade); border-color: var(--jade); }
 .opi.neg, .opi.neg2 { color: var(--red); border-color: var(--red); }
 .fio { padding: 4px 0; }
+
+/* ---------- Telas pequenas: nada sai do quadro (320 a 412 px, paisagem, fonte grande) ---------- */
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-wrap: anywhere; hyphens: auto; }
+img, svg, canvas, video { max-width: 100%; }
+.row > *, .choice > *, .kv > *, .hud-main, .card, .item, .pessoa { min-width: 0; }
+.row.between { flex-wrap: wrap; }
+.note { white-space: normal; }
+.kv { grid-template-columns: minmax(84px, 34%) minmax(0, 1fr); }
+.kv .k { overflow-wrap: anywhere; hyphens: auto; }
+.choice { flex-wrap: wrap; }
+.choice > span:first-child { flex: 1 1 12ch; }
+.home h1 { font-size: clamp(1.5rem, 9vw, 1.9rem); line-height: 1.1; }
+.home .subtitulo { text-align: center; }
+.btn, .choice, button, .tabs button { min-height: 44px; }
+.screen { padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); padding-top: max(8px, var(--safe-t)); padding-bottom: max(12px, var(--safe-b)); }
+.tabs { padding-bottom: var(--safe-b); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+@media (max-width: 360px) { .kv { grid-template-columns: 1fr; } .kv .k { margin-top: 6px; } }
+@media (orientation: landscape) and (max-height: 480px) { .scene svg { max-height: 36vh; } .duel-stage { max-height: 62vh; } }
