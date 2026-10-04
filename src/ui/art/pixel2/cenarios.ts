@@ -41,10 +41,8 @@ function astros(p: Pix, night: boolean, r: Rng) {
 }
 
 function nuvem(p: Pix, cx: number, cy: number, s: number, night: boolean) {
-  const r = night ? PAL.noite.slice(1) : PAL.ceu.slice(2);
   const f = uniao(elipse(cx, cy, 16 * s, 5 * s), elipse(cx - 9 * s, cy + 1, 9 * s, 4 * s), elipse(cx + 10 * s, cy + 1, 10 * s, 4 * s), elipse(cx - 2 * s, cy - 4 * s, 9 * s, 5 * s));
   p.forma(f, night ? [PAL.noite[1], PAL.noite[2], PAL.noite[3], PAL.roxo[2]] : [PAL.ceu[3], PAL.ceu[4], PAL.papel[4], '#ffffff'].slice(0, 4), { volume: 5 * s, semContorno: true, pontilhado: 0.5 });
-  void r;
 }
 
 /** Cadeia de montanhas em picos (ruído "ridged"): tons pela altura e pela inclinação (vertente da luz mais clara), neve opcional. */
@@ -53,7 +51,6 @@ function cadeia(p: Pix, y0: number, amp: number, passo: number, r: Rng, rampa: s
   const fases = [r.next() * 6.28, r.next() * 6.28, r.next() * 6.28, r.next() * 6.28];
   const alt = (x: number) => {
     const s = opt.suave ? 0.35 : 1;
-    // ruído ridged multifrequência baseado em 1 - |sin(frequência * x + fase)|
     const a1 = 1 - Math.abs(Math.sin(x / passo + fases[0]));
     const a2 = (1 - Math.abs(Math.sin(x / (passo * 0.43) + fases[1]))) * a1;
     const a3 = (1 - Math.abs(Math.sin(x / (passo * 0.19) + fases[2]))) * a2;
@@ -66,7 +63,7 @@ function cadeia(p: Pix, y0: number, amp: number, passo: number, r: Rng, rampa: s
   const Y = (x: number) => ys[Math.max(0, Math.min(LARGURA + 5, x + 3))];
   const topo = y0 - amp;
   for (let x = 0; x < LARGURA; x++) {
-    const inc = Y(x + 3) - Y(x - 3); // negativo: terreno sobe para a direita (vertente virada à esquerda, iluminada)
+    const inc = Y(x + 3) - Y(x - 3);
     const yIni = Math.max(0, Y(x));
     for (let y = yIni; y < base; y++) {
       const prof = y - Y(x);
@@ -74,7 +71,7 @@ function cadeia(p: Pix, y0: number, amp: number, passo: number, r: Rng, rampa: s
       let tom = t < 0.12 ? 3 : t < 0.4 ? 2 : t < 0.75 ? 1 : 0;
       if (inc > 3 && t < 0.7) tom = Math.min(rampa.length - 1, tom + 1);
       else if (inc < -3 && t < 0.7) tom = Math.max(0, tom - 1);
-      if (t > 0.1 && t < 0.9 && ((x * 7 + y * 3) % 23 === 0)) tom = Math.max(0, tom - 1); // veios de rocha
+      if (t > 0.1 && t < 0.9 && ((x * 7 + y * 3) % 23 === 0)) tom = Math.max(0, tom - 1);
       p.set(x, y, rampa[Math.min(rampa.length - 1, Math.max(0, tom))]);
     }
     if (opt.neve) {
@@ -105,9 +102,8 @@ function casa(p: Pix, x: number, y: number, w: number, h: number, night: boolean
   p.retangulo(Math.round(x + w * 0.2), Math.round(y - h * 0.65), 4, 5, jan);
   if (night) p.retangulo(Math.round(x + w * 0.2), Math.round(y - h * 0.65), 4, 1, PAL.ouro[4]);
   p.retangulo(Math.round(x + w * 0.62), Math.round(y - h * 0.55), 5, h * 0.55 | 0, PAL.madeira[1]);
-  // telhado em beirais curvos
   const t = poligono([[x - 4, y - h + 1], [x + 3, y - h - 1], [x + w / 2, y - h - 11], [x + w - 3, y - h - 1], [x + w + 4, y - h + 1], [x + w + 1, y - h + 4], [x - 1, y - h + 4]]);
-  p.forma(t, PAL[tel as unknown as keyof typeof PAL] ?? tel, { volume: 4, pontilhado: 0.3 });
+  p.forma(t, tel, { volume: 4, pontilhado: 0.3 });
 }
 
 function pagode(p: Pix, cx: number, y: number, andares: number, night: boolean) {
@@ -143,29 +139,22 @@ export function vilarejo(night: boolean, seed = 7): Camadas {
   const c: Camadas = { ceu: ceu(night, 'vilarejo'), nuvens: novo(640, 70), longe: novo(), meio: novo(), agua: novo(), perto: novo(), luzes: novo() };
   astros(c.ceu, night, r);
   for (const [x, y, s] of [[60, 14, 1], [170, 34, 1.3], [330, 20, 1.1], [450, 40, 1.2], [560, 14, 1]] as const) nuvem(c.nuvens, x, y, s, night);
-  // montanhas distantes
   cadeia(c.longe, 100, 36, 24, r, night ? [PAL.azul[0], PAL.azul[0], PAL.noite[2], PAL.azul[1], PAL.azul[1]] : [PAL.azul[2], PAL.azul[3], PAL.azul[3], PAL.ceu[3], PAL.ceu[4]], { baseY: 124, neve: false });
   cadeia(c.longe, 114, 20, 17, r, night ? [PAL.noite[1], PAL.azul[0], PAL.azul[1], PAL.azul[1], PAL.azul[1]] : [PAL.jade[1], PAL.jade[2], PAL.azul[3], PAL.ceu[3], PAL.ceu[3]], { baseY: 130 });
-  // colina com pinheiros
   cadeia(c.meio, 126, 10, 40, r, night ? [PAL.grama[0], PAL.grama[0], PAL.grama[1], PAL.grama[1], PAL.grama[2]] : [PAL.grama[1], PAL.grama[2], PAL.grama[2], PAL.grama[3], PAL.grama[3]], { baseY: 150, suave: 1 });
   const arv = night ? [PAL.grama[0], PAL.grama[0], PAL.grama[1], PAL.grama[1]] : [PAL.grama[0], PAL.grama[1], PAL.grama[2], PAL.grama[3]];
   for (let i = 0; i < 22; i++) pinheiro(c.meio, r.int(6, 314), r.int(124, 134), r.int(14, 22), arv);
-  // aldeia
   const casas: [number, number, number, number][] = [[24, 142, 24, 16], [58, 144, 20, 14], [96, 141, 26, 18], [200, 143, 22, 15], [236, 141, 26, 17], [276, 144, 20, 14]];
   for (const [x, y, w, h] of casas) casa(c.meio, x, y, w, h, night, r.next() < 0.5 ? PAL.vermelho : PAL.madeira);
   pagode(c.meio, 168, 144, 3, night);
-  // rio e ponte
   rio(c.agua, 148, 166, night, r);
   c.agua.forma(poligono([[104, 152], [112, 142], [132, 139], [152, 142], [160, 152], [160, 158], [104, 158]]), PAL.pedra, { volume: 4 });
   c.agua.forma(uniao(elipse(132, 156, 14, 8), elipse(132, 156, 14, 8)), PAL.agua.slice(0, 3), { volume: 1, semContorno: true });
   c.agua.retangulo(104, 140, 56, 2, PAL.madeira[2]);
   for (let x = 104; x <= 160; x += 8) c.agua.retangulo(x, 137, 2, 5, PAL.madeira[1]);
-  // primeiro plano
   relva(c.perto, 164, r, night);
-  // árvore à esquerda, em silhueta
   c.perto.forma(caixa(12, 150, 3, 28), PAL.madeira, { volume: 3 });
   c.perto.forma(uniao(circulo(10, 118, 20), circulo(-2, 128, 14), circulo(26, 128, 14), circulo(12, 104, 14)), night ? [PAL.grama[0], PAL.grama[0], PAL.grama[1], PAL.grama[1]] : PAL.grama.slice(1), { volume: 10, pontilhado: 0.8, semContorno: true });
-  // lanternas penduradas e janelas acesas
   if (night) {
     for (let x = 6; x < 320; x += 20) { const y = 100 + Math.round(Math.sin(x / 30) * 3); c.luzes.forma(circulo(x, y + 6, 2.4), PAL.fogo, { volume: 2.4, brilho: 1, semContorno: true }); c.luzes.ponto(x, y + 5, PAL.ouro[4]); }
     for (let x = 0; x < 320; x += 2) c.luzes.ponto(x, 100 + Math.round(Math.sin(x / 30) * 3), PAL.madeira[1]);
@@ -183,7 +172,6 @@ export function montanha(night: boolean, seed = 3): Camadas {
   for (const [x, y, s] of [[80, 26, 1.2], [260, 16, 1], [420, 34, 1.3], [580, 22, 1]] as const) nuvem(c.nuvens, x, y, s, night);
   cadeia(c.longe, 86, 62, 36, r, night ? [PAL.noite[2], PAL.azul[0], PAL.azul[1], PAL.roxo[2], PAL.aco[2]] : [PAL.azul[1], PAL.azul[2], PAL.azul[3], PAL.ceu[3], PAL.ceu[4]], { baseY: 130, neve: true });
   cadeia(c.meio, 118, 42, 26, r, night ? [PAL.noite[0], PAL.noite[1], PAL.azul[0], PAL.azul[1], PAL.pedra[2]] : [PAL.pedra[1], PAL.pedra[2], PAL.pedra[3], PAL.pedra[3], PAL.pedra[4]], { baseY: 168, neve: false });
-  // templo num penhasco
   const tx = 214, ty = 100;
   c.meio.forma(poligono([[tx - 40, 170], [tx - 34, 128], [tx - 28, 120], [tx - 22, 108], [tx - 12, 106], [tx + 14, 106], [tx + 24, 110], [tx + 32, 122], [tx + 40, 134], [tx + 46, 170]]), night ? [PAL.noite[0], PAL.noite[1], PAL.azul[0], PAL.pedra[1], PAL.pedra[2]] : PAL.pedra, { volume: 10, pontilhado: 0.7 });
   c.meio.retangulo(tx - 24, ty + 4, 50, 3, night ? PAL.pedra[1] : PAL.pedra[3]);
@@ -192,14 +180,10 @@ export function montanha(night: boolean, seed = 3): Camadas {
   c.meio.forma(caixa(tx - 30, ty - 1, 7, 4), PAL.papel, { volume: 3 });
   c.meio.forma(poligono([[tx - 39, ty - 3], [tx - 30, ty - 10], [tx - 21, ty - 3], [tx - 23, ty], [tx - 37, ty]]), PAL.vermelho, { volume: 3 });
   for (let i = 0; i < 18; i++) c.meio.retangulo(tx - 5 + i - 0, ty + 8 + i * 2, 10 - (i >> 2), 1, i % 2 ? PAL.pedra[3] : PAL.pedra[2]);
-  // cachoeira
   for (let y = 112; y < 166; y++) for (let x = 78; x < 84; x++) c.meio.set(x, y, (x + (y >> 1)) % 3 === 0 ? PAL.agua[4] : PAL.agua[3]);
-  // pinheiros do meio
   const arv = night ? [PAL.grama[0], PAL.grama[0], PAL.grama[1], PAL.grama[1]] : [PAL.grama[0], PAL.grama[1], PAL.grama[2], PAL.grama[3]];
   for (let i = 0; i < 26; i++) pinheiro(c.meio, r.int(4, 316), r.int(150, 176), r.int(16, 28), arv);
-  // névoa
   for (let y = 120; y < 150; y++) for (let x = 0; x < 320; x++) if (bay(x, y) < Math.max(0, 0.5 - Math.abs(y - 134) / 26)) c.agua.set(x, y, night ? PAL.roxo[1] : PAL.papel[4]);
-  // pico em primeiro plano
   c.perto.forma(poligono([[0, 180], [0, 140], [18, 126], [34, 150], [52, 140], [70, 180]]), night ? [PAL.noite[0], PAL.noite[0], PAL.noite[1], PAL.azul[0], PAL.azul[1]] : PAL.pedra, { volume: 12, pontilhado: 0.8 });
   c.perto.forma(poligono([[250, 180], [270, 148], [290, 160], [306, 138], [320, 150], [320, 180]]), night ? [PAL.noite[0], PAL.noite[0], PAL.noite[1], PAL.azul[0], PAL.azul[1]] : PAL.pedra, { volume: 12, pontilhado: 0.8 });
   for (let i = 0; i < 16; i++) pinheiro(c.perto, r.int(0, 300), r.int(172, 179), r.int(26, 38), night ? [PAL.noite[0], PAL.grama[0], PAL.grama[0], PAL.grama[1]] : [PAL.grama[0], PAL.grama[1], PAL.grama[1], PAL.grama[2]]);

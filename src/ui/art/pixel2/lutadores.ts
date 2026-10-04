@@ -1,4 +1,4 @@
-import { Pix, PAL, circulo, capsula, poligono, elipse } from './pix';
+import { Pix, PAL, circulo, capsula } from './pix';
 
 /**
  * Lutadores 48x64 em pixel art com quadros de animação: parado (2), ataque (3), técnica (3), dano, vitória, derrota.
@@ -44,6 +44,8 @@ export interface Pose {
 const rad = (g: number) => (g * Math.PI) / 180;
 const pol = (x: number, y: number, ang: number, len: number): [number, number] => [x + Math.sin(rad(ang)) * len, y + Math.cos(rad(ang)) * len];
 
+const COR_SOMBRA = PAL.noite[0];
+
 function deitado(t: TraçoLutador, po: Pose): Pix {
   const p = new Pix(LARG_LUT, ALT_LUT);
   const robe = PAL[t.robe], calca = PAL[t.calca];
@@ -51,7 +53,7 @@ function deitado(t: TraçoLutador, po: Pose): Pix {
 
   // sombra
   for (let x = 6; x < 42; x++) {
-    p.set(x, chao + 1, PAL.sombra);
+    p.set(x, chao + 1, COR_SOMBRA);
   }
 
   // pernas caídas
@@ -86,8 +88,8 @@ export function lutador(t: TraçoLutador, po: Pose): Pix {
   for (let x = cx - 10; x <= cx + 10; x++) {
     const d = Math.abs(x - cx) / 10;
     if (d <= 1) {
-      p.set(x, chao, PAL.sombra);
-      if (d < 0.6) p.set(x, chao + 1, PAL.sombra);
+      p.set(x, chao, COR_SOMBRA);
+      if (d < 0.6) p.set(x, chao + 1, COR_SOMBRA);
     }
   }
 
@@ -189,7 +191,7 @@ export function lutador(t: TraçoLutador, po: Pose): Pix {
   // Efeito de flash (dano)
   if (po.flash) {
     for (let i = 0; i < p.px.length; i++) {
-      if (p.px[i] && p.px[i] !== PAL.sombra) p.px[i] = PAL.vermelho[3];
+      if (p.px[i] && p.px[i] !== COR_SOMBRA) p.px[i] = PAL.vermelho[3];
     }
   }
 
