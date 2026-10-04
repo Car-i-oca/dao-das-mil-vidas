@@ -1,7 +1,7 @@
 import type { CombatScript } from '../engine/combate';
 import { FOE } from '../data/combates';
-import { sceneSvg, type SceneKind } from './art/scenes';
-import { foeFighter, pathColor, playerFighter } from './art/lutadores';
+import { sceneSvg, type SceneKind } from './art';
+import { foeFighter, pathColor, playerFighter } from './art';
 
 /**
  * Cena animada do duelo (lado a lado). Só encena o roteiro `CombatScript` que o motor já decidiu.

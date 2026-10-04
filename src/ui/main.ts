@@ -15,19 +15,19 @@ import { ALCUNHA, VIRTUDE_NOME } from '../data/marcas';
 import { EVENTS } from '../data/events';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
-import { itemIcon, techIcon, pathIcon, realmIcon } from './art/icons';
-import { sceneSvg, endingCard, type SceneKind } from './art/scenes';
-import { portraitSvg, lookFromState, lookForNpc, type Role } from './art/portrait';
-import { hash } from './art/core';
+import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, type Estilo } from './art';
+import { sceneSvg, endingCard, type SceneKind } from './art';
+import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
+import { hash } from './art';
 import { playDuel } from './duelo';
 import { FOES } from '../data/combates';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
+interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
+  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -83,6 +83,7 @@ const DIFFICULTIES: [number, string, string][] = [[-1, 'Calma', 'Mais chance nos
 
 function applySettings() {
   const r = document.documentElement;
+  definirEstilo(save.settings.estilo);
   if (save.settings.theme === 'auto') r.removeAttribute('data-theme');
   else r.setAttribute('data-theme', save.settings.theme === 'claro' ? 'light' : 'dark');
   r.setAttribute('data-font', String(save.settings.font));
@@ -507,7 +508,10 @@ function renderMeta() {
       ? `<div class="card list">${m.history.map((h) => `<div><b>${esc(h.name)}</b> <span class="muted small">${esc(h.path)}</span><div class="small">${esc(h.tierName)} · ${h.age} anos · ${esc(h.ending)}</div></div>`).join('')}</div>`
       : '<div class="card muted">Nenhuma vida encerrada ainda.</div>';
   } else {
-    body = `<div class="card"><div class="muted small">TEMA</div>
+    body = `<div class="card"><div class="muted small">ESTILO DE ARTE</div>
+      <div class="row" style="flex-wrap:wrap;margin-top:8px">${ESTILOS.map((e) => `<button class="btn ${save.settings.estilo === e.id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="estilo" data-id="${e.id}">${e.nome}</button>`).join('')}</div>
+      <div class="muted small" style="margin-top:6px">${ESTILOS.find((e) => e.id === save.settings.estilo)?.desc ?? ''}</div></div>
+      <div class="card"><div class="muted small">TEMA</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${THEME_NAMES.map(([id, n]) => `<button class="btn ${save.settings.theme === id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="theme" data-id="${id}">${n}</button>`).join('')}</div>
       <div class="muted small" style="margin-top:12px">TAMANHO DO TEXTO</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${FONT_NAMES.map((n, i) => `<button class="btn ${save.settings.font === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="font" data-i="${i}">${n}</button>`).join('')}</div></div>
@@ -590,6 +594,7 @@ app.addEventListener('click', (ev) => {
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }
+    case 'estilo': if (estiloValido(target.dataset.id)) { save.settings.estilo = target.dataset.id; applySettings(); persist(); render(); } break;
     case 'duelos': save.settings.duelos = target.dataset.i === '1'; persist(); render(); break;
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
@@ -649,4 +654,11 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
       : [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 25 }, { a: 'f' as const, mov: 'Ataque', dano: 35 }, { a: 'f' as const, mov: 'Golpe Final', dano: 45, crit: true }];
     setTimeout(() => playDuel({ foe: f, foeName: (FOE_NAMES[f] ?? f), scene: q.get('cenario') ?? 'selva', vitoria: win, desfecho: win ? 'vitoria' : ((q.get('desfecho') as 'derrota' | 'fuga' | 'salvo') ?? 'derrota'), beats, fim: win ? { p: 50, f: 0 } : { p: 20, f: 45 }, fraseFim: 'tomba', path: q.get('trilha') ?? 'espada', tier: Number(q.get('reino') ?? 2) }, { nome: 'Teste', onDone: () => { document.title = 'duelo-fim'; } }), 300);
   }
+}
+
+/** Depuração: ?arte=<pixel|manhwa|tinta>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores> */
+{
+  const q = new URLSearchParams(location.search);
+  const e = q.get('arte');
+  if (e && estiloValido(e)) import('./galeria').then((m) => m.mostrarGaleria(app, e, q.get('sec') ?? ''));
 }

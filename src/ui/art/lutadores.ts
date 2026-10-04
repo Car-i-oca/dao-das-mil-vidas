@@ -5,9 +5,9 @@ import { C } from './core';
  * O jogador muda de roupa, arma e aura com a trilha e o reino; cada oponente tem desenho próprio.
  * ===================================================================== */
 
-type Weapon = 'espada' | 'punho' | 'orbe' | 'talisma' | 'dardo' | 'frasco' | 'garra' | 'cajado' | 'cutelo' | 'adaga' | 'contas' | 'nenhuma';
+export type Weapon = 'espada' | 'punho' | 'orbe' | 'talisma' | 'dardo' | 'frasco' | 'garra' | 'cajado' | 'cutelo' | 'adaga' | 'contas' | 'nenhuma';
 
-interface Human {
+export interface Human {
   robe: string; trim: string; skin?: string; hair?: string;
   weapon: Weapon; wcol?: string;
   hood?: boolean; mask?: boolean; horns?: boolean; bald?: boolean; scale?: number; eye?: string;
@@ -60,7 +60,7 @@ function humanSvg(h: Human): string {
 }
 
 /* ---------- Jogador ---------- */
-const PATH_FIGHT: Record<string, Human> = {
+export const PATH_FIGHT: Record<string, Human> = {
   espada: { robe: '#2f3a45', trim: '#c9ced3', weapon: 'espada', wcol: C.gold },
   corpo: { robe: '#a43b2c', trim: '#2a2018', weapon: 'punho' },
   sopro: { robe: '#5f7fa6', trim: '#e8e2d0', weapon: 'orbe', wcol: C.blue },
@@ -111,3 +111,13 @@ const FOE_FIGHT: Record<string, () => string> = {
 export function foeFighter(id: string): string {
   return (FOE_FIGHT[id] ?? FOE_FIGHT.cultivador)();
 }
+
+/** Oponentes humanos (cada estilo desenha a partir destes dados) e criaturas (desenho próprio por estilo). */
+export const FOE_HUMAN: Record<string, Human> = {
+  bandido: { robe: '#6b5a3a', trim: '#a8451f', weapon: 'cutelo', mask: true, hair: '#2a1d14' },
+  assassino: { robe: '#1f2128', trim: '#5a5f6b', weapon: 'adaga', hood: true, mask: true, wcol: '#4fae7a' },
+  cultivador: { robe: '#9b2f2f', trim: '#f1d9a0', weapon: 'espada', wcol: '#c8362f', hair: '#17120e' },
+  monge: { robe: '#d79a2b', trim: '#8a3b1d', weapon: 'cajado', bald: true, wcol: '#d2a95c' },
+  demonio: { robe: '#3a1020', trim: '#c8362f', weapon: 'garra', wcol: '#8f1f2b', horns: true, eye: '#c8362f', skin: '#a86a5a' },
+};
+export const FOE_CREATURES = ['espectro', 'lobo', 'tigre', 'serpente', 'golem', 'dragao', 'raio'] as const;

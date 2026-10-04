@@ -6,7 +6,7 @@ import { C, GRADE_COLOR, hash, plate, prng, svg } from './core';
  * Variação por id (cor, detalhes) e por grau (moldura, brilho, adornos).
  * ===================================================================== */
 
-const PILL_COLORS = [C.jade, C.gold, C.red, C.blue, C.violet, '#d98aa3'];
+export const PILL_COLORS = [C.jade, C.gold, C.red, C.blue, C.violet, '#d98aa3'];
 
 function stroke(color: string, w = 2.4) { return `fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`; }
 
@@ -97,39 +97,42 @@ const seed: Glyph = (g, r, col) =>
 const fallback: Glyph = (g, r, col) =>
   `<path d="M32 12l18 14-18 26-18-26z" fill="${col}" opacity="0.8" stroke="${C.dark}" stroke-width="1.2"/><path d="M14 26h36" ${stroke('#fff', 1)} opacity="0.4"/>`;
 
+const GLYPHS = { pill, herb, blade, armor, bell, mirror, cauldron, banner, lantern, talisman, manual, core, ring, crystal, egg, fruit, scroll, key, tablet, seed, fallback };
+
 /** Escolhe o desenho pela categoria e por palavras do nome. */
-function itemGlyph(it: Item): Glyph {
+export type Motif = keyof typeof GLYPHS;
+export function itemMotif(it: Item): Motif {
   const n = it.name.toLowerCase();
   const has = (...w: string[]) => w.some((x) => n.includes(x));
   switch (it.kind) {
-    case 'pilula': return pill;
-    case 'erva': return n.includes('fruta') ? fruit : n.includes('semente') ? seed : herb;
-    case 'talisma': return talisman;
-    case 'manual': return manual;
-    case 'nucleo': return core;
-    case 'anel': return ring;
+    case 'pilula': return 'pill';
+    case 'erva': return n.includes('fruta') ? 'fruit' : n.includes('semente') ? 'seed' : 'herb';
+    case 'talisma': return 'talisman';
+    case 'manual': return 'manual';
+    case 'nucleo': return 'core';
+    case 'anel': return 'ring';
     case 'artefato':
-      if (has('espada', 'lâmina', 'lamina', 'bastão', 'bastao', 'martelo', 'punhal')) return blade;
-      if (has('manto', 'armadura', 'escudo', 'luva', 'túnica', 'veste', 'seda')) return armor;
-      if (has('sino')) return bell;
-      if (has('espelho')) return mirror;
-      if (has('fornalha', 'caldeirão', 'caldeirao', 'forja')) return cauldron;
-      if (has('estandarte', 'formação', 'formacao', 'pincel')) return banner;
-      if (has('lanterna', 'lampião')) return lantern;
-      return fallback;
+      if (has('espada', 'lâmina', 'lamina', 'bastão', 'bastao', 'martelo', 'punhal')) return 'blade';
+      if (has('manto', 'armadura', 'escudo', 'luva', 'túnica', 'veste', 'seda')) return 'armor';
+      if (has('sino')) return 'bell';
+      if (has('espelho')) return 'mirror';
+      if (has('fornalha', 'caldeirão', 'caldeirao', 'forja')) return 'cauldron';
+      if (has('estandarte', 'formação', 'formacao', 'pincel')) return 'banner';
+      if (has('lanterna', 'lampião')) return 'lantern';
+      return 'fallback';
     default:
-      if (has('cristal', 'gema', 'pérola', 'perola', 'jade', 'lingote', 'fragmento', 'escama')) return crystal;
-      if (has('ovo')) return egg;
-      if (has('mapa', 'pergaminho', 'escritura', 'carta')) return scroll;
-      if (has('chave', 'selo', 'jade_identidade')) return n.includes('selo') ? tablet : key;
-      if (has('fruta')) return fruit;
-      if (has('semente')) return seed;
-      if (has('lanterna')) return lantern;
-      if (has('sino')) return bell;
-      if (has('manto', 'seda', 'armadura', 'escudo')) return armor;
-      if (has('espada', 'lâmina', 'lamina', 'bastão')) return blade;
-      if (has('rosário', 'rosario', 'contas', 'tigela', 'incenso')) return ring;
-      return fallback;
+      if (has('cristal', 'gema', 'pérola', 'perola', 'jade', 'lingote', 'fragmento', 'escama')) return 'crystal';
+      if (has('ovo')) return 'egg';
+      if (has('mapa', 'pergaminho', 'escritura', 'carta')) return 'scroll';
+      if (has('chave', 'selo', 'jade_identidade')) return n.includes('selo') ? 'tablet' : 'key';
+      if (has('fruta')) return 'fruit';
+      if (has('semente')) return 'seed';
+      if (has('lanterna')) return 'lantern';
+      if (has('sino')) return 'bell';
+      if (has('manto', 'seda', 'armadura', 'escudo')) return 'armor';
+      if (has('espada', 'lâmina', 'lamina', 'bastão')) return 'blade';
+      if (has('rosário', 'rosario', 'contas', 'tigela', 'incenso')) return 'ring';
+      return 'fallback';
   }
 }
 
@@ -138,7 +141,7 @@ const DEFS = `<defs><radialGradient id="shine" cx="35%" cy="30%" r="75%"><stop o
 export function itemIcon(it: Item, size = 56): string {
   const r = prng(hash(it.id));
   const col = it.kind === 'artefato' || it.kind === 'anel' ? GRADE_COLOR[it.grade] === C.gold ? C.gold : PILL_COLORS[hash(it.id) % PILL_COLORS.length] : PILL_COLORS[hash(it.id) % PILL_COLORS.length];
-  const body = DEFS + plate(it.grade, itemGlyph(it)(it.grade, r, col));
+  const body = DEFS + plate(it.grade, GLYPHS[itemMotif(it)](it.grade, r, col));
   return svg(64, 64, body, 'art art-item', it.name).replace(/width="64" height="64"/, `width="${size}" height="${size}"`);
 }
 
@@ -158,7 +161,7 @@ const TAG_GLYPH: Record<string, (col: string) => string> = {
   fuga: (c) => `<path d="M16 36q10-12 20-6t14-2M16 44q10-12 20-6t14-2" ${stroke(c, 2.6)}/><path d="M44 22l8 4-8 4" ${stroke(c, 2.4)}/>`,
 };
 
-function glyphFromTags(tags: string[] | undefined, col: string, h: number): string {
+export function glyphFromTags(tags: string[] | undefined, col: string, h: number): string {
   const key = tags?.find((t) => TAG_GLYPH[t]);
   if (key) return TAG_GLYPH[key](col);
   // Sem tag: um selo abstrato único por id.

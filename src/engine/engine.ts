@@ -345,8 +345,15 @@ function oldAgeEnding(s: State): string {
   const f = (x: string) => s.flags.includes(x);
   if (s.tier === 0) return 'velhice';
   if (f('tem_neto') || f('cla_proprio')) return 'velhice_avo';
-  if (s.fama >= 70 && s.tier >= 3) return 'velhice_mestre';
-  if (eff(s, 'dao') >= 38 && s.karma >= 12) return 'velhice_sabio';
+  const v = virtudeDominante(s);
+  if (v === 'compaixao' && s.karma >= 5) return 'velhice_avo';
+  if ((v === 'disciplina' || v === 'devocao') && eff(s, 'dao') >= 40 && s.karma >= 9) return 'velhice_sabio';
+  if (v === 'cautela' && s.fama < 60) return 'velhice_esquecido';
+  if (v === 'violencia' && s.fama >= 30) return 'velhice_veterano';
+  if (v === 'ganancia' && s.pedras >= 300) return 'velhice_rico';
+  if (v === 'ganancia' || (v === 'violencia' && s.karma <= -5)) return 'velhice_rancoroso';
+  if (s.fama >= 90 && s.tier >= 4 && v !== 'cautela') return 'velhice_mestre';
+  if (eff(s, 'dao') >= 45 && s.karma >= 12) return 'velhice_sabio';
   if (s.karma <= -15) return 'velhice_rancoroso';
   if (s.pedras >= 700) return 'velhice_rico';
   if (f('veterano') || f('heroi_do_cerco') || f('campeao_torneio') || f('torneio_campeao') || f('heroi_da_guerra')) return 'velhice_veterano';
@@ -997,7 +1004,7 @@ export function finalizeLife(meta: Meta, s: State): void {
   const todas = s.flags.filter((f) => MARCAS_VIDA[f]);
   const passo = Math.max(1, todas.length / 8);
   const marcas = Array.from({ length: Math.min(8, todas.length) }, (_, i) => fill(s, MARCAS_VIDA[todas[Math.floor(i * passo)]]));
-  gain += Math.min(2, Math.floor(todas.length / 4));
+  gain += Math.min(1, Math.floor(todas.length / 6));
   meta.legacy += gain;
   meta.lives++;
   if (!meta.endingsSeen.includes(s.ending)) meta.endingsSeen.push(s.ending);
