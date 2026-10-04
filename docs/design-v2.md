@@ -103,6 +103,12 @@ Quando um molde precisa de um papel e nenhuma pessoa ativa serve, o motor procur
 
 **Custo e limites**: o elenco ativo tem teto (os 50 mais relevantes, por urgência), a reserva é processada em lotes a cada 5 anos, e o painel `?debug=mundo` lista só os ativos e os que foram promovidos. Meta de desempenho: o avanço de 15 anos do mundo deve caber em dezenas de milissegundos num celular comum.
 
+### 2.3b Morte de pessoas importantes
+**Decisão do autor:** a morte é permanente, com **cena própria e consequências**. Quando uma pessoa com papel (mentor, amigo, amor, rival, discípulo, parente) morre, o motor dispara uma cena `morte_de_<papel>` escrita para aquela relação:
+- **Cena própria**: como morreu (velhice, combate, tribulação, assassinato, abandono), onde o jogador estava, se pôde estar presente, o que foi dito. O jogador tem **opções** (velar, vingar, honrar, esconder, partir).
+- **Consequências no mundo**: fato "luto" ou "culpa" com peso; opinião das pessoas ligadas; **sucessão** (discípulo assume o pavilhão, filho herda a dívida ou a vingança); itens e técnicas deixados; fios fechados como *morto* ou abertos de novo (vingança); facção muda de estado; a **ambição** pode ser forjada ou trocada por essa perda.
+- O final cita quem morreu e como o jogador reagiu.
+
 ### 2.4 Consequência = o mundo mudou
 Cada opção tem efeitos de mundo, não só de atributo. A lista fechada de efeitos:
 
@@ -185,12 +191,55 @@ O diretor mantém a lista de fios (vingança jurada, promessa, dívida, rival, a
 ### 4.4 Passagem de tempo com sentido
 O diretor decide os saltos: calmaria pode pular anos; clímax não pula nada. Em retiros e esperas, a notícia do mundo narra o que andou sem você, e esse relato pode abrir um novo fio ("o rival está agora no seu antigo pavilhão").
 
+### 4.5 Contadores de histórias
+**Decisão do autor:** entram agora, e **oscilam**: o jeito de contar a vida muda ao longo dela e cria dinâmica. Inspiração: os contadores do RimWorld (Cassandra, Phoebe, Randy), mas aqui eles não são só dificuldade; são **vozes** que mudam o ritmo, o tom e a sorte da história.
+
+**Quatro contadores (nomes provisórios):**
+
+| Contador | Gosta de | Efeito no ritmo | Efeito no tom do texto |
+|---|---|---|---|
+| **A Cronista Serena** | consequências, calmarias, reencontros | tensão-alvo mais baixa, mais cenas de consequência e respiro | lírico, contemplativo |
+| **A Voz Sombria** | perdas, traições, dívidas cobradas | tensão-alvo alta, clímaxes mais cedo, fios pesados | sombrio, seco |
+| **O Trapaceiro** | reviravoltas, ironia, acasos | mais cenas inesperadas (papéis surpresa da reserva), recompensas tortas | irônico, leve |
+| **O Velho Mestre** | provas, mentores, ensinamentos | mais cenas de preparo e de aprendizado, perigo calculado | grave, didático |
+
+**Como oscilam.** O jogador pode escolher um **contador-base** no começo (padrão: automático). Mas a cada **capítulo** o diretor sorteia o contador que "assume a voz", com pesos que dependem da vida: depois de uma grande perda, a Cronista Serena ganha peso (uma "benevolência" como a Phoebe); depois de muito conforto, a Voz Sombria; depois de uma sequência previsível, o Trapaceiro. O contador-base sempre pesa mais, mas nunca é o único. Dentro de um capítulo a voz pode mudar em **cenas de virada**. O nome do contador aparece no cartão do capítulo ("Capítulo 3, contado pela Voz Sombria"), para o jogador **perceber** a dinâmica.
+
+**O que um contador muda concretamente:**
+1. a curva de tensão-alvo do capítulo e as probabilidades de cada `tipo` de cena (4.2);
+2. a escolha das **variantes de texto** das cenas (cada variante pode ter `tom`: lírico, sombrio, irônico, grave; sem `tom` vale para todos);
+3. a **reserva**: o Trapaceiro puxa papéis surpresa; a Voz Sombria puxa quem tem rancor; a Cronista, quem tem laço;
+4. o resumo e as **notícias do mundo** são escritos no tom do contador.
+Não muda o resultado dos testes de sucesso nem as regras de combate (continuam decididos pelo motor).
+
 ## 5. Objetivos de vida (ambições)
 
-### 5.1 Como surgem
-No fim da **Infância** o jogo propõe 2–3 ambições compatíveis com o que já vivido (origem, primeira dívida, primeiro amigo, defeito), e o jogador escolhe ou decide por conta própria mais tarde. Lista inicial:
+**Decisão do autor:** a ambição **não é escolhida de cara**. Ela é **forjada durante a vida**, a partir dos acontecimentos e das escolhas do começo, e **pode mudar durante toda a trajetória**.
 
-| Ambição | Estrutura (etapas) | Final se cumprida |
+### 5.1 Como a ambição é forjada
+O motor mantém, para o jogador, uma lista de **inclinações**: pequenos pesos que crescem com o que acontece. Cada fato, fio e escolha alimenta uma ou mais inclinações.
+
+| O que aconteceu | Inclinação que cresce |
+|---|---|
+| Perder o clã ou a família, dívida herdada, ser humilhado e não revidar | Vingar, Reerguer |
+| Criar vínculo (amigo, amor, discípulo, criança resgatada) e ser posto à prova | Proteger |
+| Vencer rivais, dominar uma técnica, subir cedo de reino | Dominar, Ascender |
+| Ajudar uma facção, ser reconhecido, receber território ou discípulos | Fundar |
+| Quebrar uma promessa, cair por um defeito, ser perdoado | Redimir |
+| Conduta repetida (perfil de conduta) | reforça a inclinação que combina (violência → Vingar, compaixão → Proteger) |
+
+A ambição aparece em **cenas de virada**, em momentos em que uma inclinação passou do limiar e um fato a deixou nítida: *"Quando a dívida foi cobrada pela terceira vez, você entendeu que não ia fugir dela: ia reerguer o nome do clã."* A cena **nomeia** a ambição; o jogador pode aceitar, recusar ("ainda não sei") ou reescrever o motivo escolhendo uma das opções. Até a primeira virada (normalmente no fim da Infância ou na Entrada no mundo) a vida corre **sem ambição**: o diretor segue os fios e as inclinações.
+
+### 5.2 A ambição muda ao longo da vida
+- **Evolução natural**: se a ambição é *cumprida*, as inclinações recalculam e uma nova é forjada ("depois da dívida paga, o que sobrou foi o discípulo que você criou: proteger o legado dele").
+- **Mudança por acontecimento**: uma perda grande ou uma conquista nova pode puxar outra inclinação acima da atual, e uma cena de virada oferece a troca.
+- **Mudança por vontade do jogador**: sempre possível em cenas de decisão, **a um custo real**: uma memória pesada ("abandonou o juramento") vira fato nas pessoas ligadas, o fio fecha como *traído* ou *abandonado*, e a reputação cai com quem acreditava.
+- Pode haver **ambições em tensão** (proteger o discípulo × vingar o clã), e o diretor usa a tensão como motor de clímax.
+
+### 5.3 Estrutura de uma ambição
+Cada ambição é um **arco** (um conjunto de moldes + fios com etapas), não um número a mais. Lista inicial (ampliável):
+
+| Ambição | Etapas | Final se cumprida |
 |---|---|---|
 | Vingar o clã | descobrir o culpado, reunir poder, enfrentar, decidir (vingança ou perdão) | Vingança / Perdão |
 | Reerguer o clã ou fundar uma seita | aliados, território, rival que contesta, primeira prova, legado | Fundador / Ancestral |
@@ -199,13 +248,8 @@ No fim da **Infância** o jogo propõe 2–3 ambições compatíveis com o que j
 | Dominar uma técnica lendária | achar, treinar, rival da técnica, perfeição | finais de técnica |
 | Redimir um defeito | falha, custo, prova, superar | finais "redenção" |
 
-Cada ambição é um **arco** (um conjunto de moldes + fios com etapas), não um número a mais.
-
-### 5.2 Trocar de ambição
-Pode-se trocar, a um custo real: uma **memória pesada** ("abandonou o juramento") vira fato nas pessoas ligadas, o fio fecha como *traído/abandonado* e a reputação cai com quem acreditava. Os finais passam a refletir a ambição **cumprida, traída ou abandonada**.
-
-### 5.3 Puxar a favor ou contra
-O diretor soma `tração da ambição` às cenas que a movem **e às que a ameaçam**: a vida de quem quer proteger a vila ganha, no capítulo de Crise, a facção que ataca a vila.
+### 5.4 Puxar a favor ou contra
+O diretor soma `tração da ambição` às cenas que a movem **e às que a ameaçam**: a vida de quem quer proteger a vila ganha, no capítulo de Crise, a facção que ataca a vila. Os finais refletem a ambição **cumprida, traída, abandonada ou trocada** (e o que a trocou).
 
 ## 6. Build com sentido
 
@@ -232,7 +276,7 @@ Defeitos fecham ou forçam opções **dentro do molde**, e a redenção é um ar
 
 **Pré-história (simulada, 41 anos antes do nascimento).** O **Clã Fu** controlava a Forja do Corvo. Perdeu-a para a **Seita das Cinzas Verdes** numa guerra e ficou devendo ao **Pavilhão de Tesouros**. O credor, **Wang Dacheng**, herda a dívida. A Seita das Cinzas Verdes foi depois destruída por uma facção rival, deixando um manual escondido num poço queimado.
 
-**Infância (6 a 14).** Aos 7 anos, **Wang Dacheng** bate à porta. A cena é *Dívida do Pai*: opções de criança (esconder-se, pedir prazo, oferecer o que tem). O jogador pede prazo; o fato "pediu prazo" fica na memória do credor com opinião +5 (ele respeita quem não foge). Aos 11, o manual do cofre acorda o Qi. O diretor nota: origem de clã decadente + dívida aberta. No fim do capítulo, propõe três ambições. O jogador escolhe **Reerguer o Clã Fu**. O fio *Dívida do Clã* tem prazo de 20 anos.
+**Infância (6 a 14).** Aos 7 anos, **Wang Dacheng** bate à porta. A cena é *Dívida do Pai*: opções de criança (esconder-se, pedir prazo, oferecer o que tem). O jogador pede prazo; o fato "pediu prazo" fica na memória do credor com opinião +5 (ele respeita quem não foge). Aos 11, o manual do cofre acorda o Qi. O motor registra as inclinações: a dívida aberta, o clã caído e o pedido de prazo alimentam *Reerguer* e *Vingar*; o manual do cofre alimenta *Dominar*. Nada é nomeado ainda. Aos 14, a terceira cobrança do credor é uma **cena de virada**: *"Você entendeu que não ia fugir dessa dívida: ia reerguer o nome do clã."* O jogador aceita, e a ambição **Reerguer o Clã Fu** nasce dessa vida, não de uma lista inicial. O fio *Dívida do Clã* tem prazo de 20 anos.
 
 **Despertar (12 a 19).** A erveira do mercado oferece o caminho da Alquimia (a trilha entra no mundo: **Mestra Lin** é a primeira mestra, de opinião +30). O rival aparece: **Duan Lian**, filha do concorrente do credor, também alquimista, orgulhosa. O jogador a derrota num teste público de pílulas, e é cordial. Decisão do jogador: **não a humilhar**. Fato "poupou" peso 3. Opinião de Lian: +10, com a desconfiança de quem foi poupada (traço orgulhosa: o fato pesa dobrado, **como ofensa e como dívida**).
 
@@ -302,7 +346,15 @@ As duas vidas compartilham a origem e contam histórias claramente diferentes, p
 | `marcas_vida.ts` e `registrarSoPerfil` | Ficam só como enfeite do resumo final; **não contam como consequência** |
 | Finais | Mantidos; escolhidos por ambição, fios e estado |
 
-### 8.5 O que não muda
+### 8.5 Cenas de sistema e a voz do mundo
+**Decisão do autor:** rompimento, tribulação e reclusão ficam como estão, **mas afetam os diálogos** e o mundo:
+- **Tratamento por reino e reputação.** Cada pessoa trata o jogador conforme o reino, o título, a fama, a alcunha e a **opinião** dela. O campo `{papel.trato}` em qualquer texto vira "jovem", "Mestre Chen", "senhor", "Ancestral", "você" ou "desgraçado", e as falas de cada pessoa mudam: o rival que o chamava de "camponês" passa a baixar o olhar no Núcleo Dourado; o mentor passa a pedir licença; o credor passa a negociar de igual para igual.
+- **Rompimento** gera uma **cena de reação** (como a atual "Reação da Seita", mas por pessoa: quem comemora, quem teme, quem cobra) e atualiza opiniões e reputações.
+- **Tribulação** sobrevivida vira fato de mundo e **lenda**: pessoas e facções citam o episódio em diálogos futuros.
+- **Reclusão** devolve o jogador com **notícias do mundo** (quem morreu, quem subiu, qual facção caiu), no tom do contador de histórias, e com o diálogo das pessoas refletindo quantos anos passaram ("você parece o retrato do seu mestre").
+- Variantes de texto podem depender de **reino do jogador, reino da pessoa e diferença entre os dois** (`reinoDif`), além de fatos e opinião.
+
+### 8.6 O que não muda
 Trilhas e recursos, escadas de reino, sensação de poder, duelos animados, os 3 estilos de arte e o seletor, aparência pela fração da vida, técnicas com domínio e fusão, itens, Herança, autoria e LICENSE, PWA e APK.
 
 ## 9. Fases, riscos e como medir sucesso
@@ -325,11 +377,11 @@ Trilhas e recursos, escadas de reino, sensação de poder, duelos animados, os 3
 **O critério é a leitura de crônicas, por você e por outra IA.** Perguntas: dá para contar a vida como história? As pessoas lembram do que fiz? Uma decisão do começo muda o depois? Builds diferentes contam histórias diferentes? Cada opção exclusiva faz sentido *naquela* cena? Nenhum evento aparece do nada?
 Números de apoio, nunca metas: fios abertos e resolvidos por vida; reaparições de cada NPC importante; % de cenas vindas de relevância contra respiro; moldes nunca escolhidos; divergência causal entre vidas pareadas. Os de equilíbrio atuais (ascensão 0,5–2%, finais ≤ 35%, nenhuma trilha dominando) continuam como **verificação de segurança**, não como objetivo.
 
-## 10. Decisões para você aprovar antes da Fase 2
-1. ~~Escala do mundo~~ **Decidido:** mundo maior, com 30–50 pessoas ativas, 8–12 facções e uma reserva de 200–400 pessoas e 20–30 facções em potencial que entram e saem de cena, com rotatividade e sucessão (secção 2.3).
-2. **Ambição**: proposta no fim da Infância (2–3 opções) e trocável a custo. Ou você prefere escolher na criação do personagem?
-3. **Contadores de histórias** (sereno, cruel, caótico) como opção de dificuldade: entram agora ou depois?
-4. **Os 3 arcos da Fase 2**: rival, reerguer/vingar o clã, ascensão numa seita. Quer outros?
-5. **Morte permanente de pessoas importantes** (mentor, amigo, amor, rival): sim, com cena própria?
-6. **Cenas de sistema** (rompimento, tribulação, reclusão): ficam como estão, com notícia do mundo no retorno.
-7. **Build de teste**: pasta `/v2/` no site com save separado, e APK de teste com outro nome. Combinado?
+## 10. Decisões do autor (registro)
+1. **Escala do mundo**: mais pessoas e facções, com reserva e rotatividade (secção 2.3).
+2. **Ambição**: forjada durante a vida pelos acontecimentos e escolhas do começo, mutável por toda a trajetória (secção 5).
+3. **Contadores de histórias**: entram, e oscilam o jeito de contar a história durante a vida (secção 4.5).
+4. **Arcos da Fase 2**: rival, reerguer/vingar o clã, ascensão numa seita. *(O autor respondeu "sim" à pergunta "quer outros?"; aguardo a indicação de quais. A Fase 2 começa com esses três.)*
+5. **Morte permanente** de pessoas importantes, com cena própria e consequências (secção 2.3b).
+6. **Cenas de sistema** ficam, e afetam os diálogos (secção 8.5).
+7. **Build de teste**: roda no APK **com outro nome** e em `/v2/` no site, com save separado. O nome do novo jogo será escolhido pelo autor (`docs/nomes-v2.md`).

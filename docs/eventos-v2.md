@@ -125,12 +125,19 @@ export default molde({
 - **fio**: `{ fio: { rival: { etapaMin: 1, aberto: true } } }`.
 - **diretor**: `capitulo`, `fase`, `tensaoMin/Max`.
 - Composição: `todos: [...]`, `algum: [...]`, `nao: {...}`.
+- **tom do contador**: `{ contador: ['sombria'] }` e variantes de `cena` com `tom: 'lirico' | 'sombrio' | 'ironico' | 'grave'` (sem `tom` serve a todos).
+- **reino relativo**: `reinoDif` (reino do jogador menos o da pessoa) em `papel`, para falas que mudam conforme quem é maior.
 
 ### 3.4 Efeitos
 `opiniao: [papel, ±n]`, `fato: [papel, tipo, peso]`, `reputacao: [facção, ±n]`, `objetivo: [papel, novo]`, `ferir`, `morte: papel`, `criar: { papel, filtro }`, `lugar: { id, dono?, perigo?, segredo? }`, `fio: [id, 'abrir' | 'avancar' | 'fechar:<desfecho>']`, `ambicao: 'avancar' | 'trocar:<id>'`, `posse: item`, `tecnica: id`, `dominio: [id, n]`, mais os efeitos atuais (`stats`, `xp`, `fama`, `karma`, `pedras`, `rec`, `ferida`, `corr`). O motor só aceita esses; efeito novo exige código novo.
 
 ### 3.5 Testes de sucesso
 `teste: { tag, ameaca? }` usa os atributos e a maestria de técnica do jogador, e o reino da ameaça (`'rival'` usa o reino da pessoa ligada ao papel). O resultado continua sendo decidido pelo motor (como hoje). Lutas usam o mesmo sistema de duelo.
+
+### 3.6 Voz do mundo: tratamento e tom
+- `{papel.trato}` resolve como a pessoa chama o jogador (jovem, "Mestre Chen", senhor, Ancestral, você, desgraçado), a partir de reino, título, fama, alcunha e opinião dela.
+- Mortes de pessoas importantes usam moldes `morte_de_<papel>` (cena própria, opções de luto, vingança ou honra, e efeitos de sucessão). Veja a secção 2.3b do design.
+- Ambições: uma cena de virada (`tipo: 'virada'`) **nomeia** a ambição forjada pelas inclinações; efeito `ambicao: 'nomear:<id>' | 'trocar:<id>' | 'adiar'`.
 
 ## 4. Passo a passo para escrever uma cena
 1. **A pergunta**: quem quer o quê, e o que o jogador pode fazer a respeito?
