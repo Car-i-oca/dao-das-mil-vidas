@@ -217,6 +217,7 @@ export function preencher(s: State, bind: Record<Papel, Id>, texto: string): str
   const mundo = s.v2!.mundo;
   const jaVisto = (s.v2!.vistos[moldeAtual] ?? 0) + (s.v2!.vistos[moldeAtual + '#c'] ?? 0) >= 1;
   texto = texto.replace(/\{vez([12]):((?:[^{}]|\{[^{}]*\})*)\}/g, (_, k: string, c: string) => ((k === '2') === jaVisto ? c : ''));
+  texto = texto.replace(/\{=([^{}]*)\}/g, '$1'); // texto literal (pronome que não é de uma pessoa do molde)
   const t = texto.replace(/\{([a-z_]+)\.([a-zA-Z]+)\}/g, (_, r: string, campo: string) => {
     if (r === 'mundo') return noticiaDoMundo(s, campo);
     if (r === 'familia') return familiaCampo(s, campo);

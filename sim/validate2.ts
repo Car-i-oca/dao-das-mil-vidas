@@ -91,7 +91,9 @@ for (const m of MOLDES) {
     for (const mm of t.matchAll(/\{([a-z_]+)\}/g)) if (!V1.has(mm[1])) errors.push(`${at}: marcador desconhecido {${mm[1]}}`);
     if (/\{[^}]*$/.test(t) || /^[^{]*\}/.test(t) || /\{\{|\}\}/.test(t)) errors.push(`${at}: chave solta`);
     // gênero fixo: pronome solto numa cena com pessoas
-    if (temPessoa && !PRONOME_LIVRE.has(m.id)) {
+    // (só vale se o próprio texto cita uma pessoa do molde: sem isso o pronome se refere a alguém sem nome, a um bicho ou a uma coisa)
+    const citaPessoa = [...t.matchAll(/\{([a-z_]+)\.[A-Za-z]+\}/g)].some((x) => ehPessoa(x[1]));
+    if (temPessoa && citaPessoa && !PRONOME_LIVRE.has(m.id)) {
       const sem = t.replace(/\{[^}]*\}/g, '');
       const g = sem.match(/\b(ele|ela|dele|dela|nele|nela|Ele|Ela)\b/);
       if (g) errors.push(`${at}: pronome fixo "${g[0]}" (use {papel.ele}): …${sem.slice(Math.max(0, (g.index ?? 0) - 25), (g.index ?? 0) + 25)}…`);
