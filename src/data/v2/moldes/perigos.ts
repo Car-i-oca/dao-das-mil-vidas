@@ -66,8 +66,8 @@ export const PERIGOS: Molde[] = [
   molde({
     id: 'respiro_ponte', titulo: 'A Ponte de Pedra', tipo: 'respiro', capitulos: ['entrada', 'ascensao', 'crise', 'legado'], cooldown: 14,
     cena: [
-      { tom: 'lirico', texto: 'A Ponte de Pedra é mais velha que qualquer nome que se conheça na região, e ninguém sabe quem a construiu. No meio dela, um viajante olha a água, e a água, ao que parece, lhe diz alguma coisa. Há dias em que o mundo é feito de tempo, e em que a ponte é a prova.' },
-      { texto: 'A Ponte de Pedra é mais velha que qualquer nome que se conheça na região, e ninguém sabe quem a construiu. Hoje há um guarda do império cobrando passagem, e uma velha vendendo castanhas, e uma fila que só anda quando o guarda quer.' },
+      { tom: 'lirico', texto: '{vez2:A Ponte de Pedra de novo, igual, e você diferente. }A Ponte de Pedra é mais velha que qualquer nome que se conheça na região, e ninguém sabe quem a construiu. No meio dela, um viajante olha a água, e a água, ao que parece, lhe diz alguma coisa. Há dias em que o mundo é feito de tempo, e em que a ponte é a prova.' },
+      { texto: '{vez2:A Ponte de Pedra de novo, igual, e você diferente. }A Ponte de Pedra é mais velha que qualquer nome que se conheça na região, e ninguém sabe quem a construiu. Hoje há um guarda do império cobrando passagem, e uma velha vendendo castanhas, e uma fila que só anda quando o guarda quer.' },
     ],
     opcoes: [
       { id: 'castanhas', texto: 'Comprar castanhas e conversar com a velha.', custo: 3, res: { texto: 'A velha sabe tudo sobre quem passa, e finge saber nada. No fim, deixa uma frase a mais no ar, que você guarda para depois. As castanhas, aliás, são boas.', fx: { stats: { sor: 1 }, perfil: { compaixao: 1, astucia: 1 } } } },
@@ -78,7 +78,7 @@ export const PERIGOS: Molde[] = [
 
   molde({
     id: 'respiro_templo', titulo: 'O Templo Antigo', tipo: 'respiro', capitulos: ['despertar', 'entrada', 'ascensao', 'crise', 'legado'], cooldown: 14,
-    cena: 'Entre duas colinas, um templo antigo guarda uma estátua sem rosto e uma tigela de arroz fresco, trocada todo dia por alguém que ninguém vê. O incenso queima sem pressa. Quando você entra, o silêncio muda de textura: não é vazio, é atenção.',
+    cena: '{vez2:O templo sem rosto outra vez; a tigela de arroz continua fresca, e isso ainda intriga. }Entre duas colinas, um templo antigo guarda uma estátua sem rosto e uma tigela de arroz fresco, trocada todo dia por alguém que ninguém vê. O incenso queima sem pressa. Quando você entra, o silêncio muda de textura: não é vazio, é atenção.',
     opcoes: [
       { id: 'oferecer', texto: 'Deixar uma oferenda simples, e sentar um pouco.', custo: 5, res: { texto: 'A oferenda é pequena, e o silêncio, grande. Quando você sai, o sol já mudou de lugar, e um peso que você nem sabia que carregava ficou ao pé da estátua.', fx: { karma: 2, xp: 3, perfil: { devocao: 2 } } } },
       { id: 'estudar', texto: 'Estudar os caracteres gastos nas paredes.', res: { texto: 'Metade dos caracteres está perdida, mas a outra metade conta uma história de uma seita que deixou de existir sem deixar herdeiros. O que sobra é uma lição de humildade e uma frase inteira, bem preservada, sobre o valor de ser lembrado.', fx: { stats: { comp: 1 }, perfil: { astucia: 1, devocao: 1 } } } },
@@ -88,7 +88,7 @@ export const PERIGOS: Molde[] = [
 
   molde({
     id: 'respiro_ferreiro', titulo: 'A Forja da Vila', tipo: 'respiro', capitulos: ['despertar', 'entrada', 'ascensao'], cooldown: 14,
-    cena: 'O ferreiro da vila bate um ferro vermelho que não vai virar nada em particular, só aquecer as mãos. O ritmo é o de uma conversa antiga, e as faíscas sobem como pensamentos que ninguém escreveu. Ele reconhece você, e acena sem parar de bater: se quiser ajudar, o fole está livre.',
+    cena: '{vez2:O ferreiro bate o mesmo ferro vermelho, ou outro idêntico, e o ritmo ainda acalma. }O ferreiro da vila bate um ferro vermelho que não vai virar nada em particular, só aquecer as mãos. O ritmo é o de uma conversa antiga, e as faíscas sobem como pensamentos que ninguém escreveu. Ele reconhece você, e acena sem parar de bater: se quiser ajudar, o fole está livre.',
     opcoes: [
       { id: 'fole', texto: 'Pegar o fole e ajudar até o ferro esfriar.', res: { texto: 'O ritmo do fole acompanha o do martelo, e por um tempo, os dois formam um instrumento só. No fim, o ferreiro joga a você uma ferradura ainda quente, para guardar. "Dá sorte", diz, sem convicção.', fx: { stats: { fis: 1 }, perfil: { disciplina: 1 } } } },
       { id: 'perguntar', texto: 'Perguntar ao ferreiro o que ele sabe do mundo lá fora.', res: { texto: 'O ferreiro fala pouco, mas o que diz é preciso: quem comprou espadas, quem pagou à vista, que seita encomendou aço demais. Uma conversa de dez minutos vale uma semana de boato.', fx: { stats: { comp: 1 }, perfil: { astucia: 1 } } } },
@@ -98,7 +98,7 @@ export const PERIGOS: Molde[] = [
 
   molde({
     id: 'respiro_peregrinos', titulo: 'Os Peregrinos', tipo: 'respiro', capitulos: ['entrada', 'ascensao', 'crise', 'legado'], cooldown: 14,
-    cena: 'Uma fila de peregrinos passa pela estrada, de mantos claros e pés calejados, rumo a um templo distante. Cantam baixinho uma canção sem melodia. Uma velha da fila, mancando, para ao seu lado e pergunta, sem malícia, se você sabe quanto falta.',
+    cena: '{vez2:Outra fila de peregrinos, e desta vez você repara em quem anda sozinho. }Uma fila de peregrinos passa pela estrada, de mantos claros e pés calejados, rumo a um templo distante. Cantam baixinho uma canção sem melodia. Uma velha da fila, mancando, para ao seu lado e pergunta, sem malícia, se você sabe quanto falta.',
     opcoes: [
       { id: 'caminhar', texto: 'Caminhar com eles por um trecho, ouvindo.', res: { texto: 'A canção não tem letra, mas tem fôlego. Você anda com eles por algumas horas, e quando se despede, a velha dá um tapinha na sua mão: "Quem caminha acompanhado, chega mais inteiro."', fx: { karma: 1, stats: { dao: 1 }, perfil: { compaixao: 1, devocao: 1 } } } },
       { id: 'ajudar', texto: 'Carregar a trouxa da velha até a próxima vila.', res: { texto: 'A trouxa é mais pesada do que parecia, e a velha, mais leve do que ela. No fim, ela deixa uma moeda de bronze, que você tenta recusar e não consegue.', fx: { pedras: 2, karma: 2, perfil: { compaixao: 2 } } } },

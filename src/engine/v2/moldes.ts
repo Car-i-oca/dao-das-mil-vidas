@@ -215,6 +215,8 @@ export function generoCampo(nome: string, campo: string): string | null {
 }
 export function preencher(s: State, bind: Record<Papel, Id>, texto: string): string {
   const mundo = s.v2!.mundo;
+  const jaVisto = (s.v2!.vistos[moldeAtual] ?? 0) >= 1;
+  texto = texto.replace(/\{vez([12]):([^}]*)\}/g, (_, k: string, c: string) => ((k === '2') === jaVisto ? c : ''));
   const t = texto.replace(/\{([a-z_]+)\.([a-zA-Z]+)\}/g, (_, r: string, campo: string) => {
     if (r === 'mundo') return noticiaDoMundo(s, campo);
     if (r === 'familia') return familiaCampo(s, campo);

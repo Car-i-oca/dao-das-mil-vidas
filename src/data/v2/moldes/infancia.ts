@@ -202,10 +202,10 @@ export const INFANCIA: Molde[] = [
     capitulos: ['infancia', 'despertar', 'entrada', 'ascensao', 'crise', 'legado'],
     cooldown: 4,
     cena: [
-      { tom: 'lirico', texto: 'A estrada do Salgueiro cheira a poeira e a chuva que ainda não veio. Você anda sem pressa, e o mundo se abre aos poucos, como um leque. Há dias em que a vida cabe inteira num passo.' },
-      { tom: 'sombrio', texto: 'A estrada do Salgueiro está vazia demais. Corvos sobem de um poste, e o vento traz um cheiro que você prefere não identificar. Alguém passou por aqui com pressa, e não voltou.' },
-      { tom: 'ironico', texto: 'A estrada do Salgueiro, como todas as estradas importantes, tem um buraco no pior lugar possível. Um mercador está parado diante dele, discutindo com a própria mula sobre quem foi o culpado.' },
-      { texto: 'A estrada do Salgueiro segue entre arrozais, e o dia passa devagar. Um viajante com a perna enfaixada pede, sem muita esperança, que você leve um recado até a próxima vila.' },
+      { tom: 'lirico', texto: '{vez2:De novo a estrada do Salgueiro, e de novo alguém precisando de ajuda; }A estrada do Salgueiro cheira a poeira e a chuva que ainda não veio. Você anda sem pressa, e o mundo se abre aos poucos, como um leque. Há dias em que a vida cabe inteira num passo.' },
+      { tom: 'sombrio', texto: '{vez2:De novo a estrada do Salgueiro, e de novo alguém precisando de ajuda; }A estrada do Salgueiro está vazia demais. Corvos sobem de um poste, e o vento traz um cheiro que você prefere não identificar. Alguém passou por aqui com pressa, e não voltou.' },
+      { tom: 'ironico', texto: '{vez2:De novo a estrada do Salgueiro, e de novo alguém precisando de ajuda; }A estrada do Salgueiro, como todas as estradas importantes, tem um buraco no pior lugar possível. Um mercador está parado diante dele, discutindo com a própria mula sobre quem foi o culpado.' },
+      { texto: '{vez2:De novo a estrada do Salgueiro, e de novo alguém precisando de ajuda; }A estrada do Salgueiro segue entre arrozais, e o dia passa devagar. Um viajante com a perna enfaixada pede, sem muita esperança, que você leve um recado até a próxima vila.' },
     ],
     opcoes: [
       { id: 'recado', texto: 'Levar o recado, mesmo fora do seu caminho.', res: { texto: 'Perde-se uma tarde, e ganha-se um agradecimento sincero e um bolinho de arroz já meio duro. Há coisas que a gente só entende depois.', efeitos: [{ inclinar: ['proteger', 1] }], fx: { karma: 1, perfil: { compaixao: 1 } } } },
@@ -222,8 +222,8 @@ export const INFANCIA: Molde[] = [
     cooldown: 8,
     papeis: { amigo: { pessoa: { papel: 'amigo', vivo: true }, opcional: true } },
     cena: [
-      { se: { papel: { amigo: { vivo: true } } }, texto: 'É noite de festival. Lanternas de papel sobem pelo rio, e {amigo.nome} puxa você pela manga para ver a primeira delas escapar do chafariz. "Faz um pedido", diz, sem olhar. "Eu já fiz o meu."' },
-      { texto: 'É noite de festival. Lanternas de papel sobem pelo rio, vendedores gritam o preço dos bolos de lótus, e crianças correm entre as pernas dos adultos. Por uma noite, ninguém parece lembrar de dívidas, de seitas ou de rivais.' },
+      { se: { papel: { amigo: { vivo: true } } }, texto: '{vez2:Outro festival das lanternas, e você já não é quem subiu o rio da primeira vez. }É noite de festival. Lanternas de papel sobem pelo rio, e {amigo.nome} puxa você pela manga para ver a primeira delas escapar do chafariz. "Faz um pedido", diz, sem olhar. "Eu já fiz o meu."' },
+      { texto: '{vez2:Outro festival das lanternas, e você já não é quem subiu o rio da primeira vez. }É noite de festival. Lanternas de papel sobem pelo rio, vendedores gritam o preço dos bolos de lótus, e crianças correm entre as pernas dos adultos. Por uma noite, ninguém parece lembrar de dívidas, de seitas ou de rivais.' },
     ],
     opcoes: [
       { id: 'pedido', texto: 'Soltar uma lanterna e fazer um pedido em silêncio.', res: { texto: 'A lanterna sobe, torta, e se perde entre as outras. Você nunca saberá qual era a sua, mas o pedido ficou no ar, e há dias em que isso basta.', efeitos: [{ opiniao: ['amigo', 3] }], fx: { stats: { dao: 1 }, perfil: { devocao: 1 } } } },
@@ -240,8 +240,8 @@ export const INFANCIA: Molde[] = [
     cooldown: 4,
     papeis: { amigo: { pessoa: { papel: 'amigo', vivo: true }, opcional: true } },
     cena: [
-      { se: { papel: { amigo: { vivo: true } } }, texto: 'O dia é de colheita, e {amigo.nome} trabalha na fileira ao lado, cantando uma música que nunca termina. As costas doem, e o sol ainda está alto. Entre uma foice e outra, o tempo passa melhor do que sozinho.' },
-      { texto: 'O dia é de colheita. A vila inteira entra na água até os joelhos, de foice na mão, do amanhecer ao escuro. As costas doem, mas as risadas ajudam.' },
+      { se: { papel: { amigo: { vivo: true } } }, texto: '{vez2:A colheita volta, como todo ano, e as costas lembram a anterior. }O dia é de colheita, e {amigo.nome} trabalha na fileira ao lado, cantando uma música que nunca termina. As costas doem, e o sol ainda está alto. Entre uma foice e outra, o tempo passa melhor do que sozinho.' },
+      { texto: '{vez2:A colheita volta, como todo ano, e as costas lembram a anterior. }O dia é de colheita. A vila inteira entra na água até os joelhos, de foice na mão, do amanhecer ao escuro. As costas doem, mas as risadas ajudam.' },
     ],
     opcoes: [
       { id: 'trabalhar', texto: 'Trabalhar firme até o fim do dia.', res: { texto: 'No fim, as mãos têm bolhas novas e a barriga tem comida de verdade. Dormir vem fácil.', efeitos: [{ opiniao: ['amigo', 3] }], fx: { stats: { fis: 1 }, perfil: { disciplina: 1 } } } },

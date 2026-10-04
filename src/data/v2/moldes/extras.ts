@@ -11,9 +11,9 @@ export const EXTRAS: Molde[] = [
   molde({
     id: 'respiro_boato', titulo: 'O Boato do Dia', tipo: 'respiro', capitulos: ['despertar', 'entrada', 'ascensao', 'crise', 'legado'], cooldown: 5,
     cena: [
-      { tom: 'sombrio', texto: 'Na estalagem, entre cerveja e fumaça, o boato do dia chega pela boca de quem não quer ser reconhecido: {mundo.noticia}. Ninguém ri. As mesas vizinhas calam, uma a uma, como quem escuta o mesmo trovão de longe.' },
-      { tom: 'ironico', texto: 'Na estalagem, o boato do dia é servido junto com o arroz: {mundo.noticia}. Cada mesa tem a sua versão, e a de cada uma é, com certeza, a única verdadeira. Alguém aposta um prato que a de baixo está errada.' },
-      { texto: 'Na estalagem, entre cerveja e fumaça, o boato do dia é este: {mundo.noticia}. Cada mesa tem uma versão, e você, que escuta com mais atenção do que fala, junta as partes.' },
+      { tom: 'sombrio', texto: '{vez2:Outra noite de boatos na estalagem, e desta vez você escuta de um jeito diferente. }Na estalagem, entre cerveja e fumaça, o boato do dia chega pela boca de quem não quer ser reconhecido: {mundo.noticia}. Ninguém ri. As mesas vizinhas calam, uma a uma, como quem escuta o mesmo trovão de longe.' },
+      { tom: 'ironico', texto: '{vez2:Outra noite de boatos na estalagem, e desta vez você escuta de um jeito diferente. }Na estalagem, o boato do dia é servido junto com o arroz: {mundo.noticia}. Cada mesa tem a sua versão, e a de cada uma é, com certeza, a única verdadeira. Alguém aposta um prato que a de baixo está errada.' },
+      { texto: '{vez2:Outra noite de boatos na estalagem, e desta vez você escuta de um jeito diferente. }Na estalagem, entre cerveja e fumaça, o boato do dia é este: {mundo.noticia}. Cada mesa tem uma versão, e você, que escuta com mais atenção do que fala, junta as partes.' },
     ],
     opcoes: [
       { id: 'escutar', texto: 'Escutar com atenção, sem perguntar nada.', res: { texto: 'A noite rende pouco em palavras e muito em pistas: quem vem de onde, quem cala quando um nome é dito, quem paga a rodada seguinte. Você sai com uma ideia mais clara do mundo, e com a sensação de que ele é menor do que parece.', fx: { stats: { comp: 1 }, perfil: { astucia: 1 } } } },
@@ -28,9 +28,9 @@ export const EXTRAS: Molde[] = [
     quando: { jogador: { reinoMin: 1 } },
     relevancia: [{ se: { papel: { rival: { opiniaoMax: -20 } } }, mais: 12 }],
     cena: [
-      { se: { papel: { rival: { opiniaoMax: -20 } } }, texto: '{rival.nome} está sentado ao fundo da estalagem, de costas para a parede, como quem aprendeu a nunca dar as costas a ninguém. Quando você entra, a conversa {rival.dele} com o taverneiro diminui. Os olhares se cruzam, e o {rival.dele} diz: "{rival.Trato}, que coincidência." O resto da sala ouve.' },
-      { se: { papel: { rival: { opiniaoMin: 15 } } }, texto: '{rival.nome} acena de uma mesa do fundo, com um sorriso quase envergonhado. Ficou entre vocês uma coisa que nenhum dos dois soube chamar. {rival.Ele} afasta uma cadeira com o pé, sem dizer nada, e você entende o convite.' },
-      { texto: '{rival.nome} está na estalagem, com a postura de quem vive em outro compasso. Vocês se veem, sem se cumprimentar, e ficam os dois, durante muito tempo, fingindo prestar atenção em outra coisa. É sempre assim, quando dois caminhos se cruzam sem querer.' },
+      { se: { papel: { rival: { opiniaoMax: -20 } } }, texto: '{vez2:De novo na estalagem, e de novo {rival.nome} na mesa do fundo, como se o mundo só tivesse aquele lugar. }{rival.nome} está sentado ao fundo da estalagem, de costas para a parede, como quem aprendeu a nunca dar as costas a ninguém. Quando você entra, a conversa {rival.dele} com o taverneiro diminui. Os olhares se cruzam, e o {rival.dele} diz: "{rival.Trato}, que coincidência." O resto da sala ouve.' },
+      { se: { papel: { rival: { opiniaoMin: 15 } } }, texto: '{vez2:De novo na estalagem, e de novo {rival.nome} na mesa do fundo, como se o mundo só tivesse aquele lugar. }{rival.nome} acena de uma mesa do fundo, com um sorriso quase envergonhado. Ficou entre vocês uma coisa que nenhum dos dois soube chamar. {rival.Ele} afasta uma cadeira com o pé, sem dizer nada, e você entende o convite.' },
+      { texto: '{vez2:De novo na estalagem, e de novo {rival.nome} na mesa do fundo, como se o mundo só tivesse aquele lugar. }{rival.nome} está na estalagem, com a postura de quem vive em outro compasso. Vocês se veem, sem se cumprimentar, e ficam os dois, durante muito tempo, fingindo prestar atenção em outra coisa. É sempre assim, quando dois caminhos se cruzam sem querer.' },
     ],
     opcoes: [
       { id: 'mesa', texto: 'Dividir a mesa com {rival.ele}, e falar de qualquer coisa.', res: { texto: 'A conversa começa por clima, passa por preço de arroz, termina em lembrança de infância. Nenhum dos dois toca no assunto de verdade. Mas há uma trégua esquisita no ar, e vocês saem separados, sem pressa de voltar à briga.', efeitos: [{ opiniao: ['rival', 6] }, { fato: ['rival', 'dividiu_a_mesa', 2] }], fx: { karma: 1, perfil: { compaixao: 1 } } } },
@@ -44,7 +44,7 @@ export const EXTRAS: Molde[] = [
   molde({
     id: 'respiro_mercado', titulo: 'O Mercado de Cultivadores', tipo: 'respiro', capitulos: ['entrada', 'ascensao', 'crise'], cooldown: 7,
     papeis: { assoc: { faccao: { tipo: ['associacao'] } } },
-    cena: 'O mercado de cultivadores acontece a cada estação, e a {assoc.nome} controla as melhores bancas. Vende-se de tudo: pílulas, talismãs, mapas falsos, manuais emprestados. Os preços sobem em proporção ao número de curiosos, e os curiosos, em proporção à promessa de segredo.',
+    cena: '{vez2:O mercado de cultivadores outra vez, com as mesmas bancas e preços novos. }O mercado de cultivadores acontece a cada estação, e a {assoc.nome} controla as melhores bancas. Vende-se de tudo: pílulas, talismãs, mapas falsos, manuais emprestados. Os preços sobem em proporção ao número de curiosos, e os curiosos, em proporção à promessa de segredo.',
     opcoes: [
       { id: 'talisma', texto: 'Comprar um talismã de escudo.', custo: 20, res: { texto: 'O talismã é pequeno, de papel amarelo, escrito com tinta cara. Pelo preço, é um bom negócio, e ao mesmo tempo, uma lembrança de que a segurança sempre tem um preço, e de que alguém sempre fica sem.', efeitos: [{ reputacao: ['assoc', 2] }], fx: { item: ['talisma_escudo'], perfil: { cautela: 1, ganancia: 1 } } } },
       { id: 'barganhar', texto: 'Barganhar por um manual usado.', teste: { stat: ['car', 'sor'], dif: 0 },
@@ -57,9 +57,9 @@ export const EXTRAS: Molde[] = [
   molde({
     id: 'respiro_chuva', titulo: 'A Chuva Que Veio Cedo', tipo: 'respiro', capitulos: TODOS as unknown as ('infancia' | 'despertar' | 'entrada' | 'ascensao' | 'crise' | 'legado')[], cooldown: 6,
     cena: [
-      { tom: 'lirico', texto: 'A chuva chega cedo, e com ela, um silêncio que só a água sabe dar. Você ouve cada gota no telhado como quem ouve um conhecido contar uma história antiga. Há momentos em que o mundo se explica sozinho, se você deixar.' },
-      { tom: 'sombrio', texto: 'A chuva chega cedo e não tem pressa de ir embora. A água escorre pelas paredes como se procurasse alguma coisa, e o cheiro de terra molhada traz de volta coisas que você achava que tinha enterrado.' },
-      { texto: 'A chuva chega cedo, e o dia, de repente, muda de ritmo. Os campos se esvaziam, as estradas viram lama, e quem tem teto fica com ele. Você, que tem, fica.' },
+      { tom: 'lirico', texto: '{vez2:A chuva chega de novo antes da hora, e você a reconhece como se fosse uma velha conhecida. }A chuva chega cedo, e com ela, um silêncio que só a água sabe dar. Você ouve cada gota no telhado como quem ouve um conhecido contar uma história antiga. Há momentos em que o mundo se explica sozinho, se você deixar.' },
+      { tom: 'sombrio', texto: '{vez2:A chuva chega de novo antes da hora, e você a reconhece como se fosse uma velha conhecida. }A chuva chega cedo e não tem pressa de ir embora. A água escorre pelas paredes como se procurasse alguma coisa, e o cheiro de terra molhada traz de volta coisas que você achava que tinha enterrado.' },
+      { texto: '{vez2:A chuva chega de novo antes da hora, e você a reconhece como se fosse uma velha conhecida. }A chuva chega cedo, e o dia, de repente, muda de ritmo. Os campos se esvaziam, as estradas viram lama, e quem tem teto fica com ele. Você, que tem, fica.' },
     ],
     opcoes: [
       { id: 'meditar', texto: 'Meditar ouvindo a água.', res: { texto: 'O Qi acompanha o ritmo da chuva, e quando você abre os olhos, a tarde já se foi. Parte do cansaço, e parte do que carregava, ficou lá, junto das poças.', fx: { xp: 4, stats: { esp: 1 }, perfil: { disciplina: 1 } } } },
@@ -72,8 +72,8 @@ export const EXTRAS: Molde[] = [
     id: 'respiro_visita', titulo: 'Uma Visita a {parente.nome}', tipo: 'personagem', capitulos: ['despertar', 'entrada', 'ascensao'], cooldown: 8,
     papeis: { parente: { pessoa: { papel: 'parente', vivo: true } } },
     cena: [
-      { se: { papel: { parente: { opiniaoMin: 50 } } }, texto: 'Você volta a ver {parente.nome}. A casa tem o mesmo cheiro, e {parente.nome} parece menor e mais frágil do que na lembrança. Há uma panela no fogo, e uma cadeira vazia que já foi sua. Não perguntam onde você andou. Sabem que você vai contar o que puder.' },
-      { texto: 'Você volta a ver {parente.nome}, depois de muito tempo. A casa mudou, e {parente.nome} também. Há uma cerimônia no cumprimento, uma cautela, e uma pergunta suspensa no ar: quem você se tornou?' },
+      { se: { papel: { parente: { opiniaoMin: 50 } } }, texto: '{vez2:Mais uma visita, e a distância entre vocês ficou mais fácil de medir. }Você volta a ver {parente.nome}. A casa tem o mesmo cheiro, e {parente.nome} parece menor e mais frágil do que na lembrança. Há uma panela no fogo, e uma cadeira vazia que já foi sua. Não perguntam onde você andou. Sabem que você vai contar o que puder.' },
+      { texto: '{vez2:Mais uma visita, e a distância entre vocês ficou mais fácil de medir. }Você volta a ver {parente.nome}, depois de muito tempo. A casa mudou, e {parente.nome} também. Há uma cerimônia no cumprimento, uma cautela, e uma pergunta suspensa no ar: quem você se tornou?' },
     ],
     opcoes: [
       { id: 'ficar', texto: 'Ficar alguns dias, ajudar no que precisar.', res: { texto: 'Os dias passam em tarefas pequenas, e cada uma é um tipo de conversa. Quando você parte, {parente.nome} não chora, mas ficou olhando a estrada mais tempo do que o razoável.', efeitos: [{ opiniao: ['parente', 12] }, { fato: ['parente', 'foi_visitado', 3] }, { inclinar: ['proteger', 1] }], fx: { karma: 1, pedras: -5, perfil: { compaixao: 1, devocao: 1 } } } },
@@ -86,8 +86,8 @@ export const EXTRAS: Molde[] = [
     id: 'respiro_pico', titulo: 'O Pico Onde Ninguém Sobe', tipo: 'respiro', capitulos: ['ascensao', 'crise', 'legado'], cooldown: 8,
     quando: { jogador: { reinoMin: 3 } },
     cena: [
-      { tom: 'lirico', texto: 'Você sobe ao pico onde ninguém sobe, e o mundo se abre, miniatura. Lá embaixo, uma seita parece um brinquedo, uma cidade, um formigueiro. Alguém contou, uma vez, que a notícia do dia era {mundo.noticia}. Daqui, isso parece pequeno.' },
-      { texto: 'Você sobe ao pico onde ninguém sobe, e o vento corta mais do que o frio. Lá embaixo, o mundo continua, com as suas guerras e feiras. Ouvi dizer que {mundo.noticia}. Daqui, tudo parece pequeno, e ao mesmo tempo, muito próximo.' },
+      { tom: 'lirico', texto: '{vez2:Você volta ao pico, e o vento parece lembrar de você. }Você sobe ao pico onde ninguém sobe, e o mundo se abre, miniatura. Lá embaixo, uma seita parece um brinquedo, uma cidade, um formigueiro. Alguém contou, uma vez, que a notícia do dia era {mundo.noticia}. Daqui, isso parece pequeno.' },
+      { texto: '{vez2:Você volta ao pico, e o vento parece lembrar de você. }Você sobe ao pico onde ninguém sobe, e o vento corta mais do que o frio. Lá embaixo, o mundo continua, com as suas guerras e feiras. Ouvi dizer que {mundo.noticia}. Daqui, tudo parece pequeno, e ao mesmo tempo, muito próximo.' },
     ],
     opcoes: [
       { id: 'contemplar', texto: 'Ficar o dia inteiro contemplando.', res: { texto: 'O dia passa como um olhar longo. Quando você desce, está mais leve, ou mais pesado, e nem você sabe qual. A altura ensina o que a planície esconde: que tudo é pequeno, e que isso não tira o valor de nada.', fx: { xp: 6, stats: { dao: 2 }, perfil: { disciplina: 1, devocao: 1 } } } },
