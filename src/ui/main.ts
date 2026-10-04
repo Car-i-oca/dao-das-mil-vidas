@@ -20,7 +20,7 @@ import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
 import { playDuel } from './duelo';
-import { mundoHtml, resumoV2Html, npcV2, cenaV2 } from './mundo';
+import { mundoHtml, resumoV2Html, npcV2, cenaV2, noiteV2 } from './mundo';
 import { FOES } from '../data/combates';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
@@ -207,7 +207,7 @@ function sceneFor(s: State, eventId: string): string {
   let kind: string = cenaV2(s) ?? s.place;
   if (s.world?.id === 'reino_secreto') kind = 'reino_secreto';
   else if (s.tier >= 7 && hash(eventId) % 3 === 0) kind = 'ceu';
-  return `<div class="scene">${sceneSvg(kind as SceneKind, eventId, hash(eventId) % 4 === 0)}</div>`;
+  return `<div class="scene">${sceneSvg(kind as SceneKind, eventId, noiteV2(s) ?? hash(eventId) % 4 === 0)}</div>`;
 }
 
 /** Retrato do personagem recorrente citado no texto do evento ({mentor}, {rival}...). */

@@ -43,14 +43,29 @@ const LUGAR_CENA: Record<string, string> = {
   vila: 'vilarejo', mercado: 'cidade', praca: 'cidade', patio: 'seita', portao: 'seita', estrada: 'vilarejo', floresta: 'selva', desfiladeiro: 'montanha',
   ruinas: 'ruinas', gruta: 'montanha', pico: 'montanha', porto: 'mar', forja: 'cidade', ponte: 'cidade', templo: 'montanha',
 };
+/** Cenário (e se é noite) de cada molde que não tem lugar próprio. */
+const CENARIO_DE: Record<string, [string, boolean?]> = {
+  inf_cobranca: ['vilarejo'], inf_visitante: ['seita'], inf_amigo_juramento: ['vilarejo'], inf_rival_primeiro: ['vilarejo'], despertar_centelha: ['vilarejo'],
+  respiro_estrada: ['vilarejo'], respiro_festival: ['cidade', true], respiro_trabalho: ['vilarejo'], respiro_boato: ['cidade', true], respiro_estalagem_rival: ['cidade', true],
+  respiro_mercado: ['cidade'], respiro_chuva: ['vilarejo'], respiro_visita: ['vilarejo'], respiro_pico: ['montanha'], respiro_ponte: ['cidade'], respiro_templo: ['montanha'],
+  respiro_ferreiro: ['vilarejo'], respiro_peregrinos: ['montanha'], perigo_lobo: ['selva'], perigo_febre: ['vilarejo', true], perigo_tempestade: ['mar', true],
+  perigo_emboscada_culto: ['montanha'], perigo_besta: ['selva'], rival_climax: ['montanha'], rival_ruina: ['vilarejo', true], cla_pista: ['vilarejo', true],
+  cla_prova: ['cidade'], cla_segredo: ['vilarejo'], cla_climax: ['cidade', true], cla_epilogo: ['vilarejo'], cla_aliados: ['cidade'],
+  desp_mestre_caminho: ['montanha'], mestre_licao: ['montanha'], mestre_legado: ['montanha'], reencontro_antigo: ['cidade'],
+};
 export function cenaV2(s: State): string | null {
   const cur = s.current?.v2;
   if (!cur || !s.v2) return null;
+  if (CENARIO_DE[cur.molde]) return CENARIO_DE[cur.molde][0];
   for (const id of Object.values(cur.bind)) {
     const l = s.v2.mundo.lugares[id];
     if (l) return LUGAR_CENA[l.tipo] ?? null;
   }
-  return null;
+  return s.v2.diretor.capitulo === 'infancia' ? 'vilarejo' : null;
+}
+export function noiteV2(s: State): boolean | null {
+  const cur = s.current?.v2;
+  return cur && CENARIO_DE[cur.molde] ? !!CENARIO_DE[cur.molde][1] : null;
 }
 
 const nomesDoFio = (s: State, papeis: Record<string, string>) =>
