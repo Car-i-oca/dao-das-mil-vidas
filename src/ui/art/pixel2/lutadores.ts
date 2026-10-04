@@ -199,17 +199,23 @@ export function lutador(t: TraçoLutador, po: Pose): Pix {
 }
 
 export const POSES_PADRAO: Record<string, Pose> = {
-  parado1: {
+  parado0: {
     hx: 0, hy: 0, tronco: 0, cab: 0,
     bf: [25, 45], bt: [-15, 30],
     pf: [12, -8], pt: [-14, 10],
     arma: 30
   },
-  parado2: {
+  parado1: {
     hx: 0, hy: 1, tronco: 2, cab: -1,
     bf: [28, 48], bt: [-12, 32],
     pf: [14, -6], pt: [-12, 8],
     arma: 32
+  },
+  ataque0: {
+    hx: -2, hy: 1, tronco: -6, cab: -3,
+    bf: [-10, 50], bt: [20, 25],
+    pf: [16, -8], pt: [-18, 14],
+    arma: 10
   },
   ataque1: {
     hx: -3, hy: 1, tronco: -10, cab: -5,
@@ -223,7 +229,78 @@ export const POSES_PADRAO: Record<string, Pose> = {
     pf: [-15, 20], pt: [24, -12],
     arma: 70,
     boca: 'grito'
+  },
+  tecnica0: {
+    hx: -2, hy: 2, tronco: -8, cab: -2,
+    bf: [40, 70], bt: [-30, 40],
+    pf: [18, -12], pt: [-16, 14],
+    arma: 40,
+    brilho: 0.4
+  },
+  tecnica1: {
+    hx: 0, hy: 0, tronco: 5, cab: 0,
+    bf: [60, 40], bt: [-20, 20],
+    pf: [8, -4], pt: [-8, 6],
+    arma: 50,
+    brilho: 0.8
+  },
+  tecnica2: {
+    hx: 6, hy: -1, tronco: 22, cab: 6,
+    bf: [95, 5], bt: [-55, 25],
+    pf: [-18, 22], pt: [28, -14],
+    arma: 85,
+    boca: 'grito',
+    brilho: 1
+  },
+  dano0: {
+    hx: -4, hy: 1, tronco: -18, cab: -10,
+    bf: [-20, 30], bt: [-40, 20],
+    pf: [8, 12], pt: [-16, -6],
+    arma: 10,
+    boca: 'dor',
+    flash: true
+  },
+  vitoria0: {
+    hx: 0, hy: -1, tronco: -2, cab: 4,
+    bf: [150, 10], bt: [-10, 20],
+    pf: [10, -6], pt: [-10, 6],
+    arma: 20
+  },
+  derrota0: {
+    hx: 0, hy: 0, tronco: 0, cab: 0,
+    bf: [0, 0], bt: [0, 0],
+    pf: [0, 0], pt: [0, 0],
+    arma: 0,
+    deitado: true
   }
+};
+
+export const POSES: Record<string, Pose[]> = {
+  parado: [POSES_PADRAO.parado0, POSES_PADRAO.parado1],
+  ataque: [POSES_PADRAO.ataque0, POSES_PADRAO.ataque1, POSES_PADRAO.ataque2],
+  tecnica: [POSES_PADRAO.tecnica0, POSES_PADRAO.tecnica1, POSES_PADRAO.tecnica2],
+  dano: [POSES_PADRAO.dano0],
+  vitoria: [POSES_PADRAO.vitoria0],
+  derrota: [POSES_PADRAO.derrota0]
+};
+
+export const TRACO_JOGADOR: TraçoLutador = {
+  robe: 'azul',
+  calca: 'pedra',
+  pele: PAL.pele,
+  cabelo: PAL.cabelo,
+  arma: 'espada',
+  detalhe: 'papel'
+};
+
+export const TRACO_DEMONIO: TraçoLutador = {
+  robe: 'noite',
+  calca: 'noite',
+  pele: PAL.peleEscura,
+  cabelo: PAL.cabelo,
+  arma: 'punho',
+  detalhe: 'fogo',
+  demoniaco: true
 };
 
 /**
@@ -231,8 +308,8 @@ export const POSES_PADRAO: Record<string, Pose> = {
  */
 export function animacaoLutador(t: TraçoLutador): Pix[] {
   const quadros: Pose[] = [
+    POSES_PADRAO.parado0,
     POSES_PADRAO.parado1,
-    POSES_PADRAO.parado2,
     POSES_PADRAO.ataque1,
     POSES_PADRAO.ataque2
   ];
