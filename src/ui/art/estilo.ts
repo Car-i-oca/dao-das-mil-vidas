@@ -1,20 +1,21 @@
 import type { Item, Technique } from '../../types';
 import type { Look } from './portrait';
 
-/** Os três estilos de arte do jogo. O padrão é o pixel art 16-bit. */
-export type Estilo = 'pixel' | 'manhwa' | 'tinta';
+/** Os estilos de arte do jogo. */
+export type Estilo = 'pixel' | 'manhwa' | 'tinta' | 'pintura';
 
 export const ESTILOS: { id: Estilo; nome: string; desc: string }[] = [
+  { id: 'pixel', nome: 'Pixel 16-bit', desc: 'RPG de 16 bits: sprites, sombreamento por faixas e cenários em camadas.' },
+  { id: 'pintura', nome: 'Pintura', desc: 'Pintura em pixel art com iluminação suave, traços definidos e tons naturais.' },
   { id: 'manhwa', nome: 'Manhwa', desc: 'Visual de web novel: cores vivas, brilhos, contornos firmes e muita luz.' },
   { id: 'tinta', nome: 'Tinta', desc: 'Pintura chinesa a tinta: poucos traços, muito papel em branco e um selo vermelho.' },
-  { id: 'pixel', nome: 'Pixel 16-bit', desc: 'RPG de 16 bits: sprites, sombreamento por faixas e cenários em camadas.' },
 ];
 
 let atual: Estilo = 'pixel';
 const ouvintes: (() => void)[] = [];
 
 export const estiloAtual = (): Estilo => atual;
-export const estiloValido = (x: unknown): x is Estilo => x === 'pixel' || x === 'manhwa' || x === 'tinta';
+export const estiloValido = (x: unknown): x is Estilo => x === 'pixel' || x === 'pintura' || x === 'manhwa' || x === 'tinta';
 
 export function definirEstilo(e: Estilo) {
   atual = e;

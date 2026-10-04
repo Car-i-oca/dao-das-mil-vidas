@@ -196,7 +196,7 @@ export function playDuel(script: CombatScript, opts: DuelOptions): void {
         kf = [{ opacity: 0, transform: 'scale(0.3)' }, { opacity: 1, transform: 'scale(1)', offset: 0.35 }, { opacity: 0, transform: 'scale(1.5)' }];
         break;
       case 'qi':
-        g('<circle cx="50" cy="50" r="12" fill="' + col + '"/><circle cx="50" cy="50" r="22" fill="none" stroke="' + col + '" stroke-width="3" opacity=".7"/><circle cx="50" cy="50" r="34" fill="none" stroke="' + col + '" stroke-width="2" opacity=".4"/>');
+        g('<circle cx="50" cy="50" r="12" fill="' + col + '"/><circle cx="50" cy="50" r="22" fill="none" stroke="' + col + '" stroke-width="3" opacity=".7"/><circle cx="50" cy="34" r="34" fill="none" stroke="' + col + '" stroke-width="2" opacity=".4"/>');
         ms = 600;
         kf = fromSide(120);
         break;
