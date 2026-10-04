@@ -16,6 +16,7 @@ import { GUERRA } from './moldes/guerra';
 import { ORIGEM } from './moldes/origem';
 import { TRILHAS } from './moldes/trilhas';
 import { TRACOS } from './moldes/tracos';
+import { REGIOES } from './moldes/regioes';
 
 /** Todos os moldes da v2 (ver docs/eventos-v2.md). */
 const CICLOS: Record<string, string> = {
@@ -29,7 +30,7 @@ function ciclar(m: Molde): Molde {
   const cena = typeof m.cena === 'string' ? pre + m.cena : m.cena.map((v) => ({ ...v, texto: pre + v.texto }));
   return { ...m, cena, capitulos: [...new Set([...m.capitulos, 'ascensao', 'crise', 'legado'])] as Molde['capitulos'] };
 }
-const TODOS: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO, ...DEMONIO, ...GUERRA, ...ORIGEM, ...TRILHAS, ...TRACOS];
+const TODOS: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO, ...DEMONIO, ...GUERRA, ...ORIGEM, ...TRILHAS, ...TRACOS, ...REGIOES];
 /** Prefixo de "segunda vez" para moldes soltos que podem voltar. */
 const REPETE: Record<string, string> = {
   desp_mestre_caminho: 'Anos depois, o mesmo convite aparece de novo, num outro ponto da estrada. ', troca_ambicao: 'De novo a sensação de que o centro da vida mudou de lugar. ',

@@ -41,7 +41,7 @@ export function npcV2(s: State): { role: Role; nome: string; reino: number } | n
 /** Tipo de cenário a partir dos lugares da cena (ou do tipo de luta). */
 const LUGAR_CENA: Record<string, string> = {
   vila: 'vilarejo', mercado: 'cidade', praca: 'cidade', patio: 'seita', portao: 'seita', estrada: 'vilarejo', floresta: 'selva', desfiladeiro: 'montanha',
-  ruinas: 'ruinas', gruta: 'montanha', pico: 'montanha', porto: 'mar', forja: 'cidade', ponte: 'cidade', templo: 'montanha',
+  ruinas: 'ruinas', gruta: 'montanha', pico: 'montanha', porto: 'mar', deserto: 'deserto', gelo: 'gelo', mar: 'mar', forja: 'cidade', ponte: 'cidade', templo: 'montanha',
 };
 /** Cenário (e se é noite) de cada molde que não tem lugar próprio. */
 const CENARIO_DE: Record<string, [string, boolean?]> = {

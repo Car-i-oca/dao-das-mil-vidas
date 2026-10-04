@@ -155,6 +155,9 @@ export function criarMundo(sem: Semente, jogadorNome: string): { mundo: Mundo; r
   novoLugar(m, 'Forja Abandonada', 'forja', undefined, 2).segredos.push('um martelo que ainda guarda calor');
   novoLugar(m, 'Ponte de Pedra', 'ponte', imperio.id, 2);
   novoLugar(m, 'Templo Antigo', 'templo', undefined, 2);
+  novoLugar(m, 'Deserto das Areias Mudas', 'deserto', undefined, 3);
+  novoLugar(m, 'Planalto do Gelo Eterno', 'gelo', undefined, 4);
+  novoLugar(m, 'Mar Sem Margem', 'mar', undefined, 3);
   void vila; void sede;
   // Elenco inicial
   const ferida: FeridaTipo = FERIDA_DE[sem.origem] ?? 'divida';
