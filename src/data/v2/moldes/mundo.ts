@@ -232,4 +232,32 @@ export const MUNDO: Molde[] = [
       { id: 'manter', texto: 'Manter o que jurei, mesmo com o peso mudado.', res: { texto: 'Você aperta os dentes e escolhe ficar. Não por convicção, e sim por lealdade ao que foi dito um dia, em outra voz. Há um valor secreto em cumprir o que foi prometido quando já ninguém lembra, e você o sente, devagar, como um calor de brasa.', efeitos: [{ ambicao: 'adiar' }], fx: { karma: 1, stats: { dao: 2 }, perfil: { disciplina: 2, devocao: 1 } } } },
     ],
   }),
+
+  /* Quem marcou a vida e sumiu de cena volta, ou tem o seu destino contado. */
+  molde({
+    id: 'reencontro_antigo',
+    titulo: 'Um Rosto Conhecido',
+    tipo: 'personagem',
+    capitulos: ['ascensao', 'crise', 'legado'],
+    cooldown: 5,
+    max: 4,
+    papeis: { velho: { pessoa: { importante: true, semVer: 9, vivo: true } } },
+    quando: { jogador: { reinoMin: 2 } },
+    relevancia: [{ se: { papel: { velho: { opiniaoMin: 30 } } }, mais: 25 }, { se: { papel: { velho: { opiniaoMax: -30 } } }, mais: 30 }],
+    cena: [
+      { se: { papel: { velho: { opiniaoMax: -30 } } }, texto: '{velho.nome} atravessa a rua para vir ao seu encontro, e a rua toda percebe. Os anos mudaram o rosto {velho.dele}, mas não o jeito de olhar quem lhe deve alguma coisa. "{velho.Trato}", diz, devagar. "Eu não esqueci."' },
+      { se: { papel: { velho: { opiniaoMin: 30 } } }, texto: 'Alguém grita o seu nome no meio da feira. Você leva um instante para reconhecer {velho.nome}, mais velh{velho.o}, de cabelo mais ralo e o mesmo sorriso. {velho.Ele} abre os braços sem cerimônia, como se tivessem se despedido ontem.' },
+      { texto: '{velho.nome} está parad{velho.o} à beira do caminho, e demora a decidir se vai cumprimentar. Faz anos. Os dois sabem que foram importantes um para o outro, e que nenhum dos dois soube o que fazer com isso.' },
+    ],
+    opcoes: [
+      { id: 'conversar', texto: 'Sentar e pôr a conversa em dia, sem pressa.', requer: { papel: { velho: { opiniaoMin: -29 } } }, seloBloqueio: 'O rancor impede a conversa',
+        res: { texto: 'A tarde vai embora em histórias de quem morreu, de quem subiu, de quem partiu. No fim, {velho.nome} diz uma frase que fica: "Você virou alguém, e continuo achando que era possível." Você não sabe se é elogio.', se: [{ se: { papel: { velho: { situacao: ['expulso', 'foragido', 'caido'] } } }, texto: 'Os anos não foram generosos com {velho.nome}, e {velho.ele} não esconde. Conta a queda sem enfeite, e você escuta sem interromper. No fim, {velho.ele} pede só uma coisa: que você se lembre {velho.dele} como era antes.' }], efeitos: [{ opiniao: ['velho', 8] }, { fato: ['velho', 'reencontrou_o_jogador', 2] }], fx: { karma: 1, perfil: { compaixao: 1 } } } },
+      { id: 'ajudar', texto: 'Ajudar {velho.ele} no que for preciso, com a bolsa que tiver.', custo: 40, requer: { papel: { velho: { opiniaoMin: -29 } } },
+        res: { texto: '{velho.nome} recusa uma vez, por orgulho, e aceita na segunda, por necessidade. Não diz obrigad{velho.o}. Mas a dívida entre vocês muda de direção, e isso, para quem deve, é um alívio.', efeitos: [{ opiniao: ['velho', 15] }, { fato: ['velho', 'foi_ajudado_pelo_jogador', 3] }], fx: { karma: 2, perfil: { compaixao: 2 } } } },
+      { id: 'enfrentar', texto: 'Ouvir até o fim o que {velho.ele} veio dizer.', requer: { papel: { velho: { opiniaoMax: -30 } } },
+        res: { texto: 'A lista é longa, e verdadeira em quase tudo. Você não se defende, e é isso que desarma {velho.nome}. {velho.Ele} vai embora sem o golpe que tinha vindo dar, e sem a paz que não veio buscar.', efeitos: [{ opiniao: ['velho', 6] }, { fato: ['velho', 'foi_ouvido_ate_o_fim', 3] }], fx: { karma: 1, perfil: { disciplina: 1 } } } },
+      { id: 'afastar', texto: 'Cumprimentar de longe e seguir o próprio caminho.',
+        res: { texto: 'O aceno é curto, educado, e dói em quem o recebe. Você segue, e {velho.nome} fica para trás, pequen{velho.o} na rua grande. Há reencontros que só confirmam o tamanho da distância.', efeitos: [{ opiniao: ['velho', -3] }, { fato: ['velho', 'foi_evitado', 1] }], fx: {} } },
+    ],
+  }),
 ];

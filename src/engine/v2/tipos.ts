@@ -202,6 +202,8 @@ export interface PapelPessoa {
   objetivo?: ObjetivoTipo[];
   /** Se nenhuma pessoa servir, cria uma assim. */
   criar?: { traco?: Traco[]; trilha?: string; reino?: number | 'jogador'; objetivo?: ObjetivoTipo; faccao?: string };
+  /** Só pessoas que o jogador conheceu de verdade e que não aparecem há pelo menos N anos. */
+  importante?: boolean; semVer?: number;
   /** Só procura entre pessoas sem papel nenhum (um desconhecido). */
   desconhecido?: boolean;
   /** Sempre cria uma pessoa nova (usa `criar`), sem procurar no mundo. */

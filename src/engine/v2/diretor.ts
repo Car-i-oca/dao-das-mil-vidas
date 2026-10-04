@@ -86,7 +86,12 @@ function atualizarCapitulo(s: State, rng: Rng) {
   d.cartao = cartao(novo, d.contador);
   // fios maduros que ninguém tocou terminam como esquecidos (o mundo seguiu em frente)
   for (const f of v.mundo.fios) {
-    if (f.estado === 'aberto' && s.age - f.ultimo > f.prazo * 1.6) { f.estado = 'abandonado'; f.desfecho = 'esquecido'; s.log.push({ age: Math.floor(s.age), text: `O fio de ${f.tipo} ficou sem resposta e se perdeu.` }); }
+    if (f.estado === 'aberto' && s.age - f.ultimo > f.prazo * 1.6) { f.estado = 'abandonado'; f.desfecho = 'esquecido';
+      for (const id of Object.values(f.papeis)) {
+        const p = v.mundo.pessoas[id];
+        if (p && p.vivo && p.importante && !p.situacao) { p.situacao = 'partiu'; v.diretor.noticias.push(concordar(`${p.nome} seguiu outro caminho, e o fio entre vocês se soltou.`)); v.mundo.log.push({ ano: Math.floor(s.age), texto: `${p.nome} seguiu outro caminho.` }); }
+      }
+      s.log.push({ age: Math.floor(s.age), text: `O fio de ${f.tipo} ficou sem resposta e se perdeu.` }); }
   }
 }
 
@@ -161,6 +166,8 @@ export function pickNextV2(s: State, rng: Rng): void {
     v.diretor.fase = PROXIMA_FASE[v.diretor.fase]; v.diretor.cenasNaFase = 0;
     cands = candidatas(s, rng);
   }
+  // respiro é tempero, não prato: com outras cenas à mão, ele perde força
+  if (cands.some((c) => c.m.tipo !== 'respiro')) for (const c of cands) if (c.m.tipo === 'respiro') c.R *= 0.35;
   let esc: { m: Molde; lig: Ligacoes } | undefined;
   if (cands.length) {
     cands.sort((a, b) => b.R - a.R);

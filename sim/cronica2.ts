@@ -8,6 +8,7 @@ import { newMeta, rollCreation, startLife, view, choose, proceed, PATH, TALENT, 
 import { botPick } from './bot';
 import { CAPITULO_NOME, CONTADOR_NOME } from '../src/engine/v2/diretor';
 import type { State } from '../src/types';
+import { MOLDE } from '../src/engine/v2/moldes';
 
 export function jogarV2(seed: number, max = 9999, imprimir = true, forcaPrimeira?: number) {
   const meta = newMeta();
@@ -23,7 +24,7 @@ export function jogarV2(seed: number, max = 9999, imprimir = true, forcaPrimeira
     const v = view(s);
     if (v.kind === 'event') {
       let i = botPick(s, bot, false);
-      if (primeira && s.current?.v2 && forcaPrimeira !== undefined) { i = Math.min(forcaPrimeira, v.choices.filter((c) => !c.disabled).length - 1); primeira = false; }
+      if (primeira && s.current?.v2 && forcaPrimeira !== undefined && MOLDE[s.current.v2.molde]?.fio?.abre) { i = Math.min(forcaPrimeira, v.choices.filter((c) => !c.disabled).length - 1); primeira = false; }
       const escolha = v.choices[i]?.text ?? '';
       const d = s.v2!.diretor;
       const idade = Math.floor(s.age);

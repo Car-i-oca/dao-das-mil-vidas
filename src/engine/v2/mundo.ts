@@ -268,6 +268,8 @@ export function pessoaServe(p: Pessoa, f: PapelPessoa, ano: number, reinoJog: nu
   if (f.trilha && !f.trilha.includes(p.trilha)) return false;
   if (f.objetivo && !f.objetivo.includes(p.objetivo.tipo)) return false;
   if (f.faccao && p.faccao !== f.faccao) return false;
+  if (f.importante && !p.importante) return false;
+  if (f.semVer !== undefined && ano - (p.ultima ?? ano) < f.semVer) return false;
   return true;
 }
 function candServe(c: CandidatoReserva, f: PapelPessoa, ano: number, reinoJog: number, idadeJog: number): boolean {
