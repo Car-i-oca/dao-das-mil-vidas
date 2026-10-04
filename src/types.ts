@@ -43,6 +43,8 @@ export interface Effects {
   fim?: string;
   /** Avança anos extras. */
   anos?: number;
+  /** v2: efeitos no mundo (opinião, fatos, reputação, fios, ambição...). */
+  mundo?: import('./engine/v2/tipos').EfeitoMundo[];
 }
 
 export interface Cond {
@@ -105,6 +107,10 @@ export interface Check {
 export interface Choice {
   /** Opção exclusiva injetada por molde (ver src/data/opcoes.ts). */
   ex?: boolean;
+  /** v2: selo do motivo da opção (trilha, traço, origem...). */
+  selo?: string;
+  /** v2: motivo pelo qual a opção está bloqueada (aparece desabilitada). */
+  bloq?: string;
   text: string;
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
@@ -292,8 +298,10 @@ export interface State {
   seen: Record<string, number>;
   log: LogEntry[];
   turn: number;
+  /** v2: mundo com memória, diretor de história e ambição (só existe nas vidas da v2). */
+  v2?: import('./engine/v2/tipos').V2State;
   /** Evento atual (null quando em resultado/final). */
-  current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number } | null;
+  current: { id: string; v2?: { molde: string; bind: Record<string, string> }; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number } | null;
   /** Resultado exibido após uma escolha. */
   result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */

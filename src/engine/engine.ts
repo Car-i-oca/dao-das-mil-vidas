@@ -9,6 +9,8 @@ import { ITEMS } from '../data/items';
 import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
+import { eventoV2, MOLDE, aplicarEfeitosMundo } from './v2/moldes';
+import { iniciarV2, pickNextV2, depoisDaCena, sincronizarMundo, finalDeVelhiceV2 } from './v2/diretor';
 import { EVENTS } from '../data/events';
 import { buildCombat } from './combate';
 import { VIRTUDE_NOME } from '../data/marcas';
@@ -141,6 +143,7 @@ export function virtudeDominante(s: State): string | null {
 
 /** Selo mostrado na opção exclusiva: o que a torna possível. */
 export function choiceBadge(c: Choice): string | undefined {
+  if (c.selo) return c.selo;
   const k = c.cond;
   if (!k) return undefined;
   if (k.path?.length) return PATH[k.path[0]]?.name.replace('Caminho d', 'D').replace(/^D[oa]s? /, '') ?? k.path[0];
@@ -276,7 +279,7 @@ export function rollCreation(meta: Meta, rng: Rng): Creation {
   return { origin: origin.id, talent: talent.id, flaw: flaw.id, root, constitution };
 }
 
-export function startLife(meta: Meta, c: Creation, pathId: string, seed: number): State {
+export function startLife(meta: Meta, c: Creation, pathId: string, seed: number, opts?: { v2?: boolean }): State {
   const rng = new Rng(seed);
   const path = PATH[pathId];
   const origin = ORIGIN[c.origin];
@@ -325,6 +328,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
+  if (opts?.v2) s.v2 = iniciarV2(s, rng);
   pickNext(s, rng);
   return s;
 }
@@ -363,7 +367,7 @@ function oldAgeEnding(s: State): string {
 
 export function endLife(s: State, id: string) {
   if (s.ending) return;
-  if (id === 'velhice') id = oldAgeEnding(s);
+  if (id === 'velhice') id = (s.v2 && finalDeVelhiceV2(s)) || oldAgeEnding(s);
   s.ending = id;
   const end = ENDING[id];
   const variants = [end.text, ...(end.alt ?? [])];
@@ -450,6 +454,7 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
     }
   }
   if (fx.agenda) for (const a of fx.agenda) s.scheduled.push({ event: a.event, at: s.age + rng.int(a.em[0], a.em[1]) });
+  if (fx.mundo && s.v2) aplicarEfeitosMundo(s, fx.mundo, s.current?.v2?.bind ?? {}, rng);
   if (fx.local) s.place = fx.local;
   if (fx.faccao) s.faction = fx.faccao;
   if (fx.tier) tierUp(s, fx.tier);
@@ -602,6 +607,9 @@ export interface View {
   choices: ViewChoice[];
   /** Aviso quando o defeito de nascença fechou alguma opção. */
   nota?: string;
+  /** v2: cartão de capítulo (aparece uma vez, no começo do capítulo) e notícias do mundo. */
+  cartao?: string;
+  noticias?: string[];
 }
 
 export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
@@ -614,6 +622,7 @@ export function visibleChoices(s: State): Visible[] {
     v.push({ action: 'wait' });
     return v;
   }
+  if (s.current?.v2) return eventoV2(s).choices.map((choice) => ({ choice }));
   const ev = EVENT[s.current!.id];
   let list = ev.choices.filter((c) => condMet(s, c.cond) && !bloqueadaPorDefeito(s, c));
   // No máximo 3 opções exclusivas injetadas por vez (em rodízio), para a lista não crescer demais.
@@ -657,10 +666,11 @@ export function view(s: State): View {
     const line = RETIRO_PATH_LINES[s.path];
     return { kind: 'event', title: 'Reclusão', rarity: 'comum', text: line ? `${base} ${line}` : base, choices: [{ text: 'Voltar ao mundo.' }] };
   }
-  const ev = EVENT[cur.id];
+  const ev = cur.v2 ? eventoV2(s) : EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
     const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c) };
+    if (c.bloq) { vc.disabled = true; vc.note = c.bloq; }
     if (c.check) vc.chance = checkChance(s, c.check, ev);
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
@@ -669,6 +679,7 @@ export function view(s: State): View {
     return vc;
   });
   const body = cur.v && ev.alt?.[cur.v - 1] ? ev.alt[cur.v - 1] : ev.text;
+  if (cur.v2) return { kind: 'event', title: ev.title, text: body, rarity: ev.rarity, choices, cartao: s.v2!.diretor.cartao, noticias: s.v2!.diretor.noticias.slice() };
   const fechadas = ev.choices.filter((c) => condMet(s, c.cond)).map((c) => bloqueadaPorDefeito(s, c)).filter(Boolean) as string[];
   return { kind: 'event', title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
 }
@@ -761,6 +772,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const v = vis[idx];
   if (!v) return;
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
+  if (v.choice?.bloq) return;
   s.turn++;
   if (v.action) {
     if (v.action === 'retiro') {
@@ -793,7 +805,8 @@ function chooseCore(s: State, idx: number, rng: Rng) {
     return;
   }
   const c = v.choice!;
-  const ev = EVENT[s.current!.id];
+  const ev = s.current!.v2 ? eventoV2(s) : EVENT[s.current!.id];
+  if (s.v2) { s.v2.diretor.noticias = []; s.v2.diretor.cartao = undefined; }
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
@@ -817,6 +830,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c));
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
+  if (s.v2 && s.current?.v2) depoisDaCena(s, MOLDE[s.current.v2.molde], rng);
 }
 
 /* ---------- Passagem do tempo e próximo evento ---------- */
@@ -840,6 +854,7 @@ export function proceed(s: State, rng: Rng) {
   s.current = null;
   advance(s, rng);
   if (s.ending) return;
+  if (s.v2) sincronizarMundo(s, rng);
   pickNext(s, rng);
 }
 
@@ -932,14 +947,14 @@ export function pickNext(s: State, rng: Rng) {
     return;
   }
   // 2) eventos agendados
-  const dueIdx = s.scheduled.findIndex((x) => x.at <= s.age && EVENT[x.event] && s.seen[x.event] === undefined);
+  const dueIdx = s.v2 ? -1 : s.scheduled.findIndex((x) => x.at <= s.age && EVENT[x.event] && s.seen[x.event] === undefined);
   if (dueIdx >= 0) {
     const due = s.scheduled.splice(dueIdx, 1)[0];
     setCurrent(s, due.event, rng);
     return;
   }
   // 2b) eras do mundo
-  if (updateWorld(s, rng)) return;
+  if (!s.v2 && updateWorld(s, rng)) return;
   // 2c) reclusão (reinos altos): em vez de mais um evento genérico, passam-se anos
   if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)]) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
     const years = realmOf(s).years;
@@ -952,6 +967,7 @@ export function pickNext(s: State, rng: Rng) {
     s.current = { id: 'vida_comum' };
     return;
   }
+  if (s.v2) { pickNextV2(s, rng); return; }
   let pool = eligibleEvents(s);
   // Despertou mas ainda sem método: só as cenas que apresentam um caminho (ver trilha_inicial.ts).
   if (!s.path && s.tier >= 1) {
