@@ -60,6 +60,7 @@ let screen: Screen = 'home';
 let tab: 'vida' | 'status' | 'mochila' | 'diario' | 'mundo' = 'vida';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
+let generoEscolha: 'sorteio' | 'm' | 'f' = 'sorteio';
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 
 const app = document.getElementById('app')!;
@@ -181,6 +182,7 @@ function renderCreate() {
         <div class="k">Talento</div><div class="v"><b>${esc(t.name)}</b><br><span class="muted small">${esc(t.desc)}</span></div>
         <div class="k">Defeito</div><div class="v"><b>${esc(f.name)}</b><br><span class="muted small">${esc(f.desc)}</span></div>
       </div>
+      <div class="card"><div class="muted small">VOCÊ É</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${([['sorteio', 'Sorteio'], ['m', 'Homem'], ['f', 'Mulher']] as const).map(([v, n]) => `<button class="btn ${generoEscolha === v ? 'primary' : ''}" style="width:auto;flex:1 1 90px" data-act="genero" data-id="${v}">${n}</button>`).join('')}</div></div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
       <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
       <p class="muted small">Sua trilha de cultivo não é escolhida agora: um mestre, um manual ou um acaso a revelará depois que o Qi despertar. Você decide dentro da história.</p>
@@ -545,7 +547,7 @@ function renderMeta() {
 function startRun() {
   if (!creation) return;
   const seed = (Math.random() * 4294967295) >>> 0;
-  save.run = startLife(save.meta, creation.c, '', seed, { v2: __V2__ });
+  save.run = startLife(save.meta, creation.c, '', seed, { v2: __V2__, genero: generoEscolha === 'sorteio' ? undefined : generoEscolha });
   save.run.dif = save.settings.difficulty;
   creation = null;
   tab = 'vida';
@@ -575,6 +577,7 @@ app.addEventListener('click', (ev) => {
       if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1);
       render();
       break;
+    case 'genero': generoEscolha = target.dataset.id as typeof generoEscolha; render(); break;
     case 'start': startRun(); break;
     case 'tab': tab = target.dataset.id as typeof tab; render(); break;
     case 'choose':

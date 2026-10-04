@@ -8,7 +8,7 @@ import { ORIGINS, TALENTS, FLAWS } from '../data/character';
 import { ITEMS } from '../data/items';
 import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
-import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
+import { CONSTITUTIONS, personName, personNameG, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { eventoV2, MOLDE, aplicarEfeitosMundo } from './v2/moldes';
 import { iniciarV2, pickNextV2, depoisDaCena, sincronizarMundo, finalDeVelhiceV2 } from './v2/diretor';
 import { EVENTS } from '../data/events';
@@ -279,7 +279,7 @@ export function rollCreation(meta: Meta, rng: Rng): Creation {
   return { origin: origin.id, talent: talent.id, flaw: flaw.id, root, constitution };
 }
 
-export function startLife(meta: Meta, c: Creation, pathId: string, seed: number, opts?: { v2?: boolean }): State {
+export function startLife(meta: Meta, c: Creation, pathId: string, seed: number, opts?: { v2?: boolean; genero?: 'm' | 'f' }): State {
   const rng = new Rng(seed);
   const path = PATH[pathId];
   const origin = ORIGIN[c.origin];
@@ -317,7 +317,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number,
   });
   const s: State = {
     pen,
-    v: 1, seed: rng.seed, name: personName(rng), path: pathId, origin: c.origin, root: c.root,
+    v: 1, seed: rng.seed, name: opts?.genero ? personNameG(rng, opts.genero) : personName(rng), path: pathId, origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
     maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
