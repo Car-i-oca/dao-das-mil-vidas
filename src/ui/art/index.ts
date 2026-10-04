@@ -31,3 +31,13 @@ export const sceneSvg = (kind: string, seed = 'x', night = false) => usar('scene
 export const endingCard = (id: string, title: string) => usar('ending')(id, title);
 export const playerFighter = (path: string, tier: number) => usar('player')(path, tier);
 export const foeFighter = (id: string) => usar('foe')(id);
+
+/** Amostra de um estilo (retrato, item e cenário) sem trocar o estilo ativo: serve ao seletor das opções. */
+export function amostraDe(e: Estilo, look: Look, item: Item) {
+  const p = PACOTES[e];
+  return {
+    retrato: (p.portrait ?? CLASSICO.portrait)(look, 54),
+    item: (p.item ?? CLASSICO.item)(item, 40),
+    cenario: (p.scene ?? CLASSICO.scene)('montanha', 'amostra', false),
+  };
+}

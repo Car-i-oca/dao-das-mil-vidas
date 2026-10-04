@@ -15,7 +15,7 @@ import { ALCUNHA, VIRTUDE_NOME } from '../data/marcas';
 import { EVENTS } from '../data/events';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
-import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, type Estilo } from './art';
+import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
@@ -146,6 +146,7 @@ function renderHome() {
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
         <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
+        <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
       <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/${ENDINGS.length}${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
@@ -509,7 +510,7 @@ function renderMeta() {
       : '<div class="card muted">Nenhuma vida encerrada ainda.</div>';
   } else {
     body = `<div class="card"><div class="muted small">ESTILO DE ARTE</div>
-      <div class="row" style="flex-wrap:wrap;margin-top:8px">${ESTILOS.map((e) => `<button class="btn ${save.settings.estilo === e.id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="estilo" data-id="${e.id}">${e.nome}</button>`).join('')}</div>
+      <div class="row estilos">${ESTILOS.map((e) => { const a = amostraDe(e.id, { seed: 'Lin Feng', stage: 2, path: 'espada', tier: 3, corr: 0, role: 'jogador', items: [] }, ITEMS.find((i) => i.kind === 'artefato' && i.name.toLowerCase().includes('espada')) ?? ITEMS[0]); return `<button class="estilo ${save.settings.estilo === e.id ? 'sel' : ''}" data-act="estilo" data-id="${e.id}"><span class="amostra">${a.retrato}${a.item}</span><span class="cenario">${a.cenario}</span><b>${e.nome}</b></button>`; }).join('')}</div>
       <div class="muted small" style="margin-top:6px">${ESTILOS.find((e) => e.id === save.settings.estilo)?.desc ?? ''}</div></div>
       <div class="card"><div class="muted small">TEMA</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${THEME_NAMES.map(([id, n]) => `<button class="btn ${save.settings.theme === id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="theme" data-id="${id}">${n}</button>`).join('')}</div>
@@ -555,6 +556,7 @@ app.addEventListener('click', (ev) => {
     case 'new': newCreation(); screen = 'create'; render(); break;
     case 'continue': screen = save.run?.ending ? 'end' : 'game'; render(); break;
     case 'meta': screen = 'meta'; render(); break;
+    case 'estilomenu': screen = 'meta'; metaTab = 'opcoes'; render(); break;
     case 'install':
       if (installEvt) { void installEvt.prompt(); installEvt = null; }
       else toast(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'No Safari: Compartilhar → Adicionar à Tela de Início' : 'No menu do navegador: Instalar app / Adicionar à tela inicial');

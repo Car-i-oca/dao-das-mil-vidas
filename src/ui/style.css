@@ -204,3 +204,12 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .alcunha { color: var(--gold); font-weight: 400; font-size: 0.8rem; }
 .dom { font-size: 0.8rem; }
 .copy { text-align: center; margin-top: 8px; }
+
+/* Seletor de estilo de arte */
+.estilos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.estilo { display: flex; flex-direction: column; gap: 6px; align-items: stretch; text-align: center; padding: 8px 6px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg2); color: var(--ink); font: inherit; cursor: pointer; }
+.estilo.sel { border-color: var(--red); box-shadow: 0 0 0 2px color-mix(in srgb, var(--red) 25%, transparent); }
+.estilo .amostra { display: flex; justify-content: center; align-items: flex-end; gap: 4px; }
+.estilo .amostra svg { display: block; max-width: 100%; height: auto; }
+.estilo .cenario svg { display: block; width: 100%; height: auto; border-radius: 6px; }
+.estilo b { font-size: 0.82rem; }
