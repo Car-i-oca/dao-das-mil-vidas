@@ -42,6 +42,8 @@ O save fica no navegador ou no app (localStorage), separado entre site, PWA e AP
 | `npm run poder -- 400` | verifica a sensação de poder: chance de sucesso por reino, eventos por faixa de reino, comparação entre trilhas (`docs/poder.md`) |
 | `npm run impacto -- 50` | verifica o impacto das escolhas: escolhas sem marca, flags nunca lidas, mínimos por talento/defeito/origem/raiz/constituição, semelhança entre vidas (`docs/impacto.md`; `--baseline` fixa o "antes") |
 | `npm run galeria` | gera `docs/galeria.html` com todos os ícones, retratos e cenários |
+| `npm run e2e:arte -- manhwa` | tira prints da galeria de arte de um estilo (`manhwa`, `tinta` ou `pixel`) a 390 px (precisa de `npm run preview -- --port 4173`) |
+| `npm run e2e:estilo` | troca de estilo pela interface, começa uma vida e toca um duelo em cada estilo |
 | `npm run e2e:duelo` | teste de navegador dos duelos animados (precisa de `npm run preview -- --port 4173`) |
 | `npm run registro` | gera, em `registro/` (fora do git), o .zip do código-fonte e o hash SHA-512 para o registro no INPI (`docs/registro-inpi.md`) |
 
@@ -49,12 +51,15 @@ O save fica no navegador ou no app (localStorage), separado entre site, PWA e AP
 ```
 src/engine/   motor do jogo (sem DOM; usado pelo jogo e pelo simulador)
 src/data/     conteúdo: eventos, itens, técnicas, reinos, finais, trilhas
-src/ui/       interface mobile; art/ (ícones, retratos, cenários e lutadores em SVG), duelo.ts (cena animada)
+src/ui/       interface mobile; art/ (três estilos de arte gerados por código: manhwa, tinta e pixel 16-bit), duelo.ts (cena animada), galeria.ts (página de teste da arte)
 sim/          simulador de vidas e validador de conteúdo
 docs/         pesquisa.md, design.md, eventos.md (como escrever eventos), lotes.md, balanceamento.md
-public/       manifest, service worker, ícones do PWA e a página de amostras de estilo de arte (estilos.html)
+public/       manifest, service worker, ícones do PWA e as primeiras amostras de estilo de arte (estilos.html, só registro)
 assets/       fontes de ícone e abertura do APK
 ```
+
+## Estilos de arte
+Três estilos, todos desenhados por código (sem imagens de terceiros): **Manhwa** (padrão, visual de web novel), **Tinta** (pintura chinesa de poucos traços) e **Pixel 16-bit**. Troque em *Herança do Dao → Opções → Estilo de arte* ou pelo botão da tela inicial; a escolha fica salva. Detalhes em `docs/arte.md`.
 
 ## Como o jogo faz as escolhas pesarem
 - **Conduta:** toda escolha soma ao perfil do personagem (compaixão, violência, astúcia, cautela, ambição, disciplina, devoção, ganância); a virtude dominante vira alcunha e abre, fecha e muda opções.
