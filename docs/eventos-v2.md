@@ -114,7 +114,9 @@ export default molde({
 - `pessoa`: `{ papel, opiniaoMin/Max, reinoMin/Max, traco, vivo, faccao, lugar }` (`reinoMin: 'jogador-1'` = um reino abaixo do jogador).
 - `faccao`: `{ tipo, estado, de: '<papel pessoa>' }`.
 - `lugar`: `{ dono, tipo, perigoMin/Max, segredo }`.
-- `criar`: se nenhum candidato servir e a cena deve existir mesmo assim, define como criar (nome, traços, objetivo).
+- Ordem de busca de cada papel de pessoa: **ativos** do mundo, depois a **reserva** (a pessoa é promovida a ativa), e só então `criar`.
+- `criar`: se nem a reserva servir e a cena deve existir mesmo assim, define como criar (nome, traços, objetivo).
+- `sucessao`: `{ de: '<papel>', como: 'filho' | 'discipulo' | 'herdeiro' }` liga o papel ao sucessor de uma pessoa que saiu de cena ou morreu.
 
 ### 3.3 Condições (`quando`, `se`, `requer`)
 - **jogador**: `reinoMin/Max`, `idadeMin/Max`, `trilha`, `talento`, `defeito`, `origem`, `raiz`, `constituicao`, `tecnica`, `mestria`, `item`, `perfil`, `rec`, `pedrasMin`, `karma`, `fama`.

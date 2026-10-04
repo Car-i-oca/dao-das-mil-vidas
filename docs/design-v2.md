@@ -63,7 +63,7 @@ Tudo é dado serializável dentro do `State` (continua salvando em JSON), sem DO
 
 **Fio**: `tipo, entidades, aberto em, último toque, etapa, desfecho (cumprido, traído, esquecido, perdoado, morto)`. É a unidade que o diretor acompanha (secção 4).
 
-Tamanho: cerca de **12–30 pessoas ativas** (as que o jogador conhece ou que o conhecem), 6–9 facções e ~14 lugares por vida. Pequeno o bastante para simular num celular em milissegundos.
+Tamanho: o mundo é **grande, mas só uma parte dele é simulada com detalhe**. Há um elenco **ativo** e uma **reserva** que entra e sai de cena (secção 2.4). Os números estão ali.
 
 ### 2.2 O mundo anda sozinho
 A cada passo de tempo (e o tempo passa em saltos de 1 a 15+ anos, conforme o reino), o motor roda `mundo.avançar(anos)`:
@@ -73,7 +73,37 @@ A cada passo de tempo (e o tempo passa em saltos de 1 a 15+ anos, conforme o rei
 - **Registro**: tudo que acontece vai para `mundo.log` (um "Legends" curto). O que aconteceu fora da tela aparece depois como **notícia** ("Enquanto você estava em reclusão: {rival} rompeu para Núcleo Dourado; o Pavilhão do Corvo caiu").
 - **A pré-história**: ao nascer, o motor simula 30–60 anos de mundo (o clã caiu porquê, quem tem a dívida, qual seita é extinta e deixou um manual) e cria as primeiras pessoas. A **origem** deixa de ser um texto e vira condição inicial do mundo: "Herdeiro de um Clã Decadente" significa *este clã, esta dívida, este credor, este rival da família*.
 
-### 2.3 Consequência = o mundo mudou
+### 2.3 Elenco: ativos, reserva e rotatividade
+Decisão do autor: o mundo deve ter **mais pessoas e facções, e gente que possa surgir depois na saga**, para haver rotatividade e uma reserva. Vidas de centenas de anos exigem isso: o rival dos 20 anos não pode ser o mesmo dos 600.
+
+**Três camadas**
+
+| Camada | Quantas (por vida) | Como é simulada |
+|---|---|---|
+| **Ativos** | 30 a 50 pessoas, 8 a 12 facções, ~16 lugares | Todo ano, em detalhe: objetivo, opinião, memória, reino |
+| **Reserva** | 200 a 400 pessoas, 20 a 30 facções em potencial | Em resolução grossa, a cada 5 anos (envelhecem, sobem, morrem, mudam de facção, por estatística). Cada uma é uma **semente** curta: nome, idade, reino, 1 traço, facção, objetivo |
+| **Memória** | ilimitada | Quem saiu de cena vira um fato no `mundo.log`, que ainda pode ser citado em cenas e no final |
+
+A reserva é **gerada de forma determinística a partir da semente do mundo**, então **não precisa ser salva**: o save guarda só o que mudou (quem foi promovido ao elenco ativo, quem morreu, o que o jogador fez). Isso mantém o save pequeno e a simulação barata.
+
+**Promoção e rebaixamento**
+- Uma pessoa da reserva é **promovida** a ativa quando uma cena a pede (o papel `rival`, `cobrador`, `herdeiro` encontra no filtro alguém da reserva), quando o jogador a conhece, ou quando o objetivo dela cruza o caminho do jogador. Ao ser promovida, ganha detalhe: opinião, memória, objetivo completo.
+- Uma pessoa ativa **sai de cena** (volta à reserva, em segundo plano) se passa muitos anos sem contato e sem ligação com fios abertos. Tudo que o jogador fez com ela fica registrado; se voltar, volta com a memória.
+
+**Rotatividade (por que o elenco muda sozinho)**
+1. **Morte e velhice**: pessoas morrem por idade, combate ou tribulação; a morte de alguém importante gera cena e consequência (e abre vagas).
+2. **Ascensão**: quem rompe para um reino muito alto sai do mundo comum (vira lenda, entra em reclusão, ascende), e isso é uma notícia.
+3. **Sucessão**: discípulos, filhos e herdeiros **assumem o lugar** dos mestres e inimigos que saem. A vingança de um pai morto pode vir do filho décadas depois, já adulto, com o fato "o jogador matou meu pai" na memória.
+4. **Chegadas**: crianças nascidas durante a vida chegam à idade de entrar em cena (a próxima geração de rivais e prodígios); forasteiros migram de outros continentes (Deserto, Gelo, Mar) para o centro.
+5. **Facções nascem e morrem**: cismas dividem uma seita; fundadores novos erguem outras; um culto adormecido desperta; uma seita extinta deixa manuais, herdeiros e vingadores. O jogador pode ser a causa de qualquer um desses movimentos.
+6. **Gerações do mundo**: a cada ~60 a 100 anos o diretor pode anunciar uma "virada de geração" (nova rodada de rivais, mestres e conflitos), útil em vidas longas.
+
+**Reserva como estoque de cenas**
+Quando um molde precisa de um papel e nenhuma pessoa ativa serve, o motor procura primeiro na reserva (barato, coerente com o mundo) e só **cria** uma pessoa nova se nem a reserva tiver. Assim as cenas "ao acaso" (um viajante, um credor, um assassino) usam pessoas que já existem no mundo e podem voltar, em vez de nomes soltos.
+
+**Custo e limites**: o elenco ativo tem teto (os 50 mais relevantes, por urgência), a reserva é processada em lotes a cada 5 anos, e o painel `?debug=mundo` lista só os ativos e os que foram promovidos. Meta de desempenho: o avanço de 15 anos do mundo deve caber em dezenas de milissegundos num celular comum.
+
+### 2.4 Consequência = o mundo mudou
 Cada opção tem efeitos de mundo, não só de atributo. A lista fechada de efeitos:
 
 | Efeito | Exemplo |
@@ -235,7 +265,7 @@ As duas vidas compartilham a origem e contam histórias claramente diferentes, p
 
 | Módulo | Papel |
 |---|---|
-| `mundo.ts` | entidades (pessoa, facção, lugar, fio), pré-história, `avançar(anos)`, registro |
+| `mundo.ts` | entidades (pessoa, facção, lugar, fio), pré-história, elenco ativo e **reserva determinística** (promover, rebaixar, sucessão, chegadas, cismas), `avançar(anos)`, registro |
 | `moldes.ts` | carrega moldes, preenche papéis, texto com `{papel.campo}`, aplica efeitos de mundo |
 | `relevancia.ts` | fórmula da secção 3.2 e escolha entre as 5 melhores |
 | `diretor.ts` | capítulos, fases, tensão, fios, saltos de tempo |
@@ -296,7 +326,7 @@ Trilhas e recursos, escadas de reino, sensação de poder, duelos animados, os 3
 Números de apoio, nunca metas: fios abertos e resolvidos por vida; reaparições de cada NPC importante; % de cenas vindas de relevância contra respiro; moldes nunca escolhidos; divergência causal entre vidas pareadas. Os de equilíbrio atuais (ascensão 0,5–2%, finais ≤ 35%, nenhuma trilha dominando) continuam como **verificação de segurança**, não como objetivo.
 
 ## 10. Decisões para você aprovar antes da Fase 2
-1. **Escala do mundo**: ~12–30 pessoas ativas, 6–9 facções, ~14 lugares por vida. Serve?
+1. ~~Escala do mundo~~ **Decidido:** mundo maior, com 30–50 pessoas ativas, 8–12 facções e uma reserva de 200–400 pessoas e 20–30 facções em potencial que entram e saem de cena, com rotatividade e sucessão (secção 2.3).
 2. **Ambição**: proposta no fim da Infância (2–3 opções) e trocável a custo. Ou você prefere escolher na criação do personagem?
 3. **Contadores de histórias** (sereno, cruel, caótico) como opção de dificuldade: entram agora ou depois?
 4. **Os 3 arcos da Fase 2**: rival, reerguer/vingar o clã, ascensão numa seita. Quer outros?
