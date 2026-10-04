@@ -20,11 +20,12 @@ import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
 import { playDuel } from './duelo';
+import { mundoHtml, resumoV2Html, npcV2, cenaV2 } from './mundo';
 import { FOES } from '../data/combates';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
-const KEY = 'dao-mil-vidas-save-v1';
+const KEY = __V2__ ? 'dao-mil-vidas-save-v2' : 'dao-mil-vidas-save-v1';
 interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
 function normSettings(x?: Partial<Settings>): Settings {
   return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
@@ -56,7 +57,7 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 /* ---------- Estado de interface ---------- */
 type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
-let tab: 'vida' | 'status' | 'mochila' | 'diario' = 'vida';
+let tab: 'vida' | 'status' | 'mochila' | 'diario' | 'mundo' = 'vida';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
@@ -141,7 +142,7 @@ function renderHome() {
   app.innerHTML = `
     <div class="screen home">
       <div class="seal">道</div>
-      <div><h1>Dao das Mil Vidas</h1><div class="tag">Viva. Cultive. Morra. Lembre.</div></div>
+      <div><h1>Dao das Mil Vidas</h1><div class="tag">Viva. Cultive. Morra. Lembre.</div>${__V2__ ? '<div class="muted small" style="margin-top:6px">Versão de teste: mundo com memória. O save é separado do jogo original.</div>' : ''}</div>
       <div class="stack">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
@@ -203,7 +204,7 @@ function hudHtml(s: State): string {
 
 /** Cenário do lugar atual (e da era do mundo, quando há). */
 function sceneFor(s: State, eventId: string): string {
-  let kind: string = s.place;
+  let kind: string = cenaV2(s) ?? s.place;
   if (s.world?.id === 'reino_secreto') kind = 'reino_secreto';
   else if (s.tier >= 7 && hash(eventId) % 3 === 0) kind = 'ceu';
   return `<div class="scene">${sceneSvg(kind as SceneKind, eventId, hash(eventId) % 4 === 0)}</div>`;
@@ -211,6 +212,10 @@ function sceneFor(s: State, eventId: string): string {
 
 /** Retrato do personagem recorrente citado no texto do evento ({mentor}, {rival}...). */
 function npcFor(s: State, eventId: string): string {
+  if (s.current?.v2) {
+    const n = npcV2(s);
+    return n ? `<div class="npc">${portraitSvg(lookForNpc(n.role, n.nome, Math.max(1, n.reino)), 54)}<div class="small muted">${esc(n.nome)}</div></div>` : '';
+  }
   const raw = EVENT[eventId]?.text ?? '';
   const roles: Role[] = ['mentor', 'rival', 'amigo', 'noivo', 'discipulo', 'inimigo'];
   const role = roles.find((r) => raw.includes('{' + r + '}'));
@@ -221,7 +226,7 @@ function npcFor(s: State, eventId: string): string {
 
 function tabsHtml(): string {
   const t = (id: typeof tab, icon: string, label: string) => `<button class="${tab === id ? 'on' : ''}" data-act="tab" data-id="${id}"><b>${icon}</b>${label}</button>`;
-  return `<nav class="tabs">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('diario', '✎', 'Diário')}</nav>`;
+  return `<nav class="tabs">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${__V2__ ? t('mundo', '✦', 'Mundo') : ''}${t('mochila', '▣', 'Mochila')}${t('diario', '✎', 'Diário')}</nav>`;
 }
 
 function renderGame() {
@@ -229,6 +234,7 @@ function renderGame() {
   let body = '';
   if (tab === 'vida') body = lifeHtml(s);
   else if (tab === 'status') body = statusHtml(s);
+  else if (tab === 'mundo' && s.v2) body = mundoHtml(s);
   else if (tab === 'mochila') body = bagHtml(s);
   else body = logHtml(s);
   app.innerHTML = `${hudHtml(s)}<div class="game" id="game">${body}</div>${tabsHtml()}`;
@@ -269,6 +275,8 @@ function lifeHtml(s: State): string {
   return `
     ${intro}
     <div class="card story" data-act="skip">
+      ${v.cartao ? `<div class="cartao-cap">${esc(v.cartao)}</div>` : ''}
+      ${v.noticias?.length ? `<div class="noticias">${v.noticias.map((n) => `<div>${esc(n)}</div>`).join('')}</div>` : ''}
       ${sceneFor(s, s.current?.id ?? 'x')}
       <div class="ev-title">${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
       ${npcFor(s, s.current?.id ?? '')}
@@ -467,6 +475,7 @@ function renderEnd() {
         <span>Técnicas</span><b>${s.techniques.length}</b>
         <span>Herança do Dao</span><b style="color:var(--gold)">+${sm.legacy}</b>
       </div>
+      ${s.v2 ? resumoV2Html(s) : ''}
       <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
       ${sm.marcas?.length ? `<div class="card"><div class="muted small">O QUE VOCÊ DEIXOU PARA TRÁS</div>${sm.marcas.map((m) => `<div class="tech small">${esc(m)}</div>`).join('')}<div class="muted small" style="margin-top:6px">Cada quatro marcas rendem +1 de Herança (até +2).</div></div>` : ''}
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
@@ -536,7 +545,7 @@ function renderMeta() {
 function startRun() {
   if (!creation) return;
   const seed = (Math.random() * 4294967295) >>> 0;
-  save.run = startLife(save.meta, creation.c, '', seed);
+  save.run = startLife(save.meta, creation.c, '', seed, { v2: __V2__ });
   save.run.dif = save.settings.difficulty;
   creation = null;
   tab = 'vida';
@@ -642,7 +651,7 @@ applySettings();
 render();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register(__V2__ ? './sw.js?v2' : './sw.js').catch(() => {}));
 }
 
 /** Depuração: ?duelo=<oponente>&trilha=<id>&reino=<n>&derrota=1 toca um duelo de exemplo. */

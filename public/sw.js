@@ -1,7 +1,10 @@
 // Service worker: o jogo funciona offline depois da 1ª visita e sempre busca a versão nova quando há internet.
 // - Páginas (index.html): rede primeiro, cache como reserva. Assim uma atualização aparece na hora.
 // - Arquivos com hash no nome (assets/): cache primeiro, são imutáveis.
-const CACHE = 'dao-mil-vidas-v2';
+// A versão de teste (v2) usa outro cache, para as duas versões não se atrapalharem no mesmo endereço.
+const V2 = self.location.search.includes('v2');
+const CACHE = V2 ? 'dao-v2-teste-1' : 'dao-mil-vidas-v2';
+const PREFIXO = V2 ? 'dao-v2-teste' : 'dao-mil-vidas';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -13,7 +16,7 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith(PREFIXO) && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
   );
 });
 

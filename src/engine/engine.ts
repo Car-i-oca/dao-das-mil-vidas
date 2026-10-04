@@ -828,6 +828,10 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
   s.result = { text: txt, check };
   if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c));
+  if (s.v2 && s.current?.v2 && s.result.combate) {
+    const alvo = ['rival', 'culpado', 'lider', 'capanga', 'herdeiro', 'discipulo', 'jovem'].map((r) => s.v2!.mundo.pessoas[s.current!.v2!.bind[r]]).find(Boolean);
+    if (alvo) s.result.combate.foeName = alvo.nome;
+  }
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
   if (s.v2 && s.current?.v2) depoisDaCena(s, MOLDE[s.current.v2.molde], rng);
@@ -942,7 +946,7 @@ function afinidade(e: GameEvent, porCat: Record<Cat, number>): number {
 export function pickNext(s: State, rng: Rng) {
   if (s.ending) return;
   // 1) rompimento
-  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= 3) {
+  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 3 + s.tier : 3)) {
     s.current = { id: '__break', breakthrough: true };
     return;
   }
@@ -956,7 +960,7 @@ export function pickNext(s: State, rng: Rng) {
   // 2b) eras do mundo
   if (!s.v2 && updateWorld(s, rng)) return;
   // 2c) reclusão (reinos altos): em vez de mais um evento genérico, passam-se anos
-  if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)]) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
+  if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)] * (s.v2 ? 0.55 : 1)) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
     const years = realmOf(s).years;
     s.seen['__retiro'] = s.turn;
     s.current = { id: '__retiro', retiro: true, d: rng.int(Math.max(3, Math.round(years * 0.05)), Math.max(5, Math.round(years * 0.14))), v: rng.int(0, 4) };
