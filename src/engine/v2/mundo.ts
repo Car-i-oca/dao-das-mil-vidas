@@ -1,7 +1,7 @@
 import { Rng } from '../rng';
 import { LADDERS } from '../../data/realms';
 import { PATHS } from '../../data/paths';
-import { clanName, personName, sectName, villageName } from '../../data/names';
+import { clanName, generoDoNome, personName, sectName, villageName } from '../../data/names';
 import type { Faccao, FaccaoTipo, Fato, FeridaTipo, Id, Lugar, Mundo, Objetivo, Papel, Pessoa, PapelPessoa, Traco } from './tipos';
 import { TRACOS } from './tipos';
 
@@ -281,12 +281,14 @@ export const temFato = (p: Pessoa, tipo: string) => p.memoria.some((f) => f.tipo
 export function trato(p: Pessoa, reinoJog: number, fama: number, nomeJog: string): string {
   const dif = reinoJog - p.reino;
   const hostil = p.opiniao <= -40, afeto = p.opiniao >= 40;
-  if (hostil) return dif >= 3 ? 'maldito' : dif >= 0 ? 'desgraçado' : 'impostor';
-  if (dif >= 4) return afeto ? 'Mestre' : 'Ancestral';
-  if (dif >= 2) return afeto ? `Mestre ${nomeJog.split(' ')[0]}` : 'senhor';
-  if (dif <= -3) return afeto ? 'jovem' : 'moleque';
+  const f = generoDoNome(nomeJog) === 'f';
+  const mestre = f ? 'Mestra' : 'Mestre';
+  if (hostil) return dif >= 3 ? (f ? 'maldita' : 'maldito') : dif >= 0 ? (f ? 'desgraçada' : 'desgraçado') : (f ? 'impostora' : 'impostor');
+  if (dif >= 4) return afeto ? mestre : 'Ancestral';
+  if (dif >= 2) return afeto ? `${mestre} ${nomeJog.split(' ')[0]}` : f ? 'senhora' : 'senhor';
+  if (dif <= -3) return afeto ? 'jovem' : f ? 'moleca' : 'moleque';
   if (afeto) return nomeJog.split(' ').pop() ?? nomeJog;
-  return fama >= 40 ? 'Mestre' : 'você';
+  return fama >= 40 ? mestre : 'você';
 }
 
 /* ---------- O mundo anda sozinho ---------- */

@@ -26,6 +26,7 @@ export const lote23Npcs: GameEvent[] = [
       { text: 'Discordar e seguir sozinho.', cond: { flags: ['mentor_aberto'] }, res: { text: '{mentor} concorda, sem rancor. "Quem discorda aprende o preço pessoalmente." Ele se afasta, mas não some.', fx: { setFlags: ['mentor_rebelde'], stats: { dao: 1 }, agenda: [{ event: 'npc_mentor_3', em: [8, 14] }] } } },
       { text: 'Ir até ele agora, depois de tanto tempo.', cond: { flags: ['mentor_recusado'] }, res: { text: '{mentor} o recebe sem cobrar o atraso. "Eu esperava." O orgulho dói, e a lição vale cada gota.', fx: { setFlags: ['mentor_aberto', 'mentor_leal'], stats: { dao: 2 }, agenda: [{ event: 'npc_mentor_3', em: [6, 12] }] } } },
       { text: 'Ignorar o bilhete e seguir o seu caminho.', cond: { flags: ['mentor_recusado'] }, res: { text: 'O bilhete vai para o fogo. Você segue, e {mentor} desaparece da sua vida, por enquanto.', fx: { setFlags: ['mentor_rebelde'], agenda: [{ event: 'npc_mentor_3', em: [10, 18] }] } } },
+      { text: 'Deixar o assunto de lado, por enquanto.', res: { text: 'Alguns assuntos esperam melhor momento. O tempo, que costuma ser cruel, desta vez é só paciente.', fx: {} } },
     ],
   },
   {
@@ -193,6 +194,7 @@ export const lote23Npcs: GameEvent[] = [
       { text: 'Cuidar do que tem, com atenção.', cond: { flags: ['amor_escolhido'] }, res: { text: 'Pequenos gestos, grandes anos. O amor de vocês não tem fogos, mas tem raízes.', fx: { karma: 4, stats: { dao: 2, car: 1 }, vida: 20, agenda: [{ event: 'npc_amor_5', em: [10, 25] }] } } },
       { text: 'Buscar {noivo} depois de tanto tempo.', cond: { flags: ['amor_perdido'] }, check: { stat: ['car', 'sor'], dif: 1 }, ok: { text: 'Vocês se reencontram numa cidade ao sul, mais velhos, mais lentos. Há perdão, e nada mais precisa ser dito.', fx: { setFlags: ['amor_escolhido'], karma: 5, stats: { dao: 2 }, agenda: [{ event: 'npc_amor_5', em: [8, 20] }] } }, fail: { text: '{noivo} já tem outra vida. O olhar cortês é a resposta. Você parte, sem rancor, e sem esperança.', fx: { stats: { dao: 3 }, karma: 1, agenda: [{ event: 'npc_amor_5', em: [8, 20] }] } } },
       { text: 'Não buscar: o passado é passado.', cond: { flags: ['amor_perdido'] }, res: { text: 'Você segue o seu caminho. O bilhete, na gaveta, nunca é enviado, e nunca é jogado fora.', fx: { stats: { dao: 2 }, agenda: [{ event: 'npc_amor_5', em: [8, 20] }] } } },
+      { text: 'Deixar os anos correrem, sem decidir nada.', res: { text: 'A vida não pergunta se você está pronto. Os anos passam, e cada um deles guarda um nome que você diz menos alto.', fx: {} } },
     ],
   },
   {
@@ -225,6 +227,7 @@ export const lote23Npcs: GameEvent[] = [
       { text: 'Assumir a culpa e pagar por ele.', cond: { flags: ['tem_discipulo'] }, res: { text: '{discipulo} chora, e jura nunca mais. A seita o admira ou o despreza, em partes iguais. A lealdade dele, a partir daí, é de ferro.', fx: { setFlags: ['disc_leal'], fama: -2, karma: 6, pedras: -60, stats: { dao: 2 }, agenda: [{ event: 'npc_disc_3', em: [6, 12] }] } } },
       { text: 'Puni-lo duramente, para dar exemplo.', cond: { flags: ['tem_discipulo'] }, res: { text: 'A seita aprova. {discipulo} aprende, mas algo se quebra entre vocês.', fx: { setFlags: ['disc_ressentido'], karma: -2, fama: 3, agenda: [{ event: 'npc_disc_3', em: [6, 12] }] } } },
       { text: 'Reencontrá-lo anos depois, ainda marcado pelo desamparo.', cond: { noFlags: ['tem_discipulo'] }, res: { text: '{discipulo} foi aceito por outro mestre, e é bom. Ele o cumprimenta com respeito, e uma ponta de mágoa.', fx: { karma: -1, stats: { dao: 1 }, agenda: [{ event: 'npc_disc_3', em: [10, 20] }] } } },
+      { text: 'Pedir mais tempo para decidir.', res: { text: 'Os anciões concedem uma noite. De manhã, a decisão já não parece tão difícil, e a pergunta que ficou é outra: quem você quer ser para quem aprende com você.', fx: {} } },
     ],
   },
   {

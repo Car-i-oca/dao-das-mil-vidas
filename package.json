@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "sim": "tsx sim/simulate.ts",
-    "validate": "tsx sim/validate.ts",
+    "validate": "tsx sim/validate.ts && tsx sim/validate2.ts",
     "fuzz": "tsx sim/fuzz.ts",
     "endings": "tsx sim/endings.ts",
     "variedade": "tsx sim/variedade.ts",

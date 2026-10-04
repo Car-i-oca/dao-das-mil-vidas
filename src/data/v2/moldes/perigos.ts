@@ -30,7 +30,7 @@ export const PERIGOS: Molde[] = [
     papeis: { inimigo: { faccao: { tipo: ['culto'], estado: ['paz', 'tensao', 'guerra'] } }, lider: { pessoa: { novo: true, criar: { traco: ['cruel', 'ambicioso'], reino: 'jogador', objetivo: 'cacar', faccao: 'culto' } } } },
     quando: { jogador: { reinoMin: 2 } },
     combate: { oponente: 'assassino', cenario: 'selva' },
-    cena: 'Na curva do desfiladeiro, três homens de manto negro saem das rochas e não dizem nada. O quarto, {lider.nome}, vem por último, devagar, e é o único que fala: "A {inimigo.nome} manda cumprimentos." Ele não parece ter pressa, e isso é o que há de mais ameaçador no caminho.',
+    cena: 'Na curva do desfiladeiro, três homens de manto negro saem das rochas e não dizem nada. O quarto, {lider.nome}, vem por último, devagar, e é o único que fala: "A {inimigo.nome} manda cumprimentos." {lider.Ele} não parece ter pressa, e isso é o que há de mais ameaçador no caminho.',
     opcoes: [
       { id: 'lutar', texto: 'Enfrentar os quatro, de costas para a rocha.', teste: { stat: ['fis', 'dao'], tag: 'combate', ameaca: 'lider' },
         sucesso: { texto: 'O desfiladeiro é estreito, e eles só podem vir dois de cada vez. É o que vence a luta. Quando o último cai, {lider.nome} está encostado na parede, ferido, com a expressão de quem calculou mal. Você o deixa ir, com o recado.', efeitos: [{ fato: ['lider', 'foi_derrotado_no_desfiladeiro', 4] }, { opiniao: ['lider', -20] }, { reputacao: ['inimigo', -8] }], fx: { fama: 3, perfil: { violencia: 1, disciplina: 1 } } },

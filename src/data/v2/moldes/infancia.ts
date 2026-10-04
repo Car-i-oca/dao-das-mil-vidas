@@ -22,14 +22,14 @@ export const INFANCIA: Molde[] = [
     cena: [
       { se: { ferida: ['divida'] }, texto: 'Um homem de casaco bom e olhos frios bate à porta, e ninguém precisa dizer quem é. {culpado.nome}, da {faccao.nome}, vem cobrar o que o seu clã deve desde antes de você nascer. Seus pais falam baixo, e você escuta de trás da porta. O nome da família, que um dia abriu portões, hoje só serve para constar num livro de contas.' },
       { se: { ferida: ['terra'] }, texto: 'Homens da {faccao.nome} medem a terra da sua família com cordas, e {culpado.nome} dita os números sem olhar para ninguém. O campo onde seus avós trabalharam agora "pertence" a outra gente. Seus pais não discutem. Você vê as mãos do seu pai se fecharem, devagar.' },
-      { se: { ferida: ['desonra'] }, texto: 'No mercado, o nome do seu clã é dito com um sorriso torto. Quem o diz é {culpado.nome}, da {faccao.nome}, o mesmo que espalhou, anos atrás, a história que o manchou. Ao passar por você, ele abaixa os olhos para ver a criança em quem esse nome ainda vive.' },
-      { texto: 'Há um retrato antigo em casa: dois sócios sorrindo. Um era da sua família; o outro é {culpado.nome}, hoje da {faccao.nome}, que nunca se explicou pelo que fez. Ele aparece na vila "só de passagem" e cumprimenta seus pais como se nada tivesse acontecido.' },
+      { se: { ferida: ['desonra'] }, texto: 'No mercado, o nome do seu clã é dito com um sorriso torto. Quem o diz é {culpado.nome}, da {faccao.nome}, o mesmo que espalhou, anos atrás, a história que o manchou. Ao passar por você, {culpado.ele} abaixa os olhos para ver a criança em quem esse nome ainda vive.' },
+      { texto: 'Há um retrato antigo em casa: dois sócios sorrindo. Um era da sua família; o outro é {culpado.nome}, hoje da {faccao.nome}, que nunca se explicou pelo que fez. {culpado.Ele} aparece na vila "só de passagem" e cumprimenta seus pais como se nada tivesse acontecido.' },
     ],
     opcoes: [
       {
-        id: 'prazo', texto: 'Dar um passo à frente e pedir mais tempo, olhando nos olhos dele.',
+        id: 'prazo', texto: 'Dar um passo à frente e pedir mais tempo, olhando nos olhos {culpado.dele}.',
         res: {
-          texto: '{culpado.nome} ergue uma sobrancelha. Esperava uma criança escondida atrás da saia da mãe. "Corajoso", diz, sem sorrir, "ou tolo". Ele vai embora, mas guarda o seu rosto.',
+          texto: '{culpado.nome} ergue uma sobrancelha. Esperava uma criança escondida atrás da saia da mãe. "Corajoso", diz, sem sorrir, "ou tolo". {culpado.Ele} vai embora, mas guarda o seu rosto.',
           efeitos: [{ fato: ['culpado', 'foi_encarado', 2] }, { inclinar: ['reerguer_cla', 2] }, { opiniao: ['parente', 8] }],
           fx: { stats: { dao: 1 }, perfil: { disciplina: 1 } },
         },
@@ -47,15 +47,15 @@ export const INFANCIA: Molde[] = [
         id: 'memoria', texto: 'Guardar cada detalhe: a voz, o anel, o nome do cocheiro. Você nunca esquece uma linha.',
         requer: { jogador: { talento: ['memoria_perfeita'] } }, selo: 'Memória Perfeita',
         res: {
-          texto: 'Quando ele sai, você repete tudo, em voz baixa, até dormir: o brasão do anel, o sotaque, o caminho que os cavalos tomaram. Anos depois, isso vale mais que uma espada.',
+          texto: 'Quando {culpado.ele} sai, você repete tudo, em voz baixa, até dormir: o brasão do anel, o sotaque, o caminho que os cavalos tomaram. Anos depois, isso vale mais que uma espada.',
           efeitos: [{ fato: ['culpado', 'foi_gravado', 3] }, { inclinar: ['vingar_cla', 2] }, { inclinar: ['reerguer_cla', 1] }, { q: ['cla_pista', 1] }],
           fx: { perfil: { astucia: 2 } },
         },
       },
       {
-        id: 'calar', texto: 'Gravar o rosto dele na memória, calado.',
+        id: 'calar', texto: 'Gravar o rosto {culpado.dele} na memória, calado.',
         res: {
-          texto: 'Você não diz nada. Cada ruga, cada gesto dele fica guardado numa memória que não sabe esquecer. Ele nem percebe que acaba de ser anotado.',
+          texto: 'Você não diz nada. Cada ruga, cada gesto {culpado.dele} fica guardado numa memória que não sabe esquecer. {culpado.Ele} nem percebe que acaba de ser anotado.',
           efeitos: [{ fato: ['culpado', 'foi_observado', 2] }, { inclinar: ['vingar_cla', 3] }],
           fx: { perfil: { astucia: 1, violencia: 1 } },
         },
@@ -81,15 +81,15 @@ export const INFANCIA: Molde[] = [
     quando: { jogador: { idadeMin: 8, idadeMax: 15 } },
     relevancia: [{ se: { jogador: { idadeMin: 8 } }, mais: 35 }],
     fio: { id: 'amigo', abre: true, abandono: 'O juramento dos dois ficou no tempo, sem ser cumprido nem quebrado.' },
-    cena: '{amigo.nome} aparece com os joelhos ralados e um brilho nos olhos de quem escondeu o segredo a manhã inteira. "Quando a gente crescer, vamos para o mundo dos imortais. Os dois, juntos. Jura?" O vento move o capim, e você percebe que a pergunta é mais séria do que a idade dele.',
+    cena: '{amigo.nome} aparece com os joelhos ralados e um brilho nos olhos de quem escondeu o segredo a manhã inteira. "Quando a gente crescer, vamos para o mundo dos imortais. Os dois, juntos. Jura?" O vento move o capim, e você percebe que a pergunta é mais séria do que a idade {amigo.dele}.',
     opcoes: [
       {
         id: 'jurar', texto: 'Jurar, e cortar o dedo no mesmo galho.',
         res: { texto: 'O galho tem uma gota de cada um. {amigo.nome} guarda o pedaço de madeira num saquinho, como quem guarda um tesouro. Você sabe que agora existe alguém esperando por você em algum lugar do futuro.', efeitos: [{ fato: ['amigo', 'juramento', 4] }, { opiniao: ['amigo', 15] }, { inclinar: ['proteger', 2] }], fx: { perfil: { devocao: 1, compaixao: 1 } } },
       },
       {
-        id: 'condicao', texto: 'Jurar, mas só se ele jurar esperar por você, caso você demore.',
-        res: { texto: '{amigo.nome} pensa, franzindo a testa, e então cospe na palma para selar. "Eu espero. Mas não demore." A barganha é boba, e você sente que ela é a mais sincera de todas.', efeitos: [{ fato: ['amigo', 'pacto_de_espera', 3] }, { opiniao: ['amigo', 9] }, { inclinar: ['proteger', 1] }], fx: { perfil: { astucia: 1 } } },
+        id: 'condicao', texto: 'Jurar, mas só se {amigo.ele} jurar esperar por você, caso você demore.',
+        res: { texto: '{amigo.nome} pensa, franzindo a testa, e então cospe na palma para selar. "Eu espero. Mas não demore." A barganha é boba, e você sente que {amigo.ele} é a mais sincera de todas.', efeitos: [{ fato: ['amigo', 'pacto_de_espera', 3] }, { opiniao: ['amigo', 9] }, { inclinar: ['proteger', 1] }], fx: { perfil: { astucia: 1 } } },
       },
       {
         id: 'rir', texto: 'Rir e dizer que o Dao é coisa de gente grande.',
@@ -117,21 +117,21 @@ export const INFANCIA: Molde[] = [
       {
         id: 'revidar', texto: 'Revidar com um soco.', teste: { stat: 'fis', dif: 1 },
         sucesso: { texto: 'O nariz de {rival.nome} sangra. A vila inteira ouve o grito. A fama de valentão começa a crescer, e a de {rival.nome} a diminuir, só um pouco.', efeitos: [{ fato: ['rival', 'foi_derrubado', 4] }, { opiniao: ['rival', -25] }, { inclinar: ['superar_rival', 2] }], fx: { fama: 2, karma: -1, stats: { fis: 1 }, perfil: { violencia: 1 } } },
-        falha: { texto: '{rival.nome} é maior do que parecia, e o soco acerta o ar. Você cai na lama diante de todos, e ele ri de novo, mais alto.', efeitos: [{ fato: ['rival', 'venceu_o_jogador', 3] }, { opiniao: ['rival', -10] }, { inclinar: ['superar_rival', 3] }], fx: { ferida: 1, perfil: { violencia: 1 } } },
+        falha: { texto: '{rival.nome} é maior do que parecia, e o soco acerta o ar. Você cai na lama diante de todos, e {rival.ele} ri de novo, mais alto.', efeitos: [{ fato: ['rival', 'venceu_o_jogador', 3] }, { opiniao: ['rival', -10] }, { inclinar: ['superar_rival', 3] }], fx: { ferida: 1, perfil: { violencia: 1 } } },
       },
       {
         id: 'ignorar', texto: 'Ignorar, e seguir o seu caminho com o balde vazio.',
-        res: { texto: 'Você caminha sem olhar para trás. A calma incomoda {rival.nome} mais que um soco: quem ignora um insulto parece não ter se importado, e isso, para ele, é pior.', efeitos: [{ fato: ['rival', 'foi_ignorado', 2] }, { opiniao: ['rival', -8] }, { inclinar: ['superar_rival', 1] }], fx: { stats: { dao: 2 }, perfil: { disciplina: 1 } } },
+        res: { texto: 'Você caminha sem olhar para trás. A calma incomoda {rival.nome} mais que um soco: quem ignora um insulto parece não ter se importado, e isso, para {rival.ele}, é pior.', efeitos: [{ fato: ['rival', 'foi_ignorado', 2] }, { opiniao: ['rival', -8] }, { inclinar: ['superar_rival', 1] }], fx: { stats: { dao: 2 }, perfil: { disciplina: 1 } } },
       },
       {
         id: 'postura', texto: 'Plantar os pés como o seu pai ensinou, e encarar sem dizer nada.',
         requer: { jogador: { origem: ['filho_guarda'] } }, selo: 'Filho de um Guarda do Reino',
-        res: { texto: '{rival.nome} esperava medo, e encontra uma criança imóvel, com a postura de quem já viu coisa pior que ele. O riso morre no meio. Ele recua um passo e finge que o balde nunca existiu.', efeitos: [{ fato: ['rival', 'recuou_diante_do_jogador', 3] }, { opiniao: ['rival', -12] }, { inclinar: ['superar_rival', 2] }], fx: { fama: 1, perfil: { disciplina: 2 } } },
+        res: { texto: '{rival.nome} esperava medo, e encontra uma criança imóvel, com a postura de quem já viu coisa pior que {rival.ele}. O riso morre no meio. {rival.Ele} recua um passo e finge que o balde nunca existiu.', efeitos: [{ fato: ['rival', 'recuou_diante_do_jogador', 3] }, { opiniao: ['rival', -12] }, { inclinar: ['superar_rival', 2] }], fx: { fama: 1, perfil: { disciplina: 2 } } },
       },
       {
         id: 'sorrir', texto: 'Sorrir. Nenhum insulto o alcança.',
         requer: { jogador: { talento: ['coracao_inabalavel'] } }, selo: 'Coração Inabalável',
-        res: { texto: 'O sorriso desarma {rival.nome} mais que um soco. Ele esperava um adversário e encontrou uma parede que sorri. Nos dias seguintes, ele passa a evitar o seu olhar.', efeitos: [{ fato: ['rival', 'foi_desarmado', 3] }, { opiniao: ['rival', -15] }, { inclinar: ['superar_rival', 1] }], fx: { stats: { dao: 1 }, perfil: { disciplina: 1 } } },
+        res: { texto: 'O sorriso desarma {rival.nome} mais que um soco. {rival.Ele} esperava um adversário e encontrou uma parede que sorri. Nos dias seguintes, {rival.ele} passa a evitar o seu olhar.', efeitos: [{ fato: ['rival', 'foi_desarmado', 3] }, { opiniao: ['rival', -15] }, { inclinar: ['superar_rival', 1] }], fx: { stats: { dao: 1 }, perfil: { disciplina: 1 } } },
       },
     ],
   }),
@@ -148,7 +148,7 @@ export const INFANCIA: Molde[] = [
     cena: [
       { se: { jogador: { origem: ['orfao_seita'] } }, texto: 'Na {seita.nome}, órfãos e servos fazem fila diante da Pedra de Teste. Cada toque revela um brilho, ou o silêncio. Quando chega a sua vez, o pátio inteiro parece prender a respiração, e você percebe que algumas dessas crianças nunca mais vão ter outra chance.' },
       { se: { jogador: { origem: ['cla_decadente'] } }, texto: 'Atrás do cofre vazio do clã, você encontra um compartimento oculto com um manual de respiração escrito por um ancestral. As letras são antigas, mas as instruções são claras. Se alguém da família já fez isso, o nome ainda pode valer alguma coisa.' },
-      { texto: 'Um cultivador errante passa por {vila} testando crianças com uma pequena esfera de cristal. Quando chega a sua vez, a esfera treme na mão dele, e as outras crianças, de repente, ficam muito quietas.' },
+      { texto: 'Um cultivador errante passa por {vila} testando crianças com uma pequena esfera de cristal. Quando chega a sua vez, a esfera treme na mão {parente.dele}, e as outras crianças, de repente, ficam muito quietas.' },
     ],
     opcoes: [
       { id: 'pedra', texto: 'Tocar a pedra com firmeza.', requer: { jogador: { origem: ['orfao_seita'] } },
@@ -195,7 +195,7 @@ export const INFANCIA: Molde[] = [
     ],
     opcoes: [
       { id: 'pedido', texto: 'Soltar uma lanterna e fazer um pedido em silêncio.', res: { texto: 'A lanterna sobe, torta, e se perde entre as outras. Você nunca saberá qual era a sua, mas o pedido ficou no ar, e há dias em que isso basta.', efeitos: [{ opiniao: ['amigo', 3] }], fx: { stats: { dao: 1 }, perfil: { devocao: 1 } } } },
-      { id: 'dancar', texto: 'Entrar na roda de dança e esquecer o resto.', res: { texto: 'A música é ruim e o chão é irregular, mas ninguém se importa. Você volta para casa rindo sozinho, o que não acontecia havia tempo.', efeitos: [{ opiniao: ['amigo', 4] }], fx: { stats: { car: 1 }, perfil: { compaixao: 1 } } } },
+      { id: 'dancar', texto: 'Entrar na roda de dança e esquecer o resto.', res: { texto: 'A música é ruim e o chão é irregular, mas ninguém se importa. Você volta para casa rindo sozinh{jogador.o}, o que não acontecia havia tempo.', efeitos: [{ opiniao: ['amigo', 4] }], fx: { stats: { car: 1 }, perfil: { compaixao: 1 } } } },
       { id: 'observar', texto: 'Ficar à margem, observando quem está ali.', res: { texto: 'Há sempre mais coisa para ver de longe: quem fala com quem, quem desvia o olhar, quem leva um recado escondido na manga. Você guarda tudo.', fx: { stats: { comp: 1 }, perfil: { astucia: 1 } } } },
     ],
   }),

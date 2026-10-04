@@ -3,6 +3,7 @@ import { applyFx, condMet, fill, ladderOf, realmOf } from '../engine';
 import { Rng } from '../rng';
 import { MOLDES } from '../../data/v2/index';
 import type { Cond2, CondPapel, EfeitoMundo, Faccao, Fio, Id, Lugar, Molde, Opcao, Papel, PapelDef, Pessoa, Res, Variante } from './tipos';
+import { generoDoNome } from '../../data/names';
 import { criarSolta, fraseMorte, inserirPessoa, nomeDoReino, procurarPessoa, promover, registrarFato, temFato, trato, type CandidatoReserva } from './mundo';
 
 export const MOLDE: Record<string, Molde> = Object.fromEntries(MOLDES.map((m) => [m.id, m]));
@@ -193,17 +194,30 @@ export function efetivarLigacao(s: State, lig: Ligacoes, papeisMolde: Record<Pap
 }
 
 /* ---------- Texto ---------- */
+/** Marcadores de gênero: {rival.ele}, {mestre.o}, {jogador.moco}... (a primeira letra maiúscula capitaliza). */
+const GEN: Record<string, [string, string]> = {
+  ele: ['ele', 'ela'], dele: ['dele', 'dela'], nele: ['nele', 'nela'], o: ['o', 'a'], um: ['um', 'uma'], este: ['este', 'esta'], mesmo: ['mesmo', 'mesma'],
+  moco: ['moço', 'moça'], homem: ['homem', 'mulher'], velho: ['velho', 'velha'], lo: ['lo', 'la'], senhor: ['senhor', 'senhora'], irmao: ['irmão', 'irmã'], jovem: ['rapaz', 'moça'], filho: ['filho', 'filha'],
+};
+export function generoCampo(nome: string, campo: string): string | null {
+  const baixo = campo[0].toLowerCase() + campo.slice(1);
+  const par = GEN[baixo];
+  if (!par) return null;
+  const t = par[generoDoNome(nome) === 'f' ? 1 : 0];
+  return campo[0] !== baixo[0] ? t[0].toUpperCase() + t.slice(1) : t;
+}
 export function preencher(s: State, bind: Record<Papel, Id>, texto: string): string {
   const mundo = s.v2!.mundo;
-  const t = texto.replace(/\{([a-z_]+)\.([a-z]+)\}/g, (_, r: string, campo: string) => {
+  const t = texto.replace(/\{([a-z_]+)\.([a-zA-Z]+)\}/g, (_, r: string, campo: string) => {
     if (r === 'mundo') return noticiaDoMundo(s, campo);
-    if (r === 'jogador') return campo === 'reino' ? realmOf(s).name : campo === 'nome' ? s.name : '';
+    if (r === 'jogador') return generoCampo(s.name, campo) ?? (campo === 'reino' ? realmOf(s).name : campo === 'nome' ? s.name : '');
     const id = bind[r];
-    if (!id) return campo === 'nome' ? 'alguém' : campo === 'trato' ? 'você' : '';
+    if (!id) return campo === 'nome' ? 'alguém' : campo.toLowerCase() === 'trato' ? (campo[0] === 'T' ? 'Você' : 'você') : generoCampo('Lin Hao', campo) ?? '';
     const p = mundo.pessoas[id], f = mundo.faccoes[id], l = mundo.lugares[id];
     if (p) {
+      const g = generoCampo(p.nome, campo); if (g !== null) return g;
       if (campo === 'nome') return p.nome;
-      if (campo === 'trato') return trato(p, s.tier, s.fama, s.name);
+      if (campo.toLowerCase() === 'trato') { const t = trato(p, s.tier, s.fama, s.name); return campo[0] === 'T' ? t[0].toUpperCase() + t.slice(1) : t; }
       if (campo === 'reino') return nomeDoReino(p.trilha, p.reino);
       if (campo === 'faccao') return p.faccao ? mundo.faccoes[p.faccao]?.nome ?? 'sua seita' : 'sua gente';
       if (campo === 'idade') return String(Math.floor(s.age) - p.nasc);

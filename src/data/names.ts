@@ -2,11 +2,22 @@ import type { Rng } from '../engine/rng';
 import type { Root, Stats } from '../types';
 
 const SURNAMES = ['Lin', 'Qin', 'Han', 'Mo', 'Su', 'Yan', 'Bai', 'Shen', 'Tang', 'Gu', 'Luo', 'Xu', 'Wen', 'Feng', 'Ji', 'Ning', 'Duan', 'Jiang', 'Fu', 'Cao'];
-const GIVEN_A = ['Yun', 'Ming', 'Lian', 'Hao', 'Xue', 'Zhi', 'Wei', 'Qing', 'Ruo', 'Tian', 'Jing', 'Chen', 'An', 'Yu', 'Shan'];
-const GIVEN_B = ['feng', 'lan', 'yan', 'shu', 'hua', 'rui', 'xin', 'ge', 'lei', 'wen', 'ning', 'zhao', 'mei', 'jun'];
-
+/** O gênero de uma pessoa vem da primeira sílaba do nome próprio (as listas são separadas). */
+const A_MASC = ['Yun', 'Ming', 'Hao', 'Zhi', 'Wei', 'Tian', 'Chen', 'An'];
+const A_FEM = ['Lian', 'Xue', 'Qing', 'Ruo', 'Yu', 'Shan', 'Jing'];
+const B_MASC = ['feng', 'ge', 'lei', 'wen', 'zhao', 'jun', 'yan'];
+const B_FEM = ['lan', 'yan', 'shu', 'hua', 'rui', 'xin', 'ning', 'mei'];
+export type Genero = 'm' | 'f';
+export function generoDoNome(nome: string): Genero {
+  const dado = nome.split(' ')[1] ?? '';
+  if (A_MASC.some((a) => dado.startsWith(a))) return 'm';
+  return A_FEM.some((a) => dado.startsWith(a)) ? 'f' : 'm';
+}
+export function personNameG(rng: Rng, g: Genero): string {
+  return `${rng.pick(SURNAMES)} ${rng.pick(g === 'm' ? A_MASC : A_FEM)}${rng.pick(g === 'm' ? B_MASC : B_FEM)}`;
+}
 export function personName(rng: Rng): string {
-  return `${rng.pick(SURNAMES)} ${rng.pick(GIVEN_A)}${rng.pick(GIVEN_B)}`;
+  return personNameG(rng, rng.chance(0.5) ? 'm' : 'f');
 }
 
 const SEITA_A = ['Seita do Pico', 'Seita do Vale', 'Seita do Lago', 'Templo do Monte', 'Pavilhão do Rio', 'Seita da Montanha'];
