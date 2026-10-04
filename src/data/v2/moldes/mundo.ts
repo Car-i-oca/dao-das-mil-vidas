@@ -16,13 +16,13 @@ export const MUNDO: Molde[] = [
     relevancia: [{ se: { papel: { amigo: { fato: ['juramento'] } } }, mais: 30 }, { se: { papel: { amigo: { opiniaoMin: 25 } } }, mais: 15 }],
     fio: { id: 'amigo', etapa: 2, abandono: 'O amigo seguiu sozinh{amigo.o}, e o juramento ficou no galho.' },
     cena: [
-      { se: { papel: { amigo: { fato: ['juramento'] } } }, texto: '{amigo.nome} aparece sem aviso, com uma sacola e os olhos fundos. Foi expulso de uma seita por uma intriga, ou escapou de uma dívida, ou perdeu alguém; não diz qual. Não pergunta se pode ficar. Só olha para você, esperando. Na mão, aperta um saquinho, e você sabe o que tem dentro: o galho do juramento.' },
-      { texto: '{amigo.nome} aparece sem aviso, com uma sacola e os olhos fundos. Foi expulso de uma seita por uma intriga, ou escapou de uma dívida, ou perdeu alguém; não diz qual. Não pergunta se pode ficar. Só olha para você, esperando.' },
+      { se: { papel: { amigo: { fato: ['juramento'] } } }, texto: '{amigo.nome} aparece sem aviso, com uma sacola e os olhos fundos. Foi expuls{amigo.o} de uma seita por uma intriga, ou escapou de uma dívida, ou perdeu alguém; não diz qual. Não pergunta se pode ficar. Só olha para você, esperando. Na mão, aperta um saquinho, e você sabe o que tem dentro: o galho do juramento.' },
+      { texto: '{amigo.nome} aparece sem aviso, com uma sacola e os olhos fundos. Foi expuls{amigo.o} de uma seita por uma intriga, ou escapou de uma dívida, ou perdeu alguém; não diz qual. Não pergunta se pode ficar. Só olha para você, esperando.' },
     ],
     opcoes: [
       { id: 'abrigar', texto: 'Abrigá-lo em casa, pelo tempo que for preciso.', res: { texto: '{amigo.nome} chora, em silêncio, durante a primeira noite. Na segunda, já está rindo de coisas que você esqueceu. Há gente que só precisa de uma porta aberta para se lembrar de quem é.', efeitos: [{ opiniao: ['amigo', 20] }, { fato: ['amigo', 'foi_abrigado', 5] }, { fio: ['amigo', 'fechar:cumprido'] }, { inclinar: ['proteger', 2] }], fx: { karma: 2, perfil: { compaixao: 2, devocao: 1 } } } },
       { id: 'pedras', texto: 'Dar o que tem, em pedras, e deixar que {amigo.ele} refaça a vida sozinh{amigo.o}.', custo: 30, res: { texto: '{amigo.nome} aceita o dinheiro com um aceno curto, de quem engoliu o orgulho de uma vez. "Eu devolvo", diz. Você sabe que vai ser difícil, e que {amigo.ele} vai tentar mesmo assim.', efeitos: [{ opiniao: ['amigo', 12] }, { fato: ['amigo', 'recebeu_ajuda', 4] }, { fio: ['amigo', 'fechar:cumprido'] }], fx: { karma: 1, perfil: { compaixao: 1 } } } },
-      { id: 'distancia', texto: 'Ajudar com um pouco de dinheiro, mas manter distância.', res: { texto: '{amigo.Ele} aceita, grato e magoado, e vai embora na manhã seguinte. Ao partir, deixa um recado: "Quando precisar de mim, sabe onde procurar." Há uma distância nova entre vocês, e nenhum dos dois sabe se é prudência ou perda.', efeitos: [{ opiniao: ['amigo', 3] }, { fato: ['amigo', 'foi_ajudado_de_longe', 2] }, { fio: ['amigo', 'fechar:cumprido'] }], fx: { pedras: -10, perfil: { cautela: 1 } } } },
+      { id: 'distancia', texto: 'Ajudar com um pouco de dinheiro, mas manter distância.', res: { texto: '{amigo.Ele} aceita, grat{amigo.o} e magoad{amigo.o}, e vai embora na manhã seguinte. Ao partir, deixa um recado: "Quando precisar de mim, sabe onde procurar." Há uma distância nova entre vocês, e nenhum dos dois sabe se é prudência ou perda.', efeitos: [{ opiniao: ['amigo', 3] }, { fato: ['amigo', 'foi_ajudado_de_longe', 2] }, { fio: ['amigo', 'fechar:cumprido'] }], fx: { pedras: -10, perfil: { cautela: 1 } } } },
       { id: 'remedio', texto: 'Cuidar {amigo.dele} com remédios, noite após noite, até a febre ceder.', requer: { jogador: { trilha: ['alquimia'] } }, selo: 'Caminho da Alquimia', teste: { stat: ['comp', 'sor'], tag: 'alquimia' },
         sucesso: { texto: 'A febre cede na quarta noite. {amigo.nome} acorda com o rosto de quem voltou de um lugar longe, e a primeira coisa que diz, rouco, é o seu nome. O que você preparou naquela panela vale mais do que qualquer pílula que já vendeu.', efeitos: [{ opiniao: ['amigo', 25] }, { fato: ['amigo', 'foi_curado', 5] }, { fio: ['amigo', 'fechar:cumprido'] }, { inclinar: ['proteger', 2] }], fx: { karma: 2, rec: 1, perfil: { compaixao: 2 } } },
         falha: { texto: 'O remédio não funciona, e você descobre, tarde, que a doença não era dessas. {amigo.nome} sobrevive, mas a sua confiança nas suas mãos nunca volta ao que era, e a {amigo.dele} em você, só um pouco.', efeitos: [{ opiniao: ['amigo', 5] }, { fato: ['amigo', 'quase_morreu', 4] }], fx: { karma: 1, perfil: { compaixao: 1 } } } },
@@ -218,7 +218,7 @@ export const MUNDO: Molde[] = [
   }),
 
   molde({
-    id: 'troca_ambicao',
+    id: 'troca_ambicao', max: 2,
     titulo: 'O Que Mudou Dentro de Você',
     tipo: 'virada',
     capitulos: ['ascensao', 'crise', 'legado'],
@@ -240,7 +240,7 @@ export const MUNDO: Molde[] = [
     tipo: 'personagem',
     capitulos: ['ascensao', 'crise', 'legado'],
     cooldown: 5,
-    max: 4,
+    max: 3,
     papeis: { velho: { pessoa: { importante: true, semVer: 9, vivo: true } } },
     quando: { jogador: { reinoMin: 2 } },
     relevancia: [{ se: { papel: { velho: { opiniaoMin: 30 } } }, mais: 25 }, { se: { papel: { velho: { opiniaoMax: -30 } } }, mais: 30 }],

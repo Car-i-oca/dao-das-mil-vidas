@@ -162,3 +162,14 @@ export default molde({
 
 ## 6. Validação (planejada para a Fase 2)
 `npm run validate` passará a conferir: papéis resolvíveis, condições sem campo desconhecido, efeitos da lista fechada, toda opção com efeito de mundo (exceto respiros), fios com abertura e desfecho, nenhuma opção repetida entre moldes, textos sem marcador solto, e tamanho de cena. O simulador reportará moldes nunca escolhidos e cenas cujas variantes nunca saem.
+
+## 7. Recursos implementados na revisão da Fase 2
+- **Gênero**: pessoas e jogador têm gênero (da primeira sílaba do nome próprio). Marcadores: `{papel.ele}`, `{papel.Ele}`, `{papel.dele}`, `{papel.nele}`, `{papel.o}` (o/a, serve para terminações: `cansad{papel.o}`), `{papel.um}`, `{papel.jovem}`, `{papel.filho}`, `{papel.senhor}`; `{jogador.o}` para o jogador. `{papel.Trato}` (com maiúscula) abre a fala.
+- **Família por origem**: `{familia.vitima}`, `{familia.dovitima}`, `{familia.aovitima}`, `{familia.tutor}`, `{familia.dotutor}`, `{familia.aotutor}`, `{familia.casa}`. Órfãos (`orfao_seita`, `mendigo_iluminado`, `discipulo_eremita`) não têm pai: use os marcadores, e `quando.nao.jogador.origem` para cenas que presumem família.
+- **Segunda vez**: `{vez1:texto}` e `{vez2:texto}` mostram o trecho só na primeira ou nas vezes seguintes em que o molde sai (aceita um `{marcador}` dentro). `Cond2.vezes: [min, max]` faz o mesmo em condições. `Molde.max` limita as repetições (padrão: 2 para respiro e perigo, 3 para os demais).
+- **Resultado por estado**: `Res.se: [{ se: Cond2, texto }]` troca o texto do resultado conforme o mundo (a primeira condição que vale).
+- **Situação das pessoas**: efeito `{ situacao: [papel, 'expulso' | 'caido' | 'foragido' | 'vingativo' | 'preso' | 'partiu'] }`; condição `papel.situacao` / `semSituacao`.
+- **Espaçamento de arcos**: `fio.espaco` (anos mínimos desde o último toque; padrão 3, e 5 para clímax).
+- **Ciclos**: arcos de rival, amigo, discípulo e guerra recomeçam com outro elenco quando fecham (o diretor cria a pessoa nova, zera os moldes do arco e os textos reconhecem a repetição). É o que enche as vidas longas.
+- **Cenário**: `ui/mundo.ts` (`CENARIO_DE`) diz cenário e dia/noite de cada molde sem lugar próprio.
+- **Validação**: `sim/validate2.ts` confere papéis, campos, gênero fixo, `trato` sem maiúscula, opção que presume o resultado do teste, itens/técnicas/finais inexistentes e fios. Roda com `npm run validate`.

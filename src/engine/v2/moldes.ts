@@ -215,8 +215,8 @@ export function generoCampo(nome: string, campo: string): string | null {
 }
 export function preencher(s: State, bind: Record<Papel, Id>, texto: string): string {
   const mundo = s.v2!.mundo;
-  const jaVisto = (s.v2!.vistos[moldeAtual] ?? 0) >= 1;
-  texto = texto.replace(/\{vez([12]):([^}]*)\}/g, (_, k: string, c: string) => ((k === '2') === jaVisto ? c : ''));
+  const jaVisto = (s.v2!.vistos[moldeAtual] ?? 0) + (s.v2!.vistos[moldeAtual + '#c'] ?? 0) >= 1;
+  texto = texto.replace(/\{vez([12]):((?:[^{}]|\{[^{}]*\})*)\}/g, (_, k: string, c: string) => ((k === '2') === jaVisto ? c : ''));
   const t = texto.replace(/\{([a-z_]+)\.([a-zA-Z]+)\}/g, (_, r: string, campo: string) => {
     if (r === 'mundo') return noticiaDoMundo(s, campo);
     if (r === 'familia') return familiaCampo(s, campo);
@@ -267,8 +267,9 @@ const MASC = 'Templo|Pavilhão|Culto|Império|Clã|Pátio|Portão|Mercado|Pico|D
 const TROCA: Record<string, string> = { de: 'do', De: 'Do', a: 'o', A: 'O', da: 'do', Da: 'Do', na: 'no', Na: 'No', 'à': 'ao', 'À': 'Ao', pela: 'pelo', Pela: 'Pelo' };
 export function concordar(t: string): string {
   return t
+    .replace(/toda o/g, 'todo o').replace(/Toda o/g, 'Todo o')
     .replace(new RegExp(`(^|[^\\p{L}])(a|A|de|De|da|Da|na|Na|à|À|pela|Pela)(\\s+)(?=(?:${MASC})(?![\\p{L}]))`, 'gu'), (_, pre: string, art: string, sp: string) => `${pre}${TROCA[art]}${sp}`)
-    .replace(/(^|[^\p{L}])(a|A|da|Da|na|Na)(\s+)(?=Ruínas(?![\p{L}]))/gu, (_, pre: string, art: string, sp: string) => `${pre}${{ a: 'as', A: 'As', da: 'das', Da: 'Das', na: 'nas', Na: 'Nas' }[art]}${sp}`);
+    .replace(/(^|[^\p{L}])(a|A|da|Da|na|Na)(\s+)(?=Ruínas(?![\p{L}]))/gu, (_, pre: string, art: string, sp: string) => `${pre}${{ a: 'as', A: 'As', da: 'das', Da: 'Das', na: 'nas', Na: 'Nas' }[art]}${sp}`).replace(/toda o /g, 'todo o ').replace(/Toda o /g, 'Todo o ');
 }
 
 /* ---------- Instanciação: molde + papéis → evento jogável ---------- */

@@ -9,7 +9,7 @@ const intro = (trilha: string, texto: string) => ({ se: { papel: { mestre: { tri
 
 export const DESPERTAR: Molde[] = [
   molde({
-    id: 'desp_mestre_caminho',
+    id: 'desp_mestre_caminho', max: 2,
     titulo: 'Quem Mostra o Caminho',
     tipo: 'personagem',
     capitulos: ['despertar', 'entrada'],

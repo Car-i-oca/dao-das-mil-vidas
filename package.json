@@ -23,7 +23,10 @@
     "dev:v2": "vite --mode v2 --host",
     "build:v2": "tsc --noEmit && vite build --mode v2 --outDir dist-v2 && node scripts/ajusta-v2.mjs dist-v2",
     "cronica2": "tsx sim/cronica2.ts",
-    "coesao": "tsx sim/coesao.ts"
+    "coesao": "tsx sim/coesao.ts",
+    "e2e:mobile": "node tools/e2e/mobile.mjs",
+    "e2e:pixel": "node tools/e2e/pixel.mjs",
+    "arte:amostra": "tsx tools/art/amostra.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",

@@ -946,7 +946,7 @@ function afinidade(e: GameEvent, porCat: Record<Cat, number>): number {
 export function pickNext(s: State, rng: Rng) {
   if (s.ending) return;
   // 1) rompimento
-  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 3 + s.tier : 3)) {
+  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 4 + s.tier * 2 : 3)) {
     s.current = { id: '__break', breakthrough: true };
     return;
   }

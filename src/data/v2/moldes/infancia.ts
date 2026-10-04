@@ -89,7 +89,7 @@ export const INFANCIA: Molde[] = [
     cena: 'Um visitante de casaco bom, {culpado.nome}, da {faccao.nome}, passa pelos fundos, onde os que não têm família comem em silêncio, e olha as crianças uma a uma, como quem procura um rosto. Quando chega a você, demora demais. Sai sem perguntar nada, e deixa no ar a sensação incômoda de que, em algum lugar, alguém sabe quem você é.',
     opcoes: [
       {
-        id: 'perguntar', texto: 'Perguntar a {familia.tutor} quem era aquele homem.',
+        id: 'perguntar', texto: 'Perguntar {familia.aotutor} quem era aquele homem.',
         res: { texto: 'A resposta vem curta demais: "Ninguém." Mas a mão que segura a vassoura aperta o cabo, e você aprende, de uma vez, que o silêncio de um adulto também é uma resposta.', efeitos: [{ fato: ['culpado', 'foi_notado', 2] }, { inclinar: ['reerguer_cla', 2] }, { opiniao: ['parente', 4] }], fx: { stats: { dao: 1 }, perfil: { astucia: 1 } } },
       },
       {

@@ -4,7 +4,7 @@ import { molde, type Molde } from '../../../engine/v2/tipos';
  * Arco do Segredo de Origem (fio `origem`): reencarnado, regressor ou portador de sangue especial.
  * Quem descobre, o que quer, e o que você faz com o que descobriu. Só abre para quem tem esse segredo no começo.
  */
-const SEGREDO = { algum: [{ jogador: { origem: ['alma_reencarnada', 'regressor'] } }, { jogador: { talento: ['sangue_dragao', 'predestinado'] } }] };
+const SEGREDO = { algum: [{ jogador: { origem: ['alma_reencarnada', 'regressor', 'principe_decaido', 'filho_demonio', 'herdeiro_alquimista', 'discipulo_eremita'] } }, { jogador: { talento: ['sangue_dragao', 'predestinado', 'alma_antiga', 'olhar_dao', 'mestre_nato'] } }] };
 const SABEDOR = { sabedor: { pessoa: { papel: 'sabedor', vivo: true } } } as const;
 
 export const ORIGEM: Molde[] = [

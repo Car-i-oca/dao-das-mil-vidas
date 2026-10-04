@@ -2,7 +2,7 @@ import { Rng } from '../rng';
 import { endLife } from '../engine';
 import type { State } from '../../types';
 import { MOLDES } from '../../data/v2/index';
-import { avancarMundo, criarMundo } from './mundo';
+import { avancarMundo, criarMundo, criarSolta, inserirPessoa } from './mundo';
 import { aplicarEfeitosMundo, concordar, condOk, efetivarLigacao, faccaoDoJogador, ligarPapeis, nomearAmbicao, usarMolde, type Ligacoes } from './moldes';
 import type { Ambicao, Capitulo, ContadorId, Diretor, Fase, Molde, Tipo, V2State } from './tipos';
 
@@ -130,7 +130,7 @@ function candidatas(s: State, rng: Rng): { m: Molde; lig: Ligacoes; R: number; s
   for (const m of MOLDES) {
     if (!m.capitulos.includes(v.diretor.capitulo) && !m.id.startsWith('morte_')) continue;
     if (m.unico && (v.vistos[m.id] ?? 0) > 0) continue;
-    if ((v.vistos[m.id] ?? 0) >= (m.max ?? (m.tipo === 'respiro' ? 2 : 3))) continue;
+    if ((v.vistos[m.id] ?? 0) >= (m.max ?? (m.tipo === 'respiro' || m.tipo === 'perigo' ? 2 : 3))) continue;
     const ult = v.quando[m.id];
     if (ult !== undefined && ano - ult < (m.cooldown ?? (m.tipo === 'respiro' ? 12 : 6))) continue;
     if (m.fio) {
@@ -157,10 +157,62 @@ function candidatas(s: State, rng: Rng): { m: Molde; lig: Ligacoes; R: number; s
   return cands;
 }
 
+/* ---------- Ciclos: arcos que recomeçam com outro elenco (vidas longas não ficam vazias) ---------- */
+const CICLAVEIS: Record<string, { prefixos: string[]; papel?: string }> = {
+  rival: { prefixos: ['rival_'], papel: 'rival' }, amigo: { prefixos: ['amigo_'], papel: 'amigo' }, discipulo: { prefixos: ['suc_prodigio', 'suc_discipulo_', 'disc_'], papel: 'discipulo' }, guerra: { prefixos: ['guerra_'] },
+};
+/** Se um arco principal já fechou há muito tempo, o mundo oferece outra geração: novo rival, novo amigo, outro discípulo, outra guerra. */
+function renovarCiclos(s: State, rng: Rng): boolean {
+  const v = s.v2!, m = v.mundo, ano = Math.floor(s.age);
+  if (s.tier < 3 || ano - (v.q.ultimoCiclo ?? -99) < 12) return false;
+  const maduros = m.fios.filter((f) => CICLAVEIS[f.id] && f.estado !== 'aberto' && ano - f.ultimo >= 10);
+  const abertos = m.fios.filter((f) => CICLAVEIS[f.id] && f.estado === 'aberto').length;
+  if (!maduros.length || abertos >= 2 || !rng.chance(0.55)) return false;
+  const f = rng.pick(maduros);
+  if (f.id === 'guerra' && !s.flags.includes('membro_seita')) return false;
+  const cfg = CICLAVEIS[f.id];
+  m.fios = m.fios.filter((x) => x !== f);
+  for (const mo of MOLDES) {
+    if (mo.id.startsWith('inf_') || mo.id.startsWith('morte_')) continue;
+    if (mo.fio?.id === f.id || cfg.prefixos.some((p) => mo.id.startsWith(p))) {
+      if (v.vistos[mo.id]) { v.vistos[mo.id + '#c'] = (v.vistos[mo.id + '#c'] ?? 0) + v.vistos[mo.id]; v.vistos[mo.id] = 0; }
+      delete v.quando[mo.id];
+    }
+  }
+  if (cfg.papel) for (const p of Object.values(m.pessoas)) p.papeis = p.papeis.filter((x) => x !== cfg.papel);
+  const bind: Record<string, string> = {};
+  if (f.id === 'rival' || f.id === 'amigo') {
+    const novo = criarSolta(m, rng, ano, s.tier, f.id === 'rival' ? { traco: ['orgulhoso', 'ambicioso'], reino: 'jogador', objetivo: 'superar', faccao: 'seita' } : { traco: ['leal', 'generoso'], reino: 'jogador', objetivo: 'proteger' });
+    novo.papeis = [f.id]; novo.importante = true; novo.opiniao = f.id === 'rival' ? -10 : 25;
+    inserirPessoa(m, novo);
+    s.names[f.id] = novo.nome;
+    bind[f.id] = novo.id;
+    v.diretor.noticias.push(concordar(f.id === 'rival' ? `Um nome novo desponta e já ouviu falar de você: ${novo.nome}.` : `${novo.nome} cruza o seu caminho e, de algum modo, parece conhecer você há anos.`));
+    m.log.push({ ano, texto: `${novo.nome} entra na sua vida.` });
+    v.ambicao.inclinacoes.superar_rival = (v.ambicao.inclinacoes.superar_rival ?? 0) + (f.id === 'rival' ? 3 : 0);
+  } else if (f.id === 'guerra') {
+    const fj = faccaoDoJogador(s); if (fj && fj.estado !== 'extinta') fj.estado = 'tensao';
+    v.diretor.noticias.push('As seitas voltam a afiar as lâminas: o último tratado já não convence ninguém.');
+  } else {
+    v.diretor.noticias.push('Há uma geração nova batendo à porta, com a mesma pressa e outros erros.');
+  }
+  v.q.ultimoCiclo = ano; v.q['ciclo_' + f.id] = (v.q['ciclo_' + f.id] ?? 0) + 1;
+  if (f.id === 'rival' || f.id === 'amigo') m.fios.push({ id: f.id, tipo: f.id, papeis: { [f.id]: bind[f.id] }, aberto: ano, ultimo: ano, etapa: 1, prazo: 14, estado: 'aberto' });
+  return true;
+}
+
 export function pickNextV2(s: State, rng: Rng): void {
   const v = s.v2!;
   atualizarCapitulo(s, rng);
+  renovarCiclos(s, rng);
   let cands = candidatas(s, rng);
+  // sem nada que sirva: o tempo corre (em vez de repetir um respiro)
+  for (let i = 0; i < 4 && !cands.length && s.tier >= 1; i++) {
+    s.age += rng.int(2, 5);
+    if (s.age >= s.maxAge) { endLife(s, 'velhice'); return; }
+    sincronizarMundo(s, rng);
+    cands = candidatas(s, rng);
+  }
   // Se a fase atual não tem cena que sirva de verdade (só sobras), o ritmo anda para a fase seguinte.
   for (let i = 0; i < 4 && !cands.some((c) => c.serve >= 0.8); i++) {
     v.diretor.fase = PROXIMA_FASE[v.diretor.fase]; v.diretor.cenasNaFase = 0;

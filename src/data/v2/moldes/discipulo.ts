@@ -22,7 +22,7 @@ export const DISCIPULO: Molde[] = [
     ],
     opcoes: [
       { id: 'rigor', texto: 'Ensinar com rigor: repetição, disciplina, nada de atalhos.',
-        res: { texto: 'A disciplina dá frutos, e também ressentimentos. {discipulo.nome} fica mais sólid{discipulo.o} a cada mês, e menos solto. Em alguns dias o olhar de {discipulo.nome} sobre você parece o de quem conta os degraus de uma escada que não escolheu.', efeitos: [{ opiniao: ['discipulo', -2] }, { fato: ['discipulo', 'foi_treinado_com_rigor', 4] }, { q: ['metodo_rigor', 1] }], fx: { xp: 12, perfil: { disciplina: 2 } } } },
+        res: { texto: 'A disciplina dá frutos, e também ressentimentos. {discipulo.nome} fica mais sólid{discipulo.o} a cada mês, e menos solt{discipulo.o}. Em alguns dias o olhar de {discipulo.nome} sobre você parece o de quem conta os degraus de uma escada que não escolheu.', efeitos: [{ opiniao: ['discipulo', -2] }, { fato: ['discipulo', 'foi_treinado_com_rigor', 4] }, { q: ['metodo_rigor', 1] }], fx: { xp: 12, perfil: { disciplina: 2 } } } },
       { id: 'liberdade', texto: 'Ensinar com liberdade: deixar {discipulo.ele} errar, e escolher o próprio ritmo.',
         res: { texto: 'Os erros são grandes e as descobertas, maiores. {discipulo.nome} aprende rápido o que importa e devagar o que não, e ri muito, o que é raro numa seita. Você aprende que há ordem em quem não é forçado, embora não seja sempre a que se esperava.', efeitos: [{ opiniao: ['discipulo', 12] }, { fato: ['discipulo', 'foi_treinado_com_liberdade', 4] }, { q: ['metodo_liberdade', 1] }], fx: { karma: 1, perfil: { compaixao: 2 } } } },
       { id: 'exemplo', texto: 'Ensinar pelo exemplo: viver diante de {discipulo.ele}, e deixar o resto vir sozinho.',

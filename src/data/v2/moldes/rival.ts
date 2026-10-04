@@ -164,7 +164,7 @@ export const RIVAL: Molde[] = [
       },
       {
         id: 'frente', texto: 'Deixar {rival.nome} ir na frente e se expor primeiro.', teste: { stat: ['sor', 'comp'], dif: 0 },
-        sucesso: { texto: 'O ataque se concentra {rival.nele}, e você enxerga o fraco do inimigo enquanto {rival.ele} se distrai. Quando tudo acaba, {rival.nome} está de pé, ferido e furioso, e a dívida entre vocês agora tem outro nome.', efeitos: [{ fato: ['rival', 'foi_usado_como_isca', 5] }, { opiniao: ['rival', -22] }, { reputacao: ['seita', 4] }, { ferir: 'rival' }], fx: { fama: 2, karma: -2, perfil: { astucia: 1, ganancia: 1 } } },
+        sucesso: { texto: 'O ataque se concentra {rival.nele}, e você enxerga o fraco do inimigo enquanto {rival.ele} se distrai. Quando tudo acaba, {rival.nome} está de pé, ferid{rival.o} e furios{rival.o}, e a dívida entre vocês agora tem outro nome.', efeitos: [{ fato: ['rival', 'foi_usado_como_isca', 5] }, { opiniao: ['rival', -22] }, { reputacao: ['seita', 4] }, { ferir: 'rival' }], fx: { fama: 2, karma: -2, perfil: { astucia: 1, ganancia: 1 } } },
         falha: { texto: 'O inimigo percebe a manobra e muda o alvo: o golpe cai em você, e {rival.nome} ainda tem tempo de olhar para você, com a certeza de quem acabou de ver o tamanho da sua alma. O resto é lembrança borrada de sangue e de dor.', efeitos: [{ fato: ['rival', 'viu_a_traicao_falhar', 5] }, { opiniao: ['rival', -25] }], fx: { ferida: 2, karma: -2, perfil: { astucia: 1 } } },
       },
       {
@@ -205,7 +205,7 @@ export const RIVAL: Molde[] = [
         id: 'mao_aberta', texto: 'Soltar a espada e estender a mão aberta: acabar com a rivalidade sem lutar.',
         requer: { jogador: { defeitoNao: ['orgulhoso'] }, papel: { rival: { opiniaoMin: -35 } } }, seloBloqueio: '{rival.Ele} ainda não esqueceu, ou você não consegue: o orgulho não deixa', teste: { stat: ['car', 'dao'], dif: 1 },
         sucesso: { texto: '{rival.nome} olha a mão, olha o seu rosto, e vê que não há truque. Solta a espada também, e o som do metal na terra parece o fim de uma longa frase. "Você é mais teimoso do que eu", diz. É o mais perto de um elogio que {rival.ele} já chegou.', efeitos: [{ fato: ['rival', 'aceitou_a_mao', 5] }, { opiniao: ['rival', 40] }, { fio: ['rival', 'fechar:reconciliado'] }, { reputacao: ['seita', 10] }], fx: { fama: 4, karma: 3, perfil: { compaixao: 2, devocao: 1 } } },
-        falha: { texto: 'A sua mão fica no ar, e {rival.nome} dá um passo atrás, ofendido. "Isso é o que você acha de mim?" A espada {rival.dele} sai da bainha antes que você pegue a sua. A luta é curta, e desigual: você a perde de mãos abertas, e é a única vez em que isso parece justo.', efeitos: [{ fato: ['rival', 'recusou_a_mao_final', 5] }, { opiniao: ['rival', -20] }, { fio: ['rival', 'fechar:venceu'] }, { reputacao: ['seita', -4] }], fx: { ferida: 2, perfil: { compaixao: 1 } } },
+        falha: { texto: 'A sua mão fica no ar, e {rival.nome} dá um passo atrás, ofendid{rival.o}. "Isso é o que você acha de mim?" A espada {rival.dele} sai da bainha antes que você pegue a sua. A luta é curta, e desigual: você a perde de mãos abertas, e é a única vez em que isso parece justo.', efeitos: [{ fato: ['rival', 'recusou_a_mao_final', 5] }, { opiniao: ['rival', -20] }, { fio: ['rival', 'fechar:venceu'] }, { reputacao: ['seita', -4] }], fx: { ferida: 2, perfil: { compaixao: 1 } } },
       },
       {
         id: 'expor', texto: 'Contar diante de todos o que você sabe sobre a muleta {rival.dele}.',
@@ -227,7 +227,7 @@ export const RIVAL: Molde[] = [
     cena: [
       { se: { fio: { rival: { desfecho: ['poupado'] } } }, texto: 'Meses depois, {rival.nome} deixa à sua porta uma lâmina nova, sem bilhete. Não é presente, nem pedido de desculpa, e sim uma forma muda de dizer que a dívida existe e que {rival.ele} sabe. Você a guarda ao lado da sua.' },
       { se: { fio: { rival: { desfecho: ['reconciliado'] } } }, texto: 'Os anos passam e as cartas começam. Curtas, secas, mas regulares: quem subiu, quem caiu, o que a seita disse de nós. {rival.nome} nunca diz que é seu amigo. Mas escreve, e isso, para {rival.ele}, é a mesma coisa.' },
-      { se: { fio: { rival: { desfecho: ['morto'] } } }, texto: 'O funeral de {rival.nome} é pequeno e frio. Você vai, de longe. Uma mulher que você não conhece olha para você por muito tempo e depois desvia o olhar. Algumas vitórias deixam órfãos.' },
+      { se: { fio: { rival: { desfecho: ['morto'] } } }, texto: 'O funeral de {rival.nome} é pequen{rival.o} e fri{rival.o}. Você vai, de longe. Uma mulher que você não conhece olha para você por muito tempo e depois desvia o olhar. Algumas vitórias deixam órfãos.' },
       { se: { fio: { rival: { desfecho: ['derrotado'] } } }, texto: '{rival.nome} deixou a seita sem se despedir. Dizem que foi para o norte, dizem que foi para o culto, dizem que desistiu do Dao. Você sente alívio e uma coisa pior, que não tem nome, quando vê o lugar vazio {rival.dele} no pátio.' },
       { texto: '{rival.nome} cresceu à sua frente: nome maior, reino mais alto, olhar de quem nunca olhou para trás. A seita fala {rival.dele} em tom de lenda, e de você em tom de nota de rodapé. Você aprendeu a conviver com isso, em silêncio, como se aprende a conviver com uma cicatriz.' },
     ],
