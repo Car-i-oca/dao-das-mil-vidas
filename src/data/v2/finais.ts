@@ -5,6 +5,9 @@ import type { Ending } from '../../types';
  * São escolhidos por `finalDeVelhiceV2` quando a vida termina por idade.
  */
 export const FINAIS_V2: Ending[] = [
+  { id: 'v2_comp_unidos', name: 'Dois no Mesmo Caminho', legacy: 1.8,
+    text: '{nome} morreu como cultivou nos últimos anos: ao lado de alguém. Os que viram os dois juntos contam que não conversavam muito, e que não precisavam. No dia da tribulação final, dizem, a luz se dividiu em duas, e a montanha guardou o resto em silêncio.',
+    alt: ['O juramento sob a lua não ficou escrito em nenhum livro. Ficou nos hábitos: o chá servido sem pedir, a palavra que se completa sozinha. {nome} deixou mais do que técnicas: deixou o exemplo de uma aposta que deu certo.'] },
   { id: 'v2_heranca_libertou', name: 'A Noite Sem Lua', legacy: 1.8,
     text: 'Quando {nome} morreu, encontraram numa gaveta um anel de ferro partido ao meio e, debaixo da terceira pedra do poço, um rolo de seda que ninguém soube ler. Contam que, em certas noites sem lua, uma voz muito velha agradece a alguém. Ninguém sabe a quem. {nome} sabia.',
     alt: ['{nome} escolheu abrir mão do que ganharia para devolver a alguém o que perdera havia séculos. Na lápide não há nada sobre isso, e é por isso que os que sabem a visitam.'] },
