@@ -5,6 +5,12 @@ import type { Ending } from '../../types';
  * São escolhidos por `finalDeVelhiceV2` quando a vida termina por idade.
  */
 export const FINAIS_V2: Ending[] = [
+  { id: 'v2_heranca_libertou', name: 'A Noite Sem Lua', legacy: 1.8,
+    text: 'Quando {nome} morreu, encontraram numa gaveta um anel de ferro partido ao meio e, debaixo da terceira pedra do poço, um rolo de seda que ninguém soube ler. Contam que, em certas noites sem lua, uma voz muito velha agradece a alguém. Ninguém sabe a quem. {nome} sabia.',
+    alt: ['{nome} escolheu abrir mão do que ganharia para devolver a alguém o que perdera havia séculos. Na lápide não há nada sobre isso, e é por isso que os que sabem a visitam.'] },
+  { id: 'v2_heranca_absorveu', name: 'A Voz Que Ficou', legacy: 1.5,
+    text: '{nome} morreu com dois nomes na boca e uma lembrança de séculos na cabeça. Os discípulos juraram que, nos últimos dias, a voz do mestre mudava de timbre no meio da frase. Ninguém contou a eles quem falava. O Dao de {nome} era de {nome}, e de mais alguém.',
+    alt: ['Houve quem dissesse que {nome} fora o último de uma linhagem antiga, e quem dissesse que fora o primeiro. Os dois lados tinham razão, e nenhum sabia por quê.'] },
   { id: 'v2_cla_reerguido', name: 'O Nome Que Voltou a Valer', legacy: 1.8,
     text: 'Quando {nome} morreu, o nome do {cla} já abria portas que ninguém lembrava de ter fechado. O livro de contas tinha uma página riscada, e uma criança, no mercado, soletrou o nome em voz alta, sem saber por quê. O que foi perdido não voltou. O que valia a pena, sim.',
     alt: ['O nome do {cla} aparece, hoje, em cartazes e em pedras. {nome} não está em nenhum deles: o clã aprendeu que o nome era dele, e o resto, de quem veio depois. Foi o que {nome} quis.'] },

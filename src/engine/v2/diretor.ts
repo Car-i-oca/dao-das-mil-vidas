@@ -243,6 +243,7 @@ const FINAL_DO_FIO: Record<string, Record<string, string>> = {
   cla: { reerguido: 'v2_cla_reerguido', vingado: 'v2_cla_vingado', perdoado: 'v2_cla_perdoado', perdido: 'v2_cla_perdido' },
   rival: { derrotado: 'v2_rival_superado', poupado: 'v2_rival_superado', reconciliado: 'v2_rival_reconciliado', morto: 'v2_rival_superado', venceu: 'v2_rival_vencedor' },
   seita: { lider: 'v2_seita_lider', exilado: 'v2_seita_exilado', errante: 'v2_seita_errante' },
+  heranca: { libertou: 'v2_heranca_libertou', absorveu: 'v2_heranca_absorveu' },
 };
 export function finalDeVelhiceV2(s: State): string | null {
   const v = s.v2;

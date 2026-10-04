@@ -8,6 +8,7 @@ import { MUNDO } from './moldes/mundo';
 import { EXTRAS } from './moldes/extras';
 import { SUCESSAO } from './moldes/sucessao';
 import { PERIGOS } from './moldes/perigos';
+import { HERANCA } from './moldes/heranca';
 
 /** Todos os moldes da v2 (ver docs/eventos-v2.md). */
-export const MOLDES: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS];
+export const MOLDES: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA];
