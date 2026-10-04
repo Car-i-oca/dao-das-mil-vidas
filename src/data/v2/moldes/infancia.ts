@@ -16,12 +16,12 @@ export const INFANCIA: Molde[] = [
       faccao: { faccao: { ferida: true } },
       parente: { pessoa: { papel: 'parente', vivo: true }, opcional: true },
     },
-    quando: { jogador: { idadeMin: 7 } },
+    quando: { jogador: { idadeMin: 7 }, nao: { jogador: { origem: ['orfao_seita', 'mendigo_iluminado', 'discipulo_eremita'] } } },
     relevancia: [{ se: { jogador: { idadeMin: 7 } }, mais: 70 }],
     fio: { id: 'cla', abre: true, abandono: 'A dívida da família ficou sem resposta, e o nome do clã seguiu sumindo.' },
     cena: [
       { se: { ferida: ['divida'] }, texto: 'Um homem de casaco bom e olhos frios bate à porta, e ninguém precisa dizer quem é. {culpado.nome}, da {faccao.nome}, vem cobrar o que o seu clã deve desde antes de você nascer. Seus pais falam baixo, e você escuta de trás da porta. O nome da família, que um dia abriu portões, hoje só serve para constar num livro de contas.' },
-      { se: { ferida: ['terra'] }, texto: 'Homens da {faccao.nome} medem a terra da sua família com cordas, e {culpado.nome} dita os números sem olhar para ninguém. O campo onde seus avós trabalharam agora "pertence" a outra gente. Seus pais não discutem. Você vê as mãos do seu pai se fecharem, devagar.' },
+      { se: { ferida: ['terra'] }, texto: 'Homens da {faccao.nome} medem a terra da sua família com cordas, e {culpado.nome} dita os números sem olhar para ninguém. O campo onde seus avós trabalharam agora "pertence" a outra gente. Seus pais não discutem. Você vê as mãos {familia.dovitima} se fecharem, devagar.' },
       { se: { ferida: ['desonra'] }, texto: 'No mercado, o nome do seu clã é dito com um sorriso torto. Quem o diz é {culpado.nome}, da {faccao.nome}, o mesmo que espalhou, anos atrás, a história que o manchou. Ao passar por você, {culpado.ele} abaixa os olhos para ver a criança em quem esse nome ainda vive.' },
       { texto: 'Há um retrato antigo em casa: dois sócios sorrindo. Um era da sua família; o outro é {culpado.nome}, hoje da {faccao.nome}, que nunca se explicou pelo que fez. {culpado.Ele} aparece na vila "só de passagem" e cumprimenta seus pais como se nada tivesse acontecido.' },
     ],
@@ -38,7 +38,7 @@ export const INFANCIA: Molde[] = [
         id: 'jurar', texto: 'Sair de trás dos seus pais e jurar que o nome da família vai voltar a valer.',
         requer: { jogador: { defeitoNao: ['covarde'] } }, seloBloqueio: 'Coração Covarde: a voz não sai',
         res: {
-          texto: '{culpado.nome} ri, sem maldade, como quem ouve uma criança dizer que vai pegar a lua. Mas seu pai coloca a mão no seu ombro e aperta, e você entende que o juramento foi ouvido por mais de uma pessoa.',
+          texto: '{culpado.nome} ri, sem maldade, como quem ouve uma criança dizer que vai pegar a lua. Mas {familia.vitima} coloca a mão no seu ombro e aperta, e você entende que o juramento foi ouvido por mais de uma pessoa.',
           efeitos: [{ fato: ['culpado', 'ouviu_juramento', 3] }, { opiniao: ['culpado', -5] }, { opiniao: ['parente', 12] }, { inclinar: ['reerguer_cla', 3] }, { inclinar: ['vingar_cla', 1] }],
           fx: { perfil: { ambicao: 1, devocao: 1 } },
         },
@@ -67,6 +67,38 @@ export const INFANCIA: Molde[] = [
           efeitos: [{ fato: ['culpado', 'viu_medo', 1] }, { inclinar: ['reerguer_cla', 1] }, { inclinar: ['vingar_cla', 1] }, { opiniao: ['parente', 3] }],
           fx: { perfil: { cautela: 1 } },
         },
+      },
+    ],
+  }),
+
+  /* Para quem cresceu sem família: o culpado aparece no lugar onde foi criado, e a pergunta é quem você era. */
+  molde({
+    id: 'inf_visitante',
+    titulo: 'O Visitante de Casaco Bom',
+    tipo: 'personagem',
+    capitulos: ['infancia'],
+    unico: true,
+    papeis: {
+      culpado: { pessoa: { papel: 'culpado' } },
+      faccao: { faccao: { ferida: true } },
+      parente: { pessoa: { papel: 'parente', vivo: true }, opcional: true },
+    },
+    quando: { jogador: { idadeMin: 7, origem: ['orfao_seita', 'mendigo_iluminado', 'discipulo_eremita'] } },
+    relevancia: [{ se: { jogador: { idadeMin: 7 } }, mais: 70 }],
+    fio: { id: 'cla', abre: true, abandono: 'Ninguém nunca explicou de onde você veio, e a pergunta ficou sem dono.' },
+    cena: 'Um visitante de casaco bom, {culpado.nome}, da {faccao.nome}, passa pelos fundos, onde os que não têm família comem em silêncio, e olha as crianças uma a uma, como quem procura um rosto. Quando chega a você, demora demais. Sai sem perguntar nada, e deixa no ar a sensação incômoda de que, em algum lugar, alguém sabe quem você é.',
+    opcoes: [
+      {
+        id: 'perguntar', texto: 'Perguntar a {familia.tutor} quem era aquele homem.',
+        res: { texto: 'A resposta vem curta demais: "Ninguém." Mas a mão que segura a vassoura aperta o cabo, e você aprende, de uma vez, que o silêncio de um adulto também é uma resposta.', efeitos: [{ fato: ['culpado', 'foi_notado', 2] }, { inclinar: ['reerguer_cla', 2] }, { opiniao: ['parente', 4] }], fx: { stats: { dao: 1 }, perfil: { astucia: 1 } } },
+      },
+      {
+        id: 'seguir', texto: 'Seguir o visitante de longe, até o portão.',
+        res: { texto: 'Você o vê montar, trocar duas palavras com o cocheiro e olhar uma vez, só uma, para trás. Não é medo o que sente: é a certeza de que aquele rosto, de algum modo, já fez parte da sua história.', efeitos: [{ fato: ['culpado', 'foi_seguido', 3] }, { inclinar: ['vingar_cla', 3] }], fx: { perfil: { astucia: 1, violencia: 1 } } },
+      },
+      {
+        id: 'calar', texto: 'Guardar cada detalhe {culpado.dele}: a voz, o anel, o caminho que os cavalos tomaram.',
+        res: { texto: 'Você não diz nada a ninguém, e repete tudo em voz baixa, até dormir. Anos depois, isso vale mais do que uma espada.', efeitos: [{ fato: ['culpado', 'foi_observado', 2] }, { inclinar: ['vingar_cla', 2] }, { inclinar: ['reerguer_cla', 1] }, { q: ['cla_pista', 1] }], fx: { perfil: { astucia: 2 } } },
       },
     ],
   }),
@@ -124,7 +156,7 @@ export const INFANCIA: Molde[] = [
         res: { texto: 'Você caminha sem olhar para trás. A calma incomoda {rival.nome} mais que um soco: quem ignora um insulto parece não ter se importado, e isso, para {rival.ele}, é pior.', efeitos: [{ fato: ['rival', 'foi_ignorado', 2] }, { opiniao: ['rival', -8] }, { inclinar: ['superar_rival', 1] }], fx: { stats: { dao: 2 }, perfil: { disciplina: 1 } } },
       },
       {
-        id: 'postura', texto: 'Plantar os pés como o seu pai ensinou, e encarar sem dizer nada.',
+        id: 'postura', texto: 'Plantar os pés como {familia.tutor} ensinou, e encarar sem dizer nada.',
         requer: { jogador: { origem: ['filho_guarda'] } }, selo: 'Filho de um Guarda do Reino',
         res: { texto: '{rival.nome} esperava medo, e encontra uma criança imóvel, com a postura de quem já viu coisa pior que {rival.ele}. O riso morre no meio. {rival.Ele} recua um passo e finge que o balde nunca existiu.', efeitos: [{ fato: ['rival', 'recuou_diante_do_jogador', 3] }, { opiniao: ['rival', -12] }, { inclinar: ['superar_rival', 2] }], fx: { fama: 1, perfil: { disciplina: 2 } } },
       },
@@ -213,7 +245,7 @@ export const INFANCIA: Molde[] = [
     ],
     opcoes: [
       { id: 'trabalhar', texto: 'Trabalhar firme até o fim do dia.', res: { texto: 'No fim, as mãos têm bolhas novas e a barriga tem comida de verdade. Dormir vem fácil.', efeitos: [{ opiniao: ['amigo', 3] }], fx: { stats: { fis: 1 }, perfil: { disciplina: 1 } } } },
-      { id: 'escutar', texto: 'Trabalhar ao lado dos mais velhos e ouvir as histórias deles.', res: { texto: 'Entre uma fileira e outra, você escuta sobre invernos terríveis, cobras de rio e um monge que passou por aqui antes de seu pai nascer. A história do monge ficou na sua cabeça.', fx: { stats: { comp: 1 }, perfil: { astucia: 1 } } } },
+      { id: 'escutar', texto: 'Trabalhar ao lado dos mais velhos e ouvir as histórias deles.', res: { texto: 'Entre uma fileira e outra, você escuta sobre invernos terríveis, cobras de rio e um monge que passou por aqui antes de você nascer. A história do monge ficou na sua cabeça.', fx: { stats: { comp: 1 }, perfil: { astucia: 1 } } } },
       { id: 'fugir', texto: 'Inventar uma desculpa e sumir na floresta.', res: { texto: 'A tarde é sua. Quando você volta, alguém já cobriu a sua parte, e ninguém diz nada, o que é pior do que dizer.', efeitos: [{ opiniao: ['amigo', -3] }], fx: { stats: { sor: 1 }, perfil: { cautela: 1 } } } },
     ],
   }),

@@ -41,7 +41,7 @@ export const SEITA_ARCO: Molde[] = [
     capitulos: ['entrada', 'ascensao'],
     unico: true,
     papeis: { ...SEITA, rival: { pessoa: { papel: 'rival', vivo: true }, opcional: true } },
-    quando: MEMBRO,
+    quando: { ...MEMBRO, jogador: { flag: ['membro_seita'], reinoMax: 1 } },
     fio: { id: 'seita', etapa: 2, abandono: 'Os trabalhos da seita foram feitos pela metade, e ninguém lembrou deles.' },
     cena: 'Os anciões da {seita.nome} dão aos novatos três trabalhos para cumprir antes do fim da estação: carregar pedras do rio, cuidar dos doentes do pátio de baixo e copiar um manual inteiro à mão. O prazo é curto, e a recompensa é uma frase: "Quem fizer bem, será lembrado." Ninguém explica por que isso importa tanto.',
     opcoes: [
@@ -98,8 +98,8 @@ export const SEITA_ARCO: Molde[] = [
       { id: 'merito', texto: 'Conversar com o líder: lembrar de gente que {lider.ele} ajudou e de quem o ajudou.', requer: { jogador: { trilha: ['budista'] } }, selo: 'Caminho do Mérito', teste: { stat: ['car', 'dao'], tag: 'social', ameaca: 'lider' },
         sucesso: { texto: 'Você diz o nome de alguém que {lider.ele} salvou uma vez, sem saber. O rosto de {lider.nome} muda. {lider.Ele} abaixa a faca, assente, e manda a quadrilha abrir caminho, sem uma palavra. Aquilo que você chama de mérito, {lider.ele} chama de vergonha, mas funciona.', efeitos: [{ fato: ['lider', 'foi_lembrado_de_um_bem', 4] }, { opiniao: ['lider', 15] }, { reputacao: ['seita', 8] }], fx: { fama: 2, karma: 3, rec: 1, perfil: { compaixao: 2 } } },
         falha: { texto: 'O discurso soa como sermão, e {lider.nome} não tem paciência para sermões. "Fale com o meu chefe", diz, rindo, e dá o sinal. A conversa acaba como começou: com a ameaça de uma lâmina e o cheiro de medo.', efeitos: [{ reputacao: ['seita', -2] }], fx: { ferida: 1, perfil: { compaixao: 1 } } } },
-      { id: 'guarda', texto: 'Mostrar a insígnia do seu pai e dizer a metade dos bandidos que já serviu com {lider.ele}.', requer: { jogador: { origem: ['filho_guarda'] } }, selo: 'Filho de um Guarda do Reino',
-        res: { texto: 'Metade dos homens foi soldado, e alguns conheceram o seu pai. Há um silêncio longo, depois um aceno, e a quadrilha abre caminho. Um deles, de voz baixa, diz: "Foi um bom homem." Antes de ir, deixa uma moeda de bronze na sua mão, e um nome para procurar.', efeitos: [{ fato: ['lider', 'reconheceu_a_insignia', 3] }, { opiniao: ['lider', 8] }, { reputacao: ['seita', 6] }], fx: { fama: 2, perfil: { disciplina: 1, devocao: 1 } } } },
+      { id: 'guarda', texto: 'Mostrar a insígnia {familia.dovitima} e dizer a metade dos bandidos que já serviu com {lider.ele}.', requer: { jogador: { origem: ['filho_guarda'] } }, selo: 'Filho de um Guarda do Reino',
+        res: { texto: 'Metade dos homens foi soldado, e alguns conheceram {familia.vitima}. Há um silêncio longo, depois um aceno, e a quadrilha abre caminho. Um deles, de voz baixa, diz: "Foi um bom homem." Antes de ir, deixa uma moeda de bronze na sua mão, e um nome para procurar.', efeitos: [{ fato: ['lider', 'reconheceu_a_insignia', 3] }, { opiniao: ['lider', 8] }, { reputacao: ['seita', 6] }], fx: { fama: 2, perfil: { disciplina: 1, devocao: 1 } } } },
     ],
   }),
 
@@ -124,7 +124,7 @@ export const SEITA_ARCO: Molde[] = [
     ],
     opcoes: [
       { id: 'aceitar', texto: 'Aceitar o favor, e armar a ruína do alvo {anciao.dele}.',
-        res: { texto: 'As provas aparecem no lugar errado, e um nome cai. Você ganha o posto, e perde um pedaço do que era. O ancião sorri, com o ar de quem compra gente e a compra barato. Nos corredores, alguém desvia o olhar quando você passa.', efeitos: [{ opiniao: ['anciao', 20] }, { fato: ['anciao', 'recebeu_o_favor', 5] }, { opiniao: ['rival', -30] }, { fato: ['rival', 'foi_sabotado_pelo_jogador', 5] }, { reputacao: ['seita', 8] }, { inclinar: ['ascender_seita', 2] }], fx: { fama: 3, karma: -3, perfil: { astucia: 2, ganancia: 1 } } } },
+        res: { texto: 'As provas aparecem no lugar errado, e um nome cai. Você ganha o posto, e perde um pedaço do que era. O ancião sorri, com o ar de quem compra gente e a compra barato. Nos corredores, alguém desvia o olhar quando você passa.', efeitos: [{ opiniao: ['anciao', 20] }, { fato: ['anciao', 'recebeu_o_favor', 5] }, { opiniao: ['rival', -30] }, { fato: ['rival', 'foi_sabotado_pelo_jogador', 5] }, { situacao: ['rival', 'expulso'] }, { reputacao: ['seita', 8] }, { inclinar: ['ascender_seita', 2] }, { noticia: '{rival.nome} foi expulso da {seita.nome} depois que as provas surgiram no lugar errado.' }], fx: { fama: 3, karma: -3, perfil: { astucia: 2, ganancia: 1 } } } },
       { id: 'recusar', texto: 'Recusar, com educação.',
         res: { texto: '{anciao.nome} não discute. Beberica o chá, assente, e despede você com a cortesia de quem guarda a conta para depois. O posto vai para outro. Você sai com a consciência limpa e a certeza de que isso tem preço.', efeitos: [{ opiniao: ['anciao', -15] }, { fato: ['anciao', 'foi_recusado', 3] }, { reputacao: ['seita', -2] }], fx: { karma: 2, stats: { dao: 1 }, perfil: { disciplina: 1, compaixao: 1 } } } },
       { id: 'avisar', texto: 'Fingir que aceita, e avisar {rival.nome} antes que seja tarde.', requer: { papel: { rival: { vivo: true } } },

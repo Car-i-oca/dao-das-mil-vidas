@@ -44,6 +44,8 @@ export interface Pessoa {
   importante?: boolean;
   /** Ligações de parentesco ou ensino: { mestre: id, filho: id... }. */
   lig?: Record<string, Id>;
+  /** Situação social depois de algo grande (expulso, caido, foragido, vingativo, preso, partiu...). */
+  situacao?: string;
 }
 
 export type FaccaoTipo = 'seita' | 'cla' | 'culto' | 'imperio' | 'associacao';
@@ -94,6 +96,8 @@ export interface Mundo {
   /** Registro do mundo (o "Legends"): o que aconteceu e pode ser citado depois. */
   log: { ano: number; texto: string }[];
   ferida: Ferida;
+  /** Como o texto se refere à família do jogador, conforme a origem. */
+  familia?: { vitima: [string, string, string]; casa: string; tutor: [string, string, string] };
   proxId: number;
   /** Última vez que a reserva foi processada. */
   anoReserva: number;
@@ -162,6 +166,7 @@ export interface CondPapel {
   /** Reino do jogador menos o reino da pessoa. */
   reinoDif?: [number, number];
   objetivo?: ObjetivoTipo[]; fato?: string[]; semFato?: string[]; vivo?: boolean; traco?: Traco[]; trilha?: string[];
+  situacao?: string[]; semSituacao?: string[];
 }
 export interface CondFaccao { estado?: FaccaoEstado[]; reputacaoMin?: number; reputacaoMax?: number; forcaMin?: number; forcaMax?: number }
 export interface CondFio { existe?: boolean; aberto?: boolean; etapaMin?: number; etapaMax?: number; resolvido?: boolean; desfecho?: string[] }
@@ -174,6 +179,8 @@ export interface Cond2 {
   /** `inclinacaoMin: [id, 0]` usa o limiar atual de virada; `dominante` é a inclinação mais alta; `trocaPossivel` vale quando outra inclinação passou muito a atual. */
   ambicao?: { atual?: string[]; sem?: boolean; inclinacaoMin?: [string, number]; dominante?: string; trocaPossivel?: boolean; etapaMin?: number; etapaMax?: number };
   q?: Record<string, [number | undefined, number | undefined]>;
+  /** Quantas vezes ESTE molde já saiu nesta vida (mínimo, máximo). */
+  vezes?: [number | undefined, number | undefined];
   ferida?: FeridaTipo[];
   todos?: Cond2[];
   algum?: Cond2[];
@@ -227,10 +234,15 @@ export type EfeitoMundo =
   | { forca: [Papel, number] }
   | { lugar: [Papel, { perigo?: number; dono?: Papel }] }
   | { reino: [Papel, number] }
+  | { situacao: [Papel, string] }
   | { trilhaDe: Papel }
   | { reducaoTensao: number };
 
-export interface Res { texto: string; alt?: string[]; efeitos?: EfeitoMundo[]; fx?: Effects }
+export interface Res {
+  texto: string; alt?: string[]; efeitos?: EfeitoMundo[]; fx?: Effects;
+  /** Variantes do resultado conforme o estado do mundo: a primeira cuja condição vale substitui o texto. */
+  se?: { se: Cond2; texto: string }[];
+}
 export interface Teste { tag?: string; stat?: StatKey | StatKey[]; dif?: number; ameaca?: Papel | number }
 export interface Opcao {
   id: string;
@@ -254,6 +266,10 @@ export interface Molde {
   capitulos: Capitulo[];
   unico?: boolean;
   cooldown?: number;
+  /** Máximo de vezes que pode sair numa vida (padrão: 2 para respiros, 3 para os demais). */
+  max?: number;
+  /** Cenário da cena quando ela não tem lugar próprio (vilarejo, cidade, seita, selva, montanha, mar, ruinas). */
+  cenario?: string;
   /** Variação de tensão ao ocorrer (padrão por tipo). */
   tensao?: number;
   papeis?: Record<Papel, PapelDef>;
@@ -261,7 +277,7 @@ export interface Molde {
   relevancia?: TermoRelevancia[];
   cena: string | Variante[];
   opcoes: Opcao[];
-  fio?: { id: string; etapa?: number; abre?: boolean; fecha?: string; abandono?: string };
+  fio?: { id: string; etapa?: number; abre?: boolean; fecha?: string; abandono?: string; /** Anos mínimos desde o último toque no fio (padrão 3; 5 para a etapa final). */ espaco?: number };
   /** Cena de luta: oponente e cenário do duelo animado. */
   combate?: { oponente?: string; cenario?: string };
 }

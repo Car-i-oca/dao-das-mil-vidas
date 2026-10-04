@@ -15,7 +15,7 @@ export const RIVAL: Molde[] = [
       seita: { faccao: { de: 'rival' } },
       patio: { lugar: { dono: 'seita', tipo: ['patio'] }, opcional: true },
     },
-    quando: { jogador: { reinoMin: 1 }, papel: { rival: { vivo: true } } },
+    quando: { jogador: { reinoMin: 1 }, papel: { rival: { semSituacao: ['expulso', 'foragido', 'preso', 'partiu'], vivo: true } } },
     relevancia: [
       { se: { papel: { rival: { fato: ['humilhou_o_jogador'] } } }, mais: 25 },
       { se: { papel: { rival: { fato: ['foi_derrubado'] } } }, mais: 25 },
@@ -63,7 +63,7 @@ export const RIVAL: Molde[] = [
     capitulos: ['entrada', 'ascensao', 'crise'],
     cooldown: 12,
     papeis: { rival: { pessoa: { papel: 'rival', vivo: true } }, seita: { faccao: { de: 'rival' } } },
-    quando: { jogador: { reinoMin: 1 }, papel: { rival: { vivo: true, reinoDif: [-9, -1] } } },
+    quando: { jogador: { reinoMin: 1 }, papel: { rival: { semSituacao: ['expulso', 'foragido', 'preso', 'partiu'], vivo: true, reinoDif: [-9, -1] } } },
     relevancia: [{ se: { papel: { rival: { objetivo: ['superar'] } } }, mais: 25 }, { se: { papel: { rival: { reinoDif: [-9, -2] } } }, mais: 20 }],
     fio: { id: 'rival' },
     cena: '{rival.nome} rompeu para {rival.reino}. A notícia chega à {seita.nome} antes do próprio {rival.nome}, e quando {rival.ele} chega, o pátio se abre diante {rival.dele}. Você está um reino atrás. {rival.Ele} passa por você sem dizer nada, e o silêncio tem mais peso que qualquer palavra.',
@@ -99,7 +99,7 @@ export const RIVAL: Molde[] = [
       seita: { faccao: { de: 'rival' } },
       praca: { lugar: { dono: 'seita', tipo: ['patio', 'portao'] }, opcional: true },
     },
-    quando: { jogador: { reinoMin: 1 }, papel: { rival: { vivo: true, opiniaoMax: 5 } } },
+    quando: { jogador: { reinoMin: 1 }, papel: { rival: { semSituacao: ['expulso', 'foragido', 'preso', 'partiu'], vivo: true, opiniaoMax: 5 } } },
     relevancia: [
       { se: { papel: { rival: { objetivo: ['vingar', 'superar'] } } }, mais: 30 },
       { se: { papel: { rival: { fato: ['foi_derrubado'] } } }, mais: 15 },
@@ -149,7 +149,7 @@ export const RIVAL: Molde[] = [
       seita: { faccao: { de: 'rival' } },
       inimigo: { faccao: { inimigoDe: 'seita' } },
     },
-    quando: { jogador: { reinoMin: 2 }, papel: { rival: { vivo: true } } },
+    quando: { jogador: { reinoMin: 2 }, papel: { rival: { semSituacao: ['expulso', 'foragido', 'preso', 'partiu'], vivo: true } } },
     relevancia: [{ se: { papel: { rival: { opiniaoMax: -20 } } }, mais: 15 }, { se: { faccao: { inimigo: { estado: ['guerra', 'tensao'] } } }, mais: 25 }],
     fio: { id: 'rival', etapa: 4, abandono: 'Eles lutaram no mesmo lado uma vez, e depois fingiram que não.' },
     cena: 'Emissários da {inimigo.nome} aparecem às portas da {seita.nome} com um recado educado e uma lista de nomes. O seu está {rival.nele}, e o de {rival.nome} também. Os anciões não decidem nada, e o prazo corre. Na sombra de um corredor, {rival.nome} o encontra: "Vou ser direto. Sozinhos, nenhum de nós sai vivo. Juntos, talvez."',
@@ -187,7 +187,7 @@ export const RIVAL: Molde[] = [
     combate: { oponente: 'cultivador', cenario: 'montanha' },
     fio: { id: 'rival', etapa: 5, abandono: 'Os dois envelheceram sem se encontrar de novo.' },
     cena: [
-      { se: { papel: { rival: { fato: ['aliados_de_ocasiao'] } } }, texto: 'Vocês lutaram do mesmo lado uma vez, e nenhum dos dois esqueceu. Agora {rival.nome} espera no alto do desfiladeiro, sozinh{rival.o}, com a espada na bainha. "Aquela noite foi sincera", diz, "e esta também vai ser. Só que uma de nós tem de acabar."' },
+      { se: { papel: { rival: { fato: ['aliados_de_ocasiao'] } } }, texto: 'Vocês lutaram do mesmo lado uma vez, e nenhum dos dois esqueceu. Agora {rival.nome} espera no alto do desfiladeiro, sozinh{rival.o}, com a espada na bainha. "Aquela noite foi sincera", diz, "e esta também vai ser. Só que um de nós vai ter de ceder."' },
       { texto: '{rival.nome} espera no alto do desfiladeiro, sozinh{rival.o}, com a espada na bainha. Os anos passaram, os reinos subiram, os nomes cresceram. O vento carrega as folhas secas entre vocês, e nenhum dos dois quer ser o primeiro a falar. {rival.Ele} fala: "Hoje eu fecho essa conta, de um jeito ou de outro."' },
     ],
     opcoes: [
@@ -234,6 +234,36 @@ export const RIVAL: Molde[] = [
     opcoes: [
       { id: 'fecha', texto: 'Aceitar o que o tempo decidiu.', requer: { ambicao: { atual: ['superar_rival'] } }, res: { texto: 'Alguns fios se resolvem no momento em que se fecham. Você sente o peso sair dos ombros, e percebe que a rivalidade era, em parte, o que o mantinha em movimento.', efeitos: [{ ambicao: 'cumprida' }, { reducaoTensao: 0.15 }], fx: { stats: { dao: 2 }, perfil: { disciplina: 1 } } } },
       { id: 'segue', texto: 'Seguir em frente.', requer: { nao: { ambicao: { atual: ['superar_rival'] } } }, res: { texto: 'A vida continua. O que foi dito não será dito de novo, e o que foi feito não será desfeito. Você carrega isso consigo, como se carrega o nome de alguém que existiu.', efeitos: [{ reducaoTensao: 0.1 }], fx: { stats: { dao: 1 } } } },
+    ],
+  }),
+
+  /* Quando o rival caiu (expulso, foragido): o arco muda de natureza, e a rivalidade vira vingança. */
+  molde({
+    id: 'rival_ruina',
+    titulo: '{rival.nome}, de Volta',
+    tipo: 'perigo',
+    capitulos: ['ascensao', 'crise', 'legado'],
+    unico: true,
+    papeis: { rival: { pessoa: { papel: 'rival', vivo: true } } },
+    quando: { jogador: { reinoMin: 2 }, papel: { rival: { vivo: true, situacao: ['expulso', 'foragido', 'caido', 'vingativo'] } } },
+    relevancia: [{ se: { papel: { rival: { situacao: ['expulso', 'foragido', 'vingativo'] } } }, mais: 70 }],
+    combate: { oponente: 'cultivador', cenario: 'montanha' },
+    fio: { id: 'rival', espaco: 4, abandono: 'O que sobrou de {rival.nome} sumiu pelas estradas, e a conta ficou aberta.' },
+    cena: [
+      { se: { papel: { rival: { fato: ['foi_sabotado_pelo_jogador'] } } }, texto: '{rival.nome} volta anos depois, magr{rival.o}, de capa suja, com a marca de quem dormiu em estradas e aprendeu, um a um, os nomes de quem o pôs ali. Não diz o seu nome. Diz o que a seita disse na noite em que as provas apareceram no lugar errado, e termina com uma frase só: "Eu sei quem foi."' },
+      { texto: '{rival.nome} volta depois de anos de queda, magr{rival.o}, de capa suja, e o orgulho que tinha virou outra coisa: uma fome fria. Olha você de cima a baixo, e o que vê não ajuda a perdoar.' },
+    ],
+    opcoes: [
+      { id: 'dar', texto: 'Oferecer abrigo e comida, sem exigir nada.',
+        res: { texto: '{rival.nome} come em silêncio, e dorme dois dias seguidos. Quando acorda, não agradece; diz apenas: "Isto não apaga nada." Mas na manhã seguinte a mesa está limpa, e a porta, fechada com cuidado.', se: [{ se: { papel: { rival: { fato: ['foi_sabotado_pelo_jogador'] } } }, texto: '{rival.nome} come em silêncio, e dorme dois dias seguidos. Quando acorda, olha para a porta, para você, para a porta de novo. "Se soubesse o que você fez", diz, "não aceitaria nem a água." Fica mais um dia, e vai embora sem avisar, deixando atrás de si uma dívida que nenhum dos dois sabe como nomear.' }], efeitos: [{ opiniao: ['rival', 18] }, { fato: ['rival', 'foi_acolhido', 4] }, { situacao: ['rival', 'partiu'] }, { fio: ['rival', 'fechar:reconciliado'] }], fx: { karma: 3, perfil: { compaixao: 2 } } } },
+      { id: 'encarar', texto: 'Aceitar o desafio que {rival.ele} veio fazer.', teste: { stat: ['fis', 'dao'], tag: 'combate', ameaca: 'rival' },
+        sucesso: { texto: 'A fome de {rival.nome} é grande, mas o corpo não acompanha. Você {rival.o} derruba sem raiva e sem alívio. {rival.nome} fica no chão, olhando o céu, e diz uma única coisa: "Então era isto." Parte antes do fim da tarde, e nunca mais aparece.', efeitos: [{ fato: ['rival', 'foi_derrotado_na_ruina', 5] }, { opiniao: ['rival', -10] }, { fio: ['rival', 'fechar:derrotado'] }, { situacao: ['rival', 'partiu'] }], fx: { fama: 3, perfil: { violencia: 1 } } },
+        falha: { texto: 'Os anos de estrada deram a {rival.nome} uma coisa que a seita nunca deu: nenhuma regra. O golpe vem de onde você não olhava. Você acorda sozinh{jogador.o}, com o gosto do pó na boca, e a certeza de que {rival.ele} poderia ter ido até o fim. Escolheu não ir.', efeitos: [{ fato: ['rival', 'venceu_na_ruina', 5] }, { fio: ['rival', 'fechar:venceu'] }, { situacao: ['rival', 'partiu'] }], fx: { ferida: 3, perfil: { disciplina: 1 } } } },
+      { id: 'verdade', texto: 'Contar a {rival.ele} o que de fato aconteceu na noite em que {rival.o} caiu.', requer: { papel: { rival: { fato: ['foi_sabotado_pelo_jogador'] } } }, teste: { stat: ['car', 'dao'], dif: 2 },
+        sucesso: { texto: '{rival.nome} escuta até o fim. Não grita, não ataca. Quando você acaba, {rival.ele} apenas assente, como quem finalmente recebe a peça que faltava num quebra-cabeça de anos. "Obrigad{rival.o} por não mentir", diz. Vai embora sem prometer perdão, e sem prometer vingança.', efeitos: [{ fato: ['rival', 'ouviu_a_verdade_da_queda', 5] }, { opiniao: ['rival', 25] }, { fio: ['rival', 'fechar:reconciliado'] }, { situacao: ['rival', 'partiu'] }], fx: { karma: 4, perfil: { compaixao: 2, devocao: 1 } } },
+        falha: { texto: 'A confissão sai pela metade, e {rival.nome} só ouve a parte que confirma o que {rival.ele} já pensava. O primeiro golpe vem sem aviso. Você sobrevive, mas a conversa nunca termina: quem se sente enganado é a pessoa mais perigosa de todas.', efeitos: [{ fato: ['rival', 'nao_acreditou_na_verdade', 5] }, { opiniao: ['rival', -20] }, { situacao: ['rival', 'vingativo'] }], fx: { ferida: 2, perfil: { compaixao: 1 } } } },
+      { id: 'expulsar', texto: 'Mandar {rival.ele} embora antes que fale.',
+        res: { texto: 'A porta se fecha, e o som dura mais do que deveria. De longe, você ouve o que {rival.nome} diz para a rua vazia. Não é ameaça; é pior: é uma promessa calma.', efeitos: [{ opiniao: ['rival', -15] }, { fato: ['rival', 'foi_expulso_da_porta', 4] }, { situacao: ['rival', 'vingativo'] }, { objetivo: ['rival', 'vingar'] }], fx: { karma: -1, perfil: { cautela: 1 } } } },
     ],
   }),
 ];

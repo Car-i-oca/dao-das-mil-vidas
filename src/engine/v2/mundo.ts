@@ -96,6 +96,27 @@ const FERIDA_DE: Record<string, FeridaTipo> = {
   alma_reencarnada: 'traicao', filho_demonio: 'traicao', regressor: 'divida',
 };
 
+const PAI: [string, string, string] = ['o seu pai', 'do seu pai', 'ao seu pai'];
+const FAMILIA_BASE: Record<string, { vitima: [string, string, string]; casa: string; orfao?: boolean }> = {
+  campones: { vitima: PAI, casa: 'a casa de barro da família' }, mercador: { vitima: PAI, casa: 'a loja da família' }, cacador: { vitima: PAI, casa: 'a cabana da família' },
+  filho_guarda: { vitima: PAI, casa: 'o alojamento da guarda' }, pescador_mares: { vitima: PAI, casa: 'a casa de palafitas' }, cla_decadente: { vitima: PAI, casa: 'a casa do clã' },
+  herdeiro_alquimista: { vitima: ['o seu avô', 'do seu avô', 'ao seu avô'], casa: 'a casa do avô' }, principe_decaido: { vitima: PAI, casa: 'o palacete que sobrou' },
+  filho_demonio: { vitima: PAI, casa: 'a casa sem janelas' }, regressor: { vitima: PAI, casa: 'a casa de sempre' }, alma_reencarnada: { vitima: PAI, casa: 'a casa em que nasceu' },
+  orfao_seita: { vitima: ['quem o deixou na seita', 'de quem o deixou na seita', 'a quem o deixou na seita'], casa: 'o alojamento dos servos', orfao: true },
+  mendigo_iluminado: { vitima: ['quem o abandonou na estrada', 'de quem o abandonou na estrada', 'a quem o abandonou na estrada'], casa: 'o canto da estrada', orfao: true },
+  discipulo_eremita: { vitima: ['quem o deixou na montanha', 'de quem o deixou na montanha', 'a quem o deixou na montanha'], casa: 'a cabana da montanha', orfao: true },
+};
+/** Origens sem família viva por perto: a infância e a ferida são contadas de outro jeito. */
+export const ORIGENS_ORFAS = ['orfao_seita', 'mendigo_iluminado', 'discipulo_eremita'];
+function familiaDe(origem: string, parente: Pessoa): NonNullable<Mundo['familia']> {
+  const b = FAMILIA_BASE[origem] ?? FAMILIA_BASE.campones;
+  const f = generoDoNome(parente.nome) === 'f';
+  const tutor: [string, string, string] = b.orfao
+    ? origem === 'discipulo_eremita' ? (f ? ['a eremita', 'da eremita', 'à eremita'] : ['o eremita', 'do eremita', 'ao eremita']) : f ? ['a velha que o criou', 'da velha que o criou', 'à velha que o criou'] : ['o velho que o criou', 'do velho que o criou', 'ao velho que o criou']
+    : f ? ['a sua mãe', 'da sua mãe', 'à sua mãe'] : ['o seu tio', 'do seu tio', 'ao seu tio'];
+  return { vitima: b.vitima, casa: b.casa, tutor };
+}
+
 export interface Semente { semente: number; origem: string; nomeVila: string; nomeSeita: string; nomeCla: string; idade: number }
 
 /** Pré-história: cria facções, lugares, a ferida de origem e o elenco inicial (rival, amigo, culpado, parente). */
@@ -149,6 +170,7 @@ export function criarMundo(sem: Semente, jogadorNome: string): { mundo: Mundo; r
   parente.importante = true; amigo.importante = true;
   m.log.push({ ano: -41, texto: `${sem.nomeCla} perdeu o que tinha: ${ferida === 'divida' ? `ficou devendo à facção de ${culpado.nome}` : ferida === 'terra' ? `a terra foi tomada por gente de ${faccaoCulpada.nome}` : ferida === 'desonra' ? `o nome foi manchado por ${culpado.nome}` : `foi traído por ${culpado.nome}`}.` });
   void todas; void jogadorNome;
+  m.familia = familiaDe(sem.origem, parente);
   return { mundo: m, rival, amigo, culpado, parente };
 }
 

@@ -8,6 +8,10 @@ import { criarSolta, fraseMorte, inserirPessoa, nomeDoReino, procurarPessoa, pro
 
 export const MOLDE: Record<string, Molde> = Object.fromEntries(MOLDES.map((m) => [m.id, m]));
 
+/** O molde cuja condição está sendo avaliada (para `vezes`). */
+let moldeAtual = '';
+export const usarMolde = (id: string) => { moldeAtual = id; };
+
 /* ---------- Visão de um papel durante a escolha (sem promover ainda) ---------- */
 export interface LigacaoPessoa { tipo: 'pessoa'; pessoa: Pessoa; reserva?: CandidatoReserva; criar?: boolean }
 export interface LigacaoFaccao { tipo: 'faccao'; faccao: Faccao }
@@ -51,6 +55,8 @@ function papelOk(s: State, p: Pessoa, c: CondPapel): boolean {
   if (c.semFato && c.semFato.some((f) => temFato(p, f))) return false;
   if (c.traco && !c.traco.some((t) => p.tracos.includes(t))) return false;
   if (c.trilha && !c.trilha.includes(p.trilha)) return false;
+  if (c.situacao && !c.situacao.includes(p.situacao ?? '')) return false;
+  if (c.semSituacao && c.semSituacao.includes(p.situacao ?? '')) return false;
   return true;
 }
 export function condOk(s: State, c: Cond2 | undefined, lig: Ligacoes): boolean {
@@ -102,6 +108,7 @@ export function condOk(s: State, c: Cond2 | undefined, lig: Ligacoes): boolean {
     if (c.ambicao.etapaMin !== undefined && (a.atual?.etapa ?? -1) < c.ambicao.etapaMin) return false;
     if (c.ambicao.etapaMax !== undefined && (a.atual?.etapa ?? 99) > c.ambicao.etapaMax) return false;
   }
+  if (c.vezes) { const n = v.vistos[moldeAtual] ?? 0; if (c.vezes[0] !== undefined && n < c.vezes[0]) return false; if (c.vezes[1] !== undefined && n > c.vezes[1]) return false; }
   if (c.q) for (const [k, [mn, mx]] of Object.entries(c.q)) { const x = v.q[k] ?? 0; if (mn !== undefined && x < mn) return false; if (mx !== undefined && x > mx) return false; }
   if (c.ferida && !c.ferida.includes(v.mundo.ferida.tipo)) return false;
   if (c.todos && !c.todos.every((x) => condOk(s, x, lig))) return false;
@@ -210,6 +217,7 @@ export function preencher(s: State, bind: Record<Papel, Id>, texto: string): str
   const mundo = s.v2!.mundo;
   const t = texto.replace(/\{([a-z_]+)\.([a-zA-Z]+)\}/g, (_, r: string, campo: string) => {
     if (r === 'mundo') return noticiaDoMundo(s, campo);
+    if (r === 'familia') return familiaCampo(s, campo);
     if (r === 'jogador') return generoCampo(s.name, campo) ?? (campo === 'reino' ? realmOf(s).name : campo === 'nome' ? s.name : '');
     const id = bind[r];
     if (!id) return campo === 'nome' ? 'alguém' : campo.toLowerCase() === 'trato' ? (campo[0] === 'T' ? 'Você' : 'você') : generoCampo('Lin Hao', campo) ?? '';
@@ -232,6 +240,14 @@ export function preencher(s: State, bind: Record<Papel, Id>, texto: string): str
     .replace(/\{jogador\.reino\}/g, realmOf(s).name)
     .replace(/\{ferida\.culpado\}/g, mundo.pessoas[mundo.ferida.culpado]?.nome ?? 'o culpado')
     .replace(/\{ferida\.faccao\}/g, mundo.faccoes[mundo.ferida.faccao]?.nome ?? 'a facção'));
+}
+
+/** {familia.vitima} (o seu pai), {familia.dovitima}, {familia.aovitima}, {familia.tutor}, {familia.dotutor}, {familia.aotutor}, {familia.casa}; Maiúscula no começo. */
+function familiaCampo(s: State, campo: string): string {
+  const f = s.v2!.mundo.familia ?? { vitima: ['o seu pai', 'do seu pai', 'ao seu pai'], casa: 'a casa da família', tutor: ['o seu tio', 'do seu tio', 'ao seu tio'] };
+  const k = campo.toLowerCase();
+  const t = k === 'vitima' ? f.vitima[0] : k === 'dovitima' ? f.vitima[1] : k === 'aovitima' ? f.vitima[2] : k === 'tutor' ? f.tutor[0] : k === 'dotutor' ? f.tutor[1] : k === 'aotutor' ? f.tutor[2] : k === 'casa' ? f.casa : '';
+  return campo[0] === campo[0].toUpperCase() ? t[0].toUpperCase() + t.slice(1) : t;
 }
 
 /** Uma novidade recente do mundo (do registro), ou uma frase neutra se nada aconteceu: serve a respiros e boatos. */
@@ -272,24 +288,29 @@ function variante(s: State, vs: Variante[] | string, lig: Ligacoes): string {
   const ok = vs.filter((x) => condOk(s, x.se, lig));
   if (!ok.length) return vs[vs.length - 1]?.texto ?? '';
   const tom = tomDoContador(s.v2!.diretor.contador);
-  const comTom = ok.filter((x) => x.tom === tom);
-  if (comTom.length) return comTom[0].texto;
-  // a mais específica (a que tem `se`) vence a genérica; entre iguais, a primeira sem tom
-  const especificas = ok.filter((x) => x.se && !x.tom);
-  return (especificas[0] ?? ok.find((x) => !x.tom) ?? ok[0]).texto;
+  const esp = ok.filter((x) => x.se);
+  const espTom = esp.filter((x) => x.tom === tom);
+  if (espTom.length) return espTom[0].texto;
+  const espSem = esp.filter((x) => !x.tom);
+  if (espSem.length) return espSem[0].texto;
+  const soTom = ok.filter((x) => !x.se && x.tom === tom);
+  if (soTom.length) return soTom[0].texto;
+  return (ok.find((x) => !x.se && !x.tom) ?? ok[0]).texto;
 }
 export function tomDoContador(c: string): 'lirico' | 'sombrio' | 'ironico' | 'grave' {
   return c === 'serena' ? 'lirico' : c === 'sombria' ? 'sombrio' : c === 'trapaceiro' ? 'ironico' : 'grave';
 }
 
-function resParaOutcome(s: State, bind: Record<Papel, Id>, r: Res | undefined): Outcome | undefined {
+function resParaOutcome(s: State, bind: Record<Papel, Id>, r: Res | undefined, lig: Ligacoes): Outcome | undefined {
   if (!r) return undefined;
   const fx = { ...(r.fx ?? {}) } as Outcome['fx'] & { mundo?: EfeitoMundo[] };
   if (r.efeitos?.length) fx.mundo = r.efeitos;
-  return { text: preencher(s, bind, r.texto), alt: r.alt?.map((a) => preencher(s, bind, a)), fx };
+  const texto = r.se?.find((x) => condOk(s, x.se, lig))?.texto ?? r.texto;
+  return { text: preencher(s, bind, texto), alt: r.alt?.map((a) => preencher(s, bind, a)), fx };
 }
 
 export function instanciar(s: State, molde: Molde, bind: Record<Papel, Id>): GameEvent {
+  usarMolde(molde.id);
   const lig = ligDeBind(s, bind);
   const choices: Choice[] = [];
   for (const o of molde.opcoes as Opcao[]) {
@@ -306,9 +327,9 @@ export function instanciar(s: State, molde: Molde, bind: Record<Papel, Id>): Gam
       if (typeof t.ameaca === 'number') check.amea = t.ameaca;
       else if (typeof t.ameaca === 'string') { const l = lig[t.ameaca]; if (l?.tipo === 'pessoa') check.amea = l.pessoa.reino; }
       c.check = check;
-      c.ok = resParaOutcome(s, bind, o.sucesso);
-      c.fail = resParaOutcome(s, bind, o.falha);
-    } else c.res = resParaOutcome(s, bind, o.res ?? o.sucesso);
+      c.ok = resParaOutcome(s, bind, o.sucesso, lig);
+      c.fail = resParaOutcome(s, bind, o.falha, lig);
+    } else c.res = resParaOutcome(s, bind, o.res ?? o.sucesso, lig);
     choices.push(c);
   }
   if (!choices.length) choices.push({ text: 'Seguir em frente.', res: { text: 'Você deixa o momento passar.' } });
@@ -396,6 +417,13 @@ export function aplicarEfeitosMundo(s: State, efs: EfeitoMundo[], bind: Record<P
       if (l) { if (e.lugar[1].perigo) l.perigo = clamp(l.perigo + e.lugar[1].perigo, 0, 5); if (e.lugar[1].dono) l.dono = bind[e.lugar[1].dono]; }
     } else if ('reino' in e) {
       const p = pessoaDe(s, bind, e.reino[0]); if (p) p.reino = clamp(p.reino + e.reino[1], 0, 8);
+    } else if ('situacao' in e) {
+      const p = pessoaDe(s, bind, e.situacao[0]); if (!p) continue;
+      p.situacao = e.situacao[1];
+      if (['expulso', 'foragido', 'partiu'].includes(e.situacao[1])) { p.faccao = undefined; p.ritmo *= 0.9; }
+      if (e.situacao[1] === 'caido') p.ritmo *= 0.85;
+      if (e.situacao[1] === 'vingativo') p.objetivo = { tipo: 'vingar', alvo: 'jogador' };
+      mundo.log.push({ ano, texto: `${p.nome} ${({ expulso: 'foi expulso da seita', caido: 'caiu em desgraça', foragido: 'fugiu e virou foragido', vingativo: 'jurou vingança', preso: 'foi preso', partiu: 'partiu sem se despedir' } as Record<string, string>)[e.situacao[1]] ?? 'mudou de situação'}.` });
     } else if ('trilhaDe' in e) {
       const p = pessoaDe(s, bind, e.trilhaDe); if (p?.trilha && !s.path) trilhaPeloMestre(s, p.trilha);
     } else if ('reducaoTensao' in e) {

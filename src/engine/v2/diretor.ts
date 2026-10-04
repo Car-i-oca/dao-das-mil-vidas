@@ -3,7 +3,7 @@ import { endLife } from '../engine';
 import type { State } from '../../types';
 import { MOLDES } from '../../data/v2/index';
 import { avancarMundo, criarMundo } from './mundo';
-import { aplicarEfeitosMundo, concordar, condOk, efetivarLigacao, faccaoDoJogador, ligarPapeis, nomearAmbicao, type Ligacoes } from './moldes';
+import { aplicarEfeitosMundo, concordar, condOk, efetivarLigacao, faccaoDoJogador, ligarPapeis, nomearAmbicao, usarMolde, type Ligacoes } from './moldes';
 import type { Ambicao, Capitulo, ContadorId, Diretor, Fase, Molde, Tipo, V2State } from './tipos';
 
 export const CAPITULO_NOME: Record<Capitulo, string> = { infancia: 'Infância', despertar: 'O Despertar', entrada: 'Entrada no Mundo', ascensao: 'Ascensão', crise: 'Crise', legado: 'Legado' };
@@ -125,6 +125,7 @@ function candidatas(s: State, rng: Rng): { m: Molde; lig: Ligacoes; R: number; s
   for (const m of MOLDES) {
     if (!m.capitulos.includes(v.diretor.capitulo) && !m.id.startsWith('morte_')) continue;
     if (m.unico && (v.vistos[m.id] ?? 0) > 0) continue;
+    if ((v.vistos[m.id] ?? 0) >= (m.max ?? (m.tipo === 'respiro' ? 2 : 3))) continue;
     const ult = v.quando[m.id];
     if (ult !== undefined && ano - ult < (m.cooldown ?? (m.tipo === 'respiro' ? 12 : 6))) continue;
     if (m.fio) {
@@ -133,6 +134,9 @@ function candidatas(s: State, rng: Rng): { m: Molde; lig: Ligacoes; R: number; s
       if (!m.fio.abre) {
         if (!f || f.estado !== 'aberto') continue;
         if (m.fio.etapa !== undefined && m.fio.etapa > 1 && f.etapa !== m.fio.etapa - 1) continue;
+        // o arco respira entre as etapas (o clímax pede mais tempo)
+        const espaco = m.fio.espaco ?? (m.tipo === 'climax' ? 5 : 3);
+        if (ano - f.ultimo < espaco) continue;
       }
     }
     const morte = m.id.startsWith('morte_');
@@ -140,6 +144,7 @@ function candidatas(s: State, rng: Rng): { m: Molde; lig: Ligacoes; R: number; s
     if (serve <= 0) continue;
     const lig = ligarPapeis(s, m, rng);
     if (!lig) continue;
+    usarMolde(m.id);
     if (!condOk(s, m.quando, lig)) continue;
     const R = relevancia(s, m, lig);
     if (R > 0) cands.push({ m, lig, R, serve });

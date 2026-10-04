@@ -9,8 +9,8 @@ const errors: string[] = [];
 const warnings: string[] = [];
 const itemIds = new Set(ITEMS.map((i) => i.id)), techIds = new Set(TECHNIQUES.map((t) => t.id)), endIds = new Set(ENDINGS.map((e) => e.id));
 
-const CAMPOS = new Set(['nome', 'trato', 'Trato', 'reino', 'faccao', 'idade', 'causa', 'ele', 'Ele', 'dele', 'Dele', 'nele', 'Nele', 'o', 'O', 'um', 'Um', 'este', 'Este', 'mesmo', 'moco', 'homem', 'Homem', 'velho', 'lo', 'senhor', 'Senhor', 'irmao', 'jovem', 'filho']);
-const GLOBAIS = new Set(['jogador', 'mundo', 'ferida']);
+const CAMPOS = new Set(['nome', 'trato', 'Trato', 'reino', 'faccao', 'idade', 'causa', 'ele', 'Ele', 'dele', 'Dele', 'nele', 'Nele', 'o', 'O', 'um', 'Um', 'este', 'Este', 'mesmo', 'moco', 'homem', 'Homem', 'velho', 'lo', 'senhor', 'Senhor', 'irmao', 'jovem', 'filho', 'vitima', 'Vitima', 'dovitima', 'aovitima', 'tutor', 'Tutor', 'dotutor', 'aotutor', 'casa', 'Casa']);
+const GLOBAIS = new Set(['jogador', 'mundo', 'ferida', 'familia']);
 const V1 = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
 /** Moldes onde "ele/ela" não se refere a uma pessoa (coisa, lugar ou nome). */
 const PRONOME_LIVRE = new Set(['virada_reerguer', 'seita_guerra', 'reacao_rompimento']);
@@ -60,7 +60,7 @@ for (const m of MOLDES) {
     if (fx?.fim && !endIds.has(fx.fim)) errors.push(`${w}#${o}: final inexistente "${fx.fim}"`);
     for (const e of r.efeitos ?? []) {
       const ref = (e as Record<string, unknown>);
-      for (const k of ['opiniao', 'fato', 'reputacao', 'objetivo', 'papel', 'semPapel', 'faccao', 'levarFaccao', 'forca', 'lugar', 'reino']) if (k in ref) exige((ref[k] as string[])[0], `efeito ${k}`);
+      for (const k of ['opiniao', 'fato', 'reputacao', 'objetivo', 'papel', 'semPapel', 'faccao', 'levarFaccao', 'forca', 'lugar', 'reino', 'situacao']) if (k in ref) exige((ref[k] as string[])[0], `efeito ${k}`);
       for (const k of ['morte', 'ferir', 'trilhaDe']) if (k in ref) exige(ref[k] as string, `efeito ${k}`);
       if ('fio' in e) { const [fid] = e.fio; if (!fios.has(fid)) errors.push(`${w}#${o}: fio "${fid}" não é aberto por nenhum molde`); }
     }
@@ -85,7 +85,7 @@ for (const m of MOLDES) {
     for (const mm of t.matchAll(/\{([a-z_]+)\.([a-zA-Z]+)\}/g)) {
       const [, r, c] = mm;
       if (!GLOBAIS.has(r) && !papeis.has(r)) errors.push(`${at}: papel "${r}" em {${r}.${c}} não existe`);
-      else if (!CAMPOS.has(c) && !(r === 'mundo' || r === 'ferida' || (r === 'jogador' && c === 'reino'))) errors.push(`${at}: campo desconhecido {${r}.${c}}`);
+      else if (!CAMPOS.has(c) && !(r === 'mundo' || r === 'ferida' || r === 'familia' || (r === 'jogador' && c === 'reino'))) errors.push(`${at}: campo desconhecido {${r}.${c}}`);
       else if (c !== 'nome' && c !== 'faccao' && papeis.has(r) && !ehPessoa(r) && !['reino'].includes(c)) errors.push(`${at}: {${r}.${c}} usado em papel que não é pessoa`);
     }
     for (const mm of t.matchAll(/\{([a-z_]+)\}/g)) if (!V1.has(mm[1])) errors.push(`${at}: marcador desconhecido {${mm[1]}}`);
