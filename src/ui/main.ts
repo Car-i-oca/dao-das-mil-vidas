@@ -676,3 +676,8 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   const e = q.get('arte');
   if (e && estiloValido(e)) import('./galeria').then((m) => m.mostrarGaleria(app, e, q.get('sec') ?? ''));
 }
+
+/** Depuração: ?arte=amostra */
+if (new URLSearchParams(location.search).get('arte') === 'amostra') {
+  void import('./arteDebug').then((m) => m.montarAmostra());
+}

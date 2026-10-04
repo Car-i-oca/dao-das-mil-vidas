@@ -26,7 +26,8 @@
     "coesao": "tsx sim/coesao.ts",
     "e2e:mobile": "node tools/e2e/mobile.mjs",
     "e2e:pixel": "node tools/e2e/pixel.mjs",
-    "arte:amostra": "tsx tools/art/amostra.ts"
+    "arte:amostra": "tsx tools/art/amostra.ts",
+    "arte": "node tools/arte/exportar.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",
