@@ -1,0 +1,10 @@
+import { jogarV2 } from './cronica2';
+const seed = Number(process.argv[2] ?? 2);
+const r = jogarV2(seed, 0, false);
+const c: Record<string, number> = {};
+r.molde.forEach((m) => { c[m] = (c[m] ?? 0) + 1; });
+console.log(r.traços, r.fim);
+console.log(Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}:${v}`).join(' '));
+console.log('fios', r.v2.mundo.fios.map((f) => `${f.id}:${f.estado}/etapa${f.etapa}`).join(' '));
+console.log('amb', JSON.stringify(r.v2.ambicao));
+console.log('cap', r.v2.diretor.capitulo, 'tier', r.s.tier, 'path', r.s.path, 'flags', r.s.flags.filter((f: string) => /membro|discip|despert|trilha/.test(f)).join(','));

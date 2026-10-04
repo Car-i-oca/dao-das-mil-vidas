@@ -17,6 +17,18 @@ const anosDoReino = (trilha: string) => ladder(trilha).realms.map((r) => r.years
 export const vidaMax = (trilha: string, reino: number) => { const r = ladder(trilha).realms; return r[Math.min(reino, r.length - 1)].lifespan; };
 const OBJ_PADRAO: Objetivo = { tipo: 'subir' };
 
+/** Nome do reino de uma pessoa (a escada depende da trilha; quem ainda não tem trilha usa a do xianxia). */
+export function nomeDoReino(trilha: string, reino: number): string {
+  const r = ladder(trilha).realms;
+  return r[Math.min(reino, r.length - 1)].name;
+}
+
+/** Frase natural para uma morte. */
+export function fraseMorte(nome: string, causa: string): string {
+  const m: Record<string, string> = { 'a idade': 'morreu de velhice', 'uma febre longa': 'morreu de febre', 'um duelo': 'morreu num duelo', 'uma emboscada': 'caiu numa emboscada', 'a tribulação': 'não sobreviveu à tribulação', 'um desvio de Qi': 'morreu num desvio de Qi' };
+  return `${nome} ${m[causa] ?? `morreu (${causa})`}.`;
+}
+
 /** Marca de um mesmo texto: gerador pequeno a partir de números. */
 const rngDe = (...n: number[]) => new Rng(n.reduce((a, b) => (Math.imul(a ^ b, 0x45d9f3b) + 0x9e3779b9) >>> 0, 0x1234567));
 
@@ -127,7 +139,7 @@ export function criarMundo(sem: Semente, jogadorNome: string): { mundo: Mundo; r
   const ferida: FeridaTipo = FERIDA_DE[sem.origem] ?? 'divida';
   const faccaoCulpada = ferida === 'divida' ? assoc[0] : ferida === 'terra' ? seita : ferida === 'desonra' ? imperio : assoc[1] ?? assoc[0];
   const papelCulpado = ferida === 'divida' ? 'credor' : 'culpado';
-  const culpado = novaPessoa(m, rng, ano, { idade: rng.int(38, 60), reino: rng.int(1, 3), trilha: '', tracos: ['ambicioso', rng.pick(['cruel', 'orgulhoso', 'cauteloso'] as Traco[])], papeis: ferida === 'divida' ? ['credor', 'culpado'] : ['culpado'], faccao: faccaoCulpada.id, opiniao: -10, objetivo: { tipo: 'cacar' } });
+  const culpado = novaPessoa(m, rng, ano, { idade: rng.int(38, 60), reino: rng.int(1, 3), trilha: '', tracos: ['ambicioso', rng.pick(['cruel', 'orgulhoso', 'cauteloso'] as Traco[])], papeis: ferida === 'divida' ? ['credor', 'culpado'] : ['culpado'], faccao: faccaoCulpada.id, opiniao: -10, objetivo: { tipo: 'subir' }, teto: rng.int(4, 6) });
   culpado.importante = true;
   m.ferida = { tipo: ferida, culpado: culpado.id, faccao: faccaoCulpada.id };
   const rival = novaPessoa(m, rng, ano, { idade: 6 + rng.int(-1, 2), reino: 0, tracos: ['orgulhoso', rng.pick(['ambicioso', 'rancoroso', 'curioso'] as Traco[])], papeis: ['rival'], faccao: seita.id, objetivo: { tipo: 'superar', alvo: 'jogador' }, opiniao: -5, teto: rng.int(4, 7) });
@@ -217,7 +229,7 @@ const reinoRef = (r: number | 'jogador-1' | 'jogador' | 'jogador+1' | undefined,
   r === undefined ? undefined : r === 'jogador' ? jogador : r === 'jogador-1' ? jogador - 1 : r === 'jogador+1' ? jogador + 1 : r;
 
 export function pessoaServe(p: Pessoa, f: PapelPessoa, ano: number, reinoJog: number, idadeJog: number): boolean {
-  if (f.vivo !== false && !p.vivo) return false;
+  if (f.vivo === true && !p.vivo) return false;
   if (f.vivo === false && p.vivo) return false;
   if (f.papel && !p.papeis.includes(f.papel)) return false;
   if (f.desconhecido && p.papeis.length) return false;
@@ -293,10 +305,11 @@ export function avancarMundo(m: Mundo, de: number, ate: number, nomeJog: string,
         const anos = anosDoReino(p.trilha);
         if (p.xp >= anos[Math.min(p.reino, 8)]) {
           p.xp = 0; p.reino++;
-          if (p.papeis.length || p.importante) out.noticias.push(`${p.nome} rompeu para ${ladder(p.trilha).realms[Math.min(p.reino, ladder(p.trilha).realms.length - 1)].name}.`);
+          if (p.papeis.length || p.importante) out.noticias.push(`${p.nome} rompeu para ${nomeDoReino(p.trilha, p.reino)}.`);
         }
       } else if (p.reino === 0 && idade >= 14 && p.papeis.includes('rival') && p.teto >= 3 && rng.chance(0.18)) {
         p.reino = 1; p.xp = 0;
+        if (!p.trilha) p.trilha = rng.pick(['sopro', 'espada', 'alquimia', 'corpo', 'alma', 'formacoes', 'budista', 'venenos', 'bestas']);
         out.noticias.push(`${p.nome} despertou o Qi.`);
       }
       // opinião esfria devagar, exceto em rancorosos e leais
@@ -310,7 +323,7 @@ export function avancarMundo(m: Mundo, de: number, ate: number, nomeJog: string,
       else if (rng.chance(0.0015)) { morre = true; causa = 'uma febre longa'; }
       if (morre) {
         p.vivo = false; p.morte = { ano: y, causa };
-        m.log.push({ ano: y, texto: `${p.nome} morreu (${causa}).` });
+        m.log.push({ ano: y, texto: fraseMorte(p.nome, causa) });
         if (p.importante || p.papeis.some((x) => ['mestre', 'amigo', 'rival', 'noivo', 'discipulo', 'parente', 'inimigo'].includes(x))) out.mortes.push(p.id);
       }
     }

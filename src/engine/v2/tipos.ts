@@ -171,7 +171,8 @@ export interface Cond2 {
   faccao?: Record<Papel, CondFaccao>;
   fio?: Record<string, CondFio>;
   diretor?: { capitulo?: Capitulo[]; fase?: Fase[]; tensaoMin?: number; tensaoMax?: number; contador?: ContadorId[] };
-  ambicao?: { atual?: string[]; sem?: boolean; inclinacaoMin?: [string, number]; etapaMin?: number; etapaMax?: number };
+  /** `inclinacaoMin: [id, 0]` usa o limiar atual de virada; `dominante` é a inclinação mais alta; `trocaPossivel` vale quando outra inclinação passou muito a atual. */
+  ambicao?: { atual?: string[]; sem?: boolean; inclinacaoMin?: [string, number]; dominante?: string; trocaPossivel?: boolean; etapaMin?: number; etapaMax?: number };
   q?: Record<string, [number | undefined, number | undefined]>;
   ferida?: FeridaTipo[];
   todos?: Cond2[];
@@ -196,6 +197,8 @@ export interface PapelPessoa {
   criar?: { traco?: Traco[]; trilha?: string; reino?: number | 'jogador'; objetivo?: ObjetivoTipo; faccao?: string };
   /** Só procura entre pessoas sem papel nenhum (um desconhecido). */
   desconhecido?: boolean;
+  /** Sempre cria uma pessoa nova (usa `criar`), sem procurar no mundo. */
+  novo?: boolean;
 }
 export interface PapelDef {
   pessoa?: PapelPessoa;

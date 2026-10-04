@@ -1,9 +1,11 @@
 import type { Ending, Achievement, State } from '../types';
 
 import { ENDINGS_TRACOS } from './endings_tracos';
+import { FINAIS_V2 } from './v2/finais';
 
 export const ENDINGS: Ending[] = [
   ...ENDINGS_TRACOS,
+  ...FINAIS_V2,
   { id: 'velhice', name: 'Fim em Paz', legacy: 1, alt: [
     'Nenhum raio, nenhuma lâmina, nenhum demônio. Apenas o tempo, que vence todos sem pressa. {nome} sorriu para o teto de madeira, lembrou do cheiro da chuva em {vila} e deixou de lembrar.',
     'Os discípulos esperaram à porta, em silêncio. Dentro, {nome} terminou o chá, fechou os olhos e confiou o resto ao Céu. O chá ainda estava morno quando abriram a porta.',

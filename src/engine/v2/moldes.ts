@@ -3,7 +3,7 @@ import { applyFx, condMet, fill, ladderOf, realmOf } from '../engine';
 import { Rng } from '../rng';
 import { MOLDES } from '../../data/v2/index';
 import type { Cond2, CondPapel, EfeitoMundo, Faccao, Fio, Id, Lugar, Molde, Opcao, Papel, PapelDef, Pessoa, Res, Variante } from './tipos';
-import { criarSolta, inserirPessoa, procurarPessoa, promover, registrarFato, temFato, trato, type CandidatoReserva } from './mundo';
+import { criarSolta, fraseMorte, inserirPessoa, nomeDoReino, procurarPessoa, promover, registrarFato, temFato, trato, type CandidatoReserva } from './mundo';
 
 export const MOLDE: Record<string, Molde> = Object.fromEntries(MOLDES.map((m) => [m.id, m]));
 
@@ -19,6 +19,12 @@ export function faccaoDoJogador(s: State): Faccao | undefined {
   const nome = s.faction === 'seita' ? s.names.seita : s.faction === 'cla' ? s.names.cla : s.faction === 'demoniaca' ? null : null;
   if (s.faction === 'demoniaca') return Object.values(m.faccoes).find((f) => f.tipo === 'culto');
   return nome ? Object.values(m.faccoes).find((f) => f.nome === nome) : undefined;
+}
+
+/** A inclinação mais alta (opcionalmente ignorando uma). */
+const COM_ARCO = ['reerguer_cla', 'vingar_cla', 'superar_rival', 'ascender_seita'];
+function dominante(a: { inclinacoes: Record<string, number> }, ignorar?: string): string | undefined {
+  return Object.entries(a.inclinacoes).filter(([k]) => k !== ignorar && COM_ARCO.includes(k)).sort((x, y) => y[1] - x[1])[0]?.[0];
 }
 
 /* ---------- Condições ---------- */
@@ -85,7 +91,13 @@ export function condOk(s: State, c: Cond2 | undefined, lig: Ligacoes): boolean {
     const a = v.ambicao;
     if (c.ambicao.sem !== undefined && !a.atual !== c.ambicao.sem) return false;
     if (c.ambicao.atual && !(a.atual && c.ambicao.atual.includes(a.atual.id))) return false;
-    if (c.ambicao.inclinacaoMin && (a.inclinacoes[c.ambicao.inclinacaoMin[0]] ?? 0) < c.ambicao.inclinacaoMin[1]) return false;
+    if (c.ambicao.inclinacaoMin && (a.inclinacoes[c.ambicao.inclinacaoMin[0]] ?? 0) < (c.ambicao.inclinacaoMin[1] || a.limiar)) return false;
+    if (c.ambicao.dominante && dominante(a, undefined) !== c.ambicao.dominante) return false;
+    if (c.ambicao.trocaPossivel) {
+      if (!a.atual) return false;
+      const d = dominante(a, a.atual.id);
+      if (!d || (a.inclinacoes[d] ?? 0) < Math.max(a.limiar, (a.inclinacoes[a.atual.id] ?? 0) + 4)) return false;
+    }
     if (c.ambicao.etapaMin !== undefined && (a.atual?.etapa ?? -1) < c.ambicao.etapaMin) return false;
     if (c.ambicao.etapaMax !== undefined && (a.atual?.etapa ?? 99) > c.ambicao.etapaMax) return false;
   }
@@ -107,6 +119,7 @@ export function ligarPapeis(s: State, m: Molde, rng: Rng): Ligacoes | null {
     const d = def as PapelDef;
     if (d.pessoa) {
       const f = d.pessoa;
+      if (f.novo && f.criar) { lig[r] = { tipo: 'pessoa', pessoa: criarSolta(mundo, rng, ano, s.tier, f.criar), criar: true }; continue; }
       const achou = procurarPessoa(mundo, f, { ano, reinoJog: s.tier, idadeJog: ano, excluir: usados }, rng);
       if (achou?.ativa) { lig[r] = { tipo: 'pessoa', pessoa: achou.ativa }; usados.push(achou.ativa.id); continue; }
       if (achou?.reserva) {
@@ -169,10 +182,8 @@ export function efetivarLigacao(s: State, lig: Ligacoes, papeisMolde: Record<Pap
       let p = l.pessoa;
       if (l.reserva) p = promover(mundo, l.reserva, ano, rng, []);
       else if (l.criar) p = inserirPessoa(mundo, p);
-      const rotulo = papeisMolde?.[r]?.pessoa?.papel;
-      // o papel da cena vira rótulo da pessoa (quem foi "o rival" desta cena segue sendo)
-      if (!rotulo && !p.papeis.includes(r) && r !== 'morto' && ['rival', 'mestre', 'amigo', 'discipulo', 'inimigo', 'noivo', 'parente', 'credor', 'culpado'].includes(r)) p.papeis.push(r);
-      if (['rival', 'mestre', 'amigo', 'discipulo', 'inimigo', 'noivo'].includes(r)) s.names[r] = p.nome;
+      if (p.papeis.length && ['rival', 'mestre', 'amigo', 'discipulo', 'inimigo', 'noivo'].includes(r) && p.papeis.includes(r)) s.names[r] = p.nome;
+      void papeisMolde;
       p.ultima = ano;
       bind[r] = p.id;
     } else if (l.tipo === 'faccao') bind[r] = l.faccao.id;
@@ -185,25 +196,47 @@ export function efetivarLigacao(s: State, lig: Ligacoes, papeisMolde: Record<Pap
 export function preencher(s: State, bind: Record<Papel, Id>, texto: string): string {
   const mundo = s.v2!.mundo;
   const t = texto.replace(/\{([a-z_]+)\.([a-z]+)\}/g, (_, r: string, campo: string) => {
+    if (r === 'mundo') return noticiaDoMundo(s, campo);
+    if (r === 'jogador') return campo === 'reino' ? realmOf(s).name : campo === 'nome' ? s.name : '';
     const id = bind[r];
     if (!id) return campo === 'nome' ? 'alguém' : campo === 'trato' ? 'você' : '';
     const p = mundo.pessoas[id], f = mundo.faccoes[id], l = mundo.lugares[id];
     if (p) {
       if (campo === 'nome') return p.nome;
       if (campo === 'trato') return trato(p, s.tier, s.fama, s.name);
-      if (campo === 'reino') return ladderOf({ ...s, path: p.trilha } as State).realms[Math.min(p.reino, ladderOf({ ...s, path: p.trilha } as State).realms.length - 1)].name;
+      if (campo === 'reino') return nomeDoReino(p.trilha, p.reino);
       if (campo === 'faccao') return p.faccao ? mundo.faccoes[p.faccao]?.nome ?? 'sua seita' : 'sua gente';
       if (campo === 'idade') return String(Math.floor(s.age) - p.nasc);
+      if (campo === 'causa') return p.morte?.causa ?? 'o tempo';
       return '';
     }
     if (f) return campo === 'nome' ? f.nome : '';
     if (l) return campo === 'nome' ? l.nome : '';
     return '';
   });
-  return fill(s, t)
+  return concordar(fill(s, t)
     .replace(/\{jogador\.reino\}/g, realmOf(s).name)
     .replace(/\{ferida\.culpado\}/g, mundo.pessoas[mundo.ferida.culpado]?.nome ?? 'o culpado')
-    .replace(/\{ferida\.faccao\}/g, mundo.faccoes[mundo.ferida.faccao]?.nome ?? 'a facção');
+    .replace(/\{ferida\.faccao\}/g, mundo.faccoes[mundo.ferida.faccao]?.nome ?? 'a facção'));
+}
+
+/** Uma novidade recente do mundo (do registro), ou uma frase neutra se nada aconteceu: serve a respiros e boatos. */
+function noticiaDoMundo(s: State, campo: string): string {
+  const m = s.v2!.mundo, ano = Math.floor(s.age);
+  if (campo === 'faccao') { const f = Object.values(m.faccoes).filter((x) => x.estado !== 'extinta'); return f.length ? f[(s.turn * 7 + ano) % f.length].nome : 'uma seita distante'; }
+  const recentes = m.log.filter((l) => l.ano > ano - 25 && l.ano >= 0);
+  if (!recentes.length) return 'que nada de importante mudou nas últimas estações';
+  const l = recentes[(s.turn * 5 + ano) % recentes.length];
+  return l.texto.replace(/\.$/, '');
+}
+
+/** Nomes próprios masculinos (Templo, Pavilhão, Culto...) pedem o/do/no/ao: troca o artigo escrito no feminino. */
+const MASC = 'Templo|Pavilhão|Culto|Império|Clã|Pátio|Portão|Mercado|Pico|Desfiladeiro|Porto|Salão|Vale';
+const TROCA: Record<string, string> = { de: 'do', De: 'Do', a: 'o', A: 'O', da: 'do', Da: 'Do', na: 'no', Na: 'No', 'à': 'ao', 'À': 'Ao', pela: 'pelo', Pela: 'Pelo' };
+export function concordar(t: string): string {
+  return t
+    .replace(new RegExp(`(^|[^\\p{L}])(a|A|de|De|da|Da|na|Na|à|À|pela|Pela)(\\s+)(?=(?:${MASC})(?![\\p{L}]))`, 'gu'), (_, pre: string, art: string, sp: string) => `${pre}${TROCA[art]}${sp}`)
+    .replace(/(^|[^\p{L}])(a|A|da|Da|na|Na)(\s+)(?=Ruínas(?![\p{L}]))/gu, (_, pre: string, art: string, sp: string) => `${pre}${{ a: 'as', A: 'As', da: 'das', Da: 'Das', na: 'nas', Na: 'Nas' }[art]}${sp}`);
 }
 
 /* ---------- Instanciação: molde + papéis → evento jogável ---------- */
@@ -295,6 +328,9 @@ export function logV2(s: State, texto: string) { s.log.push({ age: Math.floor(s.
 
 export function aplicarEfeitosMundo(s: State, efs: EfeitoMundo[], bind: Record<Papel, Id>, rng: Rng) {
   const v = s.v2!, mundo = v.mundo, ano = Math.floor(s.age);
+  // a cena que abre um fio o abre antes dos efeitos (uma opção pode fechá-lo na mesma hora)
+  const mol = s.current?.v2 ? MOLDE[s.current.v2.molde] : undefined;
+  if (mol?.fio?.abre && !mundo.fios.some((x) => x.id === mol.fio!.id)) aplicarFio(s, mol.fio.id, 'abrir', bind, ano);
   for (const e of efs) {
     if ('opiniao' in e) {
       const p = pessoaDe(s, bind, e.opiniao[0]); if (!p) continue;
@@ -317,7 +353,7 @@ export function aplicarEfeitosMundo(s: State, efs: EfeitoMundo[], bind: Record<P
     } else if ('morte' in e) {
       const p = pessoaDe(s, bind, e.morte); if (!p || !p.vivo) continue;
       p.vivo = false; p.morte = { ano, causa: e.causa ?? 'um golpe' };
-      mundo.log.push({ ano, texto: `${p.nome} morreu (${p.morte.causa}).` });
+      mundo.log.push({ ano, texto: fraseMorte(p.nome, p.morte.causa) });
       if (p.importante || p.papeis.length) v.diretor.mortes.push(p.id);
     } else if ('ferir' in e) {
       const p = pessoaDe(s, bind, e.ferir); if (p) p.ritmo *= 0.92;
@@ -368,7 +404,7 @@ function aplicarFio(s: State, id: string, acao: string, bind: Record<Papel, Id>,
   if (!f) return;
   f.ultimo = ano;
   if (acao === 'avancar') { f.etapa++; f.papeis = { ...f.papeis, ...bind }; }
-  else if (acao.startsWith('fechar:')) { f.estado = 'resolvido'; f.desfecho = acao.slice(7); }
+  else if (acao.startsWith('fechar:')) { if (f.estado === 'aberto') { f.estado = 'resolvido'; f.desfecho = acao.slice(7); } }
   else if (acao.startsWith('abandonar:')) { f.estado = 'abandonado'; f.desfecho = acao.slice(10); }
 }
 
@@ -388,7 +424,8 @@ export function nomearAmbicao(s: State, spec: string, ano: number) {
     if (a.atual) { a.historico.push({ id: a.atual.id, desde: a.atual.desde, ate: ano, desfecho: spec }); a.inclinacoes[a.atual.id] = 0; a.atual = undefined; a.limiar = Math.max(a.limiar, 10); }
     return;
   }
-  const id = spec.replace(/^nomear:|^trocar:/, '');
+  let id = spec.replace(/^nomear:|^trocar:/, '');
+  if (id === 'auto') id = dominante(a, a.atual?.id) ?? 'proteger';
   if (a.atual && a.atual.id === id) return;
   if (a.atual) a.historico.push({ id: a.atual.id, desde: a.atual.desde, ate: ano, desfecho: spec.startsWith('trocar') ? 'trocada' : 'substituida' });
   a.atual = { id, desde: ano, etapa: 1, motivo: AMBICOES[id]?.frase ?? id };
