@@ -61,16 +61,16 @@ function humanSvg(h: Human): string {
 
 /* ---------- Jogador ---------- */
 export const PATH_FIGHT: Record<string, Human> = {
-  espada: { robe: '#2f3a45', trim: '#c9ced3', weapon: 'espada', wcol: C.gold },
+  espada: { robe: '#2f3a45', trim: '#c9ced3', weapon: 'espada', wcol: '#d2a95c' },
   corpo: { robe: '#a43b2c', trim: '#2a2018', weapon: 'punho' },
-  sopro: { robe: '#5f7fa6', trim: '#e8e2d0', weapon: 'orbe', wcol: C.blue },
-  alquimia: { robe: '#a8742f', trim: '#efe0b0', weapon: 'frasco', wcol: C.fire },
-  alma: { robe: '#6d56a3', trim: '#e9defa', weapon: 'orbe', wcol: C.violet },
+  sopro: { robe: '#5f7fa6', trim: '#e8e2d0', weapon: 'orbe', wcol: '#5a8fd0' },
+  alquimia: { robe: '#a8742f', trim: '#efe0b0', weapon: 'frasco', wcol: '#e0742f' },
+  alma: { robe: '#6d56a3', trim: '#e9defa', weapon: 'orbe', wcol: '#8a6fb8' },
   formacoes: { robe: '#3f7a5e', trim: '#e6f0d8', weapon: 'talisma' },
   budista: { robe: '#d79a2b', trim: '#8a3b1d', weapon: 'contas', bald: true },
-  venenos: { robe: '#2f5a3a', trim: '#b8d06a', weapon: 'dardo', wcol: C.jade, mask: true },
-  bestas: { robe: '#9b5a2c', trim: '#e3c28a', weapon: 'garra', wcol: C.fire },
-  demoniaca: { robe: '#4a1620', trim: '#c8362f', weapon: 'garra', wcol: C.blood, eye: C.red },
+  venenos: { robe: '#2f5a3a', trim: '#b8d06a', weapon: 'dardo', wcol: '#4fae7a', mask: true },
+  bestas: { robe: '#9b5a2c', trim: '#e3c28a', weapon: 'garra', wcol: '#e0742f' },
+  demoniaca: { robe: '#4a1620', trim: '#c8362f', weapon: 'garra', wcol: '#8f1f2b', eye: '#c8362f' },
   '': { robe: '#6f6455', trim: '#d8cdb5', weapon: 'cajado' },
 };
 
