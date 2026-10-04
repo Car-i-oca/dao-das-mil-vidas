@@ -9,23 +9,26 @@ import { botPick } from './bot';
 import { CAPITULO_NOME, CONTADOR_NOME } from '../src/engine/v2/diretor';
 import type { State } from '../src/types';
 
-export function jogarV2(seed: number, max = 9999, imprimir = true) {
+export function jogarV2(seed: number, max = 9999, imprimir = true, forcaPrimeira?: number) {
   const meta = newMeta();
   const rng = new Rng(seed);
   const s = startLife(meta, rollCreation(meta, rng), '', rng.seed, { v2: true });
   const bot = new Rng(seed ^ 0x9e3779b9);
   const cena: string[] = [];
   const molde: string[] = [];
-  let n = 0, guard = 0;
+  const aparicoes: { molde: string; ids: string[]; ano: number }[] = [];
+  let n = 0, guard = 0, primeira = true;
   const corte = (t: string, k = 420) => (t.length > k ? t.slice(0, k).replace(/\s+\S*$/, '') + '…' : t);
   while (!s.ending && guard++ < 4000) {
     const v = view(s);
     if (v.kind === 'event') {
-      const i = botPick(s, bot, false);
+      let i = botPick(s, bot, false);
+      if (primeira && s.current?.v2 && forcaPrimeira !== undefined) { i = Math.min(forcaPrimeira, v.choices.filter((c) => !c.disabled).length - 1); primeira = false; }
       const escolha = v.choices[i]?.text ?? '';
       const d = s.v2!.diretor;
       const idade = Math.floor(s.age);
       molde.push(s.current?.v2?.molde ?? s.current?.id ?? '?');
+      aparicoes.push({ molde: s.current?.v2?.molde ?? '', ids: Object.values(s.current?.v2?.bind ?? {}), ano: idade });
       if (n < max && imprimir) {
         let o = '';
         if (v.cartao) o += `\n### ${v.cartao}\n\n`;
@@ -53,7 +56,7 @@ export function jogarV2(seed: number, max = 9999, imprimir = true) {
     console.log(`**Pessoas importantes:** ${imp.map((p) => `${p.nome} [${p.papeis.join(',')}] reino ${p.reino} op ${Math.round(p.opiniao)}${p.vivo ? '' : ' †' + (p.morte?.ano ?? '')} fatos:${p.memoria.map((f) => f.tipo).join('|') || '-'}`).join('\n  - ')}`);
     console.log(`**Capítulo final:** ${CAPITULO_NOME[v2.diretor.capitulo]}; pessoas no mundo: ${Object.keys(v2.mundo.pessoas).length}; facções: ${Object.values(v2.mundo.faccoes).filter((f) => f.estado !== 'extinta').length}/${Object.keys(v2.mundo.faccoes).length}`);
   }
-  return { s, traços, n, molde, fim: ENDING[s.ending!]?.name ?? s.ending, v2 };
+  return { s, traços, n, molde, aparicoes, fim: ENDING[s.ending!]?.name ?? s.ending, v2 };
 }
 
 const [a, b] = process.argv.slice(2);

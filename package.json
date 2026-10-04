@@ -22,7 +22,8 @@
     "e2e:estilo": "node tools/e2e/estilo.mjs",
     "dev:v2": "vite --mode v2 --host",
     "build:v2": "tsc --noEmit && vite build --mode v2 --outDir dist-v2 && node scripts/ajusta-v2.mjs dist-v2",
-    "cronica2": "tsx sim/cronica2.ts"
+    "cronica2": "tsx sim/cronica2.ts",
+    "coesao": "tsx sim/coesao.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",
