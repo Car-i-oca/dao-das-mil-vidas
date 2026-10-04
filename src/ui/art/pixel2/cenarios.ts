@@ -50,34 +50,40 @@ function nuvem(p: Pix, cx: number, cy: number, s: number, night: boolean) {
 /** Cadeia de montanhas em picos (ruído "ridged"): tons pela altura e pela inclinação (vertente da luz mais clara), neve opcional. */
 function cadeia(p: Pix, y0: number, amp: number, passo: number, r: Rng, rampa: string[], opt: { neve?: boolean; baseY?: number; suave?: number } = {}) {
   const base = opt.baseY ?? ALTURA;
-  const fases = [r.next() * 6.28, r.next() * 6.28, r.next() * 6.28];
+  const fases = [r.next() * 6.28, r.next() * 6.28, r.next() * 6.28, r.next() * 6.28];
   const alt = (x: number) => {
     const s = opt.suave ? 0.35 : 1;
+    // ruído ridged multifrequência baseado em 1 - |sin(frequência * x + fase)|
     const a1 = 1 - Math.abs(Math.sin(x / passo + fases[0]));
-    const a2 = 1 - Math.abs(Math.sin(x / (passo * 0.43) + fases[1]));
-    const a3 = 1 - Math.abs(Math.sin(x / (passo * 0.19) + fases[2]));
-    return y0 - amp * (0.62 * a1 + 0.28 * a2 * s + 0.1 * a3 * s);
+    const a2 = (1 - Math.abs(Math.sin(x / (passo * 0.43) + fases[1]))) * a1;
+    const a3 = (1 - Math.abs(Math.sin(x / (passo * 0.19) + fases[2]))) * a2;
+    const a4 = 1 - Math.abs(Math.sin(x / (passo * 0.09) + fases[3]));
+    const ridged = 0.54 * a1 + 0.28 * a2 * s + 0.13 * a3 * s + 0.05 * a4 * s;
+    return y0 - amp * ridged;
   };
   const ys: number[] = [];
   for (let x = -3; x < LARGURA + 3; x++) ys[x + 3] = Math.round(alt(x));
   const Y = (x: number) => ys[Math.max(0, Math.min(LARGURA + 5, x + 3))];
   const topo = y0 - amp;
   for (let x = 0; x < LARGURA; x++) {
-    const inc = Y(x + 3) - Y(x - 3); // negativo: o terreno sobe para a direita (vertente virada à esquerda, iluminada)
-    for (let y = Y(x); y < base; y++) {
+    const inc = Y(x + 3) - Y(x - 3); // negativo: terreno sobe para a direita (vertente virada à esquerda, iluminada)
+    const yIni = Math.max(0, Y(x));
+    for (let y = yIni; y < base; y++) {
       const prof = y - Y(x);
       const t = Math.min(1, prof / Math.max(14, base - Y(x)));
       let tom = t < 0.12 ? 3 : t < 0.4 ? 2 : t < 0.75 ? 1 : 0;
       if (inc > 3 && t < 0.7) tom = Math.min(rampa.length - 1, tom + 1);
       else if (inc < -3 && t < 0.7) tom = Math.max(0, tom - 1);
       if (t > 0.1 && t < 0.9 && ((x * 7 + y * 3) % 23 === 0)) tom = Math.max(0, tom - 1); // veios de rocha
-      p.set(x, y, rampa[Math.min(rampa.length - 1, tom)]);
+      p.set(x, y, rampa[Math.min(rampa.length - 1, Math.max(0, tom))]);
     }
     if (opt.neve) {
       const lim = topo + amp * 0.42;
       if (Y(x) < lim) {
         const prof = 4 + (lim - Y(x)) * 0.5 + Math.sin(x * 0.7) * 1.4 + Math.sin(x * 1.9) * 0.8;
-        for (let y = Y(x); y < Y(x) + prof; y++) p.set(x, y, y - Y(x) < 1.2 || inc > 3 ? PAL.aco[4] : inc < -3 ? PAL.aco[2] : PAL.aco[3]);
+        for (let y = Y(x); y < Y(x) + prof && y < base; y++) {
+          p.set(x, y, y - Y(x) < 1.2 || inc > 3 ? PAL.aco[4] : inc < -3 ? PAL.aco[2] : PAL.aco[3]);
+        }
       }
     }
   }
