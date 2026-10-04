@@ -34,7 +34,7 @@ export const WORLDS: WorldEra[] = [
     hazard: { fim: 'exilio', base: 0.01, minTier: 0, maxTier: 5, text: 'Com a queda da dinastia, {nome} foi declarado inimigo do novo trono e partiu para um exílio sem volta.' },
   },
   {
-    id: 'culto_ascende', name: 'Ascensão do Culto do Demônio Celestial', years: [10, 35], weight: 2, minTier: 2, startEvent: 'mundo_culto_inicio',
+    id: 'culto_ascende', name: 'Ascensão do Culto do Trono Escarlate', years: [10, 35], weight: 2, minTier: 2, startEvent: 'mundo_culto_inicio',
     hazard: { fim: 'cacado', base: 0.012, minTier: 2, maxTier: 6, text: 'Os emissários do Culto encontraram {nome} numa estrada vazia, e ninguém ouviu o resto da conversa.' },
   },
   { id: 'festivais', name: 'Era dos Grandes Festivais', years: [5, 15], weight: 2, minTier: 0, startEvent: 'mundo_festivais_inicio' },

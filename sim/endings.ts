@@ -7,6 +7,7 @@ import { Rng } from '../src/engine/rng';
 import { newMeta, rollCreation, startLife, choose, visibleChoices, view } from '../src/engine/engine';
 import { EVENTS } from '../src/data/events';
 import { ENDINGS } from '../src/data/endings';
+import { TECHNIQUES } from '../src/data/techniques';
 import { PATHS } from '../src/data/paths';
 import type { Cond, GameEvent, Outcome, State, StatKey } from '../src/types';
 
@@ -33,6 +34,15 @@ function satisfy(s: State, c?: Cond) {
   if (c.item) s.items.push(c.item);
   if (c.tecnica) s.techniques.push(c.tecnica);
   if (c.corrMin !== undefined) s.corr = Math.max(s.corr, c.corrMin);
+  if (c.talent?.length) s.talent = c.talent[0];
+  if (c.flaw?.length) s.flaw = c.flaw[0];
+  if (c.constitution?.length) s.constitution = c.constitution[0];
+  for (const t of c.tecnicas ?? []) if (!s.techniques.includes(t)) s.techniques.push(t);
+  if (c.recMin !== undefined) s.rec = Math.max(s.rec ?? 0, c.recMin);
+  for (const t of c.tecnicasTodas ?? []) if (!s.techniques.includes(t)) s.techniques.push(t);
+  if (c.tecnicaTag) { const x = TECHNIQUES.find((q) => q.tags?.includes(c.tecnicaTag!)); if (x && !s.techniques.includes(x.id)) s.techniques.push(x.id); }
+  if (c.mestria !== undefined && s.techniques.length) { s.dominio ??= {}; s.dominio[s.techniques[0]] = 80; }
+  for (const [k, v] of Object.entries(c.perfil ?? {})) { s.perfil ??= {}; s.perfil[k] = Math.max(s.perfil[k] ?? 0, v); }
 }
 
 const results: { ending: string; event: string; ok: boolean; note?: string }[] = [];

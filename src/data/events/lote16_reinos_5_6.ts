@@ -115,7 +115,7 @@ export const lote16Reinos56: GameEvent[] = [
   {
     id: 'r5_emissario_do_culto', title: 'O Emissário do Culto', rarity: 'raro', cooldown: 90, weight: 1.0,
     cond: { tierMin: 5, tierMax: 7 },
-    text: 'Um emissário de manto vinho, com olhos fundos e sorriso cuidadoso, senta-se à sua mesa sem convite. Em nome do Culto do Demônio Celestial, oferece um lugar entre os Quatro Reis: poder, acesso a uma biblioteca proibida e anos de vida a mais.',
+    text: 'Um emissário de manto vinho, com olhos fundos e sorriso cuidadoso, senta-se à sua mesa sem convite. Em nome do Culto do Trono Escarlate, oferece um lugar entre os Quatro Reis: poder, acesso a uma biblioteca proibida e anos de vida a mais.',
     choices: [
       { text: 'Aceitar a oferta e jurar ao Culto.', res: { text: 'O pacto é selado com uma gota de sangue. O poder chega rápido, e a corrupção, quase em silêncio.', fx: { corr: 20, vida: 80, xp: 12, stats: { fis: 2, esp: 2 }, fama: -10, karma: -12, setFlags: ['membro_demoniaca'] } } },
       { text: 'Recusar com educação.', res: { text: 'O emissário se despede com pesar. Anos depois, sua seita sofrerá retaliações sutis.', fx: { karma: 2, stats: { dao: 1 } } } },

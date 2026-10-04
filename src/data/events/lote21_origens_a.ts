@@ -241,8 +241,8 @@ export const lote21OrigensA: GameEvent[] = [
     text: 'Seguindo uma pista, você descobre uma trilha que não estava lá ontem: pedras redondas, musgo brilhante, uma luz azulada no fundo. Seu pai disse que a montanha, às vezes, muda de ideia. Parece ser um dia desses.',
     choices: [
       { text: 'Seguir a trilha até o fim.', check: { stat: ['sor', 'esp'], dif: 1 }, ok: { text: 'No fim da trilha, uma fonte de água azul brota da rocha. Quem bebe, sente o corpo leve e o Qi fazer cócegas. Algo em você desperta.', fx: { stats: { esp: 2, sor: 1 }, xp: 3, setFlags: ['fonte_azul'] } }, fail: { text: 'A trilha termina num precipício. Você volta com cuidado, sentindo o olhar da montanha nas costas.', fx: { stats: { sor: 1 } } } },
-      { text: 'Marcar o local e voltar com o pai.', res: { text: 'Quando volta com o pai, a trilha já não existe. O pai coça a barba: "Algumas coisas são só para quem as vê primeiro."', fx: { stats: { dao: 1 } } } },
-      { text: 'Ignorar: a montanha tem seus segredos.', res: { text: 'Você volta para casa pela trilha comum. Um peso pequeno, de curiosidade não satisfeita, fica com você por muitos anos.', fx: { stats: { dao: 1 } } } },
+      { text: 'Marcar o local e voltar com o pai.', res: { text: 'Quando volta com o pai, a trilha já não existe. O pai coça a barba: "Algumas coisas são só para quem as vê primeiro."', fx: { stats: { dao: 1 }, setFlags: ['og_cac_marcou_trilha'] } } },
+      { text: 'Ignorar: a montanha tem seus segredos.', res: { text: 'Você volta para casa pela trilha comum. Um peso pequeno, de curiosidade não satisfeita, fica com você por muitos anos.', fx: { stats: { dao: 1 }, setFlags: ['og_cac_ignorou_trilha'] } } },
     ],
   },
   {

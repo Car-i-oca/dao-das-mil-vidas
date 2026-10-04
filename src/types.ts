@@ -24,10 +24,16 @@ export interface Effects {
   trilha?: string;
   /** Pontos do recurso da trilha (intenção de espada, têmpera, etc.). */
   rec?: number;
+  /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). */
+  perfil?: Record<string, number>;
+  /** Supera o defeito de nascença (arco de redenção): ele deixa de valer e a penalidade de atributos some. */
+  superar?: boolean;
   setFlags?: string[];
   clearFlags?: string[];
   item?: string[];
   removeItem?: string[];
+  /** Remove técnicas (usado nas fusões). */
+  removeTecnica?: string[];
   tecnica?: string[];
   /** Agenda eventos futuros: em [min,max] anos. */
   agenda?: { event: string; em: [number, number] }[];
@@ -60,6 +66,10 @@ export interface Cond {
   corrMin?: number;
   /** Pontos mínimos do recurso da trilha. */
   recMin?: number;
+  /** Perfil de conduta mínimo (ex.: { compaixao: 8 }). */
+  perfil?: Record<string, number>;
+  /** Perfil de conduta máximo (ex.: { violencia: 3 }). */
+  perfilMax?: Record<string, number>;
   /** Talento, defeito, raiz (tipo ou elemento) e constituição exigidos (qualquer um da lista). */
   talent?: string[];
   flaw?: string[];
@@ -68,6 +78,10 @@ export interface Cond {
   /** Qualquer uma destas técnicas (ou uma com a etiqueta indicada em `tecnicaTag`). */
   tecnicas?: string[];
   tecnicaTag?: string;
+  /** Todas estas técnicas (fusões). */
+  tecnicasTodas?: string[];
+  /** Domínio mínimo: alguma técnica no estágio indicado ou acima (0 Iniciante ... 4 Perfeição). */
+  mestria?: number;
   /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
   mundo?: string[];
 }
@@ -89,6 +103,8 @@ export interface Check {
 }
 
 export interface Choice {
+  /** Opção exclusiva injetada por molde (ver src/data/opcoes.ts). */
+  ex?: boolean;
   text: string;
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
@@ -112,6 +128,8 @@ export interface GameEvent {
   /** Reino natural da ameaça deste evento (vale para todos os testes dele). `escala` desliga a regra automática. */
   amea?: number;
   escala?: boolean;
+  /** Cena de passagem de tempo: não precisa de consequência própria. */
+  passagem?: boolean;
   /** Marca o evento como luta: tipo de oponente e cenário do duelo animado (opcionais; há inferência). */
   combate?: { oponente?: string; cenario?: string };
   /** Anos mínimos antes de repetir (padrão: 8). */
@@ -179,6 +197,8 @@ export interface Technique {
   stats?: Partial<Stats>;
   xpMult?: number;
   tags?: string[];
+  /** Seita ou escola de origem (método de seita extinta): quem a reconhece, a cobiça ou a quer de volta. */
+  origem?: string;
 }
 
 export interface Ending {
@@ -280,6 +300,10 @@ export interface State {
   counts?: Record<string, number>;
   /** Pontos do recurso próprio da trilha. */
   rec?: number;
+  /** Perfil de conduta acumulado pelas escolhas. */
+  perfil?: Record<string, number>;
+  /** Pontos de domínio de cada técnica (usos bem-sucedidos e opções exclusivas). */
+  dominio?: Record<string, number>;
   /** Multiplicador de peso por evento, vindo das vidas anteriores (novidade entre vidas). */
   pen?: Record<string, number>;
   /** Era do mundo em curso. */
@@ -293,7 +317,7 @@ export interface State {
   ending: string | null;
   endingText: string | null;
   /** Preenchido quando a vida é encerrada (finalizeLife). */
-  summary?: { legacy: number; ach: string[]; tierName: string };
+  summary?: { legacy: number; ach: string[]; tierName: string; marcas?: string[] };
   legacyBonus: { stats: number; xp: number; luck: number; pedras: number };
 }
 

@@ -1,4 +1,5 @@
 import type { Technique } from '../types';
+import { TECNICAS_NOVAS } from './tecnicas_novas';
 
 /** Grau 1 = Mortal, 2 = Terra, 3 = Céu, 4 = Divino. O grau soma bônus em testes com a mesma tag. */
 export const TECHNIQUES: Technique[] = [
@@ -88,4 +89,5 @@ export const TECHNIQUES: Technique[] = [
   { id: 'defesa_muralha', name: 'Defesa da Muralha de Pedra Viva', grade: 2, desc: 'Linhas de Qi que correm pela pedra como veias.', stats: { fis: 1 }, tags: ['formacao', 'combate'] },
   { id: 'respiracao_lunar', name: 'Respiração da Lua Cheia', grade: 3, desc: 'Qi lunar, mais suave que o solar, entra como leite morno.', stats: { esp: 1 }, xpMult: 1.04, tags: ['juventude', 'qi'] },
   { id: 'oracao_ancestrais', name: 'Oração dos Ancestrais', grade: 2, desc: 'Dizer em voz baixa o nome de quem partiu; a colina ouve.', stats: { dao: 1 }, tags: ['mente'] },
+  ...TECNICAS_NOVAS,
 ];

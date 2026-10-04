@@ -36,20 +36,35 @@ import { lote23Npcs } from './lote23_npcs';
 import { lote24Jianghu } from './lote24_jianghu';
 import { lote25Mitologia } from './lote25_mitologia';
 import { TETOS } from '../faixas';
+import { lote26Talentos, moldesTalentos } from './lote26_talentos';
+import { lote27Defeitos, moldesDefeitos } from './lote27_defeitos';
+import { lote28Origens, moldesOrigens } from './lote28_origens';
+import { lote29CorpoRaiz, moldesCorpoRaiz } from './lote29_corpo_raiz';
+import { moldesTrilhas } from './lote30_trilhas_molde';
+import { lote31Tecnicas } from './lote31_tecnicas';
+import { moldesDeTecnicas } from '../moldes_tecnicas';
+import { aplicarMoldes, type Molde } from '../opcoes';
 import { VARIANTES } from '../variantes';
+import { marcarEscolhas, registrarSoPerfil } from '../marcas';
 
 const TODOS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
   ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
-  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia,
+  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia, ...lote26Talentos, ...lote27Defeitos, ...lote28Origens, ...lote29CorpoRaiz, ...lote31Tecnicas,
 ];
 
 /** Aplica os tetos de reino de src/data/faixas.ts. */
-export const EVENTS: GameEvent[] = TODOS.map((e0) => {
+const COM_TETOS: GameEvent[] = TODOS.map((e0) => {
   let e = e0;
   if (TETOS[e.id] !== undefined) e = { ...e, cond: { ...e.cond, tierMax: Math.min(e.cond?.tierMax ?? 8, TETOS[e.id]) } };
   if (VARIANTES[e.id]) e = { ...e, alt: [...(e.alt ?? []), ...VARIANTES[e.id]] };
   return e;
 });
+
+/** Toda escolha deixa marca: as que não têm efeito próprio ganham o perfil de conduta (src/data/marcas.ts). */
+const MOLDES: Molde[] = [...moldesTalentos, ...moldesDefeitos, ...moldesOrigens, ...moldesCorpoRaiz, ...moldesTrilhas, ...moldesDeTecnicas()];
+/** Cenas de passagem de tempo: sem consequência própria por desenho. */
+const PASSAGEM = new Set(['dia_comum', 'tarefas_da_casa', 'pesca_lago', 'aurora_norte', 'doenca_infantil', 'rotina_mortal']);
+export const EVENTS: GameEvent[] = registrarSoPerfil(marcarEscolhas(aplicarMoldes(COM_TETOS, MOLDES)).map((e) => (PASSAGEM.has(e.id) ? { ...e, passagem: true } : e)));

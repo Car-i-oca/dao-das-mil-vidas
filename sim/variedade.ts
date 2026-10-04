@@ -142,7 +142,7 @@ L.push(`| Parcela de ocorrências repetidas na mesma vida | ${delta('repeticao',
 L.push(`| Parcela dos turnos ocupada por eventos genéricos | ${delta('genericosNosTurnos', pct)} |`);
 L.push(`| Eventos distintos em 10 vidas seguidas | ${delta('distintosEm10Vidas', (x) => x.toFixed(0))} |`);
 L.push(`| Semelhança entre vidas seguidas (Jaccard, 0 a 1) | ${delta('similaridadeVidasSeguidas', (x) => x.toFixed(3))} |`);
-L.push(`| Final mais comum | ${topEnd.name}: ${delta('finalMaisComum', pct)} |`);
+L.push(`| Final mais comum | ${base && !saveBaseline ? `${(base as { finalMaisComumNome?: string }).finalMaisComumNome ?? '?'}: ${pct(base.finalMaisComum)} → **${topEnd.name}: ${pct(metrics.finalMaisComum)}**` : `${topEnd.name}: ${pct(metrics.finalMaisComum)}`} |`);
 L.push(`| Entropia dos finais (bits; maior = mais variado) | ${delta('entropiaFinais', (x) => x.toFixed(2))} |`);
 L.push(`| Finais com 1% ou mais das vidas | ${delta('finaisAcima1pct', (x) => String(x))} |`);
 L.push(`| Idade média ao morrer | ${delta('idadeMedia', (x) => x.toFixed(0))} anos |`);

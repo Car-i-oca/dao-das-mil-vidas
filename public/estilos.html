@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dao das Mil Vidas — Escolha o estilo de arte</title>
+<meta name="theme-color" content="#14110f">
+<style>
+  :root { --bg:#14110f; --card:#231e19; --line:#3a3128; --ink:#e8dec8; --muted:#a69981; --gold:#d2a95c; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family: 'Noto Serif', Georgia, serif; line-height:1.5; padding: 16px 16px 60px; max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.35rem; margin: 6px 0 4px; } h2 { font-size: 1.1rem; margin: 0; color: var(--gold); }
+  p { margin: 6px 0; } .muted { color: var(--muted); font-size: .9rem; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin: 18px 0; }
+  .lbl { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; margin: 14px 0 6px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid > div { text-align: center; font-size: .7rem; color: var(--muted); }
+  .grid svg, .grid canvas { width: 100%; height: auto; display: block; border-radius: 10px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row2 svg, .row2 canvas { width: 100%; height: auto; display: block; border-radius: 12px; }
+  .wide svg, .wide canvas, .wide .anim canvas { width: 100%; height: auto; display: block; border-radius: 12px; }
+  canvas.pix { image-rendering: pixelated; image-rendering: crisp-edges; }
+  .anim canvas { width: 100%; height: auto; display: block; border-radius: 12px; image-rendering: pixelated; }
+  .pick { background: #1d1915; border: 1px dashed var(--gold); border-radius: 12px; padding: 10px 12px; margin-top: 14px; font-size: .92rem; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="tinta" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/><feGaussianBlur stdDeviation="0.35"/></filter>
+  <filter id="lavis" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/><feGaussianBlur stdDeviation="1.6"/></filter>
+  <filter id="papel"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="2" result="n"/><feColorMatrix type="matrix" values="0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .26  0 0 0 .22 0"/></filter>
+</defs></svg>
+
+<h1>Escolha o estilo de arte</h1>
+<p class="muted">Três estilos para o Dao das Mil Vidas, cada um com a mesma amostra: 6 itens, retrato de jovem e de ancião, um cenário e um quadro de duelo. Veja no celular e me diga <b>A</b>, <b>B</b> ou <b>C</b> (ou uma mistura, por exemplo: itens do A, retratos do B). Só refaço a arte do jogo depois da sua escolha.</p>
+
+<section id="A"><h2>A · Pixel art 16-bit</h2>
+  <p class="muted">Estilo de RPG de 16 bits: sombreamento por faixas e pontilhado, contorno escuro, quadros de animação (o duelo se mexe). Combina com sprite sheets e roda leve.</p>
+  <div class="lbl">Itens</div><div class="grid" id="a-items"></div>
+  <div class="lbl">Retratos · jovem e ancião</div><div class="row2" id="a-ret"></div>
+  <div class="lbl">Cenário</div><div class="wide" id="a-cen"></div>
+  <div class="lbl">Quadro de duelo (animado)</div><div class="wide" id="a-duelo"></div>
+</section>
+
+<section id="B"><h2>B · Manhwa / manhua</h2>
+  <p class="muted">Contorno firme, cel-shading em dois tons, cores fortes, brilhos, linhas de ação e golpes dramáticos. É o visual de quadrinho coreano e chinês.</p>
+  <div class="lbl">Itens</div><div class="grid" id="b-items"></div>
+  <div class="lbl">Retratos · jovem e ancião</div><div class="row2" id="b-ret"></div>
+  <div class="lbl">Cenário</div><div class="wide" id="b-cen"></div>
+  <div class="lbl">Quadro de duelo</div><div class="wide" id="b-duelo"></div>
+</section>
+
+<section id="C"><h2>C · Pintura chinesa a tinta</h2>
+  <p class="muted">Pinceladas, lavis de tinta, papel de arroz, muita névoa e um selo vermelho em cada peça. É o visual mais poético e mais próximo da tradição do gênero.</p>
+  <div class="lbl">Itens</div><div class="grid" id="c-items"></div>
+  <div class="lbl">Retratos · jovem e ancião</div><div class="row2" id="c-ret"></div>
+  <div class="lbl">Cenário</div><div class="wide" id="c-cen"></div>
+  <div class="lbl">Quadro de duelo</div><div class="wide" id="c-duelo"></div>
+</section>
+
+<div class="pick"><b>Como escolher:</b> responda com a letra (A, B ou C) ou combine (ex.: "B nos retratos e duelos, C nos itens e cenários"). Depois da escolha eu refaço todos os itens, técnicas, retratos (com variações de idade, trilha e reino), oponentes, cenários e finais no estilo escolhido.</div>
+
+<p class="muted" style="margin-top:22px;text-align:center">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
+<script src="./estilos/a-pixel.js"></script>
+<script src="./estilos/b-manhwa.js"></script>
+<script src="./estilos/c-tinta.js"></script>
+<script>
+  function put(id, node) { const e = document.getElementById(id); if (typeof node === 'string') e.innerHTML += node; else e.appendChild(node); }
+  // A
+  EstiloA.items.forEach((it) => { const d = document.createElement('div'); d.appendChild(it.el); d.appendChild(document.createTextNode(it.nome)); put('a-items', d); });
+  put('a-ret', EstiloA.jovem()); put('a-ret', EstiloA.ancião()); put('a-cen', EstiloA.cenario()); put('a-duelo', EstiloA.duelo());
+  // B e C
+  [['b', EstiloB], ['c', EstiloC]].forEach(([k, E]) => {
+    E.items.forEach((it) => put(k + '-items', `<div>${it.html}${it.nome}</div>`));
+    put(k + '-ret', E.jovem()); put(k + '-ret', E.ancião()); put(k + '-cen', E.cenario()); put(k + '-duelo', E.duelo());
+  });
+</script>
+</body>
+</html>

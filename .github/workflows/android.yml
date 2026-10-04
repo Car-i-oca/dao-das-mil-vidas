@@ -45,6 +45,9 @@ jobs:
           npx @capacitor/assets generate --android
           sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
           sed -i "s/versionName \"1.0\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+          # Metadados de autoria no APK (AndroidManifest)
+          sed -z -i 's#\(<application[^>]*>\)#\1\n        <meta-data android:name="copyright" android:value="Dao das Mil Vidas (c) 2026 Andre Barbosa Vieira. Todos os direitos reservados." />#' android/app/src/main/AndroidManifest.xml
+          grep -c 'name="copyright"' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
       - name: Compilar (release sem assinatura)

@@ -1,8 +1,8 @@
 import type { GameEvent } from '../../types';
 
 /**
- * Lote 24 — Jianghu (tropos de wuxia e murim): agência de escolta, mapa do tesouro, manual roubado, Clã dos Mendigos,
- * Palácio do Gelo, clã de venenos, taberna cheia de espiões, Conferência do Wulin, mestre escondido, espada lendária.
+ * Lote 24 — Jianghu (tropos de wuxia e murim): agência de escolta, mapa do tesouro, manual roubado, Irmandade dos Panos Velhos,
+ * Palácio do Gelo, clã de venenos, taberna cheia de espiões, Conferência dos Punhos e Lâminas, mestre escondido, espada lendária.
  */
 export const lote24Jianghu: GameEvent[] = [
   {
@@ -28,7 +28,7 @@ export const lote24Jianghu: GameEvent[] = [
   {
     id: 'jh_manual_roubado', title: 'O Manual Roubado', rarity: 'raro', cooldown: 80, weight: 1.2,
     cond: { tierMin: 2, tierMax: 5 },
-    text: 'Um ladrão ferido se esconde no seu quarto e implora abrigo. Em suas vestes, escondido, um manual roubado de um Pavilhão de uma das Nove Grandes Seitas. "Quem o tiver será caçado", ofega. "Mas quem o dominar..."',
+    text: 'Um ladrão ferido se esconde no seu quarto e implora abrigo. Em suas vestes, escondido, um manual roubado de um Pavilhão de uma das Nove Casas do Continente. "Quem o tiver será caçado", ofega. "Mas quem o dominar..."',
     choices: [
       { text: 'Esconder o ladrão e ficar com uma cópia.', check: { stat: ['comp', 'sor'], dif: 1 }, ok: { text: 'Você copia a noite inteira. O ladrão foge ao amanhecer, e os caçadores da seita revistam a casa sem achar a cópia. Você aprende uma técnica cara.', fx: { tecnica: ['palma_cinzas'], stats: { comp: 2 }, karma: -4, setFlags: ['inimigo_secreto'] } }, fail: { text: 'Os caçadores chegam cedo demais. Você escapa com cortes e sem a cópia. O ladrão não teve a mesma sorte.', fx: { ferida: 2, karma: -2 } } },
       { text: 'Entregar o ladrão e o manual à seita.', res: { text: 'A seita agradece com uma bolsa e uma carta de recomendação. O ladrão, ao ser levado, olha para você sem rancor, e isso é pior.', fx: { pedras: 70, fama: 5, karma: -3 } } },
@@ -36,9 +36,9 @@ export const lote24Jianghu: GameEvent[] = [
     ],
   },
   {
-    id: 'jh_cla_mendigos', title: 'O Clã dos Mendigos', rarity: 'comum', cooldown: 60, weight: 1.2,
+    id: 'jh_cla_mendigos', title: 'A Irmandade dos Panos Velhos', rarity: 'comum', cooldown: 60, weight: 1.2,
     cond: { tierMin: 1, tierMax: 4 },
-    text: 'Numa esquina da cidade, um mendigo de olhos espertos faz um sinal de mão. Você o reconhece: o Clã dos Mendigos, a rede de informantes mais espalhada do continente. Ele propõe uma troca: um favor de você por um segredo que vale ouro.',
+    text: 'Numa esquina da cidade, um mendigo de olhos espertos faz um sinal de mão. Você a reconhece: a Irmandade dos Panos Velhos, a rede de informantes mais espalhada do continente. Ele propõe uma troca: um favor de você por um segredo que vale ouro.',
     choices: [
       { text: 'Aceitar o favor e pedir o segredo.', check: { stat: ['car', 'sor'], dif: 0 }, ok: { text: 'O favor é pequeno: levar uma mensagem. O segredo é grande: onde mora o homem que destruiu a sua vila, ou o nome de quem manda em um monopólio. Você sai com uma pista cara.', fx: { stats: { comp: 1, car: 1 }, setFlags: ['pista_do_cla_mendigos'], fama: 2 } }, fail: { text: 'O mensageiro some com o seu bilhete. O Clã diz que a troca "não era equivalente". Você sai com uma lição, e sem segredo.', fx: { pedras: -10, stats: { car: 1 } } } },
       { text: 'Dar uma esmola e seguir adiante.', res: { text: 'O mendigo sorri, e anota algo na manga. Meses depois, a sua fama chegará mais longe do que você imagina.', fx: { karma: 2, fama: 2 } } },
@@ -76,9 +76,9 @@ export const lote24Jianghu: GameEvent[] = [
     ],
   },
   {
-    id: 'jh_conferencia', title: 'A Conferência do Wulin', rarity: 'raro', once: true, weight: 1.2,
+    id: 'jh_conferencia', title: 'A Conferência dos Punhos e Lâminas', rarity: 'raro', once: true, weight: 1.2,
     cond: { tierMin: 3, tierMax: 5, fameMin: 20 },
-    text: 'Os grandes clãs convocam a Conferência do Wulin, para eleger o novo Líder da Aliança. Em frente a duzentos mestres, os candidatos discursam. Um deles, claramente corrupto, é o favorito. Você tem direito a um voto e, se quiser, a uma palavra.',
+    text: 'Os grandes clãs convocam a Conferência dos Punhos e Lâminas, para eleger o novo Líder da Aliança. Em frente a duzentos mestres, os candidatos discursam. Um deles, claramente corrupto, é o favorito. Você tem direito a um voto e, se quiser, a uma palavra.',
     choices: [
       { text: 'Denunciar o favorito, diante de todos.', check: { stat: ['car', 'dao'], dif: 2 }, ok: { text: 'O salão se cala. Provas aparecem, uma a uma, e o favorito é desmascarado. Você é aclamado, e pedem que assuma um posto na Aliança.', fx: { fama: 18, karma: 8, stats: { car: 2, dao: 1 }, setFlags: ['conselheiro_da_alianca'] } }, fail: { text: 'Sem provas, a denúncia vira calúnia. A multidão o vaia, e o favorito, magnânimo, o perdoa em público. Você sai com uma ferida de vergonha.', fx: { fama: -8, stats: { dao: 2 } } } },
       { text: 'Votar no favorito para manter a paz.', res: { text: 'O favorito vence, e a paz, de fachada, dura uns anos. Você se pergunta, às vezes, o preço dessa paz.', fx: { karma: -3, fama: 2 } } },

@@ -258,9 +258,9 @@ export const lote13Mundo: GameEvent[] = [
 
   /* ================= CULTO DO DEMÔNIO CELESTIAL ================= */
   {
-    id: 'mundo_culto_inicio', title: 'O Culto do Demônio Celestial', rarity: 'raro', weight: 0, cooldown: 60,
+    id: 'mundo_culto_inicio', title: 'O Culto do Trono Escarlate', rarity: 'raro', weight: 0, cooldown: 60,
     cond: W('culto_ascende'),
-    text: 'Boatos viram mensageiros, e mensageiros viram sangue: o Culto do Demônio Celestial, que dormia há três gerações, desperta. Seus emissários, de manto negro e olhos sem pupila, percorrem o continente. A Aliança Marcial convoca todas as seitas e todos os cultivadores com um mínimo de honra.',
+    text: 'Boatos viram mensageiros, e mensageiros viram sangue: o Culto do Trono Escarlate, que dormia há três gerações, desperta. Seus emissários, de manto negro e olhos sem pupila, percorrem o continente. A Aliança Marcial convoca todas as seitas e todos os cultivadores com um mínimo de honra.',
     choices: [
       { text: 'Apresentar-se à Aliança Marcial.', res: { text: 'Uma sala cheia de rostos graves, estandartes de dez seitas e uma pergunta repetida: "De que lado você está?" Seu nome entra numa lista.', fx: { setFlags: ['alianca_marcial'], fama: 4, karma: 4 } } },
       { text: 'Estudar o Culto em segredo, antes de tomar partido.', res: { text: 'Você segue dois emissários de longe, anota o que ouve e quase é descoberto por um corvo, que o encara de cima de uma árvore.', fx: { setFlags: ['culto_observador'], stats: { comp: 1, sor: 1 } } } },

@@ -1,6 +1,9 @@
 import type { Ending, Achievement, State } from '../types';
 
+import { ENDINGS_TRACOS } from './endings_tracos';
+
 export const ENDINGS: Ending[] = [
+  ...ENDINGS_TRACOS,
   { id: 'velhice', name: 'Fim em Paz', legacy: 1, alt: [
     'Nenhum raio, nenhuma lâmina, nenhum demônio. Apenas o tempo, que vence todos sem pressa. {nome} sorriu para o teto de madeira, lembrou do cheiro da chuva em {vila} e deixou de lembrar.',
     'Os discípulos esperaram à porta, em silêncio. Dentro, {nome} terminou o chá, fechou os olhos e confiou o resto ao Céu. O chá ainda estava morno quando abriram a porta.',
@@ -74,7 +77,7 @@ export const ENDINGS: Ending[] = [
   { id: 'doenca', name: 'A Febre da Praga', legacy: 0.9, text: 'A praga não distinguiu rico de pobre, mortal de cultivador. {nome} deitou-se numa esteira simples e, entre uma febre e outra, lembrou de uma canção que a avó cantava.', alt: ['Os curandeiros tentaram tudo. {nome} agradeceu cada chá, cada oração, cada mão fria na testa, e partiu com um sorriso cansado.'] },
   { id: 'feras', name: 'Engolido pela Maré de Bestas', legacy: 1.0, text: 'Quando a maré de bestas desceu da cordilheira, {nome} segurou a linha por tempo suficiente para duas aldeias fugirem. O que se ouviu depois foi um rugido, e depois, silêncio.', alt: ['Diz-se que as feras recuaram no dia seguinte, sem razão aparente. Alguns acham que foi respeito, e outros, saciedade.'] },
   { id: 'exilio', name: 'Exilado Para Sempre', legacy: 1.0, text: 'Com a queda da dinastia, {nome} foi declarado inimigo do trono novo e partiu para o exílio. Escreveu cartas por anos, e nenhuma foi respondida. Morreu em terra estrangeira, de saudade e de frio.', alt: ['O novo imperador mandou apagar o nome de {nome} dos registros. A montanha, indiferente, o guardou.'] },
-  { id: 'cacado', name: 'Caçado pelo Culto', legacy: 1.0, text: 'Os emissários do Culto do Demônio Celestial nunca erram o caminho. {nome} soube que eles chegariam semanas antes, e usou as semanas para queimar cartas e cuidar das pessoas.', alt: ['Ninguém ouviu a conversa entre {nome} e os emissários. Só se viu, ao amanhecer, uma casa vazia e uma xícara de chá, ainda morna.'] },
+  { id: 'cacado', name: 'Caçado pelo Culto', legacy: 1.0, text: 'Os emissários do Culto do Trono Escarlate nunca erram o caminho. {nome} soube que eles chegariam semanas antes, e usou as semanas para queimar cartas e cuidar das pessoas.', alt: ['Ninguém ouviu a conversa entre {nome} e os emissários. Só se viu, ao amanhecer, uma casa vazia e uma xícara de chá, ainda morna.'] },
   { id: 'traicao', name: 'Punhal nas Costas', legacy: 1.0, text: 'Foi alguém de confiança. É sempre alguém de confiança. {nome} só virou o rosto a tempo de ver o sorriso hesitante, o mesmo de tantos anos atrás.', alt: ['A lâmina veio de uma mão que {nome} havia ajudado. O último pensamento foi menos de ódio que de espanto.'] },
   { id: 'duelo', name: 'Morto em Duelo de Honra', legacy: 1.1, text: 'Dois cultivadores, uma ponte e uma palavra empenhada. {nome} perdeu o duelo, mas ganhou o respeito do vencedor, que enterrou o adversário com as próprias mãos.', alt: ['O duelo durou três lances. Houve quem dissesse que {nome} podia ter vencido, e quem dissesse que não quis.'] },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },

@@ -2,7 +2,7 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
+  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
@@ -11,6 +11,7 @@ import type { Change, Meta, State } from '../types';
 import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
 import { WORLD } from '../data/mundo';
+import { ALCUNHA, VIRTUDE_NOME } from '../data/marcas';
 import { EVENTS } from '../data/events';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
@@ -146,7 +147,8 @@ function renderHome() {
         <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
-      <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/10${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
+      <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/${ENDINGS.length}${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
+      <p class="muted small copy">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
     </div>`;
 }
 
@@ -189,7 +191,7 @@ function hudHtml(s: State): string {
   return `
     <div class="hud">
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
-      <div class="row between"><span class="name">${esc(s.name)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
+      <div class="row between"><span class="name">${esc(s.name)}${alcunhaHtml(s)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
@@ -272,6 +274,7 @@ function lifeHtml(s: State): string {
       <div class="hint" id="hint">toque para pular</div>
     </div>
     <div class="choices" id="choices">
+      ${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}
       ${v.choices.map((c, i) => `
         <button class="choice" data-act="choose" data-i="${i}" ${c.disabled ? 'disabled' : ''}>
           <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
@@ -288,6 +291,30 @@ function startTyping(s: State) {
   const text = v.kind === 'event' ? v.text : v.text;
   const reveal = () => { choices.classList.add('show'); document.getElementById('hint')?.remove(); };
   typewrite(el, text, reveal);
+}
+
+/** Alcunha ganha pela conduta (virtude dominante a partir de 10 pontos). */
+function alcunhaHtml(s: State): string {
+  const v = virtudeDominante(s);
+  return v ? ` <span class="alcunha">· ${esc(ALCUNHA[v as keyof typeof ALCUNHA] ?? '')}</span>` : '';
+}
+
+/** Estágio de domínio de uma técnica, com o progresso até o próximo. */
+function dominioHtml(s: State, id: string): string {
+  const e = dominioEstagio(s, id);
+  const p = s.dominio?.[id] ?? 0;
+  const prox = DOMINIO_LIMITES[e + 1];
+  return `<b>${DOMINIO_NOMES[e]}</b>${prox ? ` <span class="muted small">(${p}/${prox})</span>` : ''}`;
+}
+
+/** Conduta: o que as suas escolhas fizeram de você. */
+function perfilHtml(s: State): string {
+  const p = s.perfil ?? {};
+  const rows = Object.entries(p).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return '';
+  const max = Math.max(20, rows[0][1]);
+  const v = virtudeDominante(s);
+  return `<div class="card"><div class="muted small">CONDUTA${v ? ` · <b>${esc(ALCUNHA[v as keyof typeof ALCUNHA] ?? '')}</b>` : ''}</div>${rows.map(([k, n]) => `<div class="stat"><span>${esc(VIRTUDE_NOME[k as keyof typeof VIRTUDE_NOME] ?? k)}</span><div class="bar"><i style="width:${Math.min(100, (n / max) * 100)}%"></i></div><span class="n">${n}</span></div>`).join('')}<div class="muted small" style="margin-top:6px">Suas escolhas abrem, fecham e mudam opções e como os outros reagem a você.</div></div>`;
 }
 
 /** Título no mundo, poderes de reino e recurso próprio da trilha. */
@@ -329,7 +356,7 @@ function statusHtml(s: State): string {
     ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
     ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
   ].join(' · ');
-  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span><div class="small">${esc(t.desc)}</div><div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
+  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span> <span class="dom">${dominioHtml(s, t.id)}</span><div class="small">${esc(t.desc)}</div>${t.origem ? `<div class="muted small">Origem: ${esc(t.origem)}</div>` : ''}<div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
   const fac: Record<string, string> = { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
@@ -349,6 +376,7 @@ function statusHtml(s: State): string {
       </div>
     </div>
     ${powerHtml(s)}
+    ${perfilHtml(s)}
     <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>
     <div class="card kv">
       <div class="k">Pedras</div><div class="v">${s.pedras}</div>
@@ -438,6 +466,7 @@ function renderEnd() {
         <span>Herança do Dao</span><b style="color:var(--gold)">+${sm.legacy}</b>
       </div>
       <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
+      ${sm.marcas?.length ? `<div class="card"><div class="muted small">O QUE VOCÊ DEIXOU PARA TRÁS</div>${sm.marcas.map((m) => `<div class="tech small">${esc(m)}</div>`).join('')}<div class="muted small" style="margin-top:6px">Cada quatro marcas rendem +1 de Herança (até +2).</div></div>` : ''}
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
       <details class="card"><summary>Diário da vida (${s.log.length})</summary>${logHtml(s).replace('class="card"', '')}</details>
       <button class="btn primary" data-act="new">Nova vida</button>
@@ -488,7 +517,7 @@ function renderMeta() {
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.</div>`;
+      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
   }
   app.innerHTML = `
     <div class="screen">

@@ -6,6 +6,7 @@ import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
 import { WORLDS, WORLD } from '../src/data/mundo';
 import { TETOS } from '../src/data/faixas';
+import { FUSOES } from '../src/data/tecnicas_novas';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import type { Cond, Effects } from '../src/types';
 
@@ -121,7 +122,9 @@ for (const ev of EVENTS) {
   titles.set(ev.title, ev.id);
 }
 
-for (const [f, where] of needFlags) if (!setFlags.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
+for (const fu of FUSOES) for (const id of [fu.a, fu.b, fu.resultado]) if (!techIds.has(id)) errors.push(`fusão ${fu.id}: técnica inexistente ${id}`);
+const FLAGS_DO_MOTOR = new Set(['defeito_superado', 'juventude_eterna']);
+for (const [f, where] of needFlags) if (!setFlags.has(f) && !FLAGS_DO_MOTOR.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
 
 console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${TECHNIQUES.length} técnicas, ${ENDINGS.length} finais, ${PATHS.length} trilhas.`);
 warnings.forEach((w) => console.log('  aviso:', w));
