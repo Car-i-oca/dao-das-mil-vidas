@@ -13,6 +13,8 @@ export interface Molde {
   alvo: Cat[] | string[];
   /** Id curto do molde (evita duplicar no mesmo evento). */
   id: string;
+  /** A opção encena combate direto e só pode ser oferecida num encontro explicitamente combativo. */
+  combatOnly?: boolean;
   choice: Choice;
 }
 
@@ -55,6 +57,7 @@ export function aplicarMoldes(events: GameEvent[], moldes: Molde[]): GameEvent[]
   return events.map((e) => {
     if (!elegivel(e) && !porId.has(e.id)) return e;
     const cats = categorias(e);
+    const combatContext = !!e.combate || e.choices.some((choice) => !choice.ex && choice.check?.tag === 'combate');
     const extra: Choice[] = [];
     const usados = new Set<string>();
     for (const m of moldes) {
@@ -62,7 +65,14 @@ export function aplicarMoldes(events: GameEvent[], moldes: Molde[]): GameEvent[]
       const alvos = m.alvo as string[];
       const porCat = alvos.some((a) => (cats as string[]).includes(a));
       const porEv = alvos.includes(e.id);
-      if (porCat || porEv) { usados.add(m.id); extra.push({ ...m.choice, ex: true }); }
+      const combatOnly = m.combatOnly || (m.choice.check?.tag === 'combate' && (m.alvo as string[]).includes('combate'));
+      if ((porCat || porEv) && (!combatOnly || combatContext)) {
+        usados.add(m.id);
+        const choice = m.choice.cond?.root
+          ? { ...m.choice, cond: { ...m.choice.cond, tierMin: Math.max(1, m.choice.cond.tierMin ?? 0) } }
+          : m.choice;
+        extra.push({ ...choice, ex: true, ...(combatOnly ? { requiresEventType: 'combat' as const } : {}) });
+      }
     }
     return extra.length ? { ...e, choices: [...e.choices, ...extra] } : e;
   });

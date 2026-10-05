@@ -7,7 +7,7 @@ import {
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
-import type { Change, Meta, State } from '../types';
+import type { Change, Meta, State, UiNotification } from '../types';
 import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
 import { WORLD } from '../data/mundo';
@@ -22,6 +22,7 @@ import { hash } from './art';
 import { playDuel } from './duelo';
 import { FOES } from '../data/combates';
 import { QUESTS } from '../data/quests';
+import { playSfx } from './audio';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
@@ -92,7 +93,8 @@ function applySettings() {
 
 const chipsHtml = (ch?: Change[]) => (ch?.length ? `<div class="chips">${ch.map((c) => `<span class="chip ${c.k}">${esc(c.t)}</span>`).join('')}</div>` : '');
 
-function toast(msg: string) {
+function toast(msg: string, kind: UiNotification['kind'] = 'quest') {
+  playSfx(kind === 'rare-item' ? 'rare' : 'toast');
   let region = document.getElementById('toast-region');
   if (!region) {
     region = document.createElement('div');
@@ -102,14 +104,17 @@ function toast(msg: string) {
     document.body.appendChild(region);
   }
   const el = document.createElement('div');
-  el.className = 'toast';
+  el.className = `toast${kind === 'rare-item' ? ' toast-rare' : ''}${kind === 'alignment' ? ' toast-alignment' : ''}`;
   el.textContent = msg;
   region.appendChild(el);
-  setTimeout(() => el.remove(), 2400);
+  setTimeout(() => {
+    el.classList.add('toast-out');
+    setTimeout(() => el.remove(), 220);
+  }, 2600);
 }
 
 function flushEngineNotifications(s: State) {
-  for (const notification of s.uiNotifications?.splice(0) ?? []) toast(notification.message);
+  for (const notification of s.uiNotifications?.splice(0) ?? []) toast(notification.message, notification.kind);
 }
 
 /* ---------- Texto que aparece aos poucos ---------- */
@@ -160,16 +165,16 @@ function renderHome() {
   const m = save.meta;
   app.innerHTML = `
     <div class="screen home">
-      <div class="seal">道</div>
-      <div><h1>Dao das Mil Vidas</h1><div class="tag">Viva. Cultive. Morra. Lembre.</div></div>
-      <div class="stack">
+      <div class="home-emblem"><div class="seal">道</div><span>CRÔNICAS DO CULTIVO</span></div>
+      <div class="home-title"><h1>Dao das Mil Vidas</h1><div class="tag">Cada vida deixa uma marca no Dao.</div></div>
+      <div class="stack home-menu">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
         <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
         <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
-      <p class="muted small">Vidas vividas: ${m.lives} · Finais descobertos: ${m.endingsSeen.length}/${ENDINGS.length}${m.best ? ` · Melhor: ${esc(bestName(m))}` : ''}</p>
+      <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${m.endingsSeen.length}/${ENDINGS.length}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
       <p class="muted small copy">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
     </div>`;
 }
@@ -243,8 +248,8 @@ function npcFor(s: State, eventId: string): string {
 }
 
 function tabsHtml(): string {
-  const t = (id: typeof tab, icon: string, label: string) => `<button class="${tab === id ? 'on' : ''}" data-act="tab" data-id="${id}"><b>${icon}</b>${label}</button>`;
-  return `<nav class="tabs">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('missoes', '⚑', 'Missões')}${t('diario', '✎', 'Diário')}</nav>`;
+  const t = (id: typeof tab, icon: string, label: string) => `<button class="tab-item ${tab === id ? 'on' : ''}" data-act="tab" data-id="${id}" aria-current="${tab === id ? 'page' : 'false'}"><span class="tab-icon">${icon}</span><span>${label}</span></button>`;
+  return `<nav class="tabs" aria-label="Navegação da vida">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('missoes', '⚑', 'Missões')}</nav>`;
 }
 
 function renderGame() {
@@ -255,7 +260,7 @@ function renderGame() {
   else if (tab === 'mochila') body = bagHtml(s);
   else if (tab === 'missoes') body = questsHtml(s);
   else body = logHtml(s);
-  app.innerHTML = `${hudHtml(s)}<div class="game" id="game">${body}</div>${tabsHtml()}`;
+  app.innerHTML = `<div class="game-frame" data-tab="${tab}">${hudHtml(s)}<button class="journal-link" data-act="tab" data-id="diario">Abrir diário da vida <span>↗</span></button><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
   if (tab === 'vida') startTyping(s);
 }
 
@@ -294,7 +299,7 @@ function lifeHtml(s: State): string {
     ${intro}
     <div class="card story" data-act="skip">
       ${sceneFor(s, s.current?.id ?? 'x')}
-      <div class="ev-title">${v.eventType === 'mercador' ? '<span class="badge shop">Mercador</span>' : ''}${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
+      <div class="ev-title" data-event-type="${v.eventType ?? 'narrative'}">${v.eventType === 'shop' ? '<span class="badge shop">Mercador</span>' : v.eventType === 'alchemy' ? '<span class="badge alchemy">Alquimia</span>' : v.eventType === 'combat' ? '<span class="badge combat">Encontro</span>' : ''}${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
       ${npcFor(s, s.current?.id ?? '')}
       <p class="story-text" id="typed"></p>
       <div class="hint" id="hint">toque para pular</div>
@@ -593,6 +598,7 @@ function startRun() {
 app.addEventListener('click', (ev) => {
   const target = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!target) return;
+  playSfx('tap');
   const act = target.dataset.act!;
   const s = save.run;
   switch (act) {

@@ -4,6 +4,7 @@ const LOCAIS: Place[] = ['selva', 'montanha', 'ruinas', 'deserto', 'gelo', 'mar'
 
 export const caldeirao: GameEvent = {
   id: 'caldeirao_viagem',
+  type: 'alchemy',
   title: 'Caldeirão e Forja de Campo',
   text: 'Um abrigo abandonado conserva um caldeirão de pedra e uma pequena forja. Com os materiais certos, ainda é possível produzir algo útil.',
   rarity: 'comum',

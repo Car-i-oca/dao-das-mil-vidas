@@ -1,5 +1,9 @@
 /** Valida referências cruzadas do conteúdo. Uso: npm run validate */
+import { readdirSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import * as ts from 'typescript';
 import { EVENTS } from '../src/data/events';
+import { hasCombatMechanics } from '../src/data/event-type';
 import { ITEMS } from '../src/data/items';
 import { TECHNIQUES } from '../src/data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
@@ -14,6 +18,7 @@ import type { Cond, Effects } from '../src/types';
 
 const errors: string[] = [];
 const warnings: string[] = [];
+const ROOT_TAGS = new Set(['unica', 'mutante', 'dupla', 'tripla', 'quadrupla', 'caotica', 'Metal', 'Madeira', 'Água', 'Fogo', 'Terra', 'Raio', 'Gelo', 'Vento']);
 const ids = <T extends { id: string }>(a: T[]) => new Set(a.map((x) => x.id));
 const itemIds = ids(ITEMS), techIds = ids(TECHNIQUES), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS), foeIds = ids(FOES);
 
@@ -48,6 +53,7 @@ function fx(where: string, e?: Effects) {
 function cond(where: string, c?: Cond) {
   if (!c) return;
   c.flags?.forEach((f) => needFlags.set(f, where));
+  c.root?.forEach((root) => !ROOT_TAGS.has(root) && errors.push(`${where}: raiz ou elemento inexistente "${root}"`));
   if (c.item && !itemIds.has(c.item)) errors.push(`${where}: cond.item inexistente "${c.item}"`);
   c.itemsAll?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAll inexistente "${id}"`));
   c.itemsAny?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAny inexistente "${id}"`));
@@ -60,16 +66,46 @@ function cond(where: string, c?: Cond) {
 
 for (const ev of EVENTS) {
   cond(`evento ${ev.id}`, ev.cond);
+  if (!ev.type) errors.push(`evento ${ev.id}: tipo de contexto não classificado`);
+  if (ev.type !== 'combat' && hasCombatMechanics(ev)) errors.push(`evento ${ev.id}: mecânica de combate fora de um evento de combate`);
+  if (ev.type === 'combat' && !hasCombatMechanics(ev)) errors.push(`evento ${ev.id}: classificado como combate sem mecânica de combate`);
+  if (ev.type === 'shop' && ev.eventType !== 'mercador') errors.push(`evento ${ev.id}: loja sem eventType mercador`);
+  if (ev.type === 'alchemy' && !ev.id.startsWith('caldeirao_')) errors.push(`evento ${ev.id}: alquimia fora do contexto de caldeirão`);
   if (ev.combate?.oponente && !foeIds.has(ev.combate.oponente)) errors.push(`evento ${ev.id}: oponente inexistente "${ev.combate.oponente}"`);
   ev.combate?.oponentes?.forEach((id) => !foeIds.has(id) && errors.push(`evento ${ev.id}: oponente inexistente "${id}"`));
   if (!ev.choices.length) errors.push(`evento ${ev.id}: sem escolhas`);
   ev.choices.forEach((c, i) => {
     const w = `evento ${ev.id}#${i + 1}`;
     cond(w, c.cond);
+    if (c.requiresEventType && c.requiresEventType !== ev.type) errors.push(`${w}: exige contexto ${c.requiresEventType}, evento classificado como ${ev.type ?? 'sem tipo'}`);
+    if (ev.type !== 'combat' && (c.check?.tag === 'combate' || c.activeTechnique)) errors.push(`${w}: escolha de combate disponível em evento ${ev.type ?? 'sem tipo'}`);
+    if (c.activeTechnique && (ev.type !== 'combat' || c.check?.tag !== 'combate')) errors.push(`${w}: técnica ativa fora de uma escolha de combate`);
     if (c.check && (!c.ok || !c.fail)) errors.push(`${w}: check exige ok e fail`);
     if (!c.check && !c.res && !c.ok) errors.push(`${w}: escolha sem resultado`);
     fx(w, c.res?.fx); fx(w, c.ok?.fx); fx(w, c.fail?.fx);
   });
+}
+
+/* Todo módulo de eventos precisa estar ligado ao catálogo e todo evento literal precisa chegar ao runtime. */
+const eventDir = fileURLToPath(new URL('../src/data/events/', import.meta.url));
+const eventIndexSource = readFileSync(new URL('../src/data/events/index.ts', import.meta.url), 'utf8');
+const eventFiles = readdirSync(eventDir).filter((name) => name.endsWith('.ts') && name !== 'index.ts');
+for (const file of eventFiles) {
+  const stem = file.slice(0, -3);
+  if (!eventIndexSource.includes(`from './${stem}'`)) errors.push(`arquivo de eventos ${file}: não registrado em events/index.ts`);
+  const sourceText = readFileSync(new URL(`../src/data/events/${file}`, import.meta.url), 'utf8');
+  const sourceFile = ts.createSourceFile(file, sourceText, ts.ScriptTarget.Latest, true);
+  const inspect = (node: ts.Node) => {
+    if (ts.isObjectLiteralExpression(node)) {
+      const props = new Map(node.properties.filter(ts.isPropertyAssignment).map((p) => [p.name.getText(sourceFile).replace(/^['"]|['"]$/g, ''), p.initializer]));
+      const id = props.get('id');
+      if (id && ts.isStringLiteralLike(id) && props.has('choices') && !evIds.has(id.text)) {
+        errors.push(`${file}: evento "${id.text}" não foi incluído em EVENTS`);
+      }
+    }
+    ts.forEachChild(node, inspect);
+  };
+  inspect(sourceFile);
 }
 for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {

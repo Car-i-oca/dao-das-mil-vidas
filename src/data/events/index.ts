@@ -51,6 +51,7 @@ import { moldesDeTecnicas } from '../moldes_tecnicas';
 import { aplicarMoldes, type Molde } from '../opcoes';
 import { VARIANTES } from '../variantes';
 import { marcarEscolhas, registrarSoPerfil } from '../marcas';
+import { eventTypeOf } from '../event-type';
 
 const TODOS: GameEvent[] = [
   ...infancia, ...seita, ...aventura, ...cidade, ...cultivo, ...lenda,
@@ -72,4 +73,8 @@ const COM_TETOS: GameEvent[] = TODOS.map((e0) => {
 const MOLDES: Molde[] = [...moldesTalentos, ...moldesDefeitos, ...moldesOrigens, ...moldesCorpoRaiz, ...moldesTrilhas, ...moldesDeTecnicas()];
 /** Cenas de passagem de tempo: sem consequência própria por desenho. */
 const PASSAGEM = new Set(['dia_comum', 'tarefas_da_casa', 'pesca_lago', 'aurora_norte', 'doenca_infantil', 'rotina_mortal']);
-export const EVENTS: GameEvent[] = registrarSoPerfil(marcarEscolhas(aplicarMoldes(COM_TETOS, MOLDES)).map((e) => (PASSAGEM.has(e.id) ? { ...e, passagem: true } : e)));
+export const EVENTS: GameEvent[] = registrarSoPerfil(
+  marcarEscolhas(aplicarMoldes(COM_TETOS, MOLDES))
+    .map((e) => (PASSAGEM.has(e.id) ? { ...e, passagem: true } : e))
+    .map((e) => ({ ...e, type: eventTypeOf(e) })),
+);

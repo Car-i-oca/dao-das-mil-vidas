@@ -5,6 +5,7 @@ export type Alignment = 'daoico' | 'demoniaco';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 export type SectRank = 'externo' | 'interno' | 'anciao';
+export type EventType = 'narrative' | 'combat' | 'shop' | 'alchemy';
 export type QuestObjectiveKind = 'defeat' | 'collect' | 'craft';
 
 export interface QuestObjective {
@@ -168,6 +169,8 @@ export interface Check {
 export interface Choice {
   /** Opção exclusiva injetada por molde (ver src/data/opcoes.ts). */
   ex?: boolean;
+  /** Contexto requerido pela opção; a Engine não a oferece fora dele. */
+  requiresEventType?: EventType;
   text: string;
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
@@ -188,6 +191,8 @@ export interface GameEvent {
   title: string;
   text: string;
   rarity: Rarity;
+  /** Contexto mecânico do evento; eventos legados são classificados ao montar EVENTS. */
+  type?: EventType;
   weight?: number;
   once?: boolean;
   /** Evento comercial: as escolhas podem usar `custo` para cobrar pedras espirituais. */

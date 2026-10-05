@@ -12,6 +12,7 @@ import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } 
 import { EVENTS } from '../data/events';
 import { buildCombat } from './combate';
 import { FOE, foeFor } from '../data/combates';
+import { eventTypeOf } from '../data/event-type';
 import { REGION_POOLS } from '../data/regions';
 import { VIRTUDE_NOME } from '../data/marcas';
 import { MARCAS_VIDA } from '../data/marcas_vida';
@@ -732,7 +733,7 @@ export interface ViewChoice {
 
 export interface View {
   kind: 'event' | 'result' | 'ending';
-  eventType?: GameEvent['eventType'];
+  eventType?: GameEvent['type'];
   title: string;
   text: string;
   rarity?: string;
@@ -759,7 +760,13 @@ export function visibleChoices(s: State): Visible[] {
     return v;
   }
   const ev = EVENT[s.current!.id];
-  let list = ev.choices.filter((c) => condMet(s, c.cond) && !bloqueadaPorDefeito(s, c));
+  const eventType = eventTypeOf(ev);
+  let list = ev.choices.filter((c) =>
+    condMet(s, c.cond) &&
+    !bloqueadaPorDefeito(s, c) &&
+    (!c.requiresEventType || c.requiresEventType === eventType) &&
+    (eventType === 'combat' || (c.check?.tag !== 'combate' && !c.activeTechnique)),
+  );
   // No máximo 3 opções exclusivas injetadas por vez (em rodízio), para a lista não crescer demais.
   const exs = list.filter((c) => c.ex);
   if (exs.length > 3) {
@@ -767,7 +774,7 @@ export function visibleChoices(s: State): Visible[] {
     const keep = new Set([0, 1, 2].map((i) => exs[(off + i) % exs.length]));
     list = list.filter((c) => !c.ex || keep.has(c));
   }
-  const martial = availableMartialTechniques(s);
+  const martial = eventTypeOf(ev) === 'combat' ? availableMartialTechniques(s) : [];
   const rotation = (s.turn + Math.floor(s.age)) % Math.max(1, martial.length);
   const selectedMartial = martial.length > 3
     ? [0, 1, 2].map((offset) => martial[(rotation + offset) % martial.length])
@@ -835,7 +842,7 @@ export function view(s: State): View {
   });
   const body = cur.v && ev.alt?.[cur.v - 1] ? ev.alt[cur.v - 1] : ev.text;
   const fechadas = ev.choices.filter((c) => condMet(s, c.cond)).map((c) => bloqueadaPorDefeito(s, c)).filter(Boolean) as string[];
-  return { kind: 'event', eventType: ev.eventType, title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
+  return { kind: 'event', eventType: eventTypeOf(ev), title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
 }
 
 /* ---------- Escolhas ---------- */
@@ -925,6 +932,20 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const vis = visibleChoices(s);
   const v = vis[idx];
   if (!v) return;
+  if (v.choice?.requiresEventType && v.choice.requiresEventType !== eventTypeOf(EVENT[s.current!.id])) return;
+  if (v.choice && eventTypeOf(EVENT[s.current!.id]) !== 'combat' && (v.choice.check?.tag === 'combate' || v.choice.activeTechnique)) return;
+  if (v.choice?.activeTechnique) {
+    const ev = EVENT[s.current!.id];
+    const technique = TECH[v.choice.activeTechnique]?.martial;
+    if (
+      eventTypeOf(ev) !== 'combat' ||
+      v.choice.check?.tag !== 'combate' ||
+      !s.techniques.includes(v.choice.activeTechnique) ||
+      !technique ||
+      (s.qi ?? 8) < technique.qiCost ||
+      (s.techniqueCooldowns?.[v.choice.activeTechnique] ?? 0) > 0
+    ) return;
+  }
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
   s.turn++;
   if (v.action) {

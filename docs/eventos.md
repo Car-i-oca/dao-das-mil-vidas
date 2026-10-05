@@ -15,12 +15,14 @@ Depois de escrever, rode `npm run sim` — o relatório lista eventos que nunca 
   weight: 1,                      // opcional: multiplica o peso da raridade
   once: true,                     // opcional: só acontece uma vez por vida
   cooldown: 15,                   // opcional: anos mínimos para repetir (padrão 15)
+  type: 'narrative',              // opcional: 'narrative' | 'combat' | 'shop' | 'alchemy'
   cond: { ... },                  // opcional: condições para ser sorteado
   choices: [ ... ],               // 1 ou mais escolhas
 }
 ```
 
 Sorte (`sor`) aumenta o peso de eventos raros e lendários.
+O catálogo final infere `type` quando omitido. Declare-o explicitamente em eventos de loja, alquimia ou combate sempre que o contexto não puder ser inferido com segurança. Opções de combate injetadas por moldes devem usar `requiresEventType: 'combat'`; a engine oculta essas opções fora do contexto permitido e também valida a escolha ao executá-la.
 
 ## Condições (`cond`)
 
@@ -44,6 +46,7 @@ Valem para eventos e para escolhas individuais. Todas as chaves são opcionais; 
 {
   text: 'Enfrentar a fera.',
   cond: { ... },                  // opcional: esconde a escolha se falsa
+  requiresEventType: 'combat',    // opcional: contexto necessário para exibir a escolha
   custo: 20,                      // opcional: pedras gastas (desabilita se faltar)
   check: { stat: ['fis','esp'], dif: 1, tag: 'combate' },  // opcional: teste
   ok:   { text: '...', fx: { ... } },   // resultado do sucesso (com check)
