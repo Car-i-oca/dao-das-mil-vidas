@@ -25,7 +25,7 @@ npm run dev        # http://localhost:5173 (e na rede local, pelo IP mostrado)
 O save fica no navegador ou no app (localStorage), separado entre site, PWA e APK. Em *Herança do Dao → Opções* há backup (copiar/importar) para levar o progresso de um para o outro.
 
 ## Como o APK é gerado
-`.github/workflows/android.yml` roda `npm run build`, cria o projeto Android com Capacitor (`capacitor.config.json`), gera os ícones a partir de `assets/`, compila o APK release e o assina com a chave guardada nos segredos `ANDROID_KEYSTORE_B64` e `ANDROID_KEYSTORE_PASSWORD` (alias `cultivo`). A pasta `android/` não é versionada.
+`.github/workflows/android.yml` roda `npm run build`, cria o projeto Android com Capacitor (`capacitor.config.json`), gera os ícones a partir de `assets/`, compila o APK release e o assina com a chave guardada nos segredos `ANDROID_KEYSTORE_B64` e `ANDROID_KEYSTORE_PASSWORD` (alias `cultivo`). A pasta `android/` não é versionada. Pushes na `main` publicam a release `android-latest`; para testar uma branch antes do merge, execute manualmente o workflow **APK Android** em *Actions → APK Android → Run workflow* e baixe o artefato `apk` na execução. Builds manuais não substituem a release pública e, sem os segredos de assinatura, usam uma chave temporária: desinstale a versão anterior antes de instalar.
 
 ## Scripts
 | Comando | O que faz |
