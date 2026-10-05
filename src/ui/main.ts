@@ -209,11 +209,14 @@ function renderCreate() {
 function hudHtml(s: State): string {
   const realm = realmOf(s);
   const ageRatio = Math.min(1, s.age / s.maxAge);
+  const statusNames: Record<string, string> = { poisoned: 'Envenenado', bleeding: 'Sangrando', burning: 'Queimando', focused: 'Focado', guarded: 'Protegido' };
+  const statuses = (s.statuses ?? []).map((status) => `<span class="status-chip ${status.id}">${statusNames[status.id]} · ${status.turns} t</span>`).join('');
   return `
     <div class="hud">
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
       <div class="row between"><span class="name">${esc(s.name)}${alcunhaHtml(s)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
+      <div class="hud-resources"><span>Qi marcial: ${s.qi ?? 8}/10</span>${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
       </div></div>
@@ -376,6 +379,10 @@ function statusHtml(s: State): string {
     ...Object.entries(t.stats ?? {}).map(([k, v]) => `${(v as number) > 0 ? '+' : ''}${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`),
     ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
     ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
+    ...(t.martial ? [
+      `técnica ativa: ${t.martial.qiCost} Qi · recarga ${t.martial.cooldown} turno(s)`,
+      ...((s.techniqueCooldowns?.[t.id] ?? 0) > 0 ? [`disponível em ${s.techniqueCooldowns![t.id]} turno(s)`] : []),
+    ] : []),
   ].join(' · ');
   const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span> <span class="dom">${dominioHtml(s, t.id)}</span><div class="small">${esc(t.desc)}</div>${t.origem ? `<div class="muted small">Origem: ${esc(t.origem)}</div>` : ''}<div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;

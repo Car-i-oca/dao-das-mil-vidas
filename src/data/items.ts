@@ -128,4 +128,14 @@ export const ITEMS: Item[] = [
   // Lote 13: o mundo em movimento
   { id: 'cura_da_praga', name: 'Elixir Contra a Febre Espiritual', kind: 'pilula', grade: 3, desc: 'Fórmula antiga que levantou uma fila inteira de doentes.', use: { ferida: -4, vida: 10 }, value: 80 },
   { id: 'fragmento_cometa', name: 'Fragmento de Cometa', kind: 'misc', grade: 4, desc: 'Pedra luminosa, quente ao toque, Qi puro em estado bruto.', use: { xp: 25, stats: { esp: 1 } }, value: 150 },
+  // Materiais de bioma e produtos de alquimia/forja
+  { id: 'folha_mana', name: 'Folha de Mana', kind: 'material', grade: 1, desc: 'Folha tenra que conserva o Qi da floresta.', value: 6 },
+  { id: 'seiva_ardente', name: 'Seiva Ardente', kind: 'material', grade: 1, desc: 'Resina quente usada para estabilizar pílulas.', value: 8 },
+  { id: 'mineral_antigo', name: 'Minério de Ruína', kind: 'material', grade: 2, desc: 'Metal antigo, ainda marcado por inscrições.', value: 12 },
+  { id: 'poeira_espectral', name: 'Poeira Espectral', kind: 'material', grade: 2, desc: 'Resíduo frio deixado por espíritos das ruínas.', value: 14 },
+  { id: 'sal_escarlate', name: 'Sal Escarlate', kind: 'material', grade: 1, desc: 'Cristais avermelhados que purificam toxinas.', value: 7 },
+  { id: 'flor_gelo', name: 'Flor do Gelo Silencioso', kind: 'material', grade: 2, desc: 'Uma flor que floresce sob a neve espiritual.', value: 14 },
+  { id: 'perola_marinha', name: 'Pérola das Marés', kind: 'material', grade: 2, desc: 'Concentra a pressão espiritual do fundo do mar.', value: 16 },
+  { id: 'pilula_purificadora', name: 'Pílula Purificadora de Campo', kind: 'pilula', grade: 2, desc: 'Uma fórmula simples que cura feridas e elimina toxinas comuns.', use: { ferida: -2, clearStatus: ['poisoned', 'bleeding', 'burning'] }, value: 24 },
+  { id: 'lamina_bioma', name: 'Lâmina Forjada de Minério Antigo', kind: 'arma', grade: 3, desc: 'Uma lâmina equilibrada, reforçada com uma pérola das marés.', passive: { fis: 2, dao: 1 }, value: 110 },
 ];

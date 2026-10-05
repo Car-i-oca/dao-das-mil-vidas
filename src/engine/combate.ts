@@ -60,12 +60,12 @@ function playerMoves(s: State): Move[] {
   return [...tec, ...base];
 }
 
-export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: number, selo?: string): CombatScript {
+export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: number, selo?: string, activeTechnique?: string): CombatScript {
   const rng = new Rng((s.seed ^ (s.turn * 2654435761)) >>> 0);
   const foeId = foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente);
   const foe = FOE[foeId];
   const mine = playerMoves(s);
-  const tecs = mine.filter((m) => m.tec);
+  const tecs = activeTechnique ? mine.filter((m) => m.tid === activeTechnique) : mine.filter((m) => m.tec);
   const bases = mine.filter((m) => !m.tec);
 
   // 6 a 12 golpes, com idas e vindas. Quem vence dá mais golpes; quem perde apanha mais.

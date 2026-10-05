@@ -44,6 +44,8 @@ import { moldesTrilhas } from './lote30_trilhas_molde';
 import { lote31Tecnicas } from './lote31_tecnicas';
 import { lote32TrilhasIndependentes } from './lote32_trilhas_independentes';
 import { mercador } from './mercador';
+import { biomas, biomaMercador } from './biomas';
+import { caldeirao } from './alquimia';
 import { moldesDeTecnicas } from '../moldes_tecnicas';
 import { aplicarMoldes, type Molde } from '../opcoes';
 import { VARIANTES } from '../variantes';
@@ -54,7 +56,7 @@ const TODOS: GameEvent[] = [
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
   ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
-  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia, ...lote26Talentos, ...lote27Defeitos, ...lote28Origens, ...lote29CorpoRaiz, ...lote31Tecnicas, ...lote32TrilhasIndependentes, ...mercador,
+  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia, ...lote26Talentos, ...lote27Defeitos, ...lote28Origens, ...lote29CorpoRaiz, ...lote31Tecnicas, ...lote32TrilhasIndependentes, ...mercador, ...biomas, biomaMercador, caldeirao,
 ];
 
 /** Aplica os tetos de reino de src/data/faixas.ts. */

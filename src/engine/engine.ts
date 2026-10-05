@@ -11,6 +11,8 @@ import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
 import { buildCombat } from './combate';
+import { FOE } from '../data/combates';
+import { REGION_POOLS } from '../data/regions';
 import { VIRTUDE_NOME } from '../data/marcas';
 import { MARCAS_VIDA } from '../data/marcas_vida';
 import { AFINIDADES } from '../data/afinidades';
@@ -86,7 +88,7 @@ export function fill(s: State, text: string): string {
     .replace(/\{amigo\}/g, s.names.amigo)
     .replace(/\{noivo\}/g, s.names.noivo)
     .replace(/\{discipulo\}/g, s.names.discipulo ?? 'o discípulo')
-    .replace(/\{inimigo\}/g, s.names.inimigo ?? 'o inimigo')
+    .replace(/\{inimigo\}/g, s.current?.foeName ?? s.names.inimigo ?? 'o inimigo')
     .replace(/\{seita\}/g, s.names.seita)
     .replace(/\{cla\}/g, s.names.cla)
     .replace(/\{vila\}/g, s.names.vila)
@@ -216,6 +218,8 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.local && !c.local.includes(s.place)) return false;
   if (c.faction && !c.faction.includes(s.faction)) return false;
   if (c.item && !s.items.includes(c.item)) return false;
+  if (c.itemsAll && !c.itemsAll.every((id) => s.items.includes(id))) return false;
+  if (c.itemsAny && !c.itemsAny.some((id) => s.items.includes(id))) return false;
   if (c.tecnica && !s.techniques.includes(c.tecnica)) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
   if (c.recMin !== undefined && (s.rec ?? 0) < c.recMin) return false;
@@ -253,9 +257,10 @@ export function recStage(s: State): number {
   return r ? Math.min(r.stages.length - 1, Math.floor((s.rec ?? 0) / 3)) : 0;
 }
 
-export function checkChance(s: State, ch: Check, ev?: GameEvent): number {
+export function checkChance(s: State, ch: Check, ev?: GameEvent, techniqueId?: string): number {
   const keys = Array.isArray(ch.stat) ? ch.stat : [ch.stat];
   let total = keys.reduce((a, k) => a + eff(s, k), 0) / keys.length;
+  total += (s.statuses ?? []).filter((status) => status.id === 'focused').reduce((sum, status) => sum + status.potency, 0);
   if (ch.tag) {
     if (PATH[s.path].tags.includes(ch.tag)) total += 1 + Math.floor(recStage(s) / 2);
     if (PATH[s.path].fraco?.includes(ch.tag)) total -= 1.5;
@@ -264,7 +269,8 @@ export function checkChance(s: State, ch: Check, ev?: GameEvent): number {
       if (tech?.tags?.includes(ch.tag)) total += tech.grade + [0, 0, 1, 1, 2][dominioEstagio(s, t)];
     }
   }
-  const p = 0.5 + (total - checkDifficulty(s, ch, ev)) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
+  const techniquePower = techniqueId ? TECH[techniqueId]?.martial?.power ?? 0 : 0;
+  const p = 0.5 + (total - checkDifficulty(s, ch, ev) + techniquePower) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
   // Ameaças de reinos abaixo do seu ficam fáceis: quanto maior a diferença de reino, maior o piso.
   const gap = s.tier - threatTier(s, ch, ev);
   const floor = gap >= 4 ? 0.95 : gap === 3 ? 0.88 : gap === 2 ? 0.78 : 0;
@@ -337,7 +343,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? []), ...(last ? ['tem_eco'] : [])],
     items: [], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
     counts: {}, world: null, nextWorldAt: 24 + rng.int(0, 30),
-    turn: 0, current: null, result: null, ending: null, endingText: null,
+    turn: 0, current: null, qi: 8, techniqueCooldowns: {}, statuses: [], result: null, ending: null, endingText: null,
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
@@ -461,7 +467,21 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   // Ganhos de eventos são em % do reino; em reinos altos valem menos (o cultivo exige mais anos).
   if (fx.xp && s.tier > 0) s.xp = Math.min(130, Math.max(0, s.xp + fx.xp * Math.min(1, Math.pow(10 / realmOf(s).years, 0.75))));
   if (fx.vida) s.maxAge += fx.vida;
-  if (fx.ferida) s.wounds = Math.max(0, s.wounds + fx.ferida);
+  if (fx.ferida) {
+    const guard = (s.statuses ?? []).filter((status) => status.id === 'guarded').reduce((sum, status) => sum + status.potency, 0);
+    s.wounds = Math.max(0, s.wounds + (fx.ferida > 0 ? Math.max(0, fx.ferida - guard) : fx.ferida));
+  }
+  if (fx.clearStatus?.length) s.statuses = (s.statuses ?? []).filter((status) => !fx.clearStatus!.includes(status.id));
+  if (fx.status?.length) {
+    s.statuses ??= [];
+    for (const status of fx.status) {
+      const existing = s.statuses.find((current) => current.id === status.id);
+      if (existing) {
+        existing.turns = Math.max(existing.turns, status.turns);
+        existing.potency = Math.max(existing.potency, status.potency);
+      } else s.statuses.push({ ...status });
+    }
+  }
   // Quem trilha o Caminho do Sangue controla melhor a corrupção (compensa o ritmo de cultivo maior).
   if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + (fx.corr > 0 && s.path === 'demoniaca' ? fx.corr * 0.6 : fx.corr)));
   if (fx.setFlags) for (const f of fx.setFlags) if (!s.flags.includes(f)) s.flags.push(f);
@@ -647,6 +667,13 @@ export interface View {
 
 export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
 
+function availableMartialTechniques(s: State): string[] {
+  return s.techniques.filter((id) => {
+    const martial = TECH[id]?.martial;
+    return !!martial && (s.qi ?? 8) >= martial.qiCost && (s.techniqueCooldowns?.[id] ?? 0) <= 0;
+  });
+}
+
 export function visibleChoices(s: State): Visible[] {
   if (s.current?.retiro) return [{ action: 'retiro' }];
   if (s.current?.breakthrough) {
@@ -664,7 +691,24 @@ export function visibleChoices(s: State): Visible[] {
     const keep = new Set([0, 1, 2].map((i) => exs[(off + i) % exs.length]));
     list = list.filter((c) => !c.ex || keep.has(c));
   }
-  const out: Visible[] = list.map((choice) => ({ choice }));
+  const martial = availableMartialTechniques(s);
+  const rotation = (s.turn + Math.floor(s.age)) % Math.max(1, martial.length);
+  const selectedMartial = martial.length > 3
+    ? [0, 1, 2].map((offset) => martial[(rotation + offset) % martial.length])
+    : martial;
+  const out: Visible[] = list.flatMap((choice) => {
+    if (choice.check?.tag !== 'combate' || !selectedMartial.length) return [{ choice }];
+    return [
+      { choice },
+      ...selectedMartial.map((id) => ({
+        choice: {
+          ...choice,
+          activeTechnique: id,
+          text: `${choice.text} · ${TECH[id].name}`,
+        },
+      })),
+    ];
+  });
   if (!out.length) out.push({ choice: { text: 'Seguir em frente.', res: { text: 'Você deixa o momento passar.' } } });
   return out;
 }
@@ -702,7 +746,11 @@ export function view(s: State): View {
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
     const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c) };
-    if (c.check) vc.chance = checkChance(s, c.check, ev);
+    if (c.check) vc.chance = checkChance(s, c.check, ev, c.activeTechnique);
+    if (c.activeTechnique) {
+      const martial = TECH[c.activeTechnique]?.martial;
+      if (martial) vc.note = `${martial.qiCost} Qi · ${martial.cooldown} turno(s) de recarga`;
+    }
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
       if (s.pedras < c.custo) vc.disabled = true;
@@ -836,10 +884,17 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const c = v.choice!;
   const ev = EVENT[s.current!.id];
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
+  const martial = c.activeTechnique ? TECH[c.activeTechnique]?.martial : undefined;
+  if (c.activeTechnique && martial) {
+    s.qi = Math.max(0, (s.qi ?? 8) - martial.qiCost);
+    s.techniqueCooldowns ??= {};
+    s.techniqueCooldowns[c.activeTechnique] = martial.cooldown;
+    addLog(s, `Técnica usada: ${TECH[c.activeTechnique].name}.`);
+  }
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
   if (c.check) {
-    const chance = checkChance(s, c.check, ev);
+    const chance = checkChance(s, c.check, ev, c.activeTechnique);
     const success = rng.chance(chance);
     // Domínio: cada teste bem-sucedido treina as técnicas da mesma etiqueta; opções exclusivas de técnica treinam a própria técnica.
     if (c.check.tag) for (const t of s.techniques) if (TECH[t]?.tags?.includes(c.check.tag)) addDominio(s, t, success ? 1 : 0);
@@ -855,9 +910,13 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
   s.result = { text: txt, check };
-  if (check && ((c.check?.tag === 'combate') || ev.combate)) s.result.combate = buildCombat(s, ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c));
+  if (check && ((c.check?.tag === 'combate') || ev.combate)) {
+    const combatEvent = s.current?.foe ? { ...ev, combate: { ...ev.combate, oponente: s.current.foe } } : ev;
+    s.result.combate = buildCombat(s, combatEvent, check.success, out.fx?.ferida ?? 0, choiceBadge(c), c.activeTechnique);
+  }
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
+  if (check?.success && martial?.status) applyFx(s, { status: [martial.status] }, rng);
 }
 
 /* ---------- Passagem do tempo e próximo evento ---------- */
@@ -872,6 +931,22 @@ function advance(s: State, rng: Rng) {
   if (s.tier > 0) s.xp = Math.min(130, s.xp + cultivationRate(s) * dt);
   s.age += dt;
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
+  s.qi = Math.min(10, (s.qi ?? 8) + 2);
+  s.techniqueCooldowns ??= {};
+  for (const id of Object.keys(s.techniqueCooldowns)) {
+    s.techniqueCooldowns[id] = Math.max(0, s.techniqueCooldowns[id] - 1);
+    if (!s.techniqueCooldowns[id]) delete s.techniqueCooldowns[id];
+  }
+  s.statuses ??= [];
+  for (const status of s.statuses) {
+    if (status.id === 'poisoned' || status.id === 'bleeding' || status.id === 'burning') {
+      s.wounds = Math.min(6, s.wounds + status.potency);
+      addLog(s, `${status.id === 'poisoned' ? 'O veneno' : status.id === 'bleeding' ? 'O sangramento' : 'A queimadura'} causa ${status.potency} ferimento(s).`);
+    }
+    status.turns--;
+  }
+  s.statuses = s.statuses.filter((status) => status.turns > 0);
+  if (s.wounds >= 6) endLife(s, 'combate');
   if (s.age >= s.maxAge) endLife(s, s.tier === 0 ? 'mortal' : 'velhice');
 }
 
@@ -891,13 +966,18 @@ function isGeneric(e: GameEvent): boolean {
   const c = e.cond;
   if (e.once) return false;
   if (!c) return true;
-  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.tecnica || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.mundo);
+  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.itemsAll?.length || c.itemsAny?.length || c.tecnica || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.mundo);
 }
 const GENERIC_IDS = new Set(EVENTS.filter(isGeneric).map((e) => e.id));
 
 function setCurrent(s: State, id: string, rng: Rng) {
   const n = 1 + (EVENT[id]?.alt?.length ?? 0);
   s.current = { id, v: n > 1 ? rng.int(0, n - 1) : 0 };
+  const opponents = EVENT[id]?.combate?.oponentes;
+  if (opponents?.length) {
+    s.current.foe = rng.pick(opponents);
+    s.current.foeName = FOE[s.current.foe]?.name;
+  }
 }
 
 /** Atualiza a era do mundo. Devolve true se já definiu o próximo turno (abertura de era ou fim de vida). */
@@ -999,10 +1079,15 @@ export function pickNext(s: State, rng: Rng) {
     const scenes = pool.filter((e) => e.cond?.noFlags?.includes('trilha_definida'));
     if (scenes.length) pool = scenes;
   }
+  const regionalPool = REGION_POOLS[s.place]
+    ?.map(({ eventId }) => EVENT[eventId])
+    .filter((e): e is GameEvent => !!e && pool.includes(e));
+  if (regionalPool?.length && rng.chance(0.38)) pool = regionalPool;
   const luck = 1 + eff(s, 'sor') / 50;
   const porCat = afinidadePorCat(s);
   const ev = rng.weighted(pool, (e) => {
-    let w = RARITY_W[e.rarity] * (e.weight ?? 1) * (e.rarity === 'comum' ? 1 : luck);
+    const regionalWeight = REGION_POOLS[s.place]?.find((entry) => entry.eventId === e.id)?.weight ?? 1;
+    let w = RARITY_W[e.rarity] * (e.weight ?? 1) * regionalWeight * (e.rarity === 'comum' ? 1 : luck);
     if (!e.once) w *= Math.pow(0.45, s.counts?.[e.id] ?? 0); // fadiga: o que já aconteceu várias vezes perde peso
     const generic = GENERIC_IDS.has(e.id);
     if (generic) w *= 0.5;

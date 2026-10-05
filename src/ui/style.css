@@ -94,6 +94,11 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .hud { padding: calc(10px + var(--safe-t)) 14px 8px; background: var(--bg2); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
 .hud .name { font-weight: 600; }
 .hud .sub { color: var(--muted); font-size: 0.85rem; }
+.hud-resources { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 4px; color: var(--muted); font-size: 0.72rem; }
+.status-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.status-chip { border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.status-chip.poisoned, .status-chip.bleeding, .status-chip.burning { color: var(--red); border-color: var(--red); }
+.status-chip.focused, .status-chip.guarded { color: var(--jade); border-color: var(--jade); }
 .bar { height: 7px; background: var(--line); border-radius: 6px; overflow: hidden; margin-top: 6px; }
 .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold)); transition: width 0.5s; }
 .bar.age > i { background: linear-gradient(90deg, var(--blue), var(--red)); }

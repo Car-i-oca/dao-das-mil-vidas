@@ -5,6 +5,12 @@ export type Alignment = 'daoico' | 'demoniaco';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 
+export interface StatusEffect {
+  id: 'poisoned' | 'bleeding' | 'burning' | 'focused' | 'guarded';
+  turns: number;
+  potency: number;
+}
+
 /** Efeitos aplicados quando uma escolha (ou resultado) acontece. */
 export interface Effects {
   stats?: Partial<Stats>;
@@ -31,6 +37,10 @@ export interface Effects {
   powerPath?: string;
   /** Progresso a somar à trilha independente indicada em `powerPath`. */
   powerProgress?: number;
+  /** Aplica estados temporários no jogador. */
+  status?: StatusEffect[];
+  /** Remove estados temporários pelo id. */
+  clearStatus?: StatusEffect['id'][];
   /** Pontos do recurso da trilha (intenção de espada, têmpera, etc.). */
   rec?: number;
   /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). */
@@ -74,6 +84,10 @@ export interface Cond {
   /** Id do mestre atual (permite mestres alternativos). */
   master?: string[];
   origin?: string[];
+  /** Exige todos os itens listados, útil para receitas com vários ingredientes. */
+  itemsAll?: string[];
+  /** Exige qualquer um dos itens listados. */
+  itemsAny?: string[];
   flags?: string[];
   noFlags?: string[];
   stat?: Partial<Stats>;
@@ -131,6 +145,8 @@ export interface Choice {
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
   custo?: number;
+  /** Id da técnica ativa escolhida para este teste de combate. */
+  activeTechnique?: string;
   check?: Check;
   ok?: Outcome;
   fail?: Outcome;
@@ -155,7 +171,7 @@ export interface GameEvent {
   /** Cena de passagem de tempo: não precisa de consequência própria. */
   passagem?: boolean;
   /** Marca o evento como luta: tipo de oponente e cenário do duelo animado (opcionais; há inferência). */
-  combate?: { oponente?: string; cenario?: string };
+  combate?: { oponente?: string; oponentes?: string[]; cenario?: string };
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
   cond?: Cond;
@@ -201,7 +217,7 @@ export interface Path {
 export interface Item {
   id: string;
   name: string;
-  kind: 'pilula' | 'erva' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
+  kind: 'pilula' | 'erva' | 'material' | 'arma' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
   grade: 1 | 2 | 3 | 4 | 5;
   desc: string;
   /** Consumível: efeitos ao usar. */
@@ -224,6 +240,13 @@ export interface Technique {
   stats?: Partial<Stats>;
   xpMult?: number;
   tags?: string[];
+  /** Técnica marcial selecionável em encontros de combate. */
+  martial?: {
+    qiCost: number;
+    cooldown: number;
+    power: number;
+    status?: StatusEffect;
+  };
   /** Seita ou escola de origem (método de seita extinta): quem a reconhece, a cobiça ou a quer de volta. */
   origem?: string;
 }
@@ -331,7 +354,13 @@ export interface State {
   log: LogEntry[];
   turn: number;
   /** Evento atual (null quando em resultado/final). */
-  current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number } | null;
+  current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
+  /** Qi disponível para técnicas marciais; opcional para compatibilidade com saves antigos. */
+  qi?: number;
+  /** Recargas restantes, em turnos de jogo, por técnica marcial. */
+  techniqueCooldowns?: Record<string, number>;
+  /** Efeitos temporários e sua duração restante em turnos. */
+  statuses?: StatusEffect[];
   /** Resultado exibido após uma escolha. */
   result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
