@@ -93,3 +93,13 @@ jobs:
           gh release create android-latest "$APK_NAME" \
             --title "App Android (APK)" \
             --notes "APK do build ${{ github.run_number }} (commit ${GITHUB_SHA::7}). $NOTE Para instalar: abra esta página no celular Android, baixe o APK e permita a instalação de apps desta fonte."
+
+      - name: Publicar APK de teste como release
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "android-test-${GITHUB_RUN_NUMBER}" "$APK_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "APK de teste ${GITHUB_RUN_NUMBER}" \
+            --notes "Build de teste da branch ${GITHUB_REF_NAME} (commit ${GITHUB_SHA::7}). $NOTE O arquivo APK pode ser baixado diretamente nos assets desta release."
