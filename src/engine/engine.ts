@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank,
+  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank, EquipmentSlot, GuildFaction, CombatRoll, Weather,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -21,6 +21,7 @@ import { categorias, type Cat } from '../data/opcoes';
 import { WORLDS, WORLD } from '../data/mundo';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from '../data/retiros';
 import { QUESTS } from '../data/quests';
+import { COMPANIONS } from '../data/companions';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
@@ -72,8 +73,95 @@ export function eff(s: State, k: StatKey): number {
     const item = ITEM[id];
     if (isPassiveArtifact(item)) v += item.passive[k] ?? 0;
   }
+  for (const id of Object.values(s.equipment ?? {})) v += ITEM[id]?.bonuses?.[k] ?? 0;
+  for (const id of s.companions ?? []) v += COMPANIONS.find((companion) => companion.id === id)?.bonus[k] ?? 0;
   for (const id of s.techniques) v += TECH[id]?.stats?.[k] ?? 0;
   return v;
+}
+
+export function equipItem(s: State, itemId: string): boolean {
+  const item = ITEM[itemId];
+  if (!item?.equipmentSlot || !item.bonuses || !s.items.includes(itemId)) return false;
+  s.equipment ??= {};
+  s.equipment[item.equipmentSlot] = itemId;
+  return true;
+}
+
+export function unequipItem(s: State, slot: EquipmentSlot): boolean {
+  if (!s.equipment?.[slot]) return false;
+  delete s.equipment[slot];
+  return true;
+}
+
+export function recruitCompanion(s: State, id: string): boolean {
+  const companion = COMPANIONS.find((entry) => entry.id === id);
+  s.companions ??= [];
+  if (!companion || s.companions.includes(id) || s.companions.length >= 2 || s.pedras < companion.price) return false;
+  s.pedras -= companion.price;
+  s.companions.push(id);
+  addLog(s, `${companion.name} juntou-se à sua jornada.`);
+  return true;
+}
+
+export function dismissCompanion(s: State, id: string): boolean {
+  const party = s.companions ?? [];
+  const index = party.indexOf(id);
+  if (index < 0) return false;
+  party.splice(index, 1);
+  addLog(s, `Seu companheiro deixou a jornada.`);
+  return true;
+}
+
+export function joinGuild(s: State, guild: GuildFaction): boolean {
+  if (s.guild === guild) return false;
+  s.guild = guild;
+  s.factionReputation ??= {};
+  s.factionReputation[guild] ??= 0;
+  addLog(s, `Você se afiliou a ${GUILD_NAMES[guild]}.`);
+  return true;
+}
+
+const GUILD_NAMES: Record<GuildFaction, string> = {
+  sword_sect: 'Seita da Espada',
+  demon_cult: 'Culto Demoníaco',
+  merchant_guild: 'Guilda dos Mercadores',
+};
+
+export function factionReputation(s: State, guild: GuildFaction): number {
+  return s.factionReputation?.[guild] ?? 0;
+}
+
+function hasColdProtection(s: State): boolean {
+  return Object.values(s.equipment ?? {}).some((id) => !!ITEM[id]?.coldProtection);
+}
+
+function isNight(s: State): boolean {
+  return (s.hour ?? 8) >= 19 || (s.hour ?? 8) < 6;
+}
+
+function weatherPenalty(s: State, stat: StatKey): number {
+  if (s.weather === 'rain' && stat === 'esp') return -2;
+  if (s.weather === 'blizzard' && !hasColdProtection(s)) return -3;
+  if (isNight(s) && (stat === 'esp' || stat === 'sor')) return -2;
+  return 0;
+}
+
+function combatModifier(s: State, check: Check, ev?: GameEvent, techniqueId?: string): { modifier: number; dc: number; stat: StatKey } {
+  const keys = Array.isArray(check.stat) ? check.stat : [check.stat];
+  const stat = keys[0];
+  const rating = keys.reduce((sum, key) => sum + eff(s, key) + weatherPenalty(s, key), 0) / keys.length;
+  const skill = check.tag && PATH[s.path]?.tags.includes(check.tag) ? 2 + Math.floor(recStage(s) / 2) : 0;
+  const trained = check.tag ? s.techniques.reduce((sum, id) => sum + (TECH[id]?.tags?.includes(check.tag!) ? Math.max(1, Math.floor((TECH[id].grade ?? 1) / 2)) : 0), 0) : 0;
+  const technique = techniqueId ? TECH[techniqueId]?.martial?.power ?? 0 : 0;
+  const guildRep = s.guild ? factionReputation(s, s.guild) : 0;
+  const guildBonus = guildRep >= 30 ? 2 : guildRep <= -30 ? -2 : 0;
+  const modifier = Math.floor((rating - 10) / 3) + skill + trained + Math.floor(technique / 2) + guildBonus;
+  const dc = checkDifficulty(s, check, ev) + (ev?.combate?.boss ? 2 : 0) + (isNight(s) ? 2 : 0);
+  return { modifier, dc, stat };
+}
+
+export function combatCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: string): Omit<CombatRoll, 'd20' | 'total'> {
+  return combatModifier(s, check, ev, techniqueId);
 }
 
 function xpMult(s: State): number {
@@ -271,8 +359,15 @@ export function recStage(s: State): number {
 }
 
 export function checkChance(s: State, ch: Check, ev?: GameEvent, techniqueId?: string): number {
+  if (ch.tag === 'combate') {
+    const { modifier, dc } = combatModifier(s, ch, ev, techniqueId);
+    const firstRegularHit = Math.max(2, Math.ceil(dc - modifier));
+    const regularHits = Math.min(18, Math.max(0, 20 - firstRegularHit));
+    return (1 + regularHits) / 20;
+  }
   const keys = Array.isArray(ch.stat) ? ch.stat : [ch.stat];
   let total = keys.reduce((a, k) => a + eff(s, k), 0) / keys.length;
+  total += keys.reduce((sum, key) => sum + weatherPenalty(s, key), 0) / keys.length;
   total += (s.statuses ?? []).filter((status) => status.id === 'focused').reduce((sum, status) => sum + status.potency, 0);
   total -= (s.statuses ?? []).filter((status) => status.id === 'frozen').reduce((sum, status) => sum + status.potency, 0);
   if (ch.tag) {
@@ -361,9 +456,11 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
     maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
     place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? []), ...(last ? ['tem_eco'] : [])],
-    items: [], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
+    items: ['espada_ferro_viagem', 'manto_peles'], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
     counts: {}, world: null, nextWorldAt: 24 + rng.int(0, 30),
+    equipment: { rightWeapon: 'espada_ferro_viagem', armor: 'manto_peles' }, companions: [], factionReputation: {}, day: 1, hour: 8, weather: 'sunny',
     turn: 0, current: null, qi: 8, techniqueCooldowns: {}, statuses: [], result: null, ending: null, endingText: null,
+    found: { items: ['espada_ferro_viagem', 'manto_peles'], techs: path.tecnica ? [path.tecnica] : [] },
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
@@ -485,6 +582,12 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.karma) s.karma += fx.karma;
   if (fx.fama) s.fama = Math.max(0, s.fama + fx.fama);
   if (fx.reputation) s.reputation = Math.max(0, (s.reputation ?? 0) + fx.reputation);
+  if (fx.factionReputation) {
+    s.factionReputation ??= {};
+    for (const [guild, value] of Object.entries(fx.factionReputation) as [GuildFaction, number][]) {
+      s.factionReputation[guild] = Math.max(-100, Math.min(100, (s.factionReputation[guild] ?? 0) + value));
+    }
+  }
   if (fx.sectRankUp) {
     const current = sectRankOf(s);
     const next = Math.min(SECT_RANKS.length - 1, (current ? SECT_RANKS.indexOf(current) : -1) + 1);
@@ -724,6 +827,8 @@ function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
 /* ---------- Visão (para a interface) ---------- */
 export interface ViewChoice {
   text: string;
+  check?: Check;
+  activeTechnique?: string;
   chance?: number;
   disabled?: boolean;
   note?: string;
@@ -829,7 +934,7 @@ export function view(s: State): View {
   const ev = EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
-    const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c) };
+    const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c), check: c.check, activeTechnique: c.activeTechnique };
     if (c.check) vc.chance = checkChance(s, c.check, ev, c.activeTechnique);
     if (c.activeTechnique) {
       const martial = TECH[c.activeTechnique]?.martial;
@@ -993,14 +1098,26 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   }
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
+  let roll: CombatRoll | undefined;
   if (c.check) {
     const chance = checkChance(s, c.check, ev, c.activeTechnique);
-    const success = rng.chance(chance);
+    let success: boolean;
+    if (c.check.tag === 'combate') {
+      const preview = combatModifier(s, c.check, ev, c.activeTechnique);
+      const d20 = rng.int(1, 20);
+      const total = d20 + preview.modifier;
+      success = d20 === 20 || (d20 !== 1 && total >= preview.dc);
+      roll = { ...preview, d20, total };
+    } else success = rng.chance(chance);
     // Domínio: cada teste bem-sucedido treina as técnicas da mesma etiqueta; opções exclusivas de técnica treinam a própria técnica.
     if (c.check.tag) for (const t of s.techniques) if (TECH[t]?.tags?.includes(c.check.tag)) addDominio(s, t, success ? 1 : 0);
     if (success && c.check.tag && PATH[s.path]?.tags.includes(c.check.tag) && PATH[s.path].rec && rng.chance(0.25)) s.rec = (s.rec ?? 0) + 1;
     out = (success ? c.ok : c.fail) ?? c.res ?? { text: '' };
     check = { chance, success };
+    if (c.check.tag === 'combate' && !success && s.weather === 'blizzard' && !hasColdProtection(s)) {
+      out = { ...out, fx: { ...out.fx, ferida: (out.fx?.ferida ?? 0) + 1 } };
+      addLog(s, 'A nevasca atravessa suas roupas e agrava o ferimento.');
+    }
   } else {
     out = c.res ?? c.ok ?? { text: '' };
   }
@@ -1017,9 +1134,15 @@ function chooseCore(s: State, idx: number, rng: Rng) {
     addLog(s, 'O padrão de ataque do chefão culmina num golpe devastador.');
   }
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
-  s.result = { text: txt, check, ...(combat ? { combate: combat } : {}) };
+  const rollText = roll ? `[Teste de ${STAT_NAMES[roll.stat]}: ${roll.d20} ${roll.modifier >= 0 ? '+' : '−'} ${Math.abs(roll.modifier)} = ${roll.total} vs CD ${roll.dc}] ` : '';
+  s.result = { text: `${rollText}${txt}`, check, ...(roll ? { roll } : {}), ...(combat ? { combate: combat } : {}) };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
+  if (check && c.check?.tag === 'combate' && s.guild) {
+    s.factionReputation ??= {};
+    const delta = check.success ? 2 : -3;
+    s.factionReputation[s.guild] = Math.max(-100, Math.min(100, (s.factionReputation[s.guild] ?? 0) + delta));
+  }
   if (check?.success && martial?.status) applyFx(s, { status: [martial.status] }, rng);
   if (check?.success && martial?.targetStatus) {
     const target = foeId ? FOE[foeId] : undefined;
@@ -1049,6 +1172,12 @@ function advance(s: State, rng: Rng) {
   const dt = s.tier === 0 ? 1 : s.tier <= 5 && rng.chance(0.55) ? 1 : rng.int(1, DT_CAP[Math.min(s.tier, DT_CAP.length - 1)]);
   if (s.tier > 0) s.xp = Math.min(130, s.xp + cultivationRate(s) * dt);
   s.age += dt;
+  s.day = (s.day ?? 1) + 1;
+  s.hour = ((s.hour ?? 8) + 8) % 24;
+  if (rng.chance(s.place === 'gelo' ? 0.45 : 0.22)) {
+    const weather: Weather[] = s.place === 'gelo' ? ['sunny', 'rain', 'blizzard', 'blizzard'] : ['sunny', 'rain', 'sunny', 'blizzard'];
+    s.weather = rng.pick(weather);
+  }
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
   s.qi = Math.min(10, (s.qi ?? 8) + 2);
   s.techniqueCooldowns ??= {};
@@ -1197,6 +1326,16 @@ export function pickNext(s: State, rng: Rng) {
   if (!s.path && s.tier >= 1) {
     const scenes = pool.filter((e) => e.cond?.noFlags?.includes('trilha_definida'));
     if (scenes.length) pool = scenes;
+  }
+  const guildRep = s.guild ? factionReputation(s, s.guild) : 0;
+  if (s.guild && guildRep <= -40 && rng.chance(0.2)) {
+    const ambushes = pool.filter((event) => event.type === 'combat' && condMet(s, event.cond));
+    if (ambushes.length) {
+      const ambush = rng.pick(ambushes);
+      setCurrent(s, ambush.id, rng);
+      addLog(s, `${GUILD_NAMES[s.guild]} enviou uma patrulha hostil.`);
+      return;
+    }
   }
   const regionalPool = REGION_POOLS[s.place]
     ?.map(({ eventId }) => EVENT[eventId])

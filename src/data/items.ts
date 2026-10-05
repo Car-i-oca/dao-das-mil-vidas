@@ -1,6 +1,10 @@
 import type { Item } from '../types';
 
 export const ITEMS: Item[] = [
+  { id: 'espada_ferro_viagem', name: 'Espada de Viagem', kind: 'arma', grade: 1, desc: 'Uma lâmina honesta, equilibrada para o combate.', equipmentSlot: 'rightWeapon', bonuses: { fis: 3 }, value: 24 },
+  { id: 'adaga_guarda', name: 'Adaga da Guarda', kind: 'arma', grade: 1, desc: 'Lâmina curta para aparar golpes e contra-atacar.', equipmentSlot: 'leftWeapon', bonuses: { esp: 2 }, value: 18 },
+  { id: 'manto_peles', name: 'Manto Forrado de Peles', kind: 'armadura', grade: 2, desc: 'Protege contra o vento e a neve das regiões altas.', equipmentSlot: 'armor', bonuses: { fis: 2 }, coldProtection: true, value: 45 },
+  { id: 'pingente_jade', name: 'Pingente de Jade', kind: 'artefato', grade: 1, desc: 'Uma lembrança que firma o espírito.', equipmentSlot: 'accessory', bonuses: { dao: 2 }, value: 22 },
   // Pílulas de cultivo
   { id: 'pilula_qi_menor', name: 'Pílula de Qi Menor', kind: 'pilula', grade: 1, desc: 'Acelera um pouco o cultivo.', use: { xp: 8 }, value: 4 },
   { id: 'pilula_qi_media', name: 'Pílula de Qi Densa', kind: 'pilula', grade: 2, desc: 'Qi concentrado em uma gota de luz.', use: { xp: 15 }, value: 12 },

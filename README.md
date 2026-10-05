@@ -70,6 +70,9 @@ Três estilos, todos desenhados por código (sem imagens de terceiros): **Manhwa
 - **Missões e progressão da seita:** contratos aceitos na aba Missões acompanham caçadas, coletas e receitas; torneios podem elevar seu rank e abrir o Pavilhão VIP.
 - **Chefões regionais:** sobreviva a encontros num bioma para atrair seu guardião; chefões têm padrões de ataque e podem resistir a efeitos de status.
 - **Técnicas marciais e status:** técnicas ativas gastam Qi, entram em recarga e podem aplicar efeitos; o Qi recupera com a passagem dos turnos.
+- **Equipamentos, companheiros e facções:** armas e armaduras ocupam slots e alteram atributos; até dois aliados dão bônus passivos, enquanto reputação com três facções pode atrair apoio ou emboscadas.
+- **Mundo dinâmico:** o dia, horário e clima variam durante a jornada; chuva, nevasca e noite alteram testes, com proteção contra frio fornecida por equipamento.
+- **Aventura mobile:** arte 16-bit em painel próprio, narrativa e escolhas com rolagens de D20 em combate; música e efeitos só são iniciados após a interação inicial do jogador.
 
 ## Adicionar eventos
 Leia `docs/eventos.md`. Em resumo: crie ou edite um arquivo em `src/data/events/`, exporte um array de eventos e registre em `src/data/events/index.ts`. Depois rode `npm run validate` e `npm run sim -- 4000`.

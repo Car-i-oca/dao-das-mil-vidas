@@ -2,12 +2,12 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf,
+  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, joinGuild, factionReputation, combatCheckPreview,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
-import type { Change, Meta, State, UiNotification } from '../types';
+import type { Change, EquipmentSlot, GuildFaction, Meta, State, UiNotification } from '../types';
 import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
 import { WORLD } from '../data/mundo';
@@ -20,9 +20,11 @@ import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
 import { playDuel } from './duelo';
-import { FOES } from '../data/combates';
+import { FOES, foeFor } from '../data/combates';
 import { QUESTS } from '../data/quests';
-import { playSfx } from './audio';
+import { COMPANIONS } from '../data/companions';
+import { playSfx, startAudioExperience } from './audio';
+import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
@@ -58,31 +60,14 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 /* ---------- Estado de interface ---------- */
 type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
-let tab: 'vida' | 'status' | 'mochila' | 'diario' | 'missoes' = 'vida';
+let tab: 'aventura' | 'equipamentos' | 'inventario' | 'faccoes' | 'diario' = 'aventura';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
+let audioStarted = false;
+let audioGateError = '';
 
 const app = document.getElementById('app')!;
-let choiceAudioContext: AudioContext | undefined;
-
-function playChoiceClickSound() {
-  if (!window.AudioContext) return;
-  choiceAudioContext ??= new window.AudioContext();
-  const context = choiceAudioContext;
-  if (context.state === 'suspended') void context.resume();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  const start = context.currentTime;
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(400, start);
-  gain.gain.setValueAtTime(0.025, start);
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.05);
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start(start);
-  oscillator.stop(start + 0.05);
-}
 
 /* ---------- Instalação como app (PWA) ---------- */
 let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
@@ -172,12 +157,13 @@ function render() {
   if (alignment) document.documentElement.dataset.alignment = alignment;
   else delete document.documentElement.dataset.alignment;
   switch (screen) {
-    case 'home': return renderHome();
-    case 'create': return renderCreate();
-    case 'game': return renderGame();
-    case 'end': return renderEnd();
-    case 'meta': return renderMeta();
+    case 'home': renderHome(); break;
+    case 'create': renderCreate(); break;
+    case 'game': renderGame(); break;
+    case 'end': renderEnd(); break;
+    case 'meta': renderMeta(); break;
   }
+  if (!audioStarted) app.insertAdjacentHTML('beforeend', `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">道</div><h1>Dao das Mil Vidas</h1><p>Uma jornada entre vidas, escolhas e destinos.</p><button class="btn primary audio-start" data-act="start-audio">Tocar para Iniciar a Aventura</button><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`);
 }
 
 function renderHome() {
@@ -241,7 +227,7 @@ function hudHtml(s: State): string {
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
       <div class="row between"><span class="name">${esc(s.name)}${alcunhaHtml(s)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
-      <div class="hud-resources"><span>Qi marcial: ${s.qi ?? 8}/10</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
+      <div class="hud-resources"><span>Dia ${s.day ?? 1} · ${String(s.hour ?? 8).padStart(2, '0')}:00</span><span>${weatherLabel(s.weather)}</span><span>Qi marcial: ${s.qi ?? 8}/10</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
       </div></div>
@@ -253,7 +239,9 @@ function sceneFor(s: State, eventId: string): string {
   let kind: string = s.place;
   if (s.world?.id === 'reino_secreto') kind = 'reino_secreto';
   else if (s.tier >= 7 && hash(eventId) % 3 === 0) kind = 'ceu';
-  return `<div class="scene">${sceneSvg(kind as SceneKind, eventId, hash(eventId) % 4 === 0)}</div>`;
+  const scene = pixelArt.scene?.(kind as SceneKind, `${eventId}-${s.day ?? 1}-${s.weather ?? 'sunny'}`, (s.hour ?? 8) >= 19 || (s.hour ?? 8) < 6)
+    ?? sceneSvg(kind as SceneKind, eventId, (s.hour ?? 8) >= 19 || (s.hour ?? 8) < 6);
+  return `<div class="scene">${scene}</div>`;
 }
 
 /** Retrato do personagem recorrente citado no texto do evento ({mentor}, {rival}...). */
@@ -268,68 +256,68 @@ function npcFor(s: State, eventId: string): string {
 
 function tabsHtml(): string {
   const t = (id: typeof tab, icon: string, label: string) => `<button class="tab-item ${tab === id ? 'on' : ''}" data-act="tab" data-id="${id}" aria-current="${tab === id ? 'page' : 'false'}"><span class="tab-icon">${icon}</span><span>${label}</span></button>`;
-  return `<nav class="tabs" aria-label="Navegação da vida">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('missoes', '⚑', 'Missões')}</nav>`;
+  return `<nav class="tabs" aria-label="Navegação da vida">${t('aventura', '⚔', 'Aventura')}${t('equipamentos', '◈', 'Equipamentos')}${t('inventario', '▣', 'Inventário')}${t('faccoes', '⚑', 'Facções')}</nav>`;
 }
 
 function renderGame() {
   const s = save.run!;
   let body = '';
-  if (tab === 'vida') body = lifeHtml(s);
-  else if (tab === 'status') body = statusHtml(s);
-  else if (tab === 'mochila') body = bagHtml(s);
-  else if (tab === 'missoes') body = questsHtml(s);
+  if (tab === 'aventura') body = lifeHtml(s);
+  else if (tab === 'equipamentos') body = equipmentHtml(s);
+  else if (tab === 'inventario') body = bagHtml(s);
+  else if (tab === 'faccoes') body = factionsHtml(s);
   else body = logHtml(s);
   app.innerHTML = `<div class="game-frame" data-tab="${tab}">${hudHtml(s)}<button class="journal-link" data-act="tab" data-id="diario">Abrir diário da vida <span>↗</span></button><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
-  if (tab === 'vida') startTyping(s);
+  if (tab === 'aventura') startTyping(s);
 }
 
 const RAR_LABEL: Record<string, string> = { raro: 'Raro', lendario: 'Lendário' };
 
-const INTRO_HTML = `<div class="card intro">
-  <b>Como jogar</b>
-  <ul>
-    <li>Cada acontecimento traz escolhas. Quando há uma porcentagem, é a <b>chance de sucesso</b>, influenciada pelos seus atributos.</li>
-    <li>Depois de escolher, as <b>etiquetas</b> mostram o que mudou: verde é bom, vermelho é ruim.</li>
-    <li>O tempo passa sozinho. Quando a barra de cultivo encher, você tentará <b>romper o gargalo</b>.</li>
-    <li>Abas: <b>Status</b> (atributos e técnicas), <b>Mochila</b> (itens), <b>Diário</b> (sua história).</li>
-    <li>Sua trilha de cultivo aparecerá na história, depois do despertar. Ao morrer, você ganha <b>Herança do Dao</b> para as próximas vidas.</li>
-  </ul>
-  <button class="btn" data-act="intro">Entendi</button>
-</div>`;
+const INTRO_HTML = `<details class="intro"><summary>Como jogar</summary><p>Cada acontecimento traz escolhas; os testes dependem de atributos e equipamentos. O tempo passa a cada decisão e o clima pode alterar seus testes. Explore as abas para cuidar do equipamento, inventário e facções.</p><button class="btn ghost" data-act="intro">Entendi</button></details>`;
+
+function weatherLabel(weather?: State['weather']): string {
+  return weather === 'rain' ? 'Chuva' : weather === 'blizzard' ? 'Nevasca' : 'Ensolarado';
+}
+
+function adventureArt(s: State, eventId: string, title: string, eventType?: string): string {
+  const script = s.result?.combate;
+  const event = EVENT[eventId];
+  const foeId = script?.foe ?? s.current?.foe ?? event?.combate?.oponente
+    ?? (eventType === 'combat' && event ? foeFor(event.id, event.title, event.text) : undefined);
+  const duel = (eventType === 'combat' || !!script) && foeId && pixelArt.player && pixelArt.foe
+    ? `<div class="combat-pair"><div class="combatant"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(s.name)}">${pixelArt.player(s.path, s.tier)}</svg><div class="hp-track"><i style="width:${script?.fim.p ?? 100}%"></i></div><small>${esc(s.name)}</small></div><b>VS</b><div class="combatant"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(FOE_NAMES[foeId] ?? foeId)}"><g transform="translate(120 0) scale(-1 1)">${pixelArt.foe(foeId)}</g></svg><div class="hp-track enemy"><i style="width:${script?.fim.f ?? 100}%"></i></div><small>${esc(FOE_NAMES[foeId] ?? foeId)}</small></div></div>`
+    : '';
+  return `<section class="adventure-art">${sceneFor(s, eventId)}${duel}<div class="art-caption"><span class="badge">${weatherLabel(s.weather)} · Dia ${s.day ?? 1}</span><h2>${esc(title)}</h2></div></section>`;
+}
 
 function lifeHtml(s: State): string {
   const v = view(s);
   const intro = !save.settings.intro && s.turn < 2 ? INTRO_HTML : '';
-  if (v.kind === 'result' || v.kind === 'ending') {
-    const chk = s.result?.check;
-    return `
-      ${intro}
-      <div class="card story" data-act="skip">
-        ${chk ? `<span class="badge ${chk.success ? 'ok' : 'bad'}">${chk.success ? '✔ Sucesso' : '✘ Falha'} · ${pct(chk.chance)}</span>` : ''}
-        <p class="story-text" id="typed"></p>
-        <div class="hint" id="hint">toque para pular</div>
-      </div>
-      <div class="choices" id="choices">
-        ${chipsHtml(s.result?.changes)}
-        <button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>
-      </div>`;
-  }
+  const eventId = s.current?.id ?? '';
+  const title = v.kind === 'event' ? v.title : (s.ending ? ENDING[s.ending]?.name ?? 'O destino se revela' : 'Consequências');
+  const eventType = v.eventType ?? EVENT[eventId]?.type;
+  const chk = s.result?.check;
+  const choicesHtml = v.kind === 'result' || v.kind === 'ending'
+    ? `${chipsHtml(s.result?.changes)}${s.result?.roll ? `<div class="dice-result">D20 ${s.result.roll.d20} ${s.result.roll.modifier >= 0 ? '+' : '−'} ${Math.abs(s.result.roll.modifier)} = ${s.result.roll.total} · CD ${s.result.roll.dc}</div>` : ''}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
+    : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
+      const preview = c.check?.tag === 'combate' ? combatCheckPreview(s, c.check, EVENT[eventId], c.activeTechnique) : null;
+      const rollPrompt = preview ? `[Teste de ${STAT_NAMES[preview.stat]} · D20 ${preview.modifier >= 0 ? '+' : '−'}${Math.abs(preview.modifier)} vs CD ${preview.dc}] ` : '';
+      return `<button class="choice" data-act="choose" data-i="${i}">
+        <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(rollPrompt + c.text)}</span>
+        <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${preview ? '<span class="dice-icon">D20</span>' : c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
+      </button>`;
+    }).join('')}`;
   return `
-    ${intro}
-    <div class="card story" data-act="skip">
-      ${sceneFor(s, s.current?.id ?? 'x')}
-      <div class="ev-title" data-event-type="${v.eventType ?? 'narrative'}">${v.eventType === 'shop' ? '<span class="badge shop">Mercador</span>' : v.eventType === 'alchemy' ? '<span class="badge alchemy">Alquimia</span>' : v.eventType === 'combat' ? '<span class="badge combat">Encontro</span>' : ''}${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
-      ${npcFor(s, s.current?.id ?? '')}
+    <div class="adventure-layout">
+      ${adventureArt(s, eventId || 'x', title, eventType)}
+      <section class="story-panel" id="story-panel" data-act="${v.kind === 'event' ? 'skip' : ''}">
+        ${chk ? `<span class="badge ${chk.success ? 'ok' : 'bad'}">${chk.success ? '✔ Sucesso' : '✘ Falha'} · ${pct(chk.chance)}</span>` : ''}
+        ${intro}
+        ${npcFor(s, eventId)}
       <p class="story-text" id="typed"></p>
-      <div class="hint" id="hint">toque para pular</div>
-    </div>
-    <div class="choices" id="choices">
-      ${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}
-      ${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => `
-        <button class="choice" data-act="choose" data-i="${i}">
-          <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
-          <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
-        </button>`).join('')}
+        ${v.kind === 'event' ? '<div class="hint" id="hint">toque para pular</div>' : ''}
+      </section>
+      <section class="choice-panel"><div class="choices show" id="choices">${choicesHtml}</div></section>
     </div>`;
 }
 
@@ -338,7 +326,7 @@ function startTyping(s: State) {
   const choices = document.getElementById('choices');
   if (!el || !choices) return;
   const v = view(s);
-  const text = v.kind === 'event' ? v.text : v.text;
+  const text = v.text;
   const reveal = () => { choices.classList.add('show'); document.getElementById('hint')?.remove(); };
   typewrite(el, text, reveal);
 }
@@ -505,6 +493,46 @@ function bagHtml(s: State): string {
   return `<div class="card list">${rows}</div>`;
 }
 
+const EQUIPMENT_SLOTS: { id: EquipmentSlot; label: string }[] = [
+  { id: 'rightWeapon', label: 'Arma direita' },
+  { id: 'leftWeapon', label: 'Arma esquerda' },
+  { id: 'armor', label: 'Armadura' },
+  { id: 'accessory', label: 'Acessório' },
+];
+
+function equipmentHtml(s: State): string {
+  const slots = EQUIPMENT_SLOTS.map(({ id, label }) => {
+    const itemId = s.equipment?.[id];
+    const item = itemId ? ITEM[itemId] : undefined;
+    return `<div class="equipment-slot"><div><small>${label}</small><b>${item ? esc(item.name) : 'Vazio'}</b>${item?.bonuses ? `<span class="muted small">${Object.entries(item.bonuses).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span>` : ''}</div>${item ? `<button class="btn ghost" data-act="gear-remove" data-id="${id}">Remover</button>` : ''}</div>`;
+  }).join('');
+  const ownedGear = [...new Set(s.items)].map((id) => ITEM[id]).filter((item) => !!item?.equipmentSlot);
+  const gearOptions = ownedGear.map((item) => `<div class="equipment-slot"><div><b>${esc(item.name)}</b><span class="muted small">${item.bonuses ? Object.entries(item.bonuses).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ') : ''}</span></div><button class="btn" data-act="gear-equip" data-id="${item.id}" ${s.equipment?.[item.equipmentSlot!] === item.id ? 'disabled' : ''}>Equipar</button></div>`).join('');
+  const party = (s.companions ?? []).map((id) => {
+    const companion = COMPANIONS.find((entry) => entry.id === id);
+    return companion ? `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span></div><button class="btn ghost" data-act="companion-dismiss" data-id="${id}">Dispensar</button></div>` : '';
+  }).join('');
+  const offers = COMPANIONS.filter((companion) => !(s.companions ?? []).includes(companion.id)).map((companion) => `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span></div><button class="btn" data-act="companion-recruit" data-id="${companion.id}" ${s.pedras < companion.price || (s.companions?.length ?? 0) >= 2 ? 'disabled' : ''}>Recrutar · ${companion.price}</button></div>`).join('');
+  const stats = STAT_KEYS.map((key) => `<div class="stat"><span>${STAT_NAMES[key]}</span><div class="bar"><i style="width:${Math.min(100, eff(s, key))}%"></i></div><span class="n">${eff(s, key)}</span></div>`).join('');
+  return `<div class="card"><div class="muted small">EQUIPAMENTO ATIVO</div>${slots}</div><div class="card"><div class="muted small">EQUIPAR ITEM DA MOCHILA</div>${gearOptions || '<span class="muted small">Nenhum equipamento disponível.</span>'}</div><div class="card"><div class="muted small">COMPANHEIROS · ${(s.companions ?? []).length}/2</div>${party || '<span class="muted small">Nenhum companheiro ativo.</span>'}${offers}</div><div class="card">${stats}</div>`;
+}
+
+const GUILDS: { id: GuildFaction; name: string; desc: string }[] = [
+  { id: 'sword_sect', name: 'Seita da Espada', desc: 'Técnica e disciplina; reputação alta melhora testes de combate.' },
+  { id: 'demon_cult', name: 'Culto Demoníaco', desc: 'Poder sem hesitação; influência abre caminhos sombrios.' },
+  { id: 'merchant_guild', name: 'Guilda dos Mercadores', desc: 'Rotas, contatos e vantagens nas trocas.' },
+];
+
+function factionsHtml(s: State): string {
+  const cards = GUILDS.map((guild) => {
+    const reputation = factionReputation(s, guild.id);
+    const hostile = s.guild === guild.id && reputation <= -40;
+    const active = s.guild === guild.id;
+    return `<div class="faction-card"><div class="row between"><b>${esc(guild.name)}</b><span class="muted small">${active ? 'Afiliado' : 'Independente'}</span></div><p class="muted small">${esc(guild.desc)}</p><div class="rep-line"><span>Reputação</span><b>${reputation}</b></div><div class="bar reputation"><i style="width:${Math.min(100, Math.max(0, (reputation + 100) / 2))}%"></i></div>${hostile ? '<p class="faction-hostile">Hostilidade: patrulhas podem emboscar você.</p>' : reputation >= 30 ? '<p class="faction-friendly">Favor: +2 nos testes enquanto afiliado.</p>' : ''}<button class="btn ${active ? 'ghost' : ''}" data-act="guild-join" data-id="${guild.id}" ${active ? 'disabled' : ''}>${active ? 'Facção atual' : 'Afilia-se'}</button></div>`;
+  }).join('');
+  return `<div class="card"><div class="muted small">FACÇÕES E INFLUÊNCIA</div>${cards}</div>${questsHtml(s)}`;
+}
+
 function logHtml(s: State): string {
   if (!s.log.length) return '<div class="card muted">Nada ainda.</div>';
   return `<div class="card">${[...s.log].reverse().map((l) => `<div class="log-entry"><span class="a">${l.age}a</span><span>${esc(l.text)}</span></div>`).join('')}</div>`;
@@ -608,7 +636,7 @@ function startRun() {
   save.run = startLife(save.meta, creation.c, '', seed);
   save.run.dif = save.settings.difficulty;
   creation = null;
-  tab = 'vida';
+  tab = 'aventura';
   screen = 'game';
   persist();
   render();
@@ -617,9 +645,20 @@ function startRun() {
 app.addEventListener('click', (ev) => {
   const target = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!target) return;
-  if (target.matches('.choice')) playChoiceClickSound();
-  else playSfx('tap');
   const act = target.dataset.act!;
+  if (act === 'start-audio') {
+    audioGateError = '';
+    void startAudioExperience().then(() => {
+      audioStarted = true;
+      app.querySelector('.audio-gate')?.remove();
+    }).catch((error: unknown) => {
+      audioGateError = error instanceof Error ? error.message : 'Não foi possível iniciar o áudio.';
+      const message = app.querySelector<HTMLElement>('.audio-error');
+      if (message) message.textContent = audioGateError;
+    });
+    return;
+  }
+  playSfx('tap');
   const s = save.run;
   switch (act) {
     case 'skip': skipTyper(); break;
@@ -639,6 +678,26 @@ app.addEventListener('click', (ev) => {
       break;
     case 'start': startRun(); break;
     case 'tab': tab = target.dataset.id as typeof tab; render(); break;
+    case 'gear-equip':
+      if (!s) break;
+      if (equipItem(s, target.dataset.id!)) { persist(); render(); }
+      break;
+    case 'gear-remove':
+      if (!s) break;
+      if (unequipItem(s, target.dataset.id as EquipmentSlot)) { persist(); render(); }
+      break;
+    case 'companion-recruit':
+      if (!s) break;
+      if (recruitCompanion(s, target.dataset.id!)) { persist(); render(); }
+      break;
+    case 'companion-dismiss':
+      if (!s) break;
+      if (dismissCompanion(s, target.dataset.id!)) { persist(); render(); }
+      break;
+    case 'guild-join':
+      if (!s) break;
+      if (joinGuild(s, target.dataset.id as GuildFaction)) { persist(); render(); }
+      break;
     case 'quest-accept':
       if (!s) break;
       if (acceptQuest(s, target.dataset.id!)) flushEngineNotifications(s);
@@ -674,7 +733,7 @@ app.addEventListener('click', (ev) => {
       { const msg = withRng(s, (r) => useItem(s, target.dataset.id!, r)); if (msg) toast(msg); }
       flushEngineNotifications(s);
       persist();
-      if (s.ending) { s.result = { text: 'Seu corpo não resistiu.' }; tab = 'vida'; }
+      if (s.ending) { s.result = { text: 'Seu corpo não resistiu.' }; tab = 'aventura'; }
       render();
       break;
     case 'buy': {

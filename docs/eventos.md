@@ -63,6 +63,7 @@ Eventos narrativos com escolhas próprias não recebem opções globais de traç
 - `dif`: dificuldade **relativa ao reino**. 0 = normal, +3/+4 = difícil, −2/−3 = fácil. (Dificuldade real = `8 + reino×6 + dif`.)
 - `tag`: opcional. Técnicas e trilhas com a mesma tag dão bônus (`combate`, `espada`, `corpo`, `qi`, `alquimia`, `formacao`, `mente`, `fuga`, `social`, `demonio`...).
 - Chance = `0,5 + (atributo + bônus − dificuldade) × 0,035 + ajuste de Sorte − ferimentos×0,03`, entre 5% e 95%. O jogador vê a chance no botão.
+- Testes com `tag: 'combate'` usam um D20: modificador de atributo, equipamento, companheiros, trilha e facção contra uma CD. Chuva reduz Espírito; noite favorece inimigos furtivos e nevasca penaliza quem não usa proteção contra frio.
 
 ## Efeitos (`fx`)
 
@@ -70,6 +71,7 @@ Eventos narrativos com escolhas próprias não recebem opções globais de traç
 |---|---|
 | `stats: { comp: 1, fis: -1 }` | muda atributos |
 | `pedras`, `karma`, `fama` | soma/subtrai |
+| `factionReputation` | altera reputação em `sword_sect`, `demon_cult` ou `merchant_guild` |
 | `xp` | progresso de cultivo em % do reino. Calibrado para o reino 1; em reinos altos vale menos automaticamente |
 | `vida` | anos de vida máxima (+/−) |
 | `anos` | avança (ou recua, se negativo) a idade |
@@ -77,7 +79,7 @@ Eventos narrativos com escolhas próprias não recebem opções globais de traç
 | `corr` | corrupção demoníaca (100 = vira demônio) |
 | `tier: 1` | sobe de reino (use para despertares); `-1` desce |
 | `setFlags`, `clearFlags` | marca/limpa flags |
-| `item`, `removeItem` | ids de `src/data/items.ts` |
+| `item`, `removeItem` | ids de `src/data/items.ts`; itens equipáveis declaram `equipmentSlot` e `bonuses` |
 | `tecnica` | ids de `src/data/techniques.ts` |
 | `agenda: [{ event: 'id', em: [10, 30] }]` | agenda um evento daqui a 10–30 anos (cadeias!) |
 | `local`, `faccao` | muda o lugar / a facção |
@@ -94,6 +96,7 @@ Exemplo real: `rival_aparece_crianca` → `rival_reaparece` → `rival_vinganca_
 - `realms.ts`: escadas de reinos (vida, anos para encher a barra, chance de rompimento, tribulação).
 - `paths.ts`: trilhas jogáveis. `items.ts`, `techniques.ts`, `endings.ts` (finais, conquistas, upgrades de Herança), `character.ts` (origens, talentos, defeitos), `names.ts` (nomes e raízes).
 - Itens com `breakBonus: { tier, bonus }` aparecem como opção no rompimento para aquele reino.
+- Equipamentos declaram `equipmentSlot` (`rightWeapon`, `leftWeapon`, `armor`, `accessory`) e bônus numéricos em `bonuses`. Os slots ocupados e a party são salvos como propriedades opcionais para preservar saves antigos.
 - Conquistas: adicione em `ACHIEVEMENTS` e a regra em `ACH_CHECKS` (`endings.ts`). Use o id da conquista no campo `unlock` de uma origem, talento ou trilha.
 
 ## Balanceamento

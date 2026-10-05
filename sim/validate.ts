@@ -14,7 +14,8 @@ import { FUSOES } from '../src/data/tecnicas_novas';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import { QUESTS } from '../src/data/quests';
 import { FOES } from '../src/data/combates';
-import type { Cond, Effects } from '../src/types';
+import { COMPANIONS } from '../src/data/companions';
+import type { Cond, Effects, EquipmentSlot } from '../src/types';
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -29,7 +30,18 @@ function dupes(label: string, list: { id: string }[]) {
     seen.add(x.id);
   }
 }
-dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES);
+dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES); dupes('companheiro', COMPANIONS);
+
+const equipmentSlots = new Set<EquipmentSlot>(['rightWeapon', 'leftWeapon', 'armor', 'accessory']);
+for (const item of ITEMS) {
+  if (item.equipmentSlot && !equipmentSlots.has(item.equipmentSlot)) errors.push(`item ${item.id}: slot de equipamento inválido "${item.equipmentSlot}"`);
+  if (item.equipmentSlot && !item.bonuses) errors.push(`item ${item.id}: equipamento sem bônus numérico`);
+  if (item.bonuses && Object.values(item.bonuses).some((value) => !Number.isFinite(value))) errors.push(`item ${item.id}: bônus de equipamento não numérico`);
+}
+for (const companion of COMPANIONS) {
+  if (companion.price < 0 || !Number.isFinite(companion.price)) errors.push(`companheiro ${companion.id}: preço inválido`);
+  if (Object.values(companion.bonus).some((value) => !Number.isFinite(value))) errors.push(`companheiro ${companion.id}: bônus não numérico`);
+}
 
 for (const quest of QUESTS) {
   if (quest.objective.item && !itemIds.has(quest.objective.item)) errors.push(`missão ${quest.id}: item inexistente "${quest.objective.item}"`);
@@ -77,6 +89,7 @@ for (const ev of EVENTS) {
   ev.choices.forEach((c, i) => {
     const w = `evento ${ev.id}#${i + 1}`;
     cond(w, c.cond);
+    if (ev.type === 'narrative' && ev.choices.length > 0 && ev.allowGlobalTraits !== true && c.ex) errors.push(`${w}: opção global em narrativa fechada sem allowGlobalTraits`);
     if (c.requiresEventType && c.requiresEventType !== ev.type) errors.push(`${w}: exige contexto ${c.requiresEventType}, evento classificado como ${ev.type ?? 'sem tipo'}`);
     if (ev.type !== 'combat' && (c.check?.tag === 'combate' || c.activeTechnique)) errors.push(`${w}: escolha de combate disponível em evento ${ev.type ?? 'sem tipo'}`);
     if (c.activeTechnique && (ev.type !== 'combat' || c.check?.tag !== 'combate')) errors.push(`${w}: técnica ativa fora de uma escolha de combate`);

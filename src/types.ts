@@ -7,6 +7,25 @@ export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ru
 export type SectRank = 'externo' | 'interno' | 'anciao';
 export type EventType = 'narrative' | 'combat' | 'shop' | 'alchemy';
 export type QuestObjectiveKind = 'defeat' | 'collect' | 'craft';
+export type EquipmentSlot = 'rightWeapon' | 'leftWeapon' | 'armor' | 'accessory';
+export type Weather = 'sunny' | 'rain' | 'blizzard';
+export type GuildFaction = 'sword_sect' | 'demon_cult' | 'merchant_guild';
+
+export interface Companion {
+  id: string;
+  name: string;
+  description: string;
+  bonus: Partial<Stats>;
+  price: number;
+}
+
+export interface CombatRoll {
+  d20: number;
+  modifier: number;
+  total: number;
+  dc: number;
+  stat: StatKey;
+}
 
 export interface QuestObjective {
   kind: QuestObjectiveKind;
@@ -56,6 +75,7 @@ export interface Effects {
   /** Avança um nível na hierarquia da seita, sem rebaixar personagens veteranos. */
   sectRankUp?: boolean;
   reputation?: number;
+  factionReputation?: Partial<Record<GuildFaction, number>>;
   /** Adiciona uma trilha de poder independente sem substituir `trilha`. */
   powerPath?: string;
   /** Progresso a somar à trilha independente indicada em `powerPath`. */
@@ -253,13 +273,16 @@ export interface Path {
 export interface Item {
   id: string;
   name: string;
-  kind: 'pilula' | 'erva' | 'material' | 'arma' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
+  kind: 'pilula' | 'erva' | 'material' | 'arma' | 'armadura' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
   grade: 1 | 2 | 3 | 4 | 5;
   desc: string;
   /** Consumível: efeitos ao usar. */
   use?: Effects;
   /** Passivo (artefatos): bônus de atributos enquanto no inventário. */
   passive?: Partial<Stats>;
+  equipmentSlot?: EquipmentSlot;
+  bonuses?: Partial<Stats>;
+  coldProtection?: boolean;
   /** Bônus à chance de rompimento para o reino alvo (consumido ao usar). */
   breakBonus?: { tier: number; bonus: number };
   value: number;
@@ -367,6 +390,13 @@ export interface State {
   activeQuest?: { id: string; progress: number };
   /** Reputação obtida ao cumprir contratos. */
   reputation?: number;
+  factionReputation?: Partial<Record<GuildFaction, number>>;
+  guild?: GuildFaction;
+  equipment?: Partial<Record<EquipmentSlot, string>>;
+  companions?: string[];
+  day?: number;
+  hour?: number;
+  weather?: Weather;
   /** Hierarquia atual na seita; derivável dos flags antigos. */
   sectRank?: SectRank;
   /** Mensagens produzidas pela Engine e consumidas pela camada de interface. */
@@ -407,7 +437,7 @@ export interface State {
   /** Efeitos temporários e sua duração restante em turnos. */
   statuses?: StatusEffect[];
   /** Resultado exibido após uma escolha. */
-  result: { text: string; check?: { chance: number; success: boolean }; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
+  result: { text: string; check?: { chance: number; success: boolean }; roll?: CombatRoll; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
   /** Pontos do recurso próprio da trilha. */
