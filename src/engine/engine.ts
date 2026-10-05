@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, Path,
+  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -46,10 +46,20 @@ export const ladderOf = (s: State) => LADDERS[PATH[s.path].ladder];
 export const realmOf = (s: State, tier = s.tier): Realm => { const r = ladderOf(s).realms; return r[Math.min(tier, r.length - 1)]; };
 export const realmName = (s: State) => realmOf(s).name;
 export const has = (s: State, f: string) => s.flags.includes(f);
+const alignmentOf = (s: State): Alignment => s.alignment ?? (s.path === 'demoniaca' ? 'demoniaco' : 'daoico');
+const isPassiveArtifact = (item: Item | undefined): item is PassiveArtifact =>
+  !!item?.passive;
+function notify(s: State, event: UiNotification) {
+  s.uiNotifications ??= [];
+  s.uiNotifications.push(event);
+}
 
 export function eff(s: State, k: StatKey): number {
   let v = s.stats[k];
-  for (const id of s.items) v += ITEM[id]?.passive?.[k] ?? 0;
+  for (const id of s.items) {
+    const item = ITEM[id];
+    if (isPassiveArtifact(item)) v += item.passive[k] ?? 0;
+  }
   for (const id of s.techniques) v += TECH[id]?.stats?.[k] ?? 0;
   return v;
 }
@@ -191,6 +201,10 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.tierMin !== undefined && s.tier < c.tierMin) return false;
   if (c.tierMax !== undefined && s.tier > c.tierMax) return false;
   if (c.path && !c.path.includes(s.path)) return false;
+  if (c.alignment && !c.alignment.includes(alignmentOf(s))) return false;
+  if (c.powerPath && !c.powerPath.some((id) => s.powerPaths?.includes(id))) return false;
+  if (c.powerProgressMin !== undefined && !c.powerPath?.some((id) => (s.powerProgress?.[id] ?? 0) >= c.powerProgressMin!)) return false;
+  if (c.master && !(s.master && c.master.includes(s.master))) return false;
   if (c.origin && !c.origin.includes(s.origin)) return false;
   if (c.flags && !c.flags.every((f) => has(s, f))) return false;
   if (c.noFlags && c.noFlags.some((f) => has(s, f))) return false;
@@ -314,7 +328,9 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   });
   const s: State = {
     pen,
-    v: 1, seed: rng.seed, name: personName(rng), path: pathId, origin: c.origin, root: c.root,
+    v: 1, seed: rng.seed, name: personName(rng), path: pathId,
+    alignment: pathId === 'demoniaca' ? 'demoniaco' : 'daoico', master: null, powerPaths: [], powerProgress: {},
+    origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
     maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
@@ -399,6 +415,7 @@ function setPath(s: State, id: string) {
   if (p.tecnica && !s.techniques.includes(p.tecnica)) { s.techniques.push(p.tecnica); noteFound(s, 'techs', p.tecnica); }
   if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
   if (id === 'demoniaca') {
+    s.alignment = 'demoniaco';
     s.faction = 'demoniaca';
     if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
   }
@@ -410,7 +427,25 @@ function setPath(s: State, id: string) {
 
 export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (!fx) return;
+  const previousAlignment = alignmentOf(s);
+  const previousMaster = s.master;
   if (fx.trilha) setPath(s, fx.trilha);
+  if (fx.alignment) s.alignment = fx.alignment;
+  if (fx.master) s.master = fx.master;
+  const currentAlignment = alignmentOf(s);
+  if (currentAlignment !== previousAlignment) {
+    notify(s, { kind: 'alignment', message: `Alinhamento alterado: ${currentAlignment === 'demoniaco' ? 'Caminho Demoníaco' : 'Caminho Daoico'}.` });
+  }
+  if (s.master && s.master !== previousMaster) {
+    const masterName = s.master === 'lua_oca' ? 'Mestre da Lua Oca' : s.master === 'mestra_cinzas' ? 'Mestra das Cinzas' : s.master;
+    notify(s, { kind: 'master', message: `Novo mestre: ${masterName}.` });
+  }
+  if (fx.powerPath) {
+    s.powerPaths ??= [];
+    s.powerProgress ??= {};
+    if (!s.powerPaths.includes(fx.powerPath)) s.powerPaths.push(fx.powerPath);
+    if (fx.powerProgress) s.powerProgress[fx.powerPath] = Math.max(0, (s.powerProgress[fx.powerPath] ?? 0) + fx.powerProgress);
+  }
   if (fx.rec && PATH[s.path]?.rec) s.rec = Math.max(0, (s.rec ?? 0) + fx.rec);
   if (fx.superar && !s.flags.includes('defeito_superado')) {
     s.flags.push('defeito_superado');
@@ -431,7 +466,12 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + (fx.corr > 0 && s.path === 'demoniaca' ? fx.corr * 0.6 : fx.corr)));
   if (fx.setFlags) for (const f of fx.setFlags) if (!s.flags.includes(f)) s.flags.push(f);
   if (fx.clearFlags) s.flags = s.flags.filter((f) => !fx.clearFlags!.includes(f));
-  if (fx.item) for (const i of fx.item) if (s.items.length < 40) { s.items.push(i); noteFound(s, 'items', i); }
+  if (fx.item) for (const i of fx.item) if (s.items.length < 40) {
+    s.items.push(i);
+    noteFound(s, 'items', i);
+    const item = ITEM[i];
+    if (item && item.grade >= 3) notify(s, { kind: 'rare-item', message: `Item raro encontrado: ${item.name}.` });
+  }
   if (fx.removeItem) {
     for (const i of fx.removeItem) {
       const idx = s.items.indexOf(i);
@@ -596,6 +636,7 @@ export interface ViewChoice {
 
 export interface View {
   kind: 'event' | 'result' | 'ending';
+  eventType?: GameEvent['eventType'];
   title: string;
   text: string;
   rarity?: string;
@@ -670,7 +711,7 @@ export function view(s: State): View {
   });
   const body = cur.v && ev.alt?.[cur.v - 1] ? ev.alt[cur.v - 1] : ev.text;
   const fechadas = ev.choices.filter((c) => condMet(s, c.cond)).map((c) => bloqueadaPorDefeito(s, c)).filter(Boolean) as string[];
-  return { kind: 'event', title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
+  return { kind: 'event', eventType: ev.eventType, title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
 }
 
 /* ---------- Escolhas ---------- */

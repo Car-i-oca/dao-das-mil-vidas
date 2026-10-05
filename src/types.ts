@@ -1,6 +1,7 @@
 export type StatKey = 'fis' | 'esp' | 'comp' | 'sor' | 'car' | 'dao';
 export type Stats = Record<StatKey, number>;
 export type Rarity = 'comum' | 'raro' | 'lendario';
+export type Alignment = 'daoico' | 'demoniaco';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 
@@ -22,6 +23,14 @@ export interface Effects {
   tier?: number;
   /** Define a trilha de cultivo (só vale se o personagem ainda não tem uma). */
   trilha?: string;
+  /** Define o alinhamento do personagem. */
+  alignment?: Alignment;
+  /** Define ou substitui o mestre atual. */
+  master?: string;
+  /** Adiciona uma trilha de poder independente sem substituir `trilha`. */
+  powerPath?: string;
+  /** Progresso a somar à trilha independente indicada em `powerPath`. */
+  powerProgress?: number;
   /** Pontos do recurso da trilha (intenção de espada, têmpera, etc.). */
   rec?: number;
   /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). */
@@ -45,12 +54,25 @@ export interface Effects {
   anos?: number;
 }
 
+export interface UiNotification {
+  kind: 'master' | 'alignment' | 'rare-item';
+  message: string;
+}
+
 export interface Cond {
   ageMin?: number;
   ageMax?: number;
   tierMin?: number;
   tierMax?: number;
   path?: string[];
+  /** Alinhamento moral/espiritual do cultivador. */
+  alignment?: Alignment[];
+  /** Trilhas de poder independentes da trilha de cultivo principal. */
+  powerPath?: string[];
+  /** Exige progresso mínimo em uma das trilhas indicadas em `powerPath`. */
+  powerProgressMin?: number;
+  /** Id do mestre atual (permite mestres alternativos). */
+  master?: string[];
   origin?: string[];
   flags?: string[];
   noFlags?: string[];
@@ -123,6 +145,8 @@ export interface GameEvent {
   rarity: Rarity;
   weight?: number;
   once?: boolean;
+  /** Evento comercial: as escolhas podem usar `custo` para cobrar pedras espirituais. */
+  eventType?: 'mercador';
   /** Variações do texto do evento (uma é sorteada a cada ocorrência). */
   alt?: string[];
   /** Reino natural da ameaça deste evento (vale para todos os testes dele). `escala` desliga a regra automática. */
@@ -188,6 +212,9 @@ export interface Item {
   breakBonus?: { tier: number; bonus: number };
   value: number;
 }
+
+/** Item com bônus passivos ativos enquanto estiver no inventário, sem ação de uso. */
+export type PassiveArtifact = Item & { passive: Partial<Stats> };
 
 export interface Technique {
   id: string;
@@ -266,6 +293,16 @@ export interface State {
   seed: number;
   name: string;
   path: string;
+  /** Ausente apenas em saves antigos; nesses casos a Engine infere o alinhamento da trilha. */
+  alignment?: Alignment;
+  /** Mestre alternativo atual; ausente em saves antigos ou antes de conhecer um mestre. */
+  master?: string | null;
+  /** Trilhas de poder paralelas à trilha de cultivo principal. */
+  powerPaths?: string[];
+  /** Progresso por id de trilha de poder independente. */
+  powerProgress?: Record<string, number>;
+  /** Mensagens produzidas pela Engine e consumidas pela camada de interface. */
+  uiNotifications?: UiNotification[];
   origin: string;
   root: Root;
   talent: string;
@@ -285,6 +322,7 @@ export interface State {
   place: Place;
   faction: Faction;
   flags: string[];
+  /** IDs dos itens; artefatos passivos concedem seus bônus enquanto estiverem aqui. */
   items: string[];
   techniques: string[];
   names: Record<string, string>;

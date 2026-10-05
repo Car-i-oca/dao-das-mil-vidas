@@ -92,11 +92,23 @@ function applySettings() {
 const chipsHtml = (ch?: Change[]) => (ch?.length ? `<div class="chips">${ch.map((c) => `<span class="chip ${c.k}">${esc(c.t)}</span>`).join('')}</div>` : '');
 
 function toast(msg: string) {
+  let region = document.getElementById('toast-region');
+  if (!region) {
+    region = document.createElement('div');
+    region.id = 'toast-region';
+    region.setAttribute('role', 'status');
+    region.setAttribute('aria-live', 'polite');
+    document.body.appendChild(region);
+  }
   const el = document.createElement('div');
   el.className = 'toast';
   el.textContent = msg;
-  document.body.appendChild(el);
+  region.appendChild(el);
   setTimeout(() => el.remove(), 2400);
+}
+
+function flushEngineNotifications(s: State) {
+  for (const notification of s.uiNotifications?.splice(0) ?? []) toast(notification.message);
 }
 
 /* ---------- Texto que aparece aos poucos ---------- */
@@ -127,6 +139,13 @@ function skipTyper() {
 /* ---------- Telas ---------- */
 function render() {
   stopTyper();
+  const alignment = screen === 'game' && save.run
+    ? save.run.alignment ?? (save.run.path === 'demoniaca' ? 'demoniaco' : 'daoico')
+    : null;
+  app.classList.toggle('alignment-demonic', alignment === 'demoniaco');
+  app.classList.toggle('alignment-daoic', alignment === 'daoico');
+  if (alignment) document.documentElement.dataset.alignment = alignment;
+  else delete document.documentElement.dataset.alignment;
   switch (screen) {
     case 'home': return renderHome();
     case 'create': return renderCreate();
@@ -270,15 +289,15 @@ function lifeHtml(s: State): string {
     ${intro}
     <div class="card story" data-act="skip">
       ${sceneFor(s, s.current?.id ?? 'x')}
-      <div class="ev-title">${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
+      <div class="ev-title">${v.eventType === 'mercador' ? '<span class="badge shop">Mercador</span>' : ''}${v.rarity && RAR_LABEL[v.rarity] ? `<span class="rar rar-${v.rarity}">${RAR_LABEL[v.rarity]}</span>` : ''}<span>${esc(v.title)}</span></div>
       ${npcFor(s, s.current?.id ?? '')}
       <p class="story-text" id="typed"></p>
       <div class="hint" id="hint">toque para pular</div>
     </div>
     <div class="choices" id="choices">
       ${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}
-      ${v.choices.map((c, i) => `
-        <button class="choice" data-act="choose" data-i="${i}" ${c.disabled ? 'disabled' : ''}>
+      ${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => `
+        <button class="choice" data-act="choose" data-i="${i}">
           <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
           <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
         </button>`).join('')}
@@ -571,6 +590,7 @@ app.addEventListener('click', (ev) => {
     case 'choose':
       if (!s) break;
       withRng(s, (r) => choose(s, Number(target.dataset.i), r));
+      flushEngineNotifications(s);
       persist();
       if (s.result?.combate && save.settings.duelos) playDuel(s.result.combate, { nome: s.name, onDone: () => render() });
       else render();
@@ -578,6 +598,7 @@ app.addEventListener('click', (ev) => {
     case 'next':
       if (!s) break;
       withRng(s, (r) => proceed(s, r));
+      flushEngineNotifications(s);
       persist();
       render();
       window.scrollTo(0, 0);
@@ -587,6 +608,7 @@ app.addEventListener('click', (ev) => {
     case 'use':
       if (!s) break;
       { const msg = withRng(s, (r) => useItem(s, target.dataset.id!, r)); if (msg) toast(msg); }
+      flushEngineNotifications(s);
       persist();
       if (s.ending) { s.result = { text: 'Seu corpo não resistiu.' }; tab = 'vida'; }
       render();
