@@ -1,4 +1,5 @@
 import type { Choice, GameEvent } from '../types';
+import { eventTypeOf } from './event-type';
 
 /**
  * Opções exclusivas por traço (talento, defeito, trilha, origem, constituição, raiz, técnica, conduta).
@@ -55,6 +56,7 @@ export function aplicarMoldes(events: GameEvent[], moldes: Molde[]): GameEvent[]
     (porId.get(a) ?? porId.set(a, []).get(a)!).push(m);
   }
   return events.map((e) => {
+    if (eventTypeOf(e) === 'narrative' && e.choices.length > 0 && e.allowGlobalTraits !== true) return e;
     if (!elegivel(e) && !porId.has(e.id)) return e;
     const cats = categorias(e);
     const combatContext = !!e.combate || e.choices.some((choice) => !choice.ex && choice.check?.tag === 'combate');

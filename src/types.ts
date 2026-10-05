@@ -193,6 +193,8 @@ export interface GameEvent {
   rarity: Rarity;
   /** Contexto mecânico do evento; eventos legados são classificados ao montar EVENTS. */
   type?: EventType;
+  /** Permite anexar opções globais de traços/origens a este evento narrativo. */
+  allowGlobalTraits?: boolean;
   weight?: number;
   once?: boolean;
   /** Evento comercial: as escolhas podem usar `custo` para cobrar pedras espirituais. */

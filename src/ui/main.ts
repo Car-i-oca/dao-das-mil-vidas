@@ -64,6 +64,25 @@ let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 
 const app = document.getElementById('app')!;
+let choiceAudioContext: AudioContext | undefined;
+
+function playChoiceClickSound() {
+  if (!window.AudioContext) return;
+  choiceAudioContext ??= new window.AudioContext();
+  const context = choiceAudioContext;
+  if (context.state === 'suspended') void context.resume();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const start = context.currentTime;
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(400, start);
+  gain.gain.setValueAtTime(0.025, start);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.05);
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + 0.05);
+}
 
 /* ---------- Instalação como app (PWA) ---------- */
 let installEvt: (Event & { prompt: () => Promise<void> }) | null = null;
@@ -598,7 +617,8 @@ function startRun() {
 app.addEventListener('click', (ev) => {
   const target = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!target) return;
-  playSfx('tap');
+  if (target.matches('.choice')) playChoiceClickSound();
+  else playSfx('tap');
   const act = target.dataset.act!;
   const s = save.run;
   switch (act) {

@@ -764,6 +764,7 @@ export function visibleChoices(s: State): Visible[] {
   let list = ev.choices.filter((c) =>
     condMet(s, c.cond) &&
     !bloqueadaPorDefeito(s, c) &&
+    (eventType !== 'narrative' || ev.allowGlobalTraits === true || !c.ex) &&
     (!c.requiresEventType || c.requiresEventType === eventType) &&
     (eventType === 'combat' || (c.check?.tag !== 'combate' && !c.activeTechnique)),
   );

@@ -16,6 +16,7 @@ Depois de escrever, rode `npm run sim` — o relatório lista eventos que nunca 
   once: true,                     // opcional: só acontece uma vez por vida
   cooldown: 15,                   // opcional: anos mínimos para repetir (padrão 15)
   type: 'narrative',              // opcional: 'narrative' | 'combat' | 'shop' | 'alchemy'
+  allowGlobalTraits: true,        // opcional: permite moldes globais em narrativas fechadas
   cond: { ... },                  // opcional: condições para ser sorteado
   choices: [ ... ],               // 1 ou mais escolhas
 }
@@ -54,6 +55,8 @@ Valem para eventos e para escolhas individuais. Todas as chaves são opcionais; 
   res:  { text: '...', fx: { ... } },   // resultado sem teste
 }
 ```
+
+Eventos narrativos com escolhas próprias não recebem opções globais de traços/origens por padrão. Defina `allowGlobalTraits: true` no evento apenas quando quiser permitir explicitamente esses moldes.
 
 ### Testes (`check`)
 - `stat`: um atributo ou uma lista (usa a média). Atributos: `fis esp comp sor car dao`.
