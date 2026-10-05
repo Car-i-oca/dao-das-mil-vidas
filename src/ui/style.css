@@ -98,6 +98,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .status-chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .status-chip { border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
 .status-chip.poisoned, .status-chip.bleeding, .status-chip.burning { color: var(--red); border-color: var(--red); }
+.status-chip.frozen { color: var(--blue); border-color: var(--blue); }
 .status-chip.focused, .status-chip.guarded { color: var(--jade); border-color: var(--jade); }
 .bar { height: 7px; background: var(--line); border-radius: 6px; overflow: hidden; margin-top: 6px; }
 .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold)); transition: width 0.5s; }
@@ -135,6 +136,15 @@ h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: 0.02em; }
 .stat { display: grid; grid-template-columns: 110px 1fr 40px; gap: 8px; align-items: center; padding: 3px 0; }
 .stat .bar { margin: 0; height: 6px; }
 .stat .n { text-align: right; font-variant-numeric: tabular-nums; }
+.quest-card h3 { margin: 4px 0; }
+.quest-card p { margin: 4px 0 8px; }
+.quest-progress { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.quest-progress .bar { flex: 1; margin: 0; }
+.quest-progress .bar > i { background: linear-gradient(90deg, var(--blue), var(--gold)); }
+.quest-offer { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.quest-offer:last-child { border-bottom: 0; }
+.quest-offer .btn { width: auto; min-width: 90px; padding: 8px 12px; min-height: 0; }
+.quest-card .btn { margin-top: 10px; }
 .pill { display: inline-block; padding: 2px 9px; margin: 2px 4px 2px 0; border-radius: 20px; border: 1px solid var(--line); font-size: 0.82rem; background: var(--bg2); }
 .pill.g2 { border-color: var(--jade); }
 .pill.g3 { border-color: var(--blue); }

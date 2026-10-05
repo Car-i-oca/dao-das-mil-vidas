@@ -4,9 +4,28 @@ export type Rarity = 'comum' | 'raro' | 'lendario';
 export type Alignment = 'daoico' | 'demoniaco';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
+export type SectRank = 'externo' | 'interno' | 'anciao';
+export type QuestObjectiveKind = 'defeat' | 'collect' | 'craft';
+
+export interface QuestObjective {
+  kind: QuestObjectiveKind;
+  count: number;
+  place?: Place;
+  foe?: string;
+  item?: string;
+  eventId?: string;
+}
+
+export interface QuestDefinition {
+  id: string;
+  title: string;
+  description: string;
+  objective: QuestObjective;
+  reward: { pedras: number; reputation: number };
+}
 
 export interface StatusEffect {
-  id: 'poisoned' | 'bleeding' | 'burning' | 'focused' | 'guarded';
+  id: 'poisoned' | 'bleeding' | 'burning' | 'frozen' | 'focused' | 'guarded';
   turns: number;
   potency: number;
 }
@@ -33,6 +52,9 @@ export interface Effects {
   alignment?: Alignment;
   /** Define ou substitui o mestre atual. */
   master?: string;
+  /** Avança um nível na hierarquia da seita, sem rebaixar personagens veteranos. */
+  sectRankUp?: boolean;
+  reputation?: number;
   /** Adiciona uma trilha de poder independente sem substituir `trilha`. */
   powerPath?: string;
   /** Progresso a somar à trilha independente indicada em `powerPath`. */
@@ -65,7 +87,7 @@ export interface Effects {
 }
 
 export interface UiNotification {
-  kind: 'master' | 'alignment' | 'rare-item';
+  kind: 'master' | 'alignment' | 'rare-item' | 'quest';
   message: string;
 }
 
@@ -88,6 +110,11 @@ export interface Cond {
   itemsAll?: string[];
   /** Exige qualquer um dos itens listados. */
   itemsAny?: string[];
+  /** Exige que o personagem ainda não esteja em missão. */
+  noActiveQuest?: boolean;
+  /** Mínimo de encontros sobrevividos em um bioma. */
+  regionalEncounters?: { place: Place; min: number };
+  sectRank?: SectRank[];
   flags?: string[];
   noFlags?: string[];
   stat?: Partial<Stats>;
@@ -147,6 +174,8 @@ export interface Choice {
   custo?: number;
   /** Id da técnica ativa escolhida para este teste de combate. */
   activeTechnique?: string;
+  /** Estado de missão rastreado na UI/engine. */
+  questAction?: { type: 'accept' | 'abandon'; questId?: string };
   check?: Check;
   ok?: Outcome;
   fail?: Outcome;
@@ -171,7 +200,7 @@ export interface GameEvent {
   /** Cena de passagem de tempo: não precisa de consequência própria. */
   passagem?: boolean;
   /** Marca o evento como luta: tipo de oponente e cenário do duelo animado (opcionais; há inferência). */
-  combate?: { oponente?: string; oponentes?: string[]; cenario?: string };
+  combate?: { oponente?: string; oponentes?: string[]; cenario?: string; boss?: boolean };
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
   cond?: Cond;
@@ -246,6 +275,7 @@ export interface Technique {
     cooldown: number;
     power: number;
     status?: StatusEffect;
+    targetStatus?: StatusEffect;
   };
   /** Seita ou escola de origem (método de seita extinta): quem a reconhece, a cobiça ou a quer de volta. */
   origem?: string;
@@ -324,6 +354,14 @@ export interface State {
   powerPaths?: string[];
   /** Progresso por id de trilha de poder independente. */
   powerProgress?: Record<string, number>;
+  /** Contagem de encontros concluídos e sobrevividos em cada região. */
+  regionalEncounters?: Partial<Record<Place, number>>;
+  /** Missão ativa e seu progresso (ausente em saves antigos). */
+  activeQuest?: { id: string; progress: number };
+  /** Reputação obtida ao cumprir contratos. */
+  reputation?: number;
+  /** Hierarquia atual na seita; derivável dos flags antigos. */
+  sectRank?: SectRank;
   /** Mensagens produzidas pela Engine e consumidas pela camada de interface. */
   uiNotifications?: UiNotification[];
   origin: string;

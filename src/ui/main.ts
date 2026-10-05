@@ -2,7 +2,7 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES,
+  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
@@ -21,6 +21,7 @@ import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
 import { playDuel } from './duelo';
 import { FOES } from '../data/combates';
+import { QUESTS } from '../data/quests';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
@@ -56,7 +57,7 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 /* ---------- Estado de interface ---------- */
 type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
-let tab: 'vida' | 'status' | 'mochila' | 'diario' = 'vida';
+let tab: 'vida' | 'status' | 'mochila' | 'diario' | 'missoes' = 'vida';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
@@ -209,14 +210,14 @@ function renderCreate() {
 function hudHtml(s: State): string {
   const realm = realmOf(s);
   const ageRatio = Math.min(1, s.age / s.maxAge);
-  const statusNames: Record<string, string> = { poisoned: 'Envenenado', bleeding: 'Sangrando', burning: 'Queimando', focused: 'Focado', guarded: 'Protegido' };
+  const statusNames: Record<string, string> = { poisoned: 'Envenenado', bleeding: 'Sangrando', burning: 'Queimando', frozen: 'Congelado', focused: 'Focado', guarded: 'Protegido' };
   const statuses = (s.statuses ?? []).map((status) => `<span class="status-chip ${status.id}">${statusNames[status.id]} · ${status.turns} t</span>`).join('');
   return `
     <div class="hud">
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
       <div class="row between"><span class="name">${esc(s.name)}${alcunhaHtml(s)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
-      <div class="hud-resources"><span>Qi marcial: ${s.qi ?? 8}/10</span>${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
+      <div class="hud-resources"><span>Qi marcial: ${s.qi ?? 8}/10</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
       </div></div>
@@ -243,7 +244,7 @@ function npcFor(s: State, eventId: string): string {
 
 function tabsHtml(): string {
   const t = (id: typeof tab, icon: string, label: string) => `<button class="${tab === id ? 'on' : ''}" data-act="tab" data-id="${id}"><b>${icon}</b>${label}</button>`;
-  return `<nav class="tabs">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('diario', '✎', 'Diário')}</nav>`;
+  return `<nav class="tabs">${t('vida', '☯', 'Vida')}${t('status', '◈', 'Status')}${t('mochila', '▣', 'Mochila')}${t('missoes', '⚑', 'Missões')}${t('diario', '✎', 'Diário')}</nav>`;
 }
 
 function renderGame() {
@@ -252,6 +253,7 @@ function renderGame() {
   if (tab === 'vida') body = lifeHtml(s);
   else if (tab === 'status') body = statusHtml(s);
   else if (tab === 'mochila') body = bagHtml(s);
+  else if (tab === 'missoes') body = questsHtml(s);
   else body = logHtml(s);
   app.innerHTML = `${hudHtml(s)}<div class="game" id="game">${body}</div>${tabsHtml()}`;
   if (tab === 'vida') startTyping(s);
@@ -416,6 +418,23 @@ function statusHtml(s: State): string {
     </div>
     ${relationsHtml(s)}
     <div class="card"><div class="muted small" style="margin-bottom:4px">TÉCNICAS</div>${techs}</div>`;
+}
+
+function sectRankLabel(rank: NonNullable<ReturnType<typeof sectRankOf>>): string {
+  return rank === 'anciao' ? 'Ancião' : rank === 'interno' ? 'Discípulo Interno' : 'Discípulo Externo';
+}
+
+function questsHtml(s: State): string {
+  const active = s.activeQuest ? QUESTS.find((quest) => quest.id === s.activeQuest?.id) : undefined;
+  const objective = active?.objective;
+  const progress = s.activeQuest?.progress ?? 0;
+  const activeCard = active && objective
+    ? `<div class="card quest-card"><div class="muted small">CONTRATO ATIVO</div><h3>${esc(active.title)}</h3><p>${esc(active.description)}</p><div class="quest-progress"><div class="bar"><i style="width:${Math.min(100, (progress / objective.count) * 100)}%"></i></div><span>${progress}/${objective.count}</span></div><div class="muted small">Recompensa: ${active.reward.pedras} pedras espirituais · ${active.reward.reputation} reputação</div><button class="btn ghost" data-act="quest-abandon">Abandonar contrato</button></div>`
+    : `<div class="card muted">Nenhum contrato ativo.</div>`;
+  const safe = s.place === 'cidade' || s.place === 'seita';
+  const board = !safe ? '<div class="card muted small">O quadro de missões fica disponível na cidade ou na seita.</div>'
+    : active ? '' : `<div class="card"><div class="muted small">QUADRO DE MISSÕES · ${PLACE_NAMES[s.place] ?? s.place}</div>${QUESTS.map((quest) => `<div class="quest-offer"><div><b>${esc(quest.title)}</b><div class="muted small">${esc(quest.description)}</div><div class="muted small">Recompensa: ${quest.reward.pedras} pedras · ${quest.reward.reputation} reputação</div></div><button class="btn" data-act="quest-accept" data-id="${esc(quest.id)}">Aceitar</button></div>`).join('')}</div>`;
+  return `<div class="card kv"><div class="k">Reputação</div><div class="v">${s.reputation ?? 0}</div><div class="k">Rank da Seita</div><div class="v">${sectRankOf(s) ? sectRankLabel(sectRankOf(s)!) : 'Sem rank'}</div>${s.flags.includes('secta_vip') ? '<div class="k">Acesso VIP</div><div class="v">Pavilhão dos Anciãos</div>' : ''}</div>${activeCard}${board}`;
 }
 
 /** Relações importantes da história, derivadas das flags da vida. */
@@ -594,6 +613,18 @@ app.addEventListener('click', (ev) => {
       break;
     case 'start': startRun(); break;
     case 'tab': tab = target.dataset.id as typeof tab; render(); break;
+    case 'quest-accept':
+      if (!s) break;
+      if (acceptQuest(s, target.dataset.id!)) flushEngineNotifications(s);
+      persist();
+      render();
+      break;
+    case 'quest-abandon':
+      if (!s) break;
+      if (abandonQuest(s)) flushEngineNotifications(s);
+      persist();
+      render();
+      break;
     case 'choose':
       if (!s) break;
       withRng(s, (r) => choose(s, Number(target.dataset.i), r));

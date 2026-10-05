@@ -8,12 +8,14 @@ import { WORLDS, WORLD } from '../src/data/mundo';
 import { TETOS } from '../src/data/faixas';
 import { FUSOES } from '../src/data/tecnicas_novas';
 import { ORIGINS, TALENTS } from '../src/data/character';
+import { QUESTS } from '../src/data/quests';
+import { FOES } from '../src/data/combates';
 import type { Cond, Effects } from '../src/types';
 
 const errors: string[] = [];
 const warnings: string[] = [];
 const ids = <T extends { id: string }>(a: T[]) => new Set(a.map((x) => x.id));
-const itemIds = ids(ITEMS), techIds = ids(TECHNIQUES), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS);
+const itemIds = ids(ITEMS), techIds = ids(TECHNIQUES), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS), foeIds = ids(FOES);
 
 function dupes(label: string, list: { id: string }[]) {
   const seen = new Set<string>();
@@ -22,7 +24,14 @@ function dupes(label: string, list: { id: string }[]) {
     seen.add(x.id);
   }
 }
-dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS);
+dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES);
+
+for (const quest of QUESTS) {
+  if (quest.objective.item && !itemIds.has(quest.objective.item)) errors.push(`missão ${quest.id}: item inexistente "${quest.objective.item}"`);
+  if (quest.objective.foe && !foeIds.has(quest.objective.foe)) errors.push(`missão ${quest.id}: oponente inexistente "${quest.objective.foe}"`);
+  if (quest.objective.eventId && !evIds.has(quest.objective.eventId)) errors.push(`missão ${quest.id}: evento inexistente "${quest.objective.eventId}"`);
+  if (quest.objective.count < 1) errors.push(`missão ${quest.id}: objetivo deve exigir ao menos uma unidade`);
+}
 
 const setFlags = new Set<string>(['tem_eco', 'trilha_definida']); // flags definidas pelo motor
 const needFlags = new Map<string, string>();
@@ -40,6 +49,8 @@ function cond(where: string, c?: Cond) {
   if (!c) return;
   c.flags?.forEach((f) => needFlags.set(f, where));
   if (c.item && !itemIds.has(c.item)) errors.push(`${where}: cond.item inexistente "${c.item}"`);
+  c.itemsAll?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAll inexistente "${id}"`));
+  c.itemsAny?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAny inexistente "${id}"`));
   if (c.tecnica && !techIds.has(c.tecnica)) errors.push(`${where}: cond.tecnica inexistente "${c.tecnica}"`);
   c.path?.forEach((p) => !PATHS.some((x) => x.id === p) && errors.push(`${where}: trilha inexistente "${p}"`));
   c.origin?.forEach((o) => !ORIGINS.some((x) => x.id === o) && errors.push(`${where}: origem inexistente "${o}"`));
@@ -49,6 +60,8 @@ function cond(where: string, c?: Cond) {
 
 for (const ev of EVENTS) {
   cond(`evento ${ev.id}`, ev.cond);
+  if (ev.combate?.oponente && !foeIds.has(ev.combate.oponente)) errors.push(`evento ${ev.id}: oponente inexistente "${ev.combate.oponente}"`);
+  ev.combate?.oponentes?.forEach((id) => !foeIds.has(id) && errors.push(`evento ${ev.id}: oponente inexistente "${id}"`));
   if (!ev.choices.length) errors.push(`evento ${ev.id}: sem escolhas`);
   ev.choices.forEach((c, i) => {
     const w = `evento ${ev.id}#${i + 1}`;

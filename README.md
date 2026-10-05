@@ -67,6 +67,9 @@ Três estilos, todos desenhados por código (sem imagens de terceiros): **Manhwa
 - **Afinidades:** cada traço atrai os acontecimentos do seu tipo (`src/data/afinidades.ts`), então vidas diferentes veem eventos diferentes.
 - **Técnicas:** têm estágios de domínio (Iniciante a Perfeição), o mundo reage a elas, podem ser fundidas e algumas vêm de seitas extintas.
 - **Marcas da vida:** decisões que gravam flags viram linhas do que você deixou para trás, e rendem um pouco de Herança.
+- **Missões e progressão da seita:** contratos aceitos na aba Missões acompanham caçadas, coletas e receitas; torneios podem elevar seu rank e abrir o Pavilhão VIP.
+- **Chefões regionais:** sobreviva a encontros num bioma para atrair seu guardião; chefões têm padrões de ataque e podem resistir a efeitos de status.
+- **Técnicas marciais e status:** técnicas ativas gastam Qi, entram em recarga e podem aplicar efeitos; o Qi recupera com a passagem dos turnos.
 
 ## Adicionar eventos
 Leia `docs/eventos.md`. Em resumo: crie ou edite um arquivo em `src/data/events/`, exporte um array de eventos e registre em `src/data/events/index.ts`. Depois rode `npm run validate` e `npm run sim -- 4000`.

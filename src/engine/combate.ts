@@ -23,6 +23,8 @@ export interface Beat {
   crit?: boolean;
   /** O alvo desviou (sem dano). */
   esq?: boolean;
+  /** Ataque especial do padrão do chefe. */
+  pattern?: boolean;
 }
 
 export type Desfecho = 'vitoria' | 'derrota' | 'fuga' | 'salvo';
@@ -42,6 +44,8 @@ export interface CombatScript {
   tier: number;
   /** Selo da opção exclusiva que levou à luta (trilha, talento, defeito, técnica...), se houver. */
   selo?: string;
+  /** Informa à Engine que o padrão do chefe foi executado durante a animação. */
+  patternTriggered?: boolean;
 }
 
 const TECH = Object.fromEntries(TECHNIQUES.map((t) => [t.id, t]));
@@ -65,6 +69,9 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
   const foeId = foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente);
   const foe = FOE[foeId];
   const mine = playerMoves(s);
+  const rivalMoves = foe.mirrorCultivator
+    ? [...s.techniques.map((id) => TECH[id]).filter((t) => t?.martial).map((t) => t.name), ...(PATH_MOVES[s.path] ?? PATH_MOVES[''])]
+    : foe.moves;
   const tecs = activeTechnique ? mine.filter((m) => m.tid === activeTechnique) : mine.filter((m) => m.tec);
   const bases = mine.filter((m) => !m.tec);
 
@@ -84,9 +91,9 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
   const nEsq = nF >= 4 ? rng.int(1, 2) : nF === 3 ? 1 : 0;
   const hitF = nF - nEsq;
 
-  const split = (totalDmg: number, n: number): number[] => {
+  const split = (totalDmg: number, n: number, boosted: Set<number> = new Set(), multiplier = 1): number[] => {
     if (n <= 0) return [];
-    const w = Array.from({ length: n }, () => 0.6 + rng.next());
+    const w = Array.from({ length: n }, (_, i) => (0.6 + rng.next()) * (boosted.has(i) ? multiplier : 1));
     const sum = w.reduce((a, b) => a + b, 0);
     const out = w.map((x) => Math.max(3, Math.round((x / sum) * totalDmg)));
     // Ajusta o último para a soma bater exatamente com o dano total.
@@ -95,7 +102,7 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
     return out;
   };
   const dmgF = split(100 - fFim, nP);   // dano que o oponente sofre
-  const dmgP = split(100 - pFim, hitF); // dano que o jogador sofre
+  const attackPattern = foe.attackPattern;
 
   // Ordem alternada com variações; o último golpe é do vencedor.
   const seq: ('p' | 'f')[] = [];
@@ -113,7 +120,19 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
   const esqSet = new Set<number>();
   while (esqSet.size < Math.min(nEsq, fIdx.length)) esqSet.add(fIdx[rng.int(0, fIdx.length - 1)]);
 
+  const patternHits = new Set<number>();
+  let incomingTurn = 0, incomingHit = 0;
+  seq.forEach((actor, idx) => {
+    if (actor !== 'f') return;
+    incomingTurn++;
+    if (esqSet.has(idx)) return;
+    if (attackPattern && incomingTurn % attackPattern.everyTurns === 0) patternHits.add(incomingHit);
+    incomingHit++;
+  });
+  const dmgP = split(100 - pFim, hitF, patternHits, attackPattern?.damageMultiplier); // dano que o jogador sofre
+
   let kp = 0, kf = 0, ti = 0, bi = 0;
+  let patternTriggered = false;
   const beats: Beat[] = seq.map((a, idx) => {
     const last = idx === seq.length - 1;
     if (a === 'p') {
@@ -122,13 +141,17 @@ export function buildCombat(s: State, ev: GameEvent, success: boolean, ferida: n
       const mv = useTec ? tecs[ti++ % tecs.length] : bases[bi++ % bases.length];
       return { a, mov: mv.name, tec: mv.tec, tid: mv.tid, fx: mv.fx, dano: dmgF[kp++], crit: last && success };
     }
-    if (esqSet.has(idx)) return { a, mov: foe.moves[(kf++ + idx) % foe.moves.length], dano: 0, esq: true };
-    const mov = last && !success ? foe.finisher : foe.moves[(kf++ + idx) % foe.moves.length];
-    return { a, mov, dano: dmgP.shift() ?? 1, crit: last && !success };
+    if (esqSet.has(idx)) return { a, mov: rivalMoves[(kf++ + idx) % rivalMoves.length], dano: 0, esq: true };
+    const foeTurn = kf++;
+    const special = !!attackPattern && foeTurn + 1 === attackPattern.everyTurns;
+    if (special) patternTriggered = true;
+    const mov = special ? attackPattern!.move : last && !success ? foe.finisher : rivalMoves[(foeTurn + idx) % rivalMoves.length];
+    return { a, mov, dano: dmgP.shift() ?? 1, crit: (last && !success) || special, pattern: special };
   });
 
   return {
     foe: foeId, foeName: foe.name, scene: ev.combate?.cenario ?? foe.scene, vitoria: success, desfecho, beats,
     fim: { p: pFim, f: fFim }, fraseFim: foe.down, path: s.path, tier: s.tier, selo,
+    patternTriggered,
   };
 }

@@ -136,6 +136,6 @@ export const ITEMS: Item[] = [
   { id: 'sal_escarlate', name: 'Sal Escarlate', kind: 'material', grade: 1, desc: 'Cristais avermelhados que purificam toxinas.', value: 7 },
   { id: 'flor_gelo', name: 'Flor do Gelo Silencioso', kind: 'material', grade: 2, desc: 'Uma flor que floresce sob a neve espiritual.', value: 14 },
   { id: 'perola_marinha', name: 'Pérola das Marés', kind: 'material', grade: 2, desc: 'Concentra a pressão espiritual do fundo do mar.', value: 16 },
-  { id: 'pilula_purificadora', name: 'Pílula Purificadora de Campo', kind: 'pilula', grade: 2, desc: 'Uma fórmula simples que cura feridas e elimina toxinas comuns.', use: { ferida: -2, clearStatus: ['poisoned', 'bleeding', 'burning'] }, value: 24 },
+  { id: 'pilula_purificadora', name: 'Pílula Purificadora de Campo', kind: 'pilula', grade: 2, desc: 'Uma fórmula simples que cura feridas e elimina toxinas comuns.', use: { ferida: -2, clearStatus: ['poisoned', 'bleeding', 'burning', 'frozen'] }, value: 24 },
   { id: 'lamina_bioma', name: 'Lâmina Forjada de Minério Antigo', kind: 'arma', grade: 3, desc: 'Uma lâmina equilibrada, reforçada com uma pérola das marés.', passive: { fis: 2, dao: 1 }, value: 110 },
 ];

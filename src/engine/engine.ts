@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification,
+  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -11,7 +11,7 @@ import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
 import { buildCombat } from './combate';
-import { FOE } from '../data/combates';
+import { FOE, foeFor } from '../data/combates';
 import { REGION_POOLS } from '../data/regions';
 import { VIRTUDE_NOME } from '../data/marcas';
 import { MARCAS_VIDA } from '../data/marcas_vida';
@@ -19,6 +19,7 @@ import { AFINIDADES } from '../data/afinidades';
 import { categorias, type Cat } from '../data/opcoes';
 import { WORLDS, WORLD } from '../data/mundo';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from '../data/retiros';
+import { QUESTS } from '../data/quests';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
@@ -33,6 +34,7 @@ export const TECH = byId(TECHNIQUES);
 export const ENDING = byId(ENDINGS);
 export const EVENT = byId(EVENTS);
 export const CONSTITUTION = byId(CONSTITUTIONS);
+const QUEST = byId(QUESTS);
 
 export const STAT_NAMES: Record<StatKey, string> = {
   fis: 'Físico', esp: 'Espírito', comp: 'Compreensão', sor: 'Sorte', car: 'Carisma', dao: 'Coração do Dao',
@@ -49,6 +51,13 @@ export const realmOf = (s: State, tier = s.tier): Realm => { const r = ladderOf(
 export const realmName = (s: State) => realmOf(s).name;
 export const has = (s: State, f: string) => s.flags.includes(f);
 const alignmentOf = (s: State): Alignment => s.alignment ?? (s.path === 'demoniaca' ? 'demoniaco' : 'daoico');
+const SECT_RANKS: SectRank[] = ['externo', 'interno', 'anciao'];
+export function sectRankOf(s: State): SectRank | null {
+  if (s.sectRank) return s.sectRank;
+  if (has(s, 'secta_anciao')) return 'anciao';
+  if (has(s, 'discipulo_interno')) return 'interno';
+  return has(s, 'membro_seita') ? 'externo' : null;
+}
 const isPassiveArtifact = (item: Item | undefined): item is PassiveArtifact =>
   !!item?.passive;
 function notify(s: State, event: UiNotification) {
@@ -202,6 +211,9 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.ageMax !== undefined && s.age > c.ageMax) return false;
   if (c.tierMin !== undefined && s.tier < c.tierMin) return false;
   if (c.tierMax !== undefined && s.tier > c.tierMax) return false;
+  if (c.noActiveQuest && s.activeQuest) return false;
+  if (c.regionalEncounters && (s.regionalEncounters?.[c.regionalEncounters.place] ?? 0) < c.regionalEncounters.min) return false;
+  if (c.sectRank && !(sectRankOf(s) && c.sectRank.includes(sectRankOf(s)!))) return false;
   if (c.path && !c.path.includes(s.path)) return false;
   if (c.alignment && !c.alignment.includes(alignmentOf(s))) return false;
   if (c.powerPath && !c.powerPath.some((id) => s.powerPaths?.includes(id))) return false;
@@ -261,6 +273,7 @@ export function checkChance(s: State, ch: Check, ev?: GameEvent, techniqueId?: s
   const keys = Array.isArray(ch.stat) ? ch.stat : [ch.stat];
   let total = keys.reduce((a, k) => a + eff(s, k), 0) / keys.length;
   total += (s.statuses ?? []).filter((status) => status.id === 'focused').reduce((sum, status) => sum + status.potency, 0);
+  total -= (s.statuses ?? []).filter((status) => status.id === 'frozen').reduce((sum, status) => sum + status.potency, 0);
   if (ch.tag) {
     if (PATH[s.path].tags.includes(ch.tag)) total += 1 + Math.floor(recStage(s) / 2);
     if (PATH[s.path].fraco?.includes(ch.tag)) total -= 1.5;
@@ -269,8 +282,14 @@ export function checkChance(s: State, ch: Check, ev?: GameEvent, techniqueId?: s
       if (tech?.tags?.includes(ch.tag)) total += tech.grade + [0, 0, 1, 1, 2][dominioEstagio(s, t)];
     }
   }
-  const techniquePower = techniqueId ? TECH[techniqueId]?.martial?.power ?? 0 : 0;
-  const p = 0.5 + (total - checkDifficulty(s, ch, ev) + techniquePower) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
+  const technique = techniqueId ? TECH[techniqueId]?.martial : undefined;
+  const techniquePower = technique?.power ?? 0;
+  const foeId = s.current?.foe ?? (ev ? foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente) : undefined);
+  const statusBonus = technique?.targetStatus && !FOE[foeId ?? '']?.immunities?.includes(technique.targetStatus.id)
+    ? technique.targetStatus.potency
+    : 0;
+  const bossPenalty = ev?.combate?.boss ? 2 : 0;
+  const p = 0.5 + (total - checkDifficulty(s, ch, ev) + techniquePower + statusBonus - bossPenalty) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
   // Ameaças de reinos abaixo do seu ficam fáceis: quanto maior a diferença de reino, maior o piso.
   const gap = s.tier - threatTier(s, ch, ev);
   const floor = gap >= 4 ? 0.95 : gap === 3 ? 0.88 : gap === 2 ? 0.78 : 0;
@@ -464,6 +483,18 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.pedras) s.pedras = Math.max(0, s.pedras + fx.pedras);
   if (fx.karma) s.karma += fx.karma;
   if (fx.fama) s.fama = Math.max(0, s.fama + fx.fama);
+  if (fx.reputation) s.reputation = Math.max(0, (s.reputation ?? 0) + fx.reputation);
+  if (fx.sectRankUp) {
+    const current = sectRankOf(s);
+    const next = Math.min(SECT_RANKS.length - 1, (current ? SECT_RANKS.indexOf(current) : -1) + 1);
+    s.sectRank = SECT_RANKS[next];
+    if (s.sectRank === 'interno' && !s.flags.includes('discipulo_interno')) s.flags.push('discipulo_interno');
+    if (s.sectRank === 'anciao') {
+      if (!s.flags.includes('secta_anciao')) s.flags.push('secta_anciao');
+      if (!s.flags.includes('secta_vip')) s.flags.push('secta_vip');
+    }
+    addLog(s, `Rank da seita: ${s.sectRank === 'anciao' ? 'Ancião' : s.sectRank === 'interno' ? 'Discípulo Interno' : 'Discípulo Externo'}.`);
+  }
   // Ganhos de eventos são em % do reino; em reinos altos valem menos (o cultivo exige mais anos).
   if (fx.xp && s.tier > 0) s.xp = Math.min(130, Math.max(0, s.xp + fx.xp * Math.min(1, Math.pow(10 / realmOf(s).years, 0.75))));
   if (fx.vida) s.maxAge += fx.vida;
@@ -485,6 +516,8 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   // Quem trilha o Caminho do Sangue controla melhor a corrupção (compensa o ritmo de cultivo maior).
   if (fx.corr) s.corr = Math.min(100, Math.max(0, s.corr + (fx.corr > 0 && s.path === 'demoniaca' ? fx.corr * 0.6 : fx.corr)));
   if (fx.setFlags) for (const f of fx.setFlags) if (!s.flags.includes(f)) s.flags.push(f);
+  if (fx.setFlags?.includes('membro_seita') && !s.sectRank) s.sectRank = 'externo';
+  if (fx.setFlags?.includes('discipulo_interno') && !s.sectRank) s.sectRank = 'interno';
   if (fx.clearFlags) s.flags = s.flags.filter((f) => !fx.clearFlags!.includes(f));
   if (fx.item) for (const i of fx.item) if (s.items.length < 40) {
     s.items.push(i);
@@ -518,6 +551,49 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (!s.ending && s.wounds >= 6) endLife(s, 'combate');
   if (!s.ending && s.corr >= 100) endLife(s, 'demonio');
   if (!s.ending && s.age >= s.maxAge) endLife(s, s.tier === 0 ? 'mortal' : 'velhice');
+}
+
+export function acceptQuest(s: State, id: string): boolean {
+  if (s.ending || s.activeQuest || !['cidade', 'seita'].includes(s.place) || !QUEST[id]) return false;
+  s.activeQuest = { id, progress: 0 };
+  notify(s, { kind: 'quest', message: `Contrato aceito: ${QUEST[id].title}.` });
+  addLog(s, `Aceitou o contrato: ${QUEST[id].title}.`);
+  return true;
+}
+
+export function abandonQuest(s: State): boolean {
+  if (!s.activeQuest) return false;
+  const title = QUEST[s.activeQuest.id]?.title ?? 'missão';
+  s.activeQuest = undefined;
+  notify(s, { kind: 'quest', message: `Contrato abandonado: ${title}.` });
+  addLog(s, `Abandonou o contrato: ${title}.`);
+  return true;
+}
+
+function updateQuest(s: State, ev: GameEvent, place: State['place'], foeId: string | undefined, success: boolean, gained: string[]) {
+  const active = s.activeQuest;
+  if (!active) return;
+  const quest = QUEST[active.id];
+  if (!quest) { s.activeQuest = undefined; return; }
+  const objective = quest.objective;
+  if (objective.place && objective.place !== place) return;
+  if (objective.eventId && objective.eventId !== ev.id) return;
+  let amount = 0;
+  if (objective.kind === 'defeat' && success && foeId === objective.foe) amount = 1;
+  if ((objective.kind === 'collect' || objective.kind === 'craft') && objective.item) {
+    amount = gained.filter((id) => id === objective.item).length;
+  }
+  if (!amount) return;
+  active.progress = Math.min(objective.count, active.progress + amount);
+  if (active.progress < objective.count) {
+    notify(s, { kind: 'quest', message: `${quest.title}: ${active.progress}/${objective.count}.` });
+    return;
+  }
+  s.pedras += quest.reward.pedras;
+  s.reputation = (s.reputation ?? 0) + quest.reward.reputation;
+  s.activeQuest = undefined;
+  notify(s, { kind: 'quest', message: `Contrato concluído: ${quest.title} · +${quest.reward.pedras} pedras · +${quest.reward.reputation} reputação.` });
+  addLog(s, `Concluiu ${quest.title}; recebeu ${quest.reward.pedras} pedras e ${quest.reward.reputation} de reputação.`);
 }
 
 /* ---------- Rompimento (evento virtual) ---------- */
@@ -883,6 +959,8 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   }
   const c = v.choice!;
   const ev = EVENT[s.current!.id];
+  const encounterPlace = s.place;
+  const previousItems = [...s.items];
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
   const martial = c.activeTechnique ? TECH[c.activeTechnique]?.martial : undefined;
   if (c.activeTechnique && martial) {
@@ -908,15 +986,34 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.seen[ev.id] = s.age;
   s.counts ??= {};
   s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
-  const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
-  s.result = { text: txt, check };
-  if (check && ((c.check?.tag === 'combate') || ev.combate)) {
-    const combatEvent = s.current?.foe ? { ...ev, combate: { ...ev.combate, oponente: s.current.foe } } : ev;
-    s.result.combate = buildCombat(s, combatEvent, check.success, out.fx?.ferida ?? 0, choiceBadge(c), c.activeTechnique);
+  const foeId = s.current?.foe ?? (ev.combate?.oponente ?? (c.check?.tag === 'combate' ? foeFor(ev.id, ev.title, ev.text) : undefined));
+  const combat = check && ((c.check?.tag === 'combate') || ev.combate)
+    ? buildCombat(s, s.current?.foe ? { ...ev, combate: { ...ev.combate, oponente: s.current.foe } } : ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c), c.activeTechnique)
+    : undefined;
+  if (combat?.patternTriggered && !check?.success) {
+    out = { ...out, fx: { ...out.fx, ferida: (out.fx?.ferida ?? 0) + 1 } };
+    addLog(s, 'O padrão de ataque do chefão culmina num golpe devastador.');
   }
+  const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
+  s.result = { text: txt, check, ...(combat ? { combate: combat } : {}) };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
   if (check?.success && martial?.status) applyFx(s, { status: [martial.status] }, rng);
+  if (check?.success && martial?.targetStatus) {
+    const target = foeId ? FOE[foeId] : undefined;
+    if (target?.immunities?.includes(martial.targetStatus.id)) addLog(s, `${target.name} é imune a ${martial.targetStatus.id}.`);
+    else addLog(s, `${TECH[c.activeTechnique!]?.name} afeta ${target?.name ?? 'o adversário'} com ${martial.targetStatus.id}.`);
+  }
+  if (!s.ending && s.place === encounterPlace && REGION_POOLS[encounterPlace]) {
+    s.regionalEncounters ??= {};
+    s.regionalEncounters[encounterPlace] = (s.regionalEncounters[encounterPlace] ?? 0) + 1;
+  }
+  const gained = s.items.slice();
+  for (const id of previousItems) {
+    const index = gained.indexOf(id);
+    if (index >= 0) gained.splice(index, 1);
+  }
+  updateQuest(s, ev, encounterPlace, foeId, !!check?.success && check && c.check?.tag === 'combate', gained);
 }
 
 /* ---------- Passagem do tempo e próximo evento ---------- */

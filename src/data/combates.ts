@@ -1,3 +1,5 @@
+import type { StatusEffect } from '../types';
+
 /**
  * Oponentes dos duelos animados. A animação só encena o resultado que o motor já decidiu
  * (ver src/engine/combate.ts); nada aqui altera o equilíbrio.
@@ -12,6 +14,12 @@ export interface Foe {
   /** Frase de derrota dele. */
   down: string;
   scene: string;
+  /** Statuses que não afetam este oponente (relevante para técnicas que acertam o alvo). */
+  immunities?: StatusEffect['id'][];
+  /** Ataque especial emitido a cada Nª investida do oponente no roteiro. */
+  attackPattern?: { everyTurns: number; move: string; damageMultiplier: number };
+  /** Rivais cultivadores espelham o reino e as técnicas marciais do jogador. */
+  mirrorCultivator?: boolean;
 }
 
 export const FOES: Foe[] = [
@@ -27,6 +35,8 @@ export const FOES: Foe[] = [
   { id: 'tigre', name: 'Tigre de Listras Brancas', moves: ['Garrada', 'Salto do Tigre', 'Rugido', 'Mordida Fatal'], finisher: 'Bote Final', down: 'recua, rosnando', scene: 'montanha' },
   { id: 'dragao', name: 'Dragão Jovem', moves: ['Sopro de Fogo', 'Cauda de Trovão', 'Garras de Nuvem', 'Rugido do Céu'], finisher: 'Tempestade Dragônica', down: 'sobe aos céus, vencido', scene: 'ceu' },
   { id: 'raio', name: 'Tribulação do Céu', moves: ['Raio Roxo', 'Trovão Duplo', 'Chuva de Faíscas', 'Fúria das Nuvens'], finisher: 'Raio Final', down: 'dispersa-se em nuvens calmas', scene: 'ceu' },
+  { id: 'chefe_selva', name: 'Tigre Ancião das Raízes', moves: ['Garras de Raiz', 'Bote do Guardião', 'Uivo da Floresta', 'Cauda Sísmica'], finisher: 'Devorar o Núcleo', down: 'cai, e a floresta enfim volta a respirar', scene: 'selva', immunities: ['poisoned'], attackPattern: { everyTurns: 3, move: 'Rugido Sísmico em Área', damageMultiplier: 1.8 } },
+  { id: 'rival_seita', name: 'Rival do Pavilhão Interno', moves: ['Palma de Qi', 'Lâmina Espelhada', 'Selo de Duelo', 'Passo da Nuvem'], finisher: 'Técnica Final do Pavilhão', down: 'saúda você com respeito e aceita a derrota', scene: 'seita', mirrorCultivator: true },
 ];
 
 export const FOE: Record<string, Foe> = Object.fromEntries(FOES.map((f) => [f.id, f]));

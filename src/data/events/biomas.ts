@@ -16,7 +16,7 @@ const BIOMES: Biome[] = [
   { id: 'montanha', place: 'montanha', title: 'Desafio nas Montanhas Sagradas', text: '{inimigo} desce por uma trilha estreita, bloqueando sua passagem.', foes: ['tigre', 'monge', 'dragao'], material: 'seiva_ardente', gather: 'Uma árvore antiga verte seiva ardente na encosta.', hazard: 'burning' },
   { id: 'ruinas', place: 'ruinas', title: 'Ecos das Ruínas Ancestrais', text: 'O chão estremece. {inimigo} desperta entre pedras cobertas de runas.', foes: ['espectro', 'golem', 'assassino'], material: 'mineral_antigo', gather: 'Entre os escombros, você encontra minério ainda marcado por runas.', hazard: 'bleeding' },
   { id: 'deserto', place: 'deserto', title: 'Perseguição no Deserto', text: '{inimigo} surge de uma nuvem de areia e avança sem aviso.', foes: ['bandido', 'serpente', 'tigre'], material: 'sal_escarlate', gather: 'Cristais de sal escarlate brilham sob a areia.', hazard: 'bleeding' },
-  { id: 'gelo', place: 'gelo', title: 'Sombra na Planície de Gelo', text: 'Uma silhueta corta a nevasca: {inimigo} farejou seu Qi.', foes: ['lobo', 'espectro', 'tigre'], material: 'flor_gelo', gather: 'Uma flor do gelo silencioso resiste ao vento cortante.', hazard: 'burning' },
+  { id: 'gelo', place: 'gelo', title: 'Sombra na Planície de Gelo', text: 'Uma silhueta corta a nevasca: {inimigo} farejou seu Qi.', foes: ['lobo', 'espectro', 'tigre'], material: 'flor_gelo', gather: 'Uma flor do gelo silencioso resiste ao vento cortante.', hazard: 'frozen' },
   { id: 'mar', place: 'mar', title: 'Predador das Mil Ilhas', text: 'A água escurece sob o barco. {inimigo} rompe a superfície.', foes: ['serpente', 'dragao', 'lobo'], material: 'perola_marinha', gather: 'Uma pérola das marés ficou presa entre os corais.', hazard: 'poisoned' },
 ];
 
