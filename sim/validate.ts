@@ -5,12 +5,10 @@ import * as ts from 'typescript';
 import { EVENTS } from '../src/data/events';
 import { hasCombatMechanics } from '../src/data/event-type';
 import { ITEMS } from '../src/data/items';
-import { TECHNIQUES } from '../src/data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
 import { WORLDS, WORLD } from '../src/data/mundo';
 import { TETOS } from '../src/data/faixas';
-import { FUSOES } from '../src/data/tecnicas_novas';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import { QUESTS } from '../src/data/quests';
 import { FOES } from '../src/data/combates';
@@ -23,7 +21,7 @@ const errors: string[] = [];
 const warnings: string[] = [];
 const ROOT_TAGS = new Set(['unica', 'mutante', 'dupla', 'tripla', 'quadrupla', 'caotica', 'Metal', 'Madeira', 'Água', 'Fogo', 'Terra', 'Raio', 'Gelo', 'Vento']);
 const ids = <T extends { id: string }>(a: T[]) => new Set(a.map((x) => x.id));
-const itemIds = ids(ITEMS), techIds = ids(TECHNIQUES), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS), foeIds = ids(FOES);
+const itemIds = ids(ITEMS), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS), foeIds = ids(FOES);
 
 function dupes(label: string, list: { id: string }[]) {
   const seen = new Set<string>();
@@ -32,7 +30,7 @@ function dupes(label: string, list: { id: string }[]) {
     seen.add(x.id);
   }
 }
-dupes('evento', EVENTS); dupes('item', ITEMS); dupes('técnica', TECHNIQUES); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES); dupes('companheiro', COMPANIONS);
+dupes('evento', EVENTS); dupes('item', ITEMS); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES); dupes('companheiro', COMPANIONS);
 
 const equipmentSlots = new Set<EquipmentSlot>(['rightWeapon', 'leftWeapon', 'armor', 'accessory']);
 for (const item of ITEMS) {
@@ -59,7 +57,6 @@ function fx(where: string, e?: Effects) {
   if (!e) return;
   e.item?.forEach((i) => !itemIds.has(i) && errors.push(`${where}: item inexistente "${i}"`));
   e.removeItem?.forEach((i) => !itemIds.has(i) && errors.push(`${where}: removeItem inexistente "${i}"`));
-  e.tecnica?.forEach((t) => !techIds.has(t) && errors.push(`${where}: técnica inexistente "${t}"`));
   if (e.fim && !endIds.has(e.fim)) errors.push(`${where}: final inexistente "${e.fim}"`);
   e.agenda?.forEach((a) => !evIds.has(a.event) && errors.push(`${where}: evento agendado inexistente "${a.event}"`));
   e.setFlags?.forEach((f) => setFlags.add(f));
@@ -71,7 +68,6 @@ function cond(where: string, c?: Cond) {
   if (c.item && !itemIds.has(c.item)) errors.push(`${where}: cond.item inexistente "${c.item}"`);
   c.itemsAll?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAll inexistente "${id}"`));
   c.itemsAny?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAny inexistente "${id}"`));
-  if (c.tecnica && !techIds.has(c.tecnica)) errors.push(`${where}: cond.tecnica inexistente "${c.tecnica}"`);
   c.path?.forEach((p) => !PATHS.some((x) => x.id === p) && errors.push(`${where}: trilha inexistente "${p}"`));
   c.origin?.forEach((o) => !ORIGINS.some((x) => x.id === o) && errors.push(`${where}: origem inexistente "${o}"`));
   c.mundo?.forEach((m) => !WORLD[m] && errors.push(`${where}: era do mundo inexistente "${m}"`));
@@ -93,8 +89,7 @@ for (const ev of EVENTS) {
     cond(w, c.cond);
     if (ev.type === 'narrative' && ev.choices.length > 0 && ev.allowGlobalTraits !== true && c.ex) errors.push(`${w}: opção global em narrativa fechada sem allowGlobalTraits`);
     if (c.requiresEventType && c.requiresEventType !== ev.type) errors.push(`${w}: exige contexto ${c.requiresEventType}, evento classificado como ${ev.type ?? 'sem tipo'}`);
-    if (ev.type !== 'combat' && (c.check?.tag === 'combate' || c.activeTechnique)) errors.push(`${w}: escolha de combate disponível em evento ${ev.type ?? 'sem tipo'}`);
-    if (c.activeTechnique && (ev.type !== 'combat' || c.check?.tag !== 'combate')) errors.push(`${w}: técnica ativa fora de uma escolha de combate`);
+    if (ev.type !== 'combat' && c.check?.tag === 'combate') errors.push(`${w}: escolha de combate disponível em evento ${ev.type ?? 'sem tipo'}`);
     if (c.check && (!c.ok || !c.fail)) errors.push(`${w}: check exige ok e fail`);
     if (!c.check && !c.res && !c.ok) errors.push(`${w}: escolha sem resultado`);
     fx(w, c.res?.fx); fx(w, c.ok?.fx); fx(w, c.fail?.fx);
@@ -212,7 +207,6 @@ for (const file of eventFiles) {
 }
 for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {
-  if (p.tecnica && !techIds.has(p.tecnica)) errors.push(`trilha ${p.id}: técnica inexistente`);
   if (p.unlock && !achIds.has(p.unlock)) errors.push(`trilha ${p.id}: conquista inexistente "${p.unlock}"`);
 }
 for (const id of Object.keys(TETOS)) if (!evIds.has(id)) errors.push(`faixas.ts: evento inexistente ${id}`);
@@ -231,7 +225,7 @@ for (const a of ACHIEVEMENTS) if (!ACH_CHECKS[a.id]) errors.push(`conquista ${a.
 
 
 /* ---------- Linter de texto e estrutura ---------- */
-const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
+const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha']);
 function lintText(where: string, text: string | undefined, max = 700) {
   if (text === undefined) return;
   if (!text.trim()) { errors.push(`${where}: texto vazio`); return; }
@@ -261,10 +255,9 @@ for (const ev of EVENTS) {
   if (!ev.choices.some((c) => !c.cond)) warnings.push(`evento ${ev.id}: todas as opções têm condição (pode ficar sem saída)`);
 }
 for (const i of ITEMS) lintText(`item ${i.id}`, i.desc, 120);
-for (const t of TECHNIQUES) lintText(`técnica ${t.id}`, t.desc, 120);
 for (const e of ENDINGS) { lintText(`final ${e.id}`, e.text, 400); (e.alt ?? []).forEach((a, i) => lintText(`final ${e.id} (variação ${i + 1})`, a, 400)); }
 const names = new Map<string, string>();
-for (const x of [...ITEMS.map((i) => ({ id: 'item ' + i.id, name: i.name })), ...TECHNIQUES.map((t) => ({ id: 'técnica ' + t.id, name: t.name }))]) {
+for (const x of ITEMS.map((i) => ({ id: 'item ' + i.id, name: i.name }))) {
   if (names.has(x.name)) warnings.push(`nome repetido: "${x.name}" (${names.get(x.name)} e ${x.id})`);
   names.set(x.name, x.id);
 }
@@ -274,11 +267,10 @@ for (const ev of EVENTS) {
   titles.set(ev.title, ev.id);
 }
 
-for (const fu of FUSOES) for (const id of [fu.a, fu.b, fu.resultado]) if (!techIds.has(id)) errors.push(`fusão ${fu.id}: técnica inexistente ${id}`);
 const FLAGS_DO_MOTOR = new Set(['defeito_superado', 'juventude_eterna']);
 for (const [f, where] of needFlags) if (!setFlags.has(f) && !FLAGS_DO_MOTOR.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
 
-console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${TECHNIQUES.length} técnicas, ${ENDINGS.length} finais, ${PATHS.length} trilhas.`);
+console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${ENDINGS.length} finais, ${PATHS.length} caminhos de cultivo.`);
 warnings.forEach((w) => console.log('  aviso:', w));
 errors.forEach((e) => console.log('  ERRO:', e));
 if (errors.length) { console.log(`${errors.length} erro(s).`); process.exit(1); }

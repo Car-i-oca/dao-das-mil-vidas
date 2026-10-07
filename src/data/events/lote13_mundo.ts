@@ -86,7 +86,7 @@ export const lote13Mundo: GameEvent[] = [
     cond: { ...W('mare_bestas'), tierMin: 1, tierMax: 6 },
     text: 'A muralha da vila é velha e baixa. A maré bate nela em ondas: lobos, javalis de couro grosso, aves de bico de ferro. Os soldados estão exaustos, e o capitão grita por qualquer reforço.',
     choices: [
-      { text: 'Reforçar a muralha com uma formação improvisada.', check: { stat: ['comp', 'esp'], dif: 2, tag: 'formacao' }, ok: { text: 'Linhas de Qi correm pela pedra como veias. A muralha resiste a mais três ondas, e os soldados recuperam o fôlego.', fx: { fama: 8, xp: 8, stats: { comp: 2 }, tecnica: ['defesa_muralha'] } }, fail: { text: 'A formação falha no pior momento, e a muralha racha em dois pontos. Você consegue ainda remendar, mas ao custo de uma manhã inteira.', fx: { fama: 2, ferida: 1, stats: { comp: 1 } } } },
+      { text: 'Reforçar a muralha com uma formação improvisada.', check: { stat: ['comp', 'esp'], dif: 2, tag: 'formacao' }, ok: { text: 'Linhas de Qi correm pela pedra como veias. A muralha resiste a mais três ondas, e os soldados recuperam o fôlego.', fx: { fama: 8, xp: 8, stats: { comp: 2 } } }, fail: { text: 'A formação falha no pior momento, e a muralha racha em dois pontos. Você consegue ainda remendar, mas ao custo de uma manhã inteira.', fx: { fama: 2, ferida: 1, stats: { comp: 1 } } } },
       { text: 'Lutar em cima da muralha ao lado dos soldados.', check: { stat: ['fis', 'dao'], dif: 2, tag: 'combate' }, ok: { text: 'Você derruba bestas aos montes, e o resto da guarda ganha ânimo. A muralha ainda estará de pé ao anoitecer.', fx: { fama: 7, ferida: 1, stats: { fis: 1, dao: 1 }, xp: 6 } }, fail: { text: 'Uma ave de bico de ferro o derruba da muralha. Você acorda no pátio, com um corte fundo e o orgulho machucado.', fx: { ferida: 3, fama: 1 } } },
     ],
   },
@@ -162,7 +162,7 @@ export const lote13Mundo: GameEvent[] = [
     cond: { ...W('reino_secreto'), tierMin: 1 },
     text: 'Os primeiros a voltar do reino secreto saem da luz com olhos de quem viu demais. Alguns riem, outros não falam. Um jovem pálido segura nas mãos um pergaminho que vale mais do que uma aldeia.',
     choices: [
-      { text: 'Comprar o pergaminho do jovem (100 pedras).', custo: 100, check: { stat: ['comp', 'sor'], dif: 1 }, ok: { text: 'O pergaminho é real, e traz uma técnica antiga de Qi lunar. Poucos sabem que existe, e você será um deles.', fx: { tecnica: ['respiracao_lunar'], xp: 12, stats: { comp: 1 } } }, fail: { text: 'O pergaminho é falso, e você só descobre ao tentar usá-lo. O jovem já sumiu.', fx: { karma: -1 } } },
+      { text: 'Comprar o pergaminho do jovem (100 pedras).', custo: 100, check: { stat: ['comp', 'sor'], dif: 1 }, ok: { text: 'O pergaminho é real, e traz um método antigo de Qi lunar. Poucos sabem que existe, e você será um deles.', fx: {  xp: 12, stats: { comp: 1 } } }, fail: { text: 'O pergaminho é falso, e você só descobre ao tentar usá-lo. O jovem já sumiu.', fx: { karma: -1 } } },
       { text: 'Ouvir o relato do jovem e agradecer.', res: { text: 'Ele fala por uma hora, quase sem respirar. Você sai com mais perguntas que respostas, e com um pouco de medo.', fx: { stats: { comp: 1, dao: 1 } } } },
     ],
   },
@@ -319,7 +319,7 @@ export const lote13Mundo: GameEvent[] = [
     cond: { ...W('festivais') },
     text: 'No dia dos Ancestrais, as famílias sobem as colinas com cestas de comida, papel dourado e vassouras para limpar as lápides. Você tem uma colina para visitar, e alguém para lembrar, mesmo que não saiba bem quem.',
     choices: [
-      { text: 'Subir à colina com oferendas e limpar as lápides.', res: { text: 'Folhas secas, musgo, o cheiro de incenso. Você diz em voz baixa o nome de quem partiu, e a colina parece ouvir.', fx: { karma: 6, stats: { dao: 2 }, tecnica: ['oracao_ancestrais'] } } },
+      { text: 'Subir à colina com oferendas e limpar as lápides.', res: { text: 'Folhas secas, musgo, o cheiro de incenso. Você diz em voz baixa o nome de quem partiu, e a colina parece ouvir.', fx: { karma: 6, stats: { dao: 2 } } } },
       { text: 'Oferecer sua ajuda aos mais velhos que não conseguem subir.', res: { text: 'Cesto nas costas, passos lentos. No topo, uma anciã chora e agradece, e dá a você uma tigela de arroz doce.', fx: { karma: 8, stats: { car: 1, fis: 1 } } } },
       { text: 'Aproveitar o dia para cultivar: os mortos entendem.', res: { text: 'Uma meditação silenciosa sob uma árvore alta. Quando abre os olhos, a colina está vazia, e alguém deixou uma flor ao seu lado.', fx: { xp: 8, stats: { esp: 1 } } } },
     ],

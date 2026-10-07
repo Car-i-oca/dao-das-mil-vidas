@@ -26,7 +26,7 @@ export interface DiceRoll {
   statBonus: number;
   /** Parcela adicional dos bônus do equipamento vestido. */
   equipmentBonus: number;
-  /** Técnicas, clima, companheiros e demais modificadores do teste. */
+  /** Clima, companheiros e demais modificadores do teste. */
   otherBonus: number;
   total: number;
   dc: number;
@@ -84,16 +84,10 @@ export interface Effects {
   sectRankUp?: boolean;
   reputation?: number;
   factionReputation?: Partial<Record<GuildFaction, number>>;
-  /** Adiciona uma trilha de poder independente sem substituir `trilha`. */
-  powerPath?: string;
-  /** Progresso a somar à trilha independente indicada em `powerPath`. */
-  powerProgress?: number;
   /** Aplica estados temporários no jogador. */
   status?: StatusEffect[];
   /** Remove estados temporários pelo id. */
   clearStatus?: StatusEffect['id'][];
-  /** Pontos do recurso da trilha (intenção de espada, têmpera, etc.). */
-  rec?: number;
   /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). */
   perfil?: Record<string, number>;
   /** Supera o defeito de nascença (arco de redenção): ele deixa de valer e a penalidade de atributos some. */
@@ -102,9 +96,6 @@ export interface Effects {
   clearFlags?: string[];
   item?: string[];
   removeItem?: string[];
-  /** Remove técnicas (usado nas fusões). */
-  removeTecnica?: string[];
-  tecnica?: string[];
   /** Agenda eventos futuros: em [min,max] anos. */
   agenda?: { event: string; em: [number, number] }[];
   local?: Place;
@@ -128,10 +119,6 @@ export interface Cond {
   path?: string[];
   /** Alinhamento moral/espiritual do cultivador. */
   alignment?: Alignment[];
-  /** Trilhas de poder independentes da trilha de cultivo principal. */
-  powerPath?: string[];
-  /** Exige progresso mínimo em uma das trilhas indicadas em `powerPath`. */
-  powerProgressMin?: number;
   /** Id do mestre atual (permite mestres alternativos). */
   master?: string[];
   origin?: string[];
@@ -154,10 +141,9 @@ export interface Cond {
   local?: Place[];
   faction?: Faction[];
   item?: string;
-  tecnica?: string;
   corrMin?: number;
-  /** Pontos mínimos do recurso da trilha. */
-  recMin?: number;
+  /** Marco mínimo da progressão universal de sagas. */
+  sagaStageMin?: number;
   /** Perfil de conduta mínimo (ex.: { compaixao: 8 }). */
   perfil?: Record<string, number>;
   /** Perfil de conduta máximo (ex.: { violencia: 3 }). */
@@ -167,13 +153,6 @@ export interface Cond {
   flaw?: string[];
   root?: string[];
   constitution?: string[];
-  /** Qualquer uma destas técnicas (ou uma com a etiqueta indicada em `tecnicaTag`). */
-  tecnicas?: string[];
-  tecnicaTag?: string;
-  /** Todas estas técnicas (fusões). */
-  tecnicasTodas?: string[];
-  /** Domínio mínimo: alguma técnica no estágio indicado ou acima (0 Iniciante ... 4 Perfeição). */
-  mestria?: number;
   /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
   mundo?: string[];
 }
@@ -203,8 +182,6 @@ export interface Choice {
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
   custo?: number;
-  /** Id da técnica ativa escolhida para este teste de dados. */
-  activeTechnique?: string;
   /** Estado de missão rastreado na UI/engine. */
   questAction?: { type: 'accept' | 'abandon'; questId?: string };
   check?: Check;
@@ -263,25 +240,15 @@ export interface Path {
   ladder: string;
   desc: string;
   stats: Partial<Stats>;
-  xpMult: number;
-  tags: string[];
-  /** Técnica inicial. */
-  tecnica?: string;
   unlock?: string;
   /** Corrupção inicial (trilha demoníaca). */
   startCorr?: number;
-  /** Ganho de atributos a cada reino (padrão: +2 em tudo). */
-  growth?: Partial<Stats>;
-  /** Tags de testes em que a trilha é fraca (−1,5). */
-  fraco?: string[];
-  /** Recurso próprio da trilha: estágios por pontos (3 pontos por estágio). */
-  rec?: { name: string; stages: string[]; desc: string };
 }
 
 export interface Item {
   id: string;
   name: string;
-  kind: 'pilula' | 'erva' | 'material' | 'arma' | 'armadura' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
+  kind: 'pilula' | 'erva' | 'material' | 'arma' | 'armadura' | 'artefato' | 'talisma' | 'nucleo' | 'anel' | 'misc';
   grade: 1 | 2 | 3 | 4 | 5;
   rarity: Rarity;
   desc: string;
@@ -299,22 +266,6 @@ export interface Item {
 
 /** Item com bônus passivos ativos enquanto estiver no inventário, sem ação de uso. */
 export type PassiveArtifact = Item & { passive: Partial<Stats> };
-
-export interface Technique {
-  id: string;
-  name: string;
-  grade: 1 | 2 | 3 | 4;
-  desc: string;
-  stats?: Partial<Stats>;
-  xpMult?: number;
-  tags?: string[];
-  /** Técnica de combate disponível para somar poder à rolagem em um encontro. */
-  martial?: {
-    power: number;
-  };
-  /** Seita ou escola de origem (método de seita extinta): quem a reconhece, a cobiça ou a quer de volta. */
-  origem?: string;
-}
 
 export interface Ending {
   id: string;
@@ -385,10 +336,6 @@ export interface State {
   alignment?: Alignment;
   /** Mestre alternativo atual; ausente em saves antigos ou antes de conhecer um mestre. */
   master?: string | null;
-  /** Trilhas de poder paralelas à trilha de cultivo principal. */
-  powerPaths?: string[];
-  /** Progresso por id de trilha de poder independente. */
-  powerProgress?: Record<string, number>;
   /** Contagem de encontros concluídos e sobrevividos em cada região. */
   regionalEncounters?: Partial<Record<Place, number>>;
   /** Missão ativa e seu progresso (ausente em saves antigos). */
@@ -427,7 +374,6 @@ export interface State {
   flags: string[];
   /** IDs dos itens; artefatos passivos concedem seus bônus enquanto estiverem aqui. */
   items: string[];
-  techniques: string[];
   names: Record<string, string>;
   scheduled: { event: string; at: number }[];
   seen: Record<string, number>;
@@ -441,12 +387,8 @@ export interface State {
   result: { text: string; check?: { chance: number; success: boolean }; roll?: DiceRoll; changes?: Change[] } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
-  /** Pontos do recurso próprio da trilha. */
-  rec?: number;
   /** Perfil de conduta acumulado pelas escolhas. */
   perfil?: Record<string, number>;
-  /** Pontos de domínio de cada técnica (usos bem-sucedidos e opções exclusivas). */
-  dominio?: Record<string, number>;
   /** Multiplicador de peso por evento, vindo das vidas anteriores (novidade entre vidas). */
   pen?: Record<string, number>;
   /** Era do mundo em curso. */
@@ -455,8 +397,10 @@ export interface State {
   lastWorld?: string;
   /** Dificuldade escolhida: -1 calmo, 0 normal, 1 desafio. */
   dif?: number;
-  /** Técnicas e itens já obtidos nesta vida (alimenta o Códice). */
-  found?: { items: string[]; techs: string[] };
+  /** Itens já obtidos nesta vida (alimenta o Códice). */
+  found?: { items: string[] };
+  /** Inimigos efetivamente derrotados nesta vida. */
+  defeatedFoes?: string[];
   ending: string | null;
   endingText: string | null;
   /** Preenchido quando a vida é encerrada (finalizeLife). */
@@ -471,8 +415,8 @@ export interface Change {
 }
 
 export interface Meta {
-  /** Códice: técnicas e itens já descobertos em qualquer vida. */
-  codex?: { items: string[]; techs: string[] };
+  /** Códice de itens encontrados em qualquer vida. */
+  codex?: { items: string[] };
   legacy: number;
   achievements: string[];
   upgrades: Record<string, number>;
@@ -481,5 +425,7 @@ export interface Meta {
   endingsSeen: string[];
   /** Eventos vistos nas últimas vidas (mais recente primeiro): quem já apareceu perde peso na vida seguinte. */
   recent?: string[][];
-  history: { name: string; path: string; tierName: string; age: number; ending: string; techName?: string }[];
+  history: { name: string; path: string; tierName: string; age: number; ending: string }[];
+  /** Bestiário persistente: IDs dos inimigos vencidos em qualquer vida. */
+  defeatedFoes?: string[];
 }

@@ -68,7 +68,7 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 7 },
     text: 'Um mestre antigo propõe um exercício: recitar um mantra cem mil vezes, contando em contas de madeira, sem pressa e sem parar. O tédio, ele garante, é o primeiro demônio.',
     choices: [
-      { text: 'Recitar com todo o foco, por meses.', check: { stat: ['dao', 'esp'], dif: 1, tag: 'mente' }, ok: { text: 'Em algum ponto, o mantra para de ser palavras e vira respiração. Você sai calmo e vasto.', fx: { anos: 1, xp: 14, stats: { dao: 2 }, tecnica: ['mantra_cem_mil'] } }, fail: { text: 'A mente divaga e o mantra vira ruído. Você aprende o valor da paciência pela falta dela.', fx: { anos: 1, xp: 5, stats: { dao: 1 } } } },
+      { text: 'Recitar com todo o foco, por meses.', check: { stat: ['dao', 'esp'], dif: 1, tag: 'mente' }, ok: { text: 'Em algum ponto, o mantra para de ser palavras e vira respiração. Você sai calmo e vasto.', fx: { anos: 1, xp: 14, stats: { dao: 2 } } }, fail: { text: 'A mente divaga e o mantra vira ruído. Você aprende o valor da paciência pela falta dela.', fx: { anos: 1, xp: 5, stats: { dao: 1 } } } },
       { text: 'Fazer apenas mil recitações por dia durante um mês.', res: { text: 'Um bom hábito, e nada além disso. Seus pensamentos assentam, como poeira em água parada.', fx: { xp: 8, stats: { dao: 1 } } } },
     ],
   },
@@ -77,7 +77,7 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 2, tierMax: 7 },
     text: 'Um mestre idoso, sentado sob um pinheiro retorcido, faz uma pergunta sem resposta: "Qual era o som da sua mão antes de você nascer?" Ele espera, de olhos fechados.',
     choices: [
-      { text: 'Responder com silêncio.', check: { stat: ['dao', 'esp'], dif: 3, tag: 'mente' }, ok: { text: 'O mestre abre um olho e sorri. "A única resposta honesta." A lição se instala em você como pedra no leito de um rio.', fx: { stats: { dao: 3, comp: 1 }, xp: 14, tecnica: ['koan_riso'] } }, fail: { text: 'O mestre balança a cabeça. "Pensou demais." Mas o silêncio que sobra tem seu valor.', fx: { stats: { dao: 1 } } } },
+      { text: 'Responder com silêncio.', check: { stat: ['dao', 'esp'], dif: 3, tag: 'mente' }, ok: { text: 'O mestre abre um olho e sorri. "A única resposta honesta." A lição se instala em você como pedra no leito de um rio.', fx: { stats: { dao: 3, comp: 1 }, xp: 14 } }, fail: { text: 'O mestre balança a cabeça. "Pensou demais." Mas o silêncio que sobra tem seu valor.', fx: { stats: { dao: 1 } } } },
       { text: 'Responder com uma gargalhada.', check: { stat: ['car', 'dao'], dif: 3 }, ok: { text: 'O mestre ri junto. "Você entendeu mais do que parece." Ele lhe oferece chá.', fx: { stats: { dao: 2, car: 1 }, karma: 3 } }, fail: { text: 'O mestre fecha a cara. "Riso falso."', fx: { stats: { dao: 1 } } } },
       { text: 'Pedir que ele explique o sentido da pergunta.', res: { text: '"Se eu explicar, destruo a pergunta." Ele ri, e você se afasta pensativo.', fx: { stats: { comp: 1 } } } },
     ],
@@ -115,7 +115,7 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 3, karmaMin: 10 },
     text: 'Numa noite de meditação profunda, o chão se abre em um espelho de seis camadas: deuses, titãs, humanos, animais, espíritos famintos e seres dos infernos. Cada um o encara com a mesma dor e o mesmo anseio.',
     choices: [
-      { text: 'Olhar cada reino com compaixão.', check: { stat: ['dao', 'esp'], dif: 5, tag: 'mente' }, ok: { text: 'Você chora, em silêncio, pelos seis. Ao fim, o espelho se desfaz, e algo em seu peito se abre: uma compreensão sobre o ciclo que sustenta tudo.', fx: { stats: { dao: 5, esp: 2 }, xp: 25, karma: 20, tecnica: ['sutra_ceu_vazio'] } }, fail: { text: 'A visão é grande demais. Você desmaia e acorda dias depois, com a memória vaga e o coração mais mole.', fx: { ferida: 2, stats: { dao: 2 }, karma: 6 } } },
+      { text: 'Olhar cada reino com compaixão.', check: { stat: ['dao', 'esp'], dif: 5, tag: 'mente' }, ok: { text: 'Você chora, em silêncio, pelos seis. Ao fim, o espelho se desfaz, e algo em seu peito se abre: uma compreensão sobre o ciclo que sustenta tudo.', fx: { stats: { dao: 5, esp: 2 }, xp: 25, karma: 20 } }, fail: { text: 'A visão é grande demais. Você desmaia e acorda dias depois, com a memória vaga e o coração mais mole.', fx: { ferida: 2, stats: { dao: 2 }, karma: 6 } } },
       { text: 'Fechar os olhos e esperar que passe.', res: { text: 'A visão se desfaz, e fica uma vontade imensa de olhar de novo.', fx: { stats: { dao: 1 } } } },
     ],
   },
@@ -143,7 +143,7 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 7, path: ['budista', 'corpo'] },
     text: 'Depois de décadas de treino, você sente a pele ficar fria e dura como jade. Um monge mais velho, de olhos faiscantes, sorri: "Seu corpo de vajra está acordando. Agora, aprenda a não se apegar a ele."',
     choices: [
-      { text: 'Treinar três meses no pátio, sob o sol.', check: { stat: ['fis', 'dao'], dif: 3, tag: 'corpo' }, ok: { text: 'O corpo se transforma como um metal que aprende a respirar. Nada mais o arranha do mesmo jeito.', fx: { item: ['rosario_vajra'], tecnica: ['corpo_vajra_menor'], stats: { fis: 3, dao: 2 }, xp: 14 } }, fail: { text: 'O corpo reclama, e o desconforto é grande, mas há progresso.', fx: { stats: { fis: 1, dao: 1 }, ferida: 2, xp: 6 } } },
+      { text: 'Treinar três meses no pátio, sob o sol.', check: { stat: ['fis', 'dao'], dif: 3, tag: 'corpo' }, ok: { text: 'O corpo se transforma como um metal que aprende a respirar. Nada mais o arranha do mesmo jeito.', fx: { item: ['rosario_vajra'],  stats: { fis: 3, dao: 2 }, xp: 14 } }, fail: { text: 'O corpo reclama, e o desconforto é grande, mas há progresso.', fx: { stats: { fis: 1, dao: 1 }, ferida: 2, xp: 6 } } },
     ],
   },
   {
@@ -179,7 +179,7 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 4, karmaMin: 20 },
     text: 'Num vale esquecido, uma figueira de folhas em forma de coração cresce sozinha. Uma lenda diz que quem se sentar sob ela por quarenta e nove dias, sem se mover, alcança um entendimento que nenhum mestre pode ensinar.',
     choices: [
-      { text: 'Sentar sob a árvore por quarenta e nove dias.', check: { stat: ['dao', 'esp', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'No quadragésimo nono dia, as folhas caem em silêncio. O mundo passa a ser uma só coisa. Você levanta, sorrindo, mudado em tudo.', fx: { stats: { dao: 6, esp: 3, comp: 3 }, xp: 40, karma: 20, anos: 1, tecnica: ['sutra_ceu_vazio'] } }, fail: { text: 'Sua mente divaga no trigésimo dia. Você se levanta, em paz com a falha, e um pouco mais sábio.', fx: { stats: { dao: 2 }, xp: 14, anos: 1 } } },
+      { text: 'Sentar sob a árvore por quarenta e nove dias.', check: { stat: ['dao', 'esp', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'No quadragésimo nono dia, as folhas caem em silêncio. O mundo passa a ser uma só coisa. Você levanta, sorrindo, mudado em tudo.', fx: { stats: { dao: 6, esp: 3, comp: 3 }, xp: 40, karma: 20, anos: 1 } }, fail: { text: 'Sua mente divaga no trigésimo dia. Você se levanta, em paz com a falha, e um pouco mais sábio.', fx: { stats: { dao: 2 }, xp: 14, anos: 1 } } },
       { text: 'Apenas contemplar a árvore e seguir.', res: { text: 'Uma folha cai sobre seu ombro. Você a guarda, como um selo de um encontro.', fx: { stats: { dao: 1 }, karma: 2 } } },
     ],
   },
@@ -206,8 +206,8 @@ export const lote6Oeste: GameEvent[] = [
     cond: { tierMin: 2, tierMax: 8, local: ['montanha', 'ruinas', 'selva'] },
     text: 'Numa falésia, uma caverna enorme guarda mil estátuas de pedra, cada uma em uma postura diferente, todas sorrindo com a mesma calma. Dentro, o ar é frio e perfumado.',
     choices: [
-      { text: 'Sentar diante de uma estátua e meditar por semanas.', check: { stat: ['dao', 'comp'], dif: 3, tag: 'mente' }, ok: { text: 'Uma das estátuas parece sorrir mais que as outras. Em sua base, você encontra um pequeno pergaminho com um mantra raro.', fx: { stats: { dao: 2, comp: 1 }, xp: 14, tecnica: ['mantra_cem_mil'] } }, fail: { text: 'As estátuas permanecem em silêncio. Mas o ambiente acalma, e a mente acompanha.', fx: { xp: 6, stats: { dao: 1 } } } },
-      { text: 'Estudar os afrescos nas paredes.', check: { stat: 'comp', dif: 2 }, ok: { text: 'Cenas das vidas passadas de um buda, narradas em cores. Você aprende mais de narrativa que de técnica.', fx: { xp: 10, stats: { comp: 2 } } }, fail: { text: 'Os afrescos são antigos e desbotados. Pouco se aproveita.', fx: { xp: 3 } } },
+      { text: 'Sentar diante de uma estátua e meditar por semanas.', check: { stat: ['dao', 'comp'], dif: 3, tag: 'mente' }, ok: { text: 'Uma das estátuas parece sorrir mais que as outras. Em sua base, você encontra um pequeno pergaminho com um mantra raro.', fx: { stats: { dao: 2, comp: 1 }, xp: 14 } }, fail: { text: 'As estátuas permanecem em silêncio. Mas o ambiente acalma, e a mente acompanha.', fx: { xp: 6, stats: { dao: 1 } } } },
+      { text: 'Estudar os afrescos nas paredes.', check: { stat: 'comp', dif: 2 }, ok: { text: 'Cenas das vidas passadas de um buda, narradas em cores. Você aprende mais de narrativa que de método.', fx: { xp: 10, stats: { comp: 2 } } }, fail: { text: 'Os afrescos são antigos e desbotados. Pouco se aproveita.', fx: { xp: 3 } } },
     ],
   },
 ];

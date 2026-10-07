@@ -20,9 +20,9 @@ export const lote23Npcs: GameEvent[] = [
   {
     id: 'npc_mentor_2', title: 'A Lição Mais Difícil', rarity: 'comum', once: true, weight: 0,
     cond: { flags: ['npc_mentor'] },
-    text: '{mentor} aparece de novo. Se você o aceitou, traz uma lição dura: abandonar uma técnica de que se orgulha, porque ela cobra um preço escondido. Se o recusou, ele só observa de longe, e deixa um bilhete: "A porta ainda está aberta."',
+    text: '{mentor} aparece de novo. Se você o aceitou, traz uma lição dura: abandonar um método de que se orgulha, porque ela cobra um preço escondido. Se o recusou, ele só observa de longe, e deixa um bilhete: "A porta ainda está aberta."',
     choices: [
-      { text: 'Abandonar a técnica e recomeçar do básico.', cond: { flags: ['mentor_aberto'] }, res: { text: 'Três meses humilhantes, depois a base nova. {mentor} sorri pela primeira vez. "Poucos têm essa coragem."', fx: { setFlags: ['mentor_leal'], stats: { dao: 2, comp: 1 }, xp: 6, agenda: [{ event: 'npc_mentor_3', em: [6, 12] }] } } },
+      { text: 'Abandonar o método e recomeçar do básico.', cond: { flags: ['mentor_aberto'] }, res: { text: 'Três meses humilhantes, depois a base nova. {mentor} sorri pela primeira vez. "Poucos têm essa coragem."', fx: { setFlags: ['mentor_leal'], stats: { dao: 2, comp: 1 }, xp: 6, agenda: [{ event: 'npc_mentor_3', em: [6, 12] }] } } },
       { text: 'Discordar e seguir sozinho.', cond: { flags: ['mentor_aberto'] }, res: { text: '{mentor} concorda, sem rancor. "Quem discorda aprende o preço pessoalmente." Ele se afasta, mas não some.', fx: { setFlags: ['mentor_rebelde'], stats: { dao: 1 }, agenda: [{ event: 'npc_mentor_3', em: [8, 14] }] } } },
       { text: 'Ir até ele agora, depois de tanto tempo.', cond: { flags: ['mentor_recusado'] }, res: { text: '{mentor} o recebe sem cobrar o atraso. "Eu esperava." O orgulho dói, e a lição vale cada gota.', fx: { setFlags: ['mentor_aberto', 'mentor_leal'], stats: { dao: 2 }, agenda: [{ event: 'npc_mentor_3', em: [6, 12] }] } } },
       { text: 'Ignorar o bilhete e seguir o seu caminho.', cond: { flags: ['mentor_recusado'] }, res: { text: 'O bilhete vai para o fogo. Você segue, e {mentor} desaparece da sua vida, por enquanto.', fx: { setFlags: ['mentor_rebelde'], agenda: [{ event: 'npc_mentor_3', em: [10, 18] }] } } },
@@ -51,9 +51,9 @@ export const lote23Npcs: GameEvent[] = [
     id: 'npc_mentor_5', title: 'A Despedida de {mentor}', rarity: 'raro', once: true, weight: 0,
     cond: { flags: ['npc_mentor'] },
     alt: ['Chega uma carta, escrita à mão, com letra trêmula: {mentor} está morrendo e quer vê-lo. A vila onde ele vive é pequena, e o quarto, mais ainda. Ele sorri ao vê-lo entrar.', 'Um mensageiro avisa: {mentor} partiu num entardecer sereno, e deixou um embrulho com o seu nome. Você vai buscá-lo, sentindo que algo se fechou.'],
-    text: '{mentor} chega ao fim da vida. Ele deixou um legado para você: a sua melhor técnica, uma espada, ou só uma frase. O que ele deixa depende de quem você foi para ele.',
+    text: '{mentor} chega ao fim da vida. Ele deixou um legado para você: a sua melhor método, uma espada, ou só uma frase. O que ele deixa depende de quem você foi para ele.',
     choices: [
-      { text: 'Receber o legado e honrar a memória dele.', res: { text: 'O embrulho tem um manual anotado por décadas, e uma frase final: "Não ensine por obrigação. Ensine porque alguém precisa." Você chora em silêncio.', fx: { tecnica: ['sutra_do_anciao'], stats: { dao: 3, comp: 2 }, karma: 6, fama: 4, setFlags: ['herdou_do_mentor'] } } },
+      { text: 'Receber o legado e honrar a memória dele.', res: { text: 'O embrulho tem um manual anotado por décadas, e uma frase final: "Não ensine por obrigação. Ensine porque alguém precisa." Você chora em silêncio.', fx: {  stats: { dao: 3, comp: 2 }, karma: 6, fama: 4, setFlags: ['herdou_do_mentor'] } } },
       { text: 'Recusar o legado: basta ter sido discípulo.', res: { text: 'O velho ri, tosse, e diz que você é teimoso como ele. A frase final, ele diz em voz alta mesmo assim.', fx: { stats: { dao: 4 }, karma: 8, setFlags: ['herdou_do_mentor'] } } },
     ],
   },
@@ -74,14 +74,14 @@ export const lote23Npcs: GameEvent[] = [
     cond: { flags: ['npc_rival'] },
     text: 'Os anciões decidem resolver a comparação: um duelo oficial entre você e {rival}, no pátio, diante da seita inteira. Ele está calmo; você, nem tanto. A multidão já fez apostas.',
     choices: [
-      { text: 'Lutar com toda a técnica que possui.', check: { stat: ['fis', 'esp', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'A luta é parelha, e você vence por uma fração. {rival} se levanta, tenso, e murmura: "Na próxima, eu ganho."', fx: { setFlags: ['rival_derrotado'], fama: 6, xp: 5, stats: { dao: 1 }, agenda: [{ event: 'npc_rival_3', em: [6, 12] }] } }, fail: { text: '{rival} vence. Ele não comemora, e isso dói mais. "Você é bom. Só não é o melhor."', fx: { setFlags: ['rival_venceu'], fama: -2, ferida: 1, stats: { dao: 2 }, agenda: [{ event: 'npc_rival_3', em: [6, 12] }] } } },
+      { text: 'Lutar com toda o método que possui.', check: { stat: ['fis', 'esp', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'A luta é parelha, e você vence por uma fração. {rival} se levanta, tenso, e murmura: "Na próxima, eu ganho."', fx: { setFlags: ['rival_derrotado'], fama: 6, xp: 5, stats: { dao: 1 }, agenda: [{ event: 'npc_rival_3', em: [6, 12] }] } }, fail: { text: '{rival} vence. Ele não comemora, e isso dói mais. "Você é bom. Só não é o melhor."', fx: { setFlags: ['rival_venceu'], fama: -2, ferida: 1, stats: { dao: 2 }, agenda: [{ event: 'npc_rival_3', em: [6, 12] }] } } },
       { text: 'Desistir do duelo antes de começar.', res: { text: 'O pátio vaia. {rival} franze a testa, ofendido pela falta de luta. Você sente vergonha e alívio, em medidas iguais.', fx: { setFlags: ['rival_venceu'], fama: -4, stats: { dao: -1 }, agenda: [{ event: 'npc_rival_3', em: [6, 12] }] } } },
     ],
   },
   {
     id: 'npc_rival_3', title: 'Quando {rival} Fica Forte', rarity: 'comum', once: true, weight: 0,
     cond: { flags: ['npc_rival'] },
-    text: 'Anos se passam. {rival} cresce de um jeito que assusta: aprende técnicas novas, ganha um mestre famoso, e passa a ser citado ao lado do seu nome. Hoje, ele cruza o seu caminho numa estrada, sozinho, e para.',
+    text: 'Anos se passam. {rival} cresce de um jeito que assusta: aprende métodos novos, ganha um mestre famoso, e passa a ser citado ao lado do seu nome. Hoje, ele cruza o seu caminho numa estrada, sozinho, e para.',
     choices: [
       { text: 'Parabenizá-lo com sinceridade.', res: { text: '{rival} desarma-se. "Você é o único que diz isso de verdade", murmura. Vocês bebem juntos, e o placar fica esquecido por uma noite.', fx: { setFlags: ['rival_respeito'], karma: 3, stats: { car: 1, dao: 1 }, agenda: [{ event: 'npc_rival_4', em: [8, 15] }] } } },
       { text: 'Provocá-lo, como sempre.', res: { text: 'A provocação é antiga, e ele a devolve na mesma moeda. Riem, mas o riso tem algo de lâmina.', fx: { stats: { car: 1 }, agenda: [{ event: 'npc_rival_4', em: [8, 15] }] } } },

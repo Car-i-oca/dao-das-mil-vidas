@@ -64,7 +64,7 @@ export const trilhas: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 6, path: ['budista'] },
     text: 'Depois de três dias de neve, você bate à porta de um mosteiro esquecido. Um monge de olhos serenos lhe oferece chá e uma pergunta: "O que você quer largar?"',
     choices: [
-      { text: 'Responder com sinceridade: "Meu orgulho."', res: { text: 'O monge assente e o ensina o Punho do Vajra: um golpe que nasce do desapego.', fx: { tecnica: ['punho_vajra'], stats: { dao: 2 }, xp: 14, karma: 4 } } },
+      { text: 'Responder com sinceridade: "Meu orgulho."', res: { text: 'O monge assente e o ensina o Punho do Vajra: um golpe que nasce do desapego.', fx: {  stats: { dao: 2 }, xp: 14, karma: 4 } } },
       { text: 'Responder: "Nada. Quero é aprender a lutar."', check: { stat: ['dao', 'car'], dif: 1 }, ok: { text: 'O monge ri baixo. "Honesto. Fique um inverno."', fx: { stats: { dao: 1, fis: 1 }, xp: 10, item: ['manual_punho_vajra'] } }, fail: { text: 'O monge só serve mais chá. Você parte sem lição, mas com o estômago quente.', fx: { stats: { dao: 1 } } } },
     ],
   },
@@ -145,7 +145,7 @@ export const trilhas: GameEvent[] = [
   {
     id: 'banquete_de_sangue', title: 'O Banquete de Essência', rarity: 'comum', cooldown: 12,
     cond: { tierMin: 1, path: ['demoniaca'] },
-    text: 'Um bandido capturado, vivo e algemado, espera no porão. Sua técnica pede essência vital. Os pecados dele já foram julgados; os seus, ainda não.',
+    text: 'Um bandido capturado, vivo e algemado, espera no porão. Suo método pede essência vital. Os pecados dele já foram julgados; os seus, ainda não.',
     choices: [
       { text: 'Drenar a essência do bandido.', res: { text: 'O poder sobe como fogo. Você sente o gosto metálico do sucesso e a sombra em seus olhos.', fx: { xp: 20, corr: 10, karma: -8 } } },
       { text: 'Libertá-lo e buscar outro caminho.', check: { stat: 'dao', dif: 1, tag: 'mente' }, ok: { text: 'O bandido foge. Você sente sua fome, mas também uma estranha leveza.', fx: { corr: -6, karma: 4, stats: { dao: 2 } } }, fail: { text: 'A fome vence. Você hesita, e na hesitação ele morre de qualquer jeito.', fx: { corr: 6, karma: -4 } } },

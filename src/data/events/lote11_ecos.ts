@@ -3,7 +3,7 @@ import type { GameEvent } from '../../types';
 /**
  * Lote 11 — Ecos das vidas passadas.
  * Quem você foi na vida anterior vira lenda neste mundo: {eco} é o nome do personagem anterior,
- * {eco_final} o final que ele teve, {eco_trilha} a trilha que seguiu e {eco_tecnica} a técnica mais alta que dominou.
+ * {eco_final} o final que ele teve e {eco_trilha} o caminho de cultivo que seguiu.
  * Só aparecem quando existe uma vida anterior registrada (flag tem_eco).
  */
 const ECO = { flags: ['tem_eco'] };
@@ -20,9 +20,9 @@ export const lote11Ecos: GameEvent[] = [
     ],
   },
   {
-    id: 'tecnica_do_antecessor', title: 'As Notas de {eco}', rarity: 'raro', once: true, weight: 1,
+    id: 'caderno_do_antecessor', title: 'As Notas de {eco}', rarity: 'raro', once: true, weight: 1,
     cond: { ...ECO, tierMin: 2 },
-    text: 'Num sebo de cidade, um velho livreiro entrega um caderno surrado: "Notas de um cultivador, {eco}. Poucos entendem a letra. Os que entendem, dizem, aprendem a técnica que ele mais amava: {eco_tecnica}."',
+    text: 'Num sebo de cidade, um velho livreiro entrega um caderno surrado: "Notas de um cultivador, {eco}. Poucos entendem a letra." As margens estão cheias de observações sobre escolhas, perdas e erros que você ainda não cometeu.',
     choices: [
       { text: 'Comprar o caderno e estudá-lo (30 pedras).', custo: 30, check: { stat: ['comp', 'dao'], dif: 2, tag: 'mente' }, ok: { text: 'Por semanas, você decifra a letra. Cada página parece um conselho de alguém que já passou por tudo o que você enfrentará. As lições entram com facilidade, como se fossem suas.', fx: { xp: 22, stats: { comp: 2, dao: 1 } } }, fail: { text: 'A letra é difícil. Você capta um terço do conteúdo, e o resto fica como promessa.', fx: { xp: 8, stats: { comp: 1 } } } },
       { text: 'Folhear no balcão e devolver.', res: { text: 'O livreiro assente, sem insistir. Uma frase do caderno ecoa na sua memória: "Não pare, mesmo quando o caminho fingir que acabou."', fx: { stats: { dao: 1 } } } },

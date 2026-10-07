@@ -46,13 +46,13 @@ const ITEM_DEFS: Omit<Item, 'rarity'>[] = [
   // Núcleos de bestas
   { id: 'nucleo_besta_baixo', name: 'Núcleo de Besta Espiritual (baixo)', kind: 'nucleo', grade: 2, desc: 'Ainda pulsa.', use: { xp: 10 }, value: 20 },
   { id: 'nucleo_besta_alto', name: 'Núcleo de Besta Espiritual (alto)', kind: 'nucleo', grade: 4, desc: 'Brilha como um pequeno sol.', use: { xp: 35 }, value: 150 },
-  // Manuais (ensinam técnicas)
-  { id: 'manual_palma_cinzas', name: 'Manual: Palma das Cinzas Quentes', kind: 'manual', grade: 2, desc: 'Papel amarelado, caligrafia severa.', use: { tecnica: ['palma_cinzas'] }, value: 60 },
-  { id: 'manual_olho_lotus', name: 'Manual: Olho de Lótus Fechado', kind: 'manual', grade: 2, desc: 'Meditação de ver sem olhar.', use: { tecnica: ['olho_lotus'] }, value: 60 },
-  { id: 'manual_tres_luas', name: 'Manual: Espada das Três Luas', kind: 'manual', grade: 2, desc: 'Escrito com ponta de lâmina.', use: { tecnica: ['espada_tres_luas'] }, value: 70 },
-  { id: 'manual_forja_sol', name: 'Manual: Forja do Sol Interior', kind: 'manual', grade: 3, desc: 'Um tesouro de seita.', use: { tecnica: ['forja_sol_interior'] }, value: 200 },
-  { id: 'manual_selo_portas', name: 'Manual: Selo das Nove Portas', kind: 'manual', grade: 3, desc: 'Diagramas que mudam quando você pisca.', use: { tecnica: ['selo_nove_portas'] }, value: 190 },
-  { id: 'manual_passo_garca', name: 'Manual: Passo da Garça Cinzenta', kind: 'manual', grade: 1, desc: 'Barato e muito usado.', use: { tecnica: ['passo_garca'] }, value: 15 },
+  // Livros consumíveis concedem compreensão; não desbloqueiam método.
+  { id: 'manual_palma_cinzas', name: 'Caderno das Cinzas Quentes', kind: 'misc', grade: 2, desc: 'Anotações antigas sobre disciplina e leitura do adversário.', use: { stats: { comp: 1 } }, value: 60 },
+  { id: 'manual_olho_lotus', name: 'Caderno do Lótus Fechado', kind: 'misc', grade: 2, desc: 'Meditações sobre atenção e percepção.', use: { stats: { comp: 1 } }, value: 60 },
+  { id: 'manual_tres_luas', name: 'Crônica das Três Luas', kind: 'misc', grade: 2, desc: 'Um relato de duelos escrito por um espadachim viajante.', use: { stats: { comp: 1 } }, value: 70 },
+  { id: 'manual_forja_sol', name: 'Tratado do Sol Interior', kind: 'misc', grade: 3, desc: 'Um estudo raro sobre paciência e cultivo.', use: { stats: { comp: 1 } }, value: 200 },
+  { id: 'manual_selo_portas', name: 'Diagramas das Nove Portas', kind: 'misc', grade: 3, desc: 'Esquemas de arquitetura e observação.', use: { stats: { comp: 1 } }, value: 190 },
+  { id: 'manual_passo_garca', name: 'Notas da Garça Cinzenta', kind: 'misc', grade: 1, desc: 'Um caderno barato sobre equilíbrio e deslocamento.', use: { stats: { comp: 1 } }, value: 15 },
   // Expansão
   { id: 'pilula_espirito_calmo', name: 'Pílula do Espírito Calmo', kind: 'pilula', grade: 2, desc: 'Aquieta a mente e dissolve um pouco de corrupção.', use: { stats: { esp: 1 }, corr: -10 }, value: 25 },
   { id: 'antidoto_sete_ervas', name: 'Antídoto de Sete Ervas', kind: 'pilula', grade: 2, desc: 'Amarga, mas conserta o que o veneno quebrou.', use: { ferida: -3 }, value: 14 },
@@ -69,17 +69,17 @@ const ITEM_DEFS: Omit<Item, 'rarity'>[] = [
   { id: 'bolsa_celeste', name: 'Bolsa Celeste', kind: 'anel', grade: 4, desc: 'Um bolso do tamanho de um pequeno mundo.', passive: { sor: 2 }, value: 260 },
   { id: 'ovo_fera_espiritual', name: 'Ovo de Fera Espiritual', kind: 'misc', grade: 3, desc: 'Quente, vivo, esperando um nome.', value: 80 },
   { id: 'chave_reino_secreto', name: 'Chave de Reino Secreto', kind: 'misc', grade: 4, desc: 'Abre uma porta que só existe na lua certa.', value: 200 },
-  { id: 'manual_nevoa_venenos', name: 'Manual: Névoa dos Sete Venenos', kind: 'manual', grade: 2, desc: 'Notas de campo, algumas manchadas de verde.', use: { tecnica: ['nevoa_sete_venenos'] }, value: 65 },
-  { id: 'manual_agulha_alma', name: 'Manual: Agulha de Alma', kind: 'manual', grade: 2, desc: 'Poucos caracteres, muitíssimo cuidado.', use: { tecnica: ['agulha_de_alma'] }, value: 70 },
-  { id: 'manual_punho_vajra', name: 'Manual: Punho do Vajra', kind: 'manual', grade: 2, desc: 'Impresso em papel de templo.', use: { tecnica: ['punho_vajra'] }, value: 65 },
-  { id: 'manual_estrelas', name: 'Manual: Arranjo das Sete Estrelas', kind: 'manual', grade: 3, desc: 'Mapas estelares e muitos cálculos.', use: { tecnica: ['formacao_estrelas'] }, value: 210 },
+  { id: 'manual_nevoa_venenos', name: 'Notas da Névoa Verde', kind: 'misc', grade: 2, desc: 'Observações de campo sobre ervas e toxinas.', use: { stats: { comp: 1 } }, value: 65 },
+  { id: 'manual_agulha_alma', name: 'Caderno da Agulha de Alma', kind: 'misc', grade: 2, desc: 'Um estudo cuidadoso sobre foco e concentração.', use: { stats: { comp: 1 } }, value: 70 },
+  { id: 'manual_punho_vajra', name: 'Crônica do Vajra', kind: 'misc', grade: 2, desc: 'Relatos de um peregrino sobre força e serenidade.', use: { stats: { comp: 1 } }, value: 65 },
+  { id: 'manual_estrelas', name: 'Atlas das Sete Estrelas', kind: 'misc', grade: 3, desc: 'Mapas celestes e cálculos de navegação.', use: { stats: { comp: 1 } }, value: 210 },
 
   // Lote 1: vida na seita
   { id: 'pilula_merito', name: 'Pílula do Mérito', kind: 'pilula', grade: 2, desc: 'Troco de pontos de mérito; sabor de chá velho.', use: { xp: 12, stats: { dao: 1 } }, value: 30 },
   { id: 'manto_nucleo', name: 'Manto do Discípulo do Núcleo', kind: 'artefato', grade: 3, desc: 'Escuro, bordado a prata. Abre portas e olhares.', passive: { car: 2, dao: 1 }, value: 150 },
   { id: 'jade_identidade', name: 'Jade de Identidade', kind: 'misc', grade: 2, desc: 'Prova de confiança entre mestres e alunos.', passive: { car: 1 }, value: 40 },
-  { id: 'pergaminho_anciao', name: 'Pergaminho do Ancião', kind: 'manual', grade: 3, desc: 'Notas de um Ancião sobre o próprio caminho.', use: { tecnica: ['sutra_do_anciao'] }, value: 180 },
-  { id: 'manual_guarda_portao', name: 'Manual: Guarda do Portão', kind: 'manual', grade: 2, desc: 'Ilustrações de posturas e respiração.', use: { tecnica: ['guarda_do_portao'] }, value: 60 },
+  { id: 'pergaminho_anciao', name: 'Memórias do Ancião', kind: 'misc', grade: 3, desc: 'Notas de um Ancião sobre escolhas e consequências.', use: { stats: { comp: 1 } }, value: 180 },
+  { id: 'manual_guarda_portao', name: 'Caderno do Portão', kind: 'misc', grade: 2, desc: 'Ilustrações de arquitetura e disciplina cotidiana.', use: { stats: { comp: 1 } }, value: 60 },
 
   // Lote 2: reinos secretos
   { id: 'selo_do_guardiao', name: 'Selo de Passagem do Guardião', kind: 'misc', grade: 3, desc: 'Prova de que alguém pagou pela rota certa.', value: 60 },
@@ -111,7 +111,7 @@ const ITEM_DEFS: Omit<Item, 'rarity'>[] = [
 
   // Lote 6: budismo e peregrinação
   { id: 'incenso_sagrado', name: 'Incenso de Templo', kind: 'misc', grade: 2, desc: 'Queima devagar, acalma depressa.', use: { xp: 10, stats: { dao: 1 } }, value: 25 },
-  { id: 'escritura_oeste', name: 'Escritura do Templo do Oeste', kind: 'manual', grade: 4, desc: 'Poucos caracteres, muitas vidas.', use: { tecnica: ['sutra_do_oeste'] }, value: 400 },
+  { id: 'escritura_oeste', name: 'Crônicas do Templo do Oeste', kind: 'misc', grade: 4, desc: 'Uma coleção de relatos sobre vidas e renascimentos.', use: { stats: { comp: 1 } }, value: 400 },
   { id: 'rosario_vajra', name: 'Rosário de Vajra', kind: 'artefato', grade: 3, desc: 'Contas de pedra preta que nunca esquentam.', passive: { dao: 2, fis: 1 }, value: 140 },
   { id: 'tigela_mendicante', name: 'Tigela do Mendigo', kind: 'artefato', grade: 2, desc: 'Amassada, humilde, abençoada.', passive: { sor: 1, dao: 1 }, value: 40 },
 

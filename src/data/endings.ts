@@ -28,7 +28,7 @@ export const ENDINGS: Ending[] = [
     'Havia um som, um zumbido, uma doçura quente subindo pelo braço. {nome} reconheceu os sinais tarde demais e, mesmo assim, ainda tentou respirar fundo.',
     'O meridiano rompeu primeiro; o resto foi consequência. Os que encontraram {nome} disseram que o rosto estava calmo, o que talvez fosse o mais cruel de tudo.',
   ], text: 'O Qi quebrou as margens. {nome} sentiu cada meridiano virar rio e cada rio virar fogo, até o silêncio ser a única coisa estável.' },
-  { id: 'fundador', name: 'Fundador de Seita', legacy: 1.8, text: 'Séculos depois, discípulos que nunca viram {nome} ainda recitavam seus ensinamentos. A seita ergueu um pavilhão em seu nome e ninguém lembrava o rosto.' },
+  { id: 'fundador', name: 'Fundador de Seita', legacy: 1.8, text: 'Séculos depois, discípulos que nunca viram {nome} ainda recitavam seus métodos. A seita ergueu um pavilhão em seu nome e ninguém lembrava o rosto.' },
   { id: 'karma', name: 'A Dívida Cobrada', legacy: 1, text: 'Toda semente plantada em sangue dá fruto. {nome} descobriu, tarde demais, que o karma tem paciência e boa memória.' },
   { id: 'amor', name: 'Fio Vermelho', legacy: 1.3, text: '{nome} trocou a eternidade por uma casa pequena com uma pessoa dentro. Quando a vida acabou, não havia dúvida de que foi um bom negócio.' },
   { id: 'sacrificio', name: 'Sacrifício Final', legacy: 2, text: 'Quando o céu desabou sobre os inocentes, {nome} abriu os braços. A luz que restou durou três dias, e três gerações lembraram por quê.' },
@@ -111,7 +111,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_penitente', name: 'Vassoura e Silêncio', desc: 'Termine uma vida como Penitente.', reward: '+6 Herança do Dao' },
   { id: 'ach_iluminacao', name: 'Despertar Sem Degraus', desc: 'Alcance a Iluminação ao fim da Peregrinação ao Oeste.', reward: '+8 Herança do Dao' },
   { id: 'ach_celeste', name: 'Carimbo do Céu', desc: 'Torne-se Oficial da Corte Celeste ou o novo Registro.', reward: '+5 Herança do Dao' },
-  { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Receba ensinamentos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
+  { id: 'ach_diaspora', name: 'Discípulo de Sábios', desc: 'Recebo métodos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
 ];
 
 /** Condição de cada conquista. `ending` só existe ao morrer. */

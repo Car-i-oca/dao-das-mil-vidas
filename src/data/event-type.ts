@@ -1,7 +1,7 @@
 import type { EventType, GameEvent } from '../types';
 
 const hasCombatChoices = (event: GameEvent) => event.choices.some((choice) =>
-  !choice.ex && (choice.check?.tag === 'combate' || !!choice.activeTechnique),
+  !choice.ex && choice.check?.tag === 'combate',
 );
 
 export function eventTypeOf(event: GameEvent): EventType {

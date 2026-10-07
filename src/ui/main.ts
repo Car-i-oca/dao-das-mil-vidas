@@ -2,20 +2,19 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, joinGuild, factionReputation, combatCheckPreview,
+  realmOf, ladderOf, eff, cultivationRate, EVENT, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, joinGuild, factionReputation, combatCheckPreview, tradeItem,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
 import type { Change, DiceRoll, EquipmentSlot, GuildFaction, Meta, State, UiNotification } from '../types';
-import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
 import { WORLD } from '../data/mundo';
 import { ALCUNHA, VIRTUDE_NOME } from '../data/marcas';
 import { EVENTS } from '../data/events';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
-import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
+import { itemIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
@@ -49,6 +48,77 @@ function persist() {
   try { localStorage.setItem(KEY, JSON.stringify(save)); } catch { /* sem armazenamento */ }
 }
 
+function shopModalHtml(s: State): string {
+  const byRarity = new Map<string, (typeof ITEMS)[number]>();
+  const rarityOrder = ['comum', 'incomum', 'raro', 'epico', 'lendario'];
+  for (const rarity of rarityOrder) {
+    const item = ITEMS.filter((entry) => entry.rarity === rarity && entry.kind !== 'misc')
+      .sort((a, b) => a.value - b.value)[0];
+    if (item) byRarity.set(rarity, item);
+  }
+  const offers = [...byRarity.entries()].map(([rarity, item]) =>
+    `<div class="shop-row"><span class="shop-item rarity-text-${rarity}"><b>${esc(item.name)}</b><small>${RARITY_LABEL[rarity]} · ${item.value} pedras</small></span><button class="btn" data-act="shop-buy" data-id="${item.id}" ${s.pedras < item.value ? 'disabled' : ''}>Comprar</button></div>`,
+  ).join('');
+  const saleCounts = new Map<string, number>();
+  for (const id of s.items) saleCounts.set(id, (saleCounts.get(id) ?? 0) + 1);
+  const sales = [...saleCounts.entries()].map(([id, count]) => {
+    const item = ITEM[id];
+    if (!item || Object.values(s.equipment ?? {}).includes(id)) return '';
+    const price = Math.max(1, Math.floor(item.value / 2));
+    return `<div class="shop-row"><span class="shop-item"><b>${esc(item.name)}${count > 1 ? ` ×${count}` : ''}</b><small>${RARITY_LABEL[item.rarity]} · revenda ${price} pedras</small></span><button class="btn ghost" data-act="shop-sell" data-id="${id}">Vender</button></div>`;
+  }).join('') || '<p class="muted small">Não há itens disponíveis para venda.</p>';
+  return `<div class="shop-overlay" role="dialog" aria-modal="true" aria-label="Loja do mercador">
+    <button class="shop-backdrop" data-act="shop-close" aria-label="Fechar loja"></button>
+    <section class="shop-modal"><header class="shop-header"><div><span class="muted small">PEDRAS ESPIRITUAIS · ${s.pedras}</span><h2>Mercador</h2></div><button class="btn ghost" data-act="shop-close" aria-label="Fechar">×</button></header>
+      <div class="shop-scroll"><div class="muted small">COMPRAR · OFERTAS POR RARIDADE</div>${offers}<div class="muted small shop-section-title">VENDER · RECEBA METADE DO VALOR</div>${sales}</div>
+    </section>
+  </div>`;
+}
+
+function bgmDataUri(): string {
+  const sampleRate = 8000;
+  const sampleCount = sampleRate * 2;
+  const buffer = new ArrayBuffer(44 + sampleCount * 2);
+  const view = new DataView(buffer);
+  const write = (offset: number, value: string) => [...value].forEach((char, i) => view.setUint8(offset + i, char.charCodeAt(0)));
+  write(0, 'RIFF');
+  view.setUint32(4, 36 + sampleCount * 2, true);
+  write(8, 'WAVEfmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  write(36, 'data');
+  view.setUint32(40, sampleCount * 2, true);
+  for (let i = 0; i < sampleCount; i++) {
+    const t = i / sampleRate;
+    const envelope = 0.58 + 0.12 * Math.sin(2 * Math.PI * t / 2);
+    const chord = Math.sin(2 * Math.PI * 110 * t) * 0.48
+      + Math.sin(2 * Math.PI * 165 * t) * 0.24
+      + Math.sin(2 * Math.PI * 220 * t) * 0.18;
+    view.setInt16(44 + i * 2, Math.round(chord * envelope * 32767), true);
+  }
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return `data:audio/wav;base64,${btoa(binary)}`;
+}
+
+const bgm = document.createElement('audio');
+bgm.id = 'bgm';
+bgm.loop = true;
+bgm.autoplay = true;
+bgm.preload = 'auto';
+bgm.volume = 0.14;
+bgm.src = bgmDataUri();
+document.body.appendChild(bgm);
+
+window.addEventListener('pagehide', persist);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persist(); });
+
 function withRng<T>(s: State, fn: (r: Rng) => T): T {
   const r = new Rng(s.seed);
   const out = fn(r);
@@ -69,6 +139,10 @@ let audioStarting = false;
 let diceModal: { roll: DiceRoll; combat: boolean; success: boolean; face: number; settled: boolean } | null = null;
 let diceTimer = 0;
 let selectedInventoryItem: string | null = null;
+let galleryOpen = false;
+let galleryTab: 'endings' | 'enemies' | 'artifacts' = 'endings';
+let shopOpen = false;
+let shopEventId = '';
 
 const app = document.getElementById('app')!;
 
@@ -184,7 +258,7 @@ function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
     ? `<div class="dice-power"><span>Seu poder <b>${roll.playerPower}</b></span><span>Inimigo <b>${roll.enemyPower}</b></span></div>`
     : '';
   return `<div class="dice-overlay" role="dialog" aria-modal="true" aria-label="Resultado da rolagem">
-    <div class="dice-card ${modal.settled ? (modal.success ? 'success' : 'failure') : ''}">
+    <div class="dice-card ${modal.settled ? (modal.success ? 'success' : 'failure') : 'rolling'}">
       <span class="dice-kicker">${modal.combat ? 'CONFRONTO' : 'TESTE DE ATRIBUTO'}</span>
       <div class="dice-face" aria-live="polite">${modal.settled ? roll.d20 : modal.face}</div>
       <h2>${modal.settled ? (modal.success ? 'Sucesso' : 'Falha') : 'O destino decide'}</h2>
@@ -206,7 +280,7 @@ function showDiceModal(s: State) {
   const timerStarted = performance.now();
   diceTimer = window.setInterval(() => {
     if (!diceModal) { window.clearInterval(diceTimer); return; }
-    if (performance.now() - timerStarted >= 900) {
+    if (performance.now() - timerStarted >= 2400) {
       window.clearInterval(diceTimer);
       diceModal.face = roll.d20;
       diceModal.settled = true;
@@ -217,11 +291,12 @@ function showDiceModal(s: State) {
     diceModal.face = 1 + Math.floor(Math.random() * 20);
     const face = app.querySelector<HTMLElement>('.dice-face');
     if (face) face.textContent = String(diceModal.face);
-  }, 65);
+  }, 72);
 }
 
 function renderHome() {
   const m = save.meta;
+  const gallery = galleryOpen ? galleryModalHtml(m) : '';
   app.innerHTML = `
     <div class="screen home">
       <div class="home-emblem"><div class="seal">道</div><span>CRÔNICAS DO CULTIVO</span></div>
@@ -230,12 +305,45 @@ function renderHome() {
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
         <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
+        <button class="btn" data-act="gallery-open">Galeria · finais, inimigos e artefatos</button>
         <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
       <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${m.endingsSeen.length}/${ENDINGS.length}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
       <p class="muted small copy">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
-    </div>`;
+    </div>${gallery}`;
+}
+
+function galleryModalHtml(meta: Meta): string {
+  const tabs: [typeof galleryTab, string][] = [['endings', 'Finais'], ['enemies', 'Inimigos'], ['artifacts', 'Artefatos']];
+  let content = '';
+  if (galleryTab === 'endings') {
+    content = `<div class="gallery-grid">${ENDINGS.map((ending) => {
+      const found = meta.endingsSeen.includes(ending.id);
+      return `<div class="gallery-entry ${found ? 'found' : 'locked'}"><span class="gallery-silhouette">${found ? '✦' : '◈'}</span><b>${found ? esc(ending.name) : '???'}</b><small>${found ? 'Final descoberto' : 'Final não descoberto'}</small></div>`;
+    }).join('')}</div>`;
+  } else if (galleryTab === 'enemies') {
+    const defeated = new Set(meta.defeatedFoes ?? []);
+    content = `<div class="gallery-grid">${FOES.map((foe) => {
+      const found = defeated.has(foe.id);
+      const portrait = found && pixelArt.foe ? pixelArt.foe(foe.id) : found ? esc(foe.name.slice(0, 1)) : '◈';
+      return `<div class="gallery-entry ${found ? 'found' : 'locked'}"><span class="gallery-silhouette">${portrait}</span><b>${found ? esc(foe.name) : '???'}</b><small>${found ? 'Derrotado' : 'Inimigo desconhecido'}</small></div>`;
+    }).join('')}</div>`;
+  } else {
+    const discovered = new Set(meta.codex?.items ?? []);
+    const artifacts = ITEMS.filter((item) => ['artefato', 'arma', 'armadura', 'anel', 'talisma'].includes(item.kind));
+    content = `<div class="gallery-grid">${artifacts.map((item) => {
+      const found = discovered.has(item.id);
+      return `<div class="gallery-entry ${found ? 'found' : 'locked'} rarity-${item.rarity}"><span class="gallery-silhouette">${found ? itemIcon(item, 40) : '◈'}</span><b>${found ? esc(item.name) : '???'}</b><small>${found ? RARITY_LABEL[item.rarity] : 'Artefato desconhecido'}</small></div>`;
+    }).join('')}</div>`;
+  }
+  return `<div class="gallery-overlay" role="dialog" aria-modal="true" aria-label="Galeria e Herança do Dao">
+    <button class="gallery-backdrop" data-act="gallery-close" aria-label="Fechar galeria"></button>
+    <section class="gallery-modal"><header class="gallery-header"><div><span class="muted small">MEMÓRIA DAS VIDAS</span><h2>Galeria</h2></div><button class="btn ghost" data-act="gallery-close" aria-label="Fechar">×</button></header>
+      <nav class="gallery-tabs">${tabs.map(([id, label]) => `<button class="${galleryTab === id ? 'active' : ''}" data-act="gallery-tab" data-id="${id}">${label}</button>`).join('')}</nav>
+      <div class="gallery-content">${content}</div>
+    </section>
+  </div>`;
 }
 
 function bestName(m: Meta): string {
@@ -274,6 +382,8 @@ function renderCreate() {
 function hudHtml(s: State): string {
   const realm = realmOf(s);
   const ageRatio = Math.min(1, s.age / s.maxAge);
+  const sagaProgress = Math.round((s.turn % 6) / 6 * 100);
+  const sagaChapter = Math.floor(s.turn / 6) + 1;
   const statusNames: Record<string, string> = { poisoned: 'Envenenado', bleeding: 'Sangrando', burning: 'Queimando', frozen: 'Congelado', focused: 'Focado', guarded: 'Protegido' };
   const statuses = (s.statuses ?? []).map((status) => `<span class="status-chip ${status.id}">${statusNames[status.id]} · ${status.turns} t</span>`).join('');
   return `
@@ -284,6 +394,7 @@ function hudHtml(s: State): string {
       <div class="hud-resources"><span>Dia ${s.day ?? 1} · ${String(s.hour ?? 8).padStart(2, '0')}:00</span><span>${weatherLabel(s.weather)}</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
+      <div class="saga-progress"><span>Jornada · Cap. ${sagaChapter}</span><div class="bar"><i style="width:${sagaProgress}%"></i></div><b>${sagaProgress}%</b></div>
       </div></div>
     </div>`;
 }
@@ -315,6 +426,15 @@ function tabsHtml(): string {
 
 function renderGame() {
   const s = save.run!;
+  const currentType = s.current ? EVENT[s.current.id]?.type ?? (EVENT[s.current.id] ? view(s).eventType : undefined) : undefined;
+  const currentEventId = s.current?.id;
+  if (currentType === 'shop' && currentEventId && currentEventId !== shopEventId) {
+    shopEventId = currentEventId;
+    shopOpen = true;
+  } else if (currentType !== 'shop') {
+    shopEventId = '';
+    shopOpen = false;
+  }
   let body = '';
   if (tab === 'aventura') body = lifeHtml(s);
   else if (tab === 'equipamentos') body = equipmentHtml(s);
@@ -360,7 +480,7 @@ function lifeHtml(s: State): string {
   const choicesHtml = v.kind === 'result' || v.kind === 'ending'
     ? `${chipsHtml(s.result?.changes)}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
     : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
-      const preview = c.check ? combatCheckPreview(s, c.check, EVENT[eventId], c.activeTechnique) : null;
+      const preview = c.check ? combatCheckPreview(s, c.check, EVENT[eventId]) : null;
       const rollPrompt = preview ? `[Teste de ${STAT_NAMES[preview.stat]} · D20 ${preview.modifier >= 0 ? '+' : '−'}${Math.abs(preview.modifier)} vs CD ${preview.dc}] ` : '';
       return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(rollPrompt + c.text)}">
         <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(rollPrompt + c.text)}</span>
@@ -376,9 +496,11 @@ function lifeHtml(s: State): string {
         ${npcFor(s, eventId)}
       <p class="story-text" id="typed"></p>
         ${v.kind === 'event' ? '<div class="hint" id="hint">toque para pular</div>' : ''}
+        ${eventType === 'shop' && !shopOpen ? '<button class="btn ghost" data-act="shop-open">Abrir loja do mercador</button>' : ''}
       </section>
       <section class="choice-panel"><div class="choices show" id="choices">${choicesHtml}</div></section>
       ${tab === 'inventario' ? inventoryModalHtml(s) : ''}
+      ${eventType === 'shop' && shopOpen ? shopModalHtml(s) : ''}
     </div>`;
 }
 
@@ -396,14 +518,6 @@ function startTyping(s: State) {
 function alcunhaHtml(s: State): string {
   const v = virtudeDominante(s);
   return v ? ` <span class="alcunha">· ${esc(ALCUNHA[v as keyof typeof ALCUNHA] ?? '')}</span>` : '';
-}
-
-/** Estágio de domínio de uma técnica, com o progresso até o próximo. */
-function dominioHtml(s: State, id: string): string {
-  const e = dominioEstagio(s, id);
-  const p = s.dominio?.[id] ?? 0;
-  const prox = DOMINIO_LIMITES[e + 1];
-  return `<b>${DOMINIO_NOMES[e]}</b>${prox ? ` <span class="muted small">(${p}/${prox})</span>` : ''}`;
 }
 
 /** Conduta: o que as suas escolhas fizeram de você. */
@@ -427,18 +541,9 @@ function powerHtml(s: State): string {
     .map(({ x }) => `<li><b>${esc(x.name)}</b>: ${esc(x.poder!)}</li>`)
     .join('');
   const next = L.realms[s.tier + 1];
-  let rec = '';
-  if (path?.rec) {
-    const stage = recStage(s);
-    const into = (s.rec ?? 0) - stage * 3;
-    const last = stage >= path.rec.stages.length - 1;
-    rec = `<div style="margin-top:8px"><b>${esc(path.rec.name)}:</b> ${esc(path.rec.stages[stage])} <span class="muted small">(estágio ${stage + 1}/${path.rec.stages.length})</span>
-      <div class="bar"><i style="width:${last ? 100 : Math.min(100, (into / 3) * 100)}%"></i></div>
-      <div class="small muted">${esc(path.rec.desc)} A cada 2 estágios, +1 nos testes de ${esc(path.tags.join(', '))}.${path.fraco?.length ? ` Ponto fraco: ${esc(path.fraco.join(', '))}.` : ''}</div></div>`;
-  }
   return `<div class="card"><div class="kv"><div class="k">Título</div><div class="v">${esc(r.titulo ?? 'Mortal')}</div></div>
     ${powers ? `<ul class="small" style="margin:6px 0 0 18px">${powers}</ul>` : ''}
-    ${next?.poder ? `<div class="muted small" style="margin-top:4px">Próximo reino (${esc(next.name)}): ${esc(next.poder)}</div>` : ''}${rec}</div>`;
+    ${next?.poder ? `<div class="muted small" style="margin-top:4px">Próximo reino (${esc(next.name)}): ${esc(next.poder)}</div>` : ''}</div>`;
 }
 
 function statusHtml(s: State): string {
@@ -449,14 +554,6 @@ function statusHtml(s: State): string {
     const base = s.stats[k];
     return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
-  const GRADE = ['', 'Mortal', 'Terra', 'Céu', 'Divino'];
-  const techEffects = (t: (typeof TECH)[string]) => [
-    ...Object.entries(t.stats ?? {}).map(([k, v]) => `${(v as number) > 0 ? '+' : ''}${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`),
-    ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
-    ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
-    ...(t.martial ? [`técnica ativa: +${t.martial.power} poder na rolagem`] : []),
-  ].join(' · ');
-  const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span> <span class="dom">${dominioHtml(s, t.id)}</span><div class="small">${esc(t.desc)}</div>${t.origem ? `<div class="muted small">Origem: ${esc(t.origem)}</div>` : ''}<div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
   const fac: Record<string, string> = { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
@@ -486,8 +583,7 @@ function statusHtml(s: State): string {
       <div class="k">Ferimentos</div><div class="v">${Math.round(s.wounds)}/6</div>
       <div class="k">Cultivo</div><div class="v">${s.tier > 0 ? `${cultivationRate(s).toFixed(1)}%/ano` : '—'}</div>
     </div>
-    ${relationsHtml(s)}
-    <div class="card"><div class="muted small" style="margin-bottom:4px">TÉCNICAS</div>${techs}</div>`;
+    ${relationsHtml(s)}`;
 }
 
 function sectRankLabel(rank: NonNullable<ReturnType<typeof sectRankOf>>): string {
@@ -605,7 +701,7 @@ function equipmentHtml(s: State): string {
 }
 
 const GUILDS: { id: GuildFaction; name: string; desc: string }[] = [
-  { id: 'sword_sect', name: 'Seita da Espada', desc: 'Técnica e disciplina; reputação alta melhora testes de combate.' },
+  { id: 'sword_sect', name: 'Seita da Espada', desc: 'Disciplina e tradição marcial; reputação alta melhora testes de combate.' },
   { id: 'demon_cult', name: 'Culto Demoníaco', desc: 'Poder sem hesitação; influência abre caminhos sombrios.' },
   { id: 'merchant_guild', name: 'Guilda dos Mercadores', desc: 'Rotas, contatos e vantagens nas trocas.' },
 ];
@@ -654,7 +750,6 @@ function renderEnd() {
         <span>Herança ganha nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
         <span>Fama</span><b>${s.fama}</b>
         <span>Karma</span><b>${s.karma > 0 ? '+' : ''}${s.karma}</b>
-        <span>Técnicas</span><b>${s.techniques.length}</b>
       </div>
       <div class="card sum final-equipment"><div class="muted small equipment-summary-title">EQUIPAMENTOS FINAIS</div>${finalGear}</div>
       <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
@@ -688,10 +783,9 @@ function renderMeta() {
     }).join('')}</div>
     <div class="card muted small">Origens liberadas: ${ORIGINS.filter((o) => !o.unlock || m.achievements.includes(o.unlock)).length}/${ORIGINS.length} · Talentos liberados: ${TALENTS.filter((t) => !t.unlock || m.achievements.includes(t.unlock)).length}/${TALENTS.length}</div>`;
   } else if (metaTab === 'codice') {
-    const cx = m.codex ?? { items: [], techs: [] };
+    const cx = m.codex ?? { items: [] };
     const pill = (name: string, ok: boolean, grade?: number, icon = '') => `<span class="pill cx ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${icon ? `<span class="cxi">${icon}</span>` : ''}${ok ? esc(name) : '???'}</span>`;
     body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${ENDINGS.length}</div>${ENDINGS.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
-      <div class="card"><div class="muted small">TÉCNICAS · ${cx.techs.length}/${TECHNIQUES.length}</div>${TECHNIQUES.map((t) => pill(t.name, cx.techs.includes(t.id), t.grade, cx.techs.includes(t.id) ? techIcon(t, 26) : '')).join('')}</div>
       <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${ITEMS.length}</div>${ITEMS.map((i) => pill(i.name, cx.items.includes(i.id), i.grade, cx.items.includes(i.id) ? itemIcon(i, 26) : '')).join('')}</div>
       <div class="card muted small">O Códice guarda tudo o que você já encontrou em qualquer vida. Os nomes escondidos (???) esperam ser descobertos.</div>`;
   } else if (metaTab === 'historico') {
@@ -712,7 +806,7 @@ function renderMeta() {
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${TECHNIQUES.length} técnicas · ${ENDINGS.length} finais · ${PATHS.length} trilhas<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas, técnicas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
+      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${ENDINGS.length} finais · ${PATHS.length} caminhos de cultivo<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
   }
   app.innerHTML = `
     <div class="screen">
@@ -746,7 +840,8 @@ app.addEventListener('click', (ev) => {
     audioGateError = '';
     target.setAttribute('aria-disabled', 'true');
     target.textContent = 'Preparando o Cultivo…';
-    void startAudioExperience().then(() => {
+    const bgmPlayback = bgm.play();
+    void Promise.all([startAudioExperience(), bgmPlayback]).then(() => {
       audioStarted = true;
       audioStarting = false;
       render();
@@ -770,8 +865,16 @@ app.addEventListener('click', (ev) => {
       break;
     case 'skip': skipTyper(); break;
     case 'home': screen = 'home'; render(); break;
+    case 'gallery-open': galleryOpen = true; galleryTab = 'endings'; render(); break;
+    case 'gallery-close': galleryOpen = false; render(); break;
+    case 'gallery-tab': galleryTab = target.dataset.id as typeof galleryTab; render(); break;
     case 'new': newCreation(); screen = 'create'; render(); break;
-    case 'continue': screen = save.run?.ending ? 'end' : 'game'; render(); break;
+    case 'continue':
+      if (save.run) tab = 'aventura';
+      screen = save.run?.ending ? 'end' : 'game';
+      persist();
+      render();
+      break;
     case 'meta': screen = 'meta'; render(); break;
     case 'estilomenu': screen = 'meta'; metaTab = 'opcoes'; render(); break;
     case 'install':
@@ -789,6 +892,17 @@ app.addEventListener('click', (ev) => {
       selectedInventoryItem = null;
       render();
       break;
+    case 'shop-open': shopOpen = true; render(); break;
+    case 'shop-close': shopOpen = false; render(); break;
+    case 'shop-buy':
+    case 'shop-sell': {
+      if (!s) break;
+      const message = tradeItem(s, act === 'shop-buy' ? 'buy' : 'sell', target.dataset.id!);
+      if (message) toast(message, act === 'shop-buy' && ITEM[target.dataset.id!]?.rarity !== 'comum' ? 'rare-item' : 'quest');
+      persist();
+      render();
+      break;
+    }
     case 'inventory-close':
       tab = 'aventura';
       selectedInventoryItem = null;
@@ -934,7 +1048,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
 
-/** Depuração: ?arte=<pixel|manhwa|tinta>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores> */
+/** Depuração: ?arte=<pixel|manhwa|tinta>&sec=<itens|trilhas|reinos|cenarios|finais|retratos|lutadores> */
 {
   const q = new URLSearchParams(location.search);
   const e = q.get('arte');

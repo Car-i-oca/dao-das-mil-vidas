@@ -88,7 +88,7 @@ export const lote3Alquimia: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 8, path: ['alquimia'], flags: ['alquimista_certificado'] },
     text: 'A Associação de Alquimistas convoca você ao exame de Mestre: refinar três pílulas de graus diferentes diante de cinco juízes. Os que falham raramente tentam outra vez.',
     choices: [
-      { text: 'Prestar o exame de Mestre.', check: { stat: 'comp', dif: 4, tag: 'alquimia' }, ok: { text: 'Os juízes provam as pílulas em silêncio, e depois levantam-se. "Mestre", dizem. Um broche de jade pesa em seu peito.', fx: { setFlags: ['mestre_alquimista'], tecnica: ['fogo_coracao'], fama: 14, pedras: 100, stats: { comp: 2 }, item: ['pilula_qi_maior'] } }, fail: { text: 'Você falha na terceira pílula. Os juízes indicam um ano de espera.', fx: { fama: -2, xp: 5, stats: { comp: 1 } } } },
+      { text: 'Prestar o exame de Mestre.', check: { stat: 'comp', dif: 4, tag: 'alquimia' }, ok: { text: 'Os juízes provam as pílulas em silêncio, e depois levantam-se. "Mestre", dizem. Um broche de jade pesa em seu peito.', fx: { setFlags: ['mestre_alquimista'],  fama: 14, pedras: 100, stats: { comp: 2 }, item: ['pilula_qi_maior'] } }, fail: { text: 'Você falha na terceira pílula. Os juízes indicam um ano de espera.', fx: { fama: -2, xp: 5, stats: { comp: 1 } } } },
     ],
   },
   {
@@ -121,7 +121,7 @@ export const lote3Alquimia: GameEvent[] = [
   {
     id: 'aprendiz_retorna', title: 'A Pílula da Aprendiz', rarity: 'raro', once: true,
     cond: { flags: ['aprendiz_alquimista'] },
-    text: 'Uma Mestra de aura calma o procura, com uma caixa de jade nas mãos: "Mestre, a primeira pílula que criei sozinha, com a técnica que o senhor me ensinou. Quero que seja a primeira a experimentar."',
+    text: 'Uma Mestra de aura calma o procura, com uma caixa de jade nas mãos: "Mestre, a primeira pílula que criei sozinha, com o método que o senhor me ensinou. Quero que seja a primeira a experimentar."',
     choices: [
       { text: 'Aceitar a pílula e prová-la.', res: { text: 'É uma pílula de grau alto, límpida, memorável. Você chora, em silêncio, de orgulho.', fx: { xp: 30, vida: 20, karma: 6, fama: 6, stats: { dao: 2 } } } },
       { text: 'Pedir que ela fique com a pílula e a venda para crescer.', res: { text: 'Ela insiste, e vocês dividem o lucro. Uma amizade longa nasce.', fx: { pedras: 80, karma: 4, stats: { car: 1 } } } },
@@ -152,7 +152,7 @@ export const lote3Alquimia: GameEvent[] = [
     cond: { tierMin: 2, tierMax: 6, pedrasMin: 40 },
     text: 'Um ferreiro ancião ensina uma tradição antiga: um cultivador deve forjar o próprio artefato natal, que crescerá com ele pela vida inteira. Quatro etapas: fundição, têmpera, forma e vínculo do espírito. A primeira exige minério raro.',
     choices: [
-      { text: 'Comprar o minério e iniciar a fundição (40 pedras).', custo: 40, check: { stat: ['fis', 'comp'], dif: 2, tag: 'forja' }, ok: { text: 'O minério vira um lingote cintilante. A primeira etapa está completa.', fx: { setFlags: ['forja_fusao'], tecnica: ['martelo_ressonante'], agenda: [{ event: 'forja_natal_tempera', em: [1, 3] }] } }, fail: { text: 'O minério racha ao esfriar. Você perde parte do material, mas a técnica continua possível.', fx: { setFlags: ['forja_fusao', 'forja_falha'], agenda: [{ event: 'forja_natal_tempera', em: [1, 3] }] } } },
+      { text: 'Comprar o minério e iniciar a fundição (40 pedras).', custo: 40, check: { stat: ['fis', 'comp'], dif: 2, tag: 'forja' }, ok: { text: 'O minério vira um lingote cintilante. A primeira etapa está completa.', fx: { setFlags: ['forja_fusao'], stats: { dao: 1 }, agenda: [{ event: 'forja_natal_tempera', em: [1, 3] }] } }, fail: { text: 'O minério racha ao esfriar. Você perde parte do material, mas o método continua possível.', fx: { setFlags: ['forja_fusao', 'forja_falha'], agenda: [{ event: 'forja_natal_tempera', em: [1, 3] }] } } },
       { text: 'Não: forjar o próprio artefato é arrogância demais.', res: { text: 'O ferreiro assente. "Há artefatos que não pedem para nascer."', fx: { stats: { dao: 1 } } } },
     ],
   },
@@ -197,7 +197,7 @@ export const lote3Alquimia: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 8, path: ['espada'], item: 'espada_aprendiz' },
     text: 'Anos de treino com a mesma lâmina deixaram marcas: ela parece vibrar quando você pensa em golpes. Um velho mestre ferreiro diz: "Sua espada quer um espírito. Dê-lhe um."',
     choices: [
-      { text: 'Atar um fragmento do seu espírito à espada.', check: { stat: ['esp', 'dao'], dif: 4, tag: 'espada' }, ok: { text: 'A espada acorda. Ela ouve seus pensamentos e responde com um tilintar. Nenhuma lâmina será mais leal.', fx: { tecnica: ['selo_espirito_arma'], stats: { dao: 2, esp: 1 }, xp: 12, fama: 6 } }, fail: { text: 'A espada resiste, indignada. Você perde um pouco de energia e sai ofendido.', fx: { ferida: 2, stats: { dao: 1 } } } },
+      { text: 'Atar um fragmento do seu espírito à espada.', check: { stat: ['esp', 'dao'], dif: 4, tag: 'espada' }, ok: { text: 'A espada acorda. Ela ouve seus pensamentos e responde com um tilintar. Nenhuma lâmina será mais leal.', fx: {  stats: { dao: 2, esp: 1 }, xp: 12, fama: 6 } }, fail: { text: 'A espada resiste, indignada. Você perde um pouco de energia e sai ofendido.', fx: { ferida: 2, stats: { dao: 1 } } } },
       { text: 'Preservar a espada como ferramenta, sem espírito.', res: { text: 'O velho ferreiro dá de ombros. "Uma boa lâmina é mais honesta sem alma."', fx: { stats: { dao: 1 } } } },
     ],
   },

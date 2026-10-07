@@ -12,7 +12,7 @@ export const lote5Sangue: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, corrMin: 10, noFlags: ['membro_demoniaca'], faction: ['errante', 'nenhuma', 'cla'] },
     text: 'Numa encosta onde nada cresce, portões vermelhos se abrem sem ranger. Um homem de olhos baços recebe você: "Sentimos sua sede. Aqui não perguntamos de onde veio, apenas até onde quer chegar."',
     choices: [
-      { text: 'Entrar e jurar lealdade à seita.', res: { text: 'Uma gota de sangue sela o juramento. As paredes têm cheiro de ferrugem e incenso, e os discípulos o observam como lobos observam um novo membro da matilha.', fx: { faccao: 'demoniaca', setFlags: ['membro_demoniaca'], corr: 8, xp: 12, tecnica: ['passo_sombrio'], karma: -4 } } },
+      { text: 'Entrar e jurar lealdade à seita.', res: { text: 'Uma gota de sangue sela o juramento. As paredes têm cheiro de ferrugem e incenso, e os discípulos o observam como lobos observam um novo membro da matilha.', fx: { faccao: 'demoniaca', setFlags: ['membro_demoniaca'], corr: 8, xp: 12, stats: { dao: 1 }, karma: -4 } } },
       { text: 'Recusar e seguir.', res: { text: 'O homem sorri sem calor. "Voltará, ou não." Você continua, com a nuca arrepiada.', fx: { stats: { dao: 1 } } } },
     ],
   },
@@ -66,7 +66,7 @@ export const lote5Sangue: GameEvent[] = [
   {
     id: 'coracao_dividido', title: 'O Coração Dividido', rarity: 'raro', once: true, weight: 5,
     cond: { tierMin: 2, tierMax: 7, flags: ['membro_demoniaca'], karmaMin: 5 },
-    text: 'Vendo crianças brincarem numa aldeia que a seita pretende queimar, algo trinca dentro de você. Ficar ou partir, obedecer ou se rebelar: a escolha pesa mais que qualquer técnica.',
+    text: 'Vendo crianças brincarem numa aldeia que a seita pretende queimar, algo trinca dentro de você. Ficar ou partir, obedecer ou se rebelar: a escolha pesa mais que qualquer método.',
     choices: [
       { text: 'Avisar a aldeia e deixar a seita.', check: { stat: ['dao', 'car'], dif: 3 }, ok: { text: 'A aldeia foge a tempo. A seita o declara traidor, mas as crianças crescem para contar a história.', fx: { item: ['talisma_exorcismo'], faccao: 'errante', clearFlags: ['membro_demoniaca'], karma: 18, corr: -12, fama: 6, stats: { dao: 3 }, setFlags: ['desertor_demoniaco'], agenda: [{ event: 'perseguidor_demoniaco', em: [5, 15] }] } }, fail: { text: 'Você tenta avisar a aldeia, mas é interceptado. A fuga é caótica e dolorosa.', fx: { faccao: 'errante', clearFlags: ['membro_demoniaca'], ferida: 3, karma: 8, setFlags: ['desertor_demoniaco'], agenda: [{ event: 'perseguidor_demoniaco', em: [5, 15] }] } } },
       { text: 'Seguir a ordem e queimar a aldeia.', res: { text: 'As chamas sobem. A dúvida some, junto com um pedaço do seu coração.', fx: { corr: 15, karma: -20, xp: 15, stats: { dao: -2 } } } },
@@ -105,7 +105,7 @@ export const lote5Sangue: GameEvent[] = [
     cond: { tierMin: 3, corrMin: 20, karmaMin: 5 },
     text: 'Nem justo nem demoníaco: um velho cultivador de manto cinza, que vagueia pelo mundo sem seita, propõe uma terceira via. "O bem e o mal são faces de um mesmo rio. Quem aprende a navegá-lo sem se afogar domina ambos."',
     choices: [
-      { text: 'Aprender o Caminho Cinzento.', check: { stat: ['dao', 'comp'], dif: 5, tag: 'mente' }, ok: { text: 'Por anos, você aprende a equilibrar sombra e luz. O Coração do Dao nunca esteve tão estável, e a corrupção vira combustível dominado.', fx: { tecnica: ['sutra_cinzento'], corr: -20, stats: { dao: 4, esp: 2 }, xp: 20, anos: 3 } }, fail: { text: 'A lição é difícil demais. O velho sorri e desaparece no nevoeiro, deixando uma pista.', fx: { stats: { dao: 2 } } } },
+      { text: 'Aprender o Caminho Cinzento.', check: { stat: ['dao', 'comp'], dif: 5, tag: 'mente' }, ok: { text: 'Por anos, você aprende a equilibrar sombra e luz. O Coração do Dao nunca esteve tão estável, e a corrupção vira combustível dominado.', fx: {  corr: -20, stats: { dao: 4, esp: 2 }, xp: 20, anos: 3 } }, fail: { text: 'A lição é difícil demais. O velho sorri e desaparece no nevoeiro, deixando uma pista.', fx: { stats: { dao: 2 } } } },
       { text: 'Recusar: prefere a clareza de um lado só.', res: { text: 'O velho assente com sabedoria. "Também é um caminho."', fx: { stats: { dao: 1 } } } },
     ],
   },

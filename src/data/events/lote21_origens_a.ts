@@ -85,7 +85,7 @@ export const lote21OrigensA: GameEvent[] = [
     cond: O('orfao_seita', 9, 16),
     text: 'Ao limpar o depósito dos fundos, você encontra uma caixa de livros descartados: manuais danificados, pergaminhos rasgados, um caderno quase queimado. Para a seita, é lixo. Para quem nunca teve um livro, é um tesouro.',
     choices: [
-      { text: 'Levar tudo para o quarto e estudar à noite.', check: { stat: ['comp', 'dao'], dif: 0 }, ok: { text: 'Fragmentos se encaixam: uma respiração, uma postura, uma explicação do Qi. Sua base é, sem ninguém saber, melhor do que a de muitos discípulos.', fx: { stats: { comp: 2, esp: 1 }, tecnica: ['respiracao_nuvem'] } }, fail: { text: 'A letra é difícil e metade das páginas, ilegível. Mas você aprende a ler melhor, só por teimosia.', fx: { stats: { comp: 1 } } } },
+      { text: 'Levar tudo para o quarto e estudar à noite.', check: { stat: ['comp', 'dao'], dif: 0 }, ok: { text: 'Fragmentos se encaixam: uma respiração, uma postura, uma explicação do Qi. Sua base é, sem ninguém saber, melhor do que a de muitos discípulos.', fx: { stats: { comp: 2, esp: 1 } } }, fail: { text: 'A letra é difícil e metade das páginas, ilegível. Mas você aprende a ler melhor, só por teimosia.', fx: { stats: { comp: 1 } } } },
       { text: 'Entregar tudo a um ancião, esperando reconhecimento.', res: { text: 'O ancião agradece sem olhar. No dia seguinte, os livros estão na biblioteca dos discípulos internos. Você aprende como o mundo funciona.', fx: { karma: 2, stats: { dao: 1 } } } },
     ],
   },
@@ -137,7 +137,7 @@ export const lote21OrigensA: GameEvent[] = [
     text: 'Toda noite, o avô conta uma história sobre o que o {cla} já foi: um ancestral que cortou um rio ao meio, uma ancestral que derrotou um dragão. Cada história tem uma moral e uma lacuna. Esta noite, ele conta uma que nunca ouvira, e fica calado no meio.',
     choices: [
       { text: 'Perguntar o que aconteceu depois.', res: { text: 'Ele demora a responder. Fala de uma traição, de um selo perdido, de um nome que o clã jurou jamais pronunciar. Você anota tudo na memória.', fx: { stats: { comp: 1 }, setFlags: ['sabe_da_traicao_do_cla'] } } },
-      { text: 'Pedir que ele ensine o que sabe de cultivo.', check: { stat: ['comp', 'car'], dif: 0 }, ok: { text: 'O avô relutante cede. Passa a lhe ensinar uma respiração antiga, fraca, mas legítima, do clã.', fx: { tecnica: ['respiracao_nuvem'], stats: { comp: 1, esp: 1 } } }, fail: { text: 'Ele diz que o clã já sofreu demais com cultivo. A resposta é um muro, mas uma curiosidade se acende.', fx: { stats: { dao: 1 } } } },
+      { text: 'Pedir que ele ensine o que sabe de cultivo.', check: { stat: ['comp', 'car'], dif: 0 }, ok: { text: 'O avô relutante cede. Passa a lhe ensinar uma respiração antiga, fraca, mas legítima, do clã.', fx: {  stats: { comp: 1, esp: 1 } } }, fail: { text: 'Ele diz que o clã já sofreu demais com cultivo. A resposta é um muro, mas uma curiosidade se acende.', fx: { stats: { dao: 1 } } } },
       { text: 'Ouvir calado e dormir no colo dele.', res: { text: 'Uma das últimas noites assim. Você só vai saber disso muito depois.', fx: { stats: { dao: 1 }, karma: 2 } } },
     ],
   },
@@ -334,7 +334,7 @@ export const lote21OrigensA: GameEvent[] = [
     cond: O('alma_reencarnada', 9, 16),
     text: 'Numa feira, entre quinquilharias, você vê uma pequena tigela de jade rachada. Seu coração dispara. Você sabe, sem saber como, que ela cabe exatamente na sua mão esquerda, e que, quando era "outro", você bebeu chá nela todas as manhãs.',
     choices: [
-      { text: 'Comprar a tigela, custe o que custar.', check: { stat: ['car', 'sor'], dif: 0 }, ok: { text: 'O vendedor, vendo seus olhos, faz um desconto absurdo. Ao tocar a tigela, uma lembrança inteira se abre: o rosto do mestre, o cheiro do incenso, uma técnica perdida.', fx: { tecnica: ['memoria_vida_passada'], stats: { dao: 2, comp: 1 }, pedras: -2 } }, fail: { text: 'O preço é alto demais. Você vai embora, mas a tigela te persegue nos sonhos por semanas.', fx: { stats: { dao: 1 } } } },
+      { text: 'Comprar a tigela, custe o que custar.', check: { stat: ['car', 'sor'], dif: 0 }, ok: { text: 'O vendedor, vendo seus olhos, faz um desconto absurdo. Ao tocar a tigela, uma lembrança inteira se abre: o rosto do mestre, o cheiro do incenso, um método perdida.', fx: {  stats: { dao: 2, comp: 1 }, pedras: -2 } }, fail: { text: 'O preço é alto demais. Você vai embora, mas a tigela te persegue nos sonhos por semanas.', fx: { stats: { dao: 1 } } } },
       { text: 'Perguntar de onde veio.', res: { text: 'O vendedor conta que a comprou numa cidade distante, de um velho que disse: "Quem voltar a procurar, entregue-a." Você sente um frio na espinha.', fx: { stats: { comp: 1 }, setFlags: ['pista_da_vida_passada'] } } },
       { text: 'Fingir que não a viu.', res: { text: 'Você se afasta devagar. A tigela fica lá, brilhando de leve, enquanto você diz a si mesmo que não é nada.', fx: { stats: { dao: 1 }, karma: -1 } } },
     ],

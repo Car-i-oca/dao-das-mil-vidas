@@ -20,7 +20,7 @@ const ID_GENERIC = (e: GameEvent) => {
   const c = e.cond;
   if (e.once) return false;
   if (!c) return true;
-  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.tecnica || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin);
+  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.sagaStageMin);
 };
 const GENERIC = new Set(EVENTS.filter(ID_GENERIC).map((e) => e.id));
 

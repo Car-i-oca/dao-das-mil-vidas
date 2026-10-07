@@ -1,4 +1,4 @@
-import type { Item, Technique } from '../../types';
+import type { Item } from '../../types';
 import type { Look } from './portrait';
 
 /** Os três estilos de arte do jogo. O padrão é o manhwa. */
@@ -26,7 +26,6 @@ export function aoMudarEstilo(f: () => void) { ouvintes.push(f); }
 /** Contrato de cada estilo. `player` e `foe` devolvem o miolo de um <svg viewBox="0 0 120 140">. */
 export interface Pacote {
   item(it: Item, size: number): string;
-  tech(t: Technique, size: number): string;
   path(id: string, size: number): string;
   realm(ladder: string, tier: number, size: number): string;
   portrait(look: Look, size: number): string;

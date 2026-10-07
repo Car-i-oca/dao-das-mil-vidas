@@ -10,7 +10,7 @@ export const TETOS: Record<string, number> = {
   guilda_mercadores: 4, juiz_do_vilarejo: 3, encomenda_assassino: 5, cacada_com_besta: 5, peregrino_enigmatico: 5, torneio_alquimia: 5,
   miragem_oasis: 5, tempestade_areia: 5, planicie_branca: 5, tempestade_no_mar: 5, viajante_congelado: 5, nomades_do_vento: 5,
   ilha_pescadores: 5, lista_negra: 5, carta_anonima: 5, bandidos_da_mina: 4, espiritos_vingativos: 5, fome_no_reino: 5,
-  general_rebelde: 5, mestre_ensina_tecnica: 5, prova_do_espelho: 4, prova_do_peso: 4, prova_do_silencio: 4, pilula_envenenada: 5,
+  general_rebelde: 5, mestre_ensina_compreensao: 5, prova_do_espelho: 4, prova_do_peso: 4, prova_do_silencio: 4, pilula_envenenada: 5,
   colher_ervas_toxicas: 5, oferenda_templo: 5, fantasma_faminto: 5, bodhisattva_mendigo: 6, emboscada_bandidos: 4,
   encontro_festival: 6, boato_estalagem: 6, colheita_lua_prata: 5, alma_sonho_lucido: 5, estudo_geomancia: 5,
   dilema_do_merito: 5, banquete_aniversario: 5, minerio_celeste: 5, armadura_escamas: 5, artefato_amaldicoado: 5,

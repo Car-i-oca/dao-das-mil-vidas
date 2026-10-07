@@ -285,7 +285,7 @@ t_sdr_aceito|Foi aceito pelos caçadores de dragões.
 t_sdr_refugio|Refugiou-se nas montanhas entre criaturas de sangue antigo.
 t_av_fixou|Repetiu o que aprendeu até fixá-lo de verdade.
 t_av_colecionador|Colecionou métodos sem dominar nenhum.
-t_av_mestre_um|Venceu a competição com uma única técnica.
+t_av_mestre_um|Venceu a competição com um único método.
 t_av_mil_estilos|Venceu a competição dos mil estilos.
 t_av_escola|Fundou uma escola com todos os estilos que aprendeu.
 t_ft_achou|Achou tesouros onde outros só viam bugigangas.
@@ -349,7 +349,7 @@ f_or_nao_perdoou|Não perdoou quem pediu perdão.
 f_or_superado|Pediu perdão de joelhos, em público.
 f_di_foco|Treinou o foco por exercício diário.
 f_di_ideias|Anotou as ideias que a dispersão trouxe.
-f_di_tecnica|Inventou uma técnica nascida de uma divagação.
+f_di_licao|Inventou um método que nasceu de uma divagação.
 f_di_rotina|Criou listas e rituais contra o esquecimento.
 f_di_culpou|Culpou as circunstâncias por um erro seu.
 f_di_olhar_aberto|Aprendeu o Olhar Aberto.
@@ -519,11 +519,11 @@ p_form_falha|Achou a falha escondida no arranjo de um lugar.
 p_ven_tolerancia|Provou o que havia de estranho e aprendeu pelo gosto.
 p_bes_vinculo|Passou dias calmos ao lado do companheiro, e o Qi dos dois se espelhou.
 p_dem_proprio|Sangrou a si mesmo num ritual curto, sem tocar em ninguém.
-tc_demonio_resolvido|Resolveu a caçada dos inquisidores contra quem usa a técnica do sangue.
+tc_demonio_resolvido|Resolveu a caçada dos inquisidores contra quem usa o método do sangue.
 tc_inquisicao_tolera|Convenceu os inquisidores de que o seu uso do sangue era contido.
-tc_inquisicao_cobra|Foi marcado pela inquisição por usar a técnica do sangue.
+tc_inquisicao_cobra|Foi marcado pela inquisição por usar o método do sangue.
 tc_inquisicao_inimiga|Enfrentou três inquisidores e ganhou a inimizade da inquisição.
-tc_renunciou_sangue|Renunciou, diante dos inquisidores, à técnica do sangue.
+tc_renunciou_sangue|Renunciou, diante dos inquisidores, ao método do sangue.
 tc_espada_ramo|Descobriu que o seu corte era o ramo irmão de uma escola antiga.
 tc_espada_misterio|Deixou um velho espadachim intrigado com a origem do seu corte.
 tc_alq_conselho|Aceitou um assento no conselho de pesquisa da Associação dos Alquimistas.

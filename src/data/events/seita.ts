@@ -32,7 +32,7 @@ export const seita: GameEvent[] = [
   {
     id: 'torneio_seita', title: 'O Torneio da Seita', rarity: 'comum', cooldown: 20,
     cond: { tierMin: 1, faction: ['seita'] },
-    text: 'A {seita} realiza seu torneio quinquenal. Os melhores serão recompensados com técnicas e recursos; os piores, com humilhação pública.',
+    text: 'A {seita} realiza seu torneio quinquenal. Os melhores serão recompensados com método e recursos; os piores, com humilhação pública.',
     choices: [
       { text: 'Disputar com tudo.', check: { stat: ['fis', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'Você derruba um oponente após outro. A arena grita seu nome.', fx: { fama: 8, pedras: 12, xp: 10, setFlags: ['campeao_torneio'], stats: { dao: 1 } } }, fail: { text: 'Você cai nas quartas de final, mas luta bem e aprende.', fx: { fama: 2, ferida: 1, xp: 4 } } },
       { text: 'Assistir de longe e estudar os golpes.', res: { text: 'Cada golpe é uma lição. Você anota mentalmente e imita à noite.', fx: { stats: { comp: 1 }, xp: 5 } } },
@@ -43,7 +43,7 @@ export const seita: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 4, faction: ['seita'], flags: ['discipulo_interno'], noFlags: ['mestre_protetor'] },
     text: 'O Mestre {mentor} passa por você no pátio e para. "Você tem algo", diz, e o olha como quem avalia uma espada.',
     choices: [
-      { text: 'Pedir que o aceite como discípulo direto.', check: { stat: ['car', 'comp'], dif: 1 }, ok: { text: 'O Mestre {mentor} aceita. Daqui em diante, você terá luz de verdade no caminho.', fx: { setFlags: ['mestre_protetor'], tecnica: ['palma_cinzas'], xp: 15, stats: { comp: 2 }, fama: 4 } }, fail: { text: '"Ainda não", diz o Mestre. "Mostre-me mais em cinco anos."', fx: { stats: { dao: 1 } } } },
+      { text: 'Pedir que o aceite como discípulo direto.', check: { stat: ['car', 'comp'], dif: 1 }, ok: { text: 'O Mestre {mentor} aceita. Daqui em diante, você terá luz de verdade no caminho.', fx: { setFlags: ['mestre_protetor'],  xp: 15, stats: { comp: 2 }, fama: 4 } }, fail: { text: '"Ainda não", diz o Mestre. "Mostre-me mais em cinco anos."', fx: { stats: { dao: 1 } } } },
       { text: 'Agradecer e continuar por conta própria.', res: { text: 'Você rejeita proteção para construir seu próprio caminho.', fx: { stats: { dao: 2 }, setFlags: ['independente'] } } },
     ],
   },
@@ -61,7 +61,7 @@ export const seita: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, faction: ['seita'] },
     text: 'Seus pontos de mérito permitem ler no pavilhão do segundo andar. Os livros ali custam caro e ensinam mais que qualquer sermão.',
     choices: [
-      { text: 'Pagar 20 pedras por acesso a manuais de técnica.', custo: 20, check: { stat: 'comp', dif: 0 }, ok: { text: 'Após semanas de leitura, você domina uma técnica nova.', fx: { item: ['manual_passo_garca'], xp: 8, stats: { comp: 1 } } }, fail: { text: 'Os manuais são densos demais. Você aprende só um pedaço do que buscava.', fx: { xp: 4 } } },
+      { text: 'Pagar 20 pedras por acesso a manuais de método.', custo: 20, check: { stat: 'comp', dif: 0 }, ok: { text: 'Após semanas de leitura, você domina um método novo.', fx: { item: ['manual_passo_garca'], xp: 8, stats: { comp: 1 } } }, fail: { text: 'Os manuais são densos demais. Você aprende só um pedaço do que buscava.', fx: { xp: 4 } } },
       { text: 'Ler apenas os livros livres.', res: { text: 'Poucos segredos, mas nenhum custo. Você relê textos básicos com olhos novos.', fx: { xp: 5, stats: { comp: 1 } } } },
     ],
   },

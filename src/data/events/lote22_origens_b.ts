@@ -198,7 +198,7 @@ export const lote22OrigensB: GameEvent[] = [
     choices: [
       { text: 'Descer a montanha em busca de um médico.', check: { stat: ['fis', 'sor'], dif: 1, tag: 'fuga' }, ok: { text: 'Você chega à vila ofegante, encontra um médico, e volta com ervas e um mapa. O mestre se recupera. Em silêncio, ele agradece.', fx: { karma: 4, stats: { fis: 1, dao: 1 }, setFlags: ['salvou_o_mestre'] } }, fail: { text: 'O inverno é cruel. Você volta tarde, com ervas insuficientes. O mestre melhora, mas ficará mais frágil.', fx: { ferida: 1, stats: { dao: 2 } } } },
       { text: 'Ficar e cuidar dele com o que tem.', res: { text: 'Chás, compressas, noites em claro. Três semanas depois, a febre cede. Ele, sorrindo, diz: "Agora, o mestre aprendeu uma lição."', fx: { karma: 3, stats: { dao: 2, comp: 1 } } } },
-      { text: 'Pedir que ele o ensine uma última técnica, por precaução.', res: { text: 'O mestre ri, tosse, e ensina. A técnica é simples, e profundíssima. Ele se recupera, mas você nunca mais esquece o aviso.', fx: { tecnica: ['sutra_vazio_calmo'], stats: { dao: 1 } } } },
+      { text: 'Pedir que ele lhe ensine um último método, por precaução.', res: { text: 'O mestre ri, tosse e ensina. O método é simples, mas profundo. Ele se recupera, mas você nunca mais esquece o aviso.', fx: {  stats: { dao: 1 } } } },
     ],
   },
 
@@ -352,7 +352,7 @@ export const lote22OrigensB: GameEvent[] = [
     cond: O('regressor', 12, 19),
     text: 'Você sabe que, daqui a três meses, um velho eremita passará por {vila}, e que ele, na outra vida, o aceitou como discípulo e mudou seu destino. Agora, você tem a chance de ir ao encontro dele, e de impressioná-lo antes da hora.',
     choices: [
-      { text: 'Esperar o eremita no caminho, com chá.', check: { stat: ['car', 'dao'], dif: 0 }, ok: { text: 'O eremita ergue as sobrancelhas: "Você me esperava?". Você diz que sim, e ele ri, e o aceita, sem a prova habitual.', fx: { setFlags: ['mestre_regressor'], stats: { dao: 2, comp: 1 }, tecnica: ['respiracao_nuvem'] } }, fail: { text: 'O eremita acha estranho que você saiba demais, e o evita. Um desperdício de tempo, e de oportunidade.', fx: { stats: { dao: 1 }, karma: -1 } } },
+      { text: 'Esperar o eremita no caminho, com chá.', check: { stat: ['car', 'dao'], dif: 0 }, ok: { text: 'O eremita ergue as sobrancelhas: "Você me esperava?". Você diz que sim, e ele ri, e o aceita, sem a prova habitual.', fx: { setFlags: ['mestre_regressor'], stats: { dao: 2, comp: 1 } } }, fail: { text: 'O eremita acha estranho que você saiba demais, e o evita. Um desperdício de tempo, e de oportunidade.', fx: { stats: { dao: 1 }, karma: -1 } } },
       { text: 'Procurar outro mestre, diferente do da outra vida.', res: { text: 'Você tenta algo novo, e o novo é desconhecido. Em seis meses, o vazio da incerteza é, de algum modo, mais fértil do que o certo.', fx: { stats: { dao: 2, sor: 1 } } } },
       { text: 'Ignorar o encontro e treinar sozinho.', res: { text: 'Por anos, você pratica o que lembra. A solidão pesa, mas o passado, afinal, é seu.', fx: { stats: { dao: 1, comp: 2 } } } },
     ],

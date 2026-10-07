@@ -13,7 +13,6 @@ import { TALENTS, FLAWS, ORIGINS } from '../src/data/character';
 import { CONSTITUTIONS } from '../src/data/names';
 import { ENDINGS } from '../src/data/endings';
 import { MARCAS_VIDA } from '../src/data/marcas_vida';
-import { TECHNIQUES } from '../src/data/techniques';
 import { newMeta, rollCreation, startLife, view, choose, proceed } from '../src/engine/engine';
 import { botPick } from './bot';
 import { Rng } from '../src/engine/rng';
@@ -35,13 +34,11 @@ function markOf(fx?: Effects): string[] {
   if (fx.agenda?.length) m.push('agenda');
   if (fx.item?.length) m.push('item');
   if (fx.removeItem?.length) m.push('perde-item');
-  if (fx.tecnica?.length) m.push('técnica');
   if (fx.local) m.push('local');
   if (fx.faccao) m.push('facção');
   if (fx.fim) m.push('fim');
   if (fx.tier) m.push('reino');
   if (fx.trilha) m.push('trilha');
-  if (fx.rec) m.push('recurso');
   if (fx.perfil) m.push('perfil');
   if (Math.abs(fx.karma ?? 0) >= 8) m.push('karma');
   if (Math.abs(fx.fama ?? 0) >= 10) m.push('fama');
@@ -115,7 +112,7 @@ function traitRow(kind: 'talent' | 'flaw' | 'origin' | 'constitution', id: strin
       const chHas = hasTrait(c.cond, kind, id);
       if (chHas && !evHas) opcoes++;
       if (evHas || chHas) {
-        const fx = outcomes(c).flatMap((o) => [o.fx?.fim, o.fx?.trilha, ...(o.fx?.tecnica ?? [])]).filter(Boolean);
+        const fx = outcomes(c).flatMap((o) => [o.fx?.fim, o.fx?.trilha]).filter(Boolean);
         if (fx.length) caminhos++;
       }
     }
@@ -132,7 +129,7 @@ const rootRows: Row[] = rootKinds.map((k) => {
   for (const e of EVENTS) {
     const evHas = !!e.cond?.root?.includes(k);
     if (evHas) eventos++;
-    for (const c of e.choices) if (c.cond?.root?.includes(k) && !evHas) { opcoes++; if (outcomes(c).some((o) => o.fx?.fim || o.fx?.tecnica || o.fx?.trilha)) caminhos++; }
+    for (const c of e.choices) if (c.cond?.root?.includes(k) && !evHas) { opcoes++; if (outcomes(c).some((o) => o.fx?.fim || o.fx?.trilha)) caminhos++; }
   }
   return { id: k, name: k, eventos, opcoes, caminhos };
 });
@@ -143,14 +140,13 @@ const MIN_ROOT = { eventos: 1, opcoes: 2, caminhos: 0 };
 const fails = (rows: Row[], m: { eventos: number; opcoes: number; caminhos: number }) => rows.filter((r) => r.eventos < m.eventos || r.opcoes < m.opcoes || r.caminhos < m.caminhos);
 
 /* ---------- Escolhas exclusivas (gerais) ---------- */
-const exclusive: Record<string, number> = { trilha: 0, talento: 0, defeito: 0, tecnica: 0, item: 0, raiz: 0, constituicao: 0, origem: 0 };
+const exclusive: Record<string, number> = { trilha: 0, talento: 0, defeito: 0, item: 0, raiz: 0, constituicao: 0, origem: 0 };
 for (const e of EVENTS) for (const c of e.choices) {
   const k = c.cond;
   if (!k) continue;
   if (k.path) exclusive.trilha++;
   if (k.talent) exclusive.talento++;
   if (k.flaw) exclusive.defeito++;
-  if (k.tecnicas || k.tecnicaTag || k.tecnica) exclusive.tecnica++;
   if (k.item) exclusive.item++;
   if (k.root) exclusive.raiz++;
   if (k.constitution) exclusive.constituicao++;
@@ -191,8 +187,8 @@ for (let i = 0; i < PAIRS; i++) {
 const simSame = sameTraits / nS, simDiff = diffTraits / nD;
 
 /* ---------- Relatório ---------- */
-interface Snap { totalChoices: number; noMark: number; dup: number; tantoFaz: number; unread: number; excl: Record<string, number>; simSame: number; simDiff: number; events: number; tecnicas: number; rows: Record<string, Row[]> }
-const snap: Snap = { totalChoices, noMark, dup, tantoFaz: taNEvents.length, unread: unreadFlags.length, excl: exclusive, simSame, simDiff, events: EVENTS.length, tecnicas: TECHNIQUES.length, rows: { talentos: talentRows, defeitos: flawRows, origens: originRows, constituicoes: consRows, raizes: rootRows } };
+interface Snap { totalChoices: number; noMark: number; dup: number; tantoFaz: number; unread: number; excl: Record<string, number>; simSame: number; simDiff: number; events: number; rows: Record<string, Row[]> }
+const snap: Snap = { totalChoices, noMark, dup, tantoFaz: taNEvents.length, unread: unreadFlags.length, excl: exclusive, simSame, simDiff, events: EVENTS.length, rows: { talentos: talentRows, defeitos: flawRows, origens: originRows, constituicoes: consRows, raizes: rootRows } };
 const before: Snap | null = existsSync(BASE) && !saveBaseline ? JSON.parse(readFileSync(BASE, 'utf8')) : null;
 const arrow = (a: number | undefined, b: number, f = (x: number) => String(x)) => (a === undefined ? f(b) : `${f(a)} → **${f(b)}**`);
 const tbl = (title: string, rows: Row[], m: { eventos: number; opcoes: number; caminhos: number }, prev?: Row[]) => {
@@ -206,13 +202,13 @@ const tbl = (title: string, rows: Row[], m: { eventos: number; opcoes: number; c
 };
 let md = `# Impacto das escolhas, traços e eventos\n\nGerado por \`npm run impacto\`. ${before ? 'Comparação com o baseline (antes → depois).' : 'Sem baseline para comparar.'}\n\n## Resumo\n\n| Métrica | Valor | Meta |\n|---|---|---|\n`;
 md += `| Escolhas no jogo | ${arrow(before?.totalChoices, totalChoices)} | — |\n`;
-md += `| Escolhas sem marca (nenhuma flag, agenda, item, técnica, mudança de local/facção ou efeito grande) | ${arrow(before?.noMark, noMark)} (${((100 * noMark) / totalChoices).toFixed(0)}%) | 0 |\n`;
+md += `| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | ${arrow(before?.noMark, noMark)} (${((100 * noMark) / totalChoices).toFixed(0)}%) | 0 |\n`;
 md += `| Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | ${soPerfil} (${((100 * soPerfil) / totalChoices).toFixed(0)}%) | cair ao longo dos lotes |
 `;
 md += `| Escolhas com a mesma consequência de outra do mesmo evento | ${arrow(before?.dup, dup)} | 0 |\n`;
 md += `| Eventos "tanto faz" | ${arrow(before?.tantoFaz, taNEvents.length)} | 0 |\n`;
 md += `| Flags gravadas e nunca lidas | ${arrow(before?.unread, unreadFlags.length)} | 0 |\n`;
-md += `| Escolhas exclusivas por trilha / talento / defeito / técnica / item | ${arrow(before?.excl.trilha, exclusive.trilha)} / ${arrow(before?.excl.talento, exclusive.talento)} / ${arrow(before?.excl.defeito, exclusive.defeito)} / ${arrow(before?.excl.tecnica, exclusive.tecnica)} / ${arrow(before?.excl.item, exclusive.item)} | muito mais |\n`;
+md += `| Escolhas exclusivas por trilha / talento / defeito / item | ${arrow(before?.excl.trilha, exclusive.trilha)} / ${arrow(before?.excl.talento, exclusive.talento)} / ${arrow(before?.excl.defeito, exclusive.defeito)} / ${arrow(before?.excl.item, exclusive.item)} | muito mais |\n`;
 md += `| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | ${arrow(before?.simSame, +simSame.toFixed(3), (x) => x.toFixed(3))} | referência |\n`;
 md += `| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | ${arrow(before?.simDiff, +simDiff.toFixed(3), (x) => x.toFixed(3))} | bem menor que a de cima |\n`;
 md += tbl('Talentos', talentRows, MIN_T, before?.rows.talentos);

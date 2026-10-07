@@ -69,7 +69,7 @@ export const VARIANTES: Record<string, string[]> = {
     'Você sente que o próximo passo só virá no silêncio. A porta de uma câmara de retiro se abre, e o seu lugar nela está marcado.',
   ],
   loja_do_registro: [
-    'Uma aba nova surge no quadro: "LOJA DO REGISTRO". Preços em pedras, miniaturas brilhantes de pílulas, talismãs e fragmentos de técnicas.',
+    'Uma aba nova surge no quadro: "LOJA DO REGISTRO". Preços em pedras, miniaturas brilhantes de pílulas, talismãs e fragmentos de método.',
     'O Registro abre uma vitrine: pequenas relíquias de luz, cada uma com preço. Tudo cintila mais do que deveria.',
     'No canto do quadro, um aviso: "OFERTA LIMITADA". Itens em miniatura, de brilho convidativo, e uma voz que fala baixinho: "Só hoje."',
   ],

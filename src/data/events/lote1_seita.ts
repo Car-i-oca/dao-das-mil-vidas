@@ -83,12 +83,12 @@ export const lote1Seita: GameEvent[] = [
     ],
   },
   {
-    id: 'mestre_ensina_tecnica', title: 'A Lição do Mestre', rarity: 'raro', cooldown: 30, weight: 3,
+    id: 'mestre_ensina_compreensao', title: 'A Lição do Mestre', rarity: 'raro', cooldown: 30, weight: 3,
     cond: { tierMin: 2, tierMax: 7, faction: ['seita'], flags: ['mestre_protetor'] },
-    text: 'O Mestre {mentor} o chama para o pavilhão particular. "Hoje você aprende algo que poucos veem. Mas ele cobra atenção."',
+    text: 'O Mestre {mentor} o chama para o pavilhão particular. "Hoje vamos estudar duas coisas que poucos percebem. Preste atenção."',
     choices: [
-      { text: 'Estudar a Respiração Coletiva.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'O método une sua respiração à de todo o pavilhão. Você sente o mundo inspirar com você.', fx: { tecnica: ['respiracao_coletiva'], xp: 12, stats: { comp: 1 } } }, fail: { text: 'Você capta apenas um pedaço. O Mestre promete ensinar o resto "mais tarde".', fx: { xp: 6, stats: { comp: 1 } } } },
-      { text: 'Pedir o Guarda do Portão, técnica de defesa.', check: { stat: ['fis', 'dao'], dif: 1, tag: 'corpo' }, ok: { text: 'Uma técnica de pés plantados e coração firme. Você se sente imóvel como o próprio portão.', fx: { tecnica: ['guarda_do_portao'], stats: { fis: 1, dao: 1 } } }, fail: { text: 'O Mestre ri da sua pressa. Você terá de voltar quando o corpo estiver pronto.', fx: { xp: 4 } } },
+      { text: 'Estudar a respiração coletiva do pavilhão.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'O ritmo une sua respiração à de todo o pavilhão. Você sente o mundo inspirar com você.', fx: { xp: 12, stats: { comp: 1 } } }, fail: { text: 'Você capta apenas parte da cadência, mas já percebe onde estava errando.', fx: { xp: 6, stats: { comp: 1 } } } },
+      { text: 'Observar a guarda dos portões e corrigir a postura.', check: { stat: ['fis', 'dao'], dif: 1, tag: 'corpo' }, ok: { text: 'Pés firmes e coração sereno: você entende como a postura distribui o peso do corpo.', fx: { stats: { fis: 1, dao: 1 } } }, fail: { text: 'O Mestre aponta a pressa em seus movimentos. Você terá de voltar quando o corpo estiver pronto.', fx: { xp: 4 } } },
     ],
   },
   {
@@ -105,7 +105,7 @@ export const lote1Seita: GameEvent[] = [
     cond: { tierMin: 2, flags: ['confidente_do_mestre'] },
     text: 'Uma carta chega à noite: "Meu aluno, estou cercado pelos inimigos de minha juventude. Se ainda me considera, venha." Não há assinatura, mas há o cheiro do incenso do Mestre {mentor}.',
     choices: [
-      { text: 'Correr em socorro do Mestre.', check: { stat: ['fis', 'esp', 'dao'], dif: 3, tag: 'combate' }, ok: { text: 'Você chega a tempo e luta ao lado dele. Os inimigos recuam, e o Mestre sorri entre dentes ensanguentados. "Meu melhor aluno."', fx: { fama: 12, karma: 10, xp: 18, stats: { dao: 2, fis: 1 }, item: ['pergaminho_anciao'], setFlags: ['salvou_mestre'] } }, fail: { text: 'Você chega tarde demais para evitar o pior, mas a tempo de enterrá-lo. Sua lealdade nunca será esquecida.', fx: { ferida: 3, karma: 6, stats: { dao: 2 }, tecnica: ['sutra_do_anciao'] } } },
+      { text: 'Correr em socorro do Mestre.', check: { stat: ['fis', 'esp', 'dao'], dif: 3, tag: 'combate' }, ok: { text: 'Você chega a tempo e luta ao lado dele. Os inimigos recuam, e o Mestre sorri entre dentes ensanguentados. "Meu melhor aluno."', fx: { fama: 12, karma: 10, xp: 18, stats: { dao: 2, fis: 1 }, item: ['pergaminho_anciao'], setFlags: ['salvou_mestre'] } }, fail: { text: 'Você chega tarde demais para evitar o pior, mas a tempo de enterrá-lo. Sua lealdade nunca será esquecida.', fx: { ferida: 3, karma: 6, stats: { dao: 2 } } } },
       { text: 'Avisar os Anciãos e esperar que cheguem a tempo.', res: { text: 'Os Anciãos o salvam, mas tarde demais para evitar uma perna perdida. O Mestre nunca esquece quem veio de peito aberto e quem pediu licença.', fx: { karma: 2, fama: 1 } } },
       { text: 'Ignorar a carta.', res: { text: 'Semanas depois, você descobre que o Mestre foi dado como morto. A culpa pesa mais que qualquer montanha.', fx: { karma: -10, stats: { dao: -2 }, corr: 3 } } },
     ],
@@ -154,7 +154,7 @@ export const lote1Seita: GameEvent[] = [
     text: 'Como discípulo do núcleo, você tem a primeira escolha nas distribuições de recursos. O quartel-general dos tesouros abre diante de você: pílulas, ervas, manuais.',
     choices: [
       { text: 'Levar uma pílula de rompimento.', cond: { tierMax: 5 }, res: { text: 'O guardião a entrega com reverência. Os outros discípulos olham de longe, sem dizer nada.', fx: { item: ['pilula_passagem_3'], fama: 2 } } },
-      { text: 'Levar um manual de técnica.', res: { text: 'Cada manual é uma porta; você escolhe a que mais combina com sua alma.', fx: { item: ['manual_olho_lotus'], stats: { comp: 1 } } } },
+      { text: 'Levar um manual de método.', res: { text: 'Cada manual é uma porta; você escolhe a que mais combina com sua alma.', fx: { item: ['manual_olho_lotus'], stats: { comp: 1 } } } },
       { text: 'Abrir mão e deixar para os mais novos.', res: { text: 'O Ancião faz um aceno de aprovação. Poucos entendem seu gesto, mas todos o notam.', fx: { karma: 8, fama: 4, stats: { dao: 2 } } } },
     ],
   },
@@ -228,9 +228,9 @@ export const lote1Seita: GameEvent[] = [
   {
     id: 'biblioteca_selada', title: 'A Seção Proibida da Biblioteca', rarity: 'raro', once: true,
     cond: { tierMin: 2, tierMax: 6, faction: ['seita'], flags: ['discipulo_interno'] },
-    text: 'No terceiro andar do Pavilhão dos Mil Livros há uma porta selada com talismãs. Dizem que lá guardam técnicas proibidas, de poder alto e preço mais alto ainda.',
+    text: 'No terceiro andar do Pavilhão dos Mil Livros há uma porta selada com talismãs. Dizem que lá guardam método proibidas, de poder alto e preço mais alto ainda.',
     choices: [
-      { text: 'Quebrar o selo à noite.', check: { stat: ['comp', 'sor'], dif: 3, tag: 'formacao' }, ok: { text: 'Você entra. Entre pergaminhos mofados, copia um método antigo e sai sem deixar rastro.', fx: { tecnica: ['sutra_vazio_calmo'], xp: 14, karma: -4, setFlags: ['leu_proibido'] } }, fail: { text: 'O selo reage e o alarma soa. Você é preso e punido.', fx: { ferida: 2, fama: -8, karma: -3 } } },
+      { text: 'Quebrar o selo à noite.', check: { stat: ['comp', 'sor'], dif: 3, tag: 'formacao' }, ok: { text: 'Você entra. Entre pergaminhos mofados, copia um método antigo e sai sem deixar rastro.', fx: { stats: { dao: 1 }, xp: 14, karma: -4, setFlags: ['leu_proibido'] } }, fail: { text: 'O selo reage e o alarma soa. Você é preso e punido.', fx: { ferida: 2, fama: -8, karma: -3 } } },
       { text: 'Pedir autorização ao Ancião da Biblioteca.', check: { stat: ['car', 'dao'], dif: 2 }, ok: { text: 'O Ancião, impressionado com sua franqueza, permite uma leitura supervisionada.', fx: { xp: 10, stats: { comp: 2 }, fama: 2 } }, fail: { text: '"Cedo demais", diz o Ancião, devolvendo a chave ao bolso.', fx: { stats: { dao: 1 } } } },
       { text: 'Deixar a porta em paz.', res: { text: 'Há perguntas que é mais sensato não fazer.', fx: { stats: { dao: 2 } } } },
     ],

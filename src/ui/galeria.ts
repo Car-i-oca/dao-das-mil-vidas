@@ -1,10 +1,9 @@
 import { ITEMS } from '../data/items';
-import { TECHNIQUES } from '../data/techniques';
 import { PATHS } from '../data/paths';
 import { ENDINGS } from '../data/endings';
 import { MOTIF } from './art/scenes';
 import {
-  itemIcon, techIcon, pathIcon, realmIcon, sceneSvg, endingCard, portraitSvg, playerFighter, foeFighter,
+  itemIcon, pathIcon, realmIcon, sceneSvg, endingCard, portraitSvg, playerFighter, foeFighter,
   definirEstilo, type Estilo, type Look,
 } from './art';
 
@@ -24,7 +23,6 @@ export function mostrarGaleria(app: HTMLElement, estilo: Estilo, sec: string) {
   const fig = (inner: string, cena: string) => `<div class="c w2"><div class="fx">${sceneSvg(cena, 'g').replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ')}<svg class="fg" viewBox="0 0 120 140" width="120" height="140">${inner}</svg></div></div>`;
   const S: Record<string, () => string> = {
     itens: () => `<div class="g">${ITEMS.map((i) => `<div class="c">${itemIcon(i, 64)}<br>${i.name}</div>`).join('')}</div>`,
-    tecnicas: () => `<div class="g">${TECHNIQUES.slice(0, 60).map((t) => `<div class="c">${techIcon(t, 56)}<br>${t.name}</div>`).join('')}</div>`,
     trilhas: () => `<div class="g">${PATHS.map((p) => `<div class="c">${pathIcon(p.id, 64)}<br>${p.name}</div>`).join('')}</div>`,
     reinos: () => `<div class="g">${[0, 1, 2, 3, 4, 5, 6, 7, 8].map((t) => `<div class="c">${realmIcon('xianxia', t, 56)}<br>${t}</div>`).join('')}${[0, 3, 6].map((t) => `<div class="c">${realmIcon('murim', t, 56)}<br>murim ${t}</div>`).join('')}</div>`,
     cenarios: () => `<div class="g">${kinds.map((k) => `<div class="c w">${sceneSvg(k, 'g')}<br>${k}</div>`).join('')}<div class="c w">${sceneSvg('seita', 'n', true)}<br>seita noite</div><div class="c w">${sceneSvg('selva', 'n', true)}<br>selva noite</div></div>`,

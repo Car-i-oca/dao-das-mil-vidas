@@ -79,7 +79,7 @@ export const lote17Reinos78: GameEvent[] = [
   {
     id: 'r7_testamento', title: 'O Testamento do Imortal Quase', rarity: 'comum', once: true, weight: 1.6,
     cond: { tierMin: 7 },
-    text: 'Você começa a escrever o seu testamento. Não porque vai morrer, mas porque, na sua idade, o mundo precisa saber o que você deixa. Pedras, técnicas, relíquias, rancores. Cada linha pesa mais que o ouro que descreve.',
+    text: 'Você começa a escrever o seu testamento. Não porque vai morrer, mas porque, na sua idade, o mundo precisa saber o que você deixa. Pedras, método, relíquias, rancores. Cada linha pesa mais que o ouro que descreve.',
     choices: [
       { text: 'Deixar tudo para a seita.', res: { text: 'A seita agradece com uma reverência de séculos. O seu nome vai ser dito por gerações antes do almoço.', fx: { fama: 14, karma: 6, stats: { dao: 2 }, setFlags: ['legado_seita'] } } },
       { text: 'Dividir tudo entre os mortais.', res: { text: 'Terras viram escolas, relíquias viram remédios. Em mil anos, ninguém lembrará de você, e todos viverão melhor.', fx: { karma: 20, fama: 8, stats: { dao: 3 }, setFlags: ['legado_mortais'] } } },

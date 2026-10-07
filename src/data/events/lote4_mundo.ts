@@ -102,7 +102,7 @@ export const lote4Mundo: GameEvent[] = [
     cond: { flags: ['viuvo_do_dao'] },
     text: 'Meses depois, um monge passa pela sua porta e vê a tristeza nos olhos. "O luto também é um caminho", diz. "Quem o atravessa carrega quem foi embora dentro de si."',
     choices: [
-      { text: 'Aceitar o ensinamento e meditar no luto.', check: { stat: 'dao', dif: 2, tag: 'mente' }, ok: { text: 'Em silêncio, a dor muda de forma. Em vez de ferida, vira alicerce. Seu Coração do Dao se firma como uma rocha.', fx: { stats: { dao: 4 }, xp: 14, tecnica: ['sutra_familia'] } }, fail: { text: 'O luto ainda é grande demais. Você agradece o monge e continua, pouco a pouco.', fx: { stats: { dao: 1 } } } },
+      { text: 'Aceitar o método e meditar no luto.', check: { stat: 'dao', dif: 2, tag: 'mente' }, ok: { text: 'Em silêncio, a dor muda de forma. Em vez de ferida, vira alicerce. Seu Coração do Dao se firma como uma rocha.', fx: { stats: { dao: 4 }, xp: 14 } }, fail: { text: 'O luto ainda é grande demais. Você agradece o monge e continua, pouco a pouco.', fx: { stats: { dao: 1 } } } },
       { text: 'Mergulhar no trabalho para não sentir.', res: { text: 'A rotina dura anos. A dor espera, paciente, até você estar pronto.', fx: { xp: 12, stats: { dao: 1 }, corr: 3 } } },
     ],
   },
@@ -151,7 +151,7 @@ export const lote4Mundo: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 3, local: ['cidade', 'vilarejo'] },
     text: 'Um grande torneio entre guerreiros mortais, sem qualquer Qi, acontece na praça central. Prêmios altos, plateia enorme. Você poderia vencer facilmente, mas isso não seria justo.',
     choices: [
-      { text: 'Participar sem usar Qi.', check: { stat: ['fis', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'Você vence com técnica pura. A plateia ruge, e você sai com uma lembrança clara de que luta não se resume a poder.', fx: { tecnica: ['passo_jianghu'], fama: 6, pedras: 30, stats: { fis: 1, dao: 1 } } }, fail: { text: 'Sem o Qi, você perde para um guerreiro mortal mais experiente. A humildade é um bom professor.', fx: { fama: 1, stats: { dao: 2 } } } },
+      { text: 'Participar sem usar Qi.', check: { stat: ['fis', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'Você vence com método pura. A plateia ruge, e você sai com uma lembrança clara de que luta não se resume a poder.', fx: {  fama: 6, pedras: 30, stats: { fis: 1, dao: 1 } } }, fail: { text: 'Sem o Qi, você perde para um guerreiro mortal mais experiente. A humildade é um bom professor.', fx: { fama: 1, stats: { dao: 2 } } } },
       { text: 'Usar o Qi e vencer sem esforço.', res: { text: 'Você vence com um sopro. A plateia se cala, assustada, e o prêmio tem sabor de vergonha.', fx: { pedras: 50, fama: -3, karma: -4 } } },
       { text: 'Apenas assistir.', res: { text: 'Cada luta é uma pequena história. Você aprende a ler corpos e intenções.', fx: { stats: { comp: 1 } } } },
     ],

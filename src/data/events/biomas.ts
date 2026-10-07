@@ -32,7 +32,7 @@ export const biomas: GameEvent[] = BIOMES.flatMap((biome) => [
     combate: { oponentes: biome.foes, cenario: biome.place },
     choices: [
       {
-        text: 'Enfrentar a fera com uma técnica.',
+        text: 'Enfrentar a fera com um método.',
         check: { stat: ['fis', 'esp'], tag: 'combate' },
         ok: { text: 'Você vence {inimigo} e recolhe o núcleo deixado para trás.', fx: { item: ['nucleo_besta_baixo'], fama: 1 } },
         fail: { text: 'O confronto termina em retirada; o golpe de {inimigo} deixa uma condição dolorosa.', fx: { ferida: 1, status: [{ id: biome.hazard, turns: 2, potency: 1 }] } },

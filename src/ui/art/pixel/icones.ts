@@ -1,4 +1,4 @@
-import type { Item, Technique } from '../../../types';
+import type { Item } from '../../../types';
 import { hash } from '../core';
 import { itemMotif, type Motif } from '../icons';
 import { mix } from '../cor';
@@ -83,22 +83,6 @@ export function item(it: Item, size: number): string {
   return imagemSvg(url, 32, 32, 'art art-item', it.name, size);
 }
 
-/* ---------- Técnicas, trilhas e reinos: selos redondos de 32x32 ---------- */
-const TAG: Record<string, (s: Surf, c: string) => void> = {
-  combate: (s, c) => { s.trago(8, 24, 24, 8, PR, 3); s.trago(24, 24, 8, 8, c, 3); },
-  mente: (s, c) => { s.poli([[5, 16], [16, 8], [27, 16], [16, 24]], '#f0ecff'); s.elipse(16, 16, 5, 5, c); s.elipse(16, 16, 2, 2, K); pts(s, [[17, 15]], W); },
-  qi: (s, c) => { for (let a = 0; a < 6.2; a += 0.12) s.set(16 + Math.cos(a) * (3 + a * 1.9), 16 + Math.sin(a) * (3 + a * 1.9), c); for (let a = 0; a < 6.2; a += 0.12) s.set(16 + Math.cos(a) * (4 + a * 1.9), 16 + Math.sin(a) * (4 + a * 1.9), c); },
-  formacao: (s, c) => { s.poli([[16, 4], [27, 10], [27, 22], [16, 28], [5, 22], [5, 10]], mix(c, '#20194a', 0.5)); s.linha(16, 4, 16, 28, c); s.linha(5, 10, 27, 22, c); s.linha(27, 10, 5, 22, c); s.elipse(16, 16, 3, 3, c); },
-  corpo: (s, c) => { s.ret(7, 11, 18, 14, c); s.rect(11, 14, 2, 6, K); s.rect(15, 13, 2, 7, K); s.rect(19, 14, 2, 6, K); },
-  espada: (s, c) => { s.trago(26, 6, 10, 22, PR, 3); s.trago(8, 18, 14, 24, AM, 3); s.trago(7, 25, 4, 29, c, 3); },
-  veneno: (s, c) => { s.poli([[16, 4], [24, 17], [24, 22], [16, 28], [8, 22], [8, 17]], c); pts(s, [[12, 19], [12, 21], [13, 23]], W); },
-  besta: (s, c) => { s.elipse(16, 21, 6, 5, c); s.elipse(8, 15, 2.6, 3, c); s.elipse(13, 10, 2.6, 3, c); s.elipse(19, 10, 2.6, 3, c); s.elipse(24, 15, 2.6, 3, c); },
-  demonio: (s, c) => { s.poli([[16, 28], [8, 20], [10, 11], [14, 15], [16, 7], [18, 15], [22, 11], [24, 20]], c); pts(s, [[13, 20], [19, 20]], W); s.trago(6, 6, 10, 12, K, 2); s.trago(26, 6, 22, 12, K, 2); },
-  alquimia: (s, c) => { s.elipse(16, 21, 9, 6, c); s.rect(6, 15, 20, 3, AM); pts(s, [[12, 11], [12, 8], [13, 6], [19, 11], [19, 8], [20, 5]], LJ); },
-  forja: (s, c) => { s.poli([[5, 19], [27, 19], [24, 26], [8, 26]], '#4a4658'); s.ret(9, 12, 14, 7, c); pts(s, [[14, 8], [16, 5], [18, 8]], LJ); },
-  fuga: (s, c) => { s.trago(4, 21, 12, 14, c, 2); s.trago(12, 14, 20, 18, c, 2); s.trago(20, 18, 28, 12, c, 2); s.trago(4, 26, 14, 21, PR, 2); s.trago(14, 21, 24, 24, PR, 2); },
-};
-
 function selo(glifo: (s: Surf, c: string) => void, cor: string, g: number, sementes: number): Surf {
   const s = new Surf(32, 32);
   s.elipse(16, 16, 15, 15, mix(cor, '#0a0820', 0.8), true);
@@ -113,13 +97,6 @@ function selo(glifo: (s: Surf, c: string) => void, cor: string, g: number, semen
   if (g >= 4) for (let i = 0; i < 8; i++) s.set(16 + Math.cos(i * 0.785 + 0.3) * 15, 16 + Math.sin(i * 0.785 + 0.3) * 15, '#fff2b0');
   void sementes;
   return s;
-}
-
-export function tech(t: Technique, size: number): string {
-  const g = Math.max(1, Math.min(4, t.grade)), h = hash(t.id);
-  const col = [PR, VD, AZ, AM][g - 1], tag = t.tags?.find((x) => TAG[x]);
-  const glifo = tag ? TAG[tag] : (s: Surf, c: string) => { s.poli([[16, 5], [26, 16], [16, 27], [6, 16]], c); s.elipse(16, 16, 3, 3, VM); };
-  return imagemSvg(png(`t|${t.id}`, () => selo(glifo, col === PR ? PAL[h % PAL.length] : col, g, h)), 32, 32, 'art art-tech', t.name, size);
 }
 
 const TRILHAS: Record<string, [string, (s: Surf, c: string) => void]> = {

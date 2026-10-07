@@ -9,11 +9,11 @@ import type { GameEvent } from '../../types';
 export const lote7Ceu: GameEvent[] = [
   /* ===== Reencarnado / Regressor ===== */
   {
-    id: 'memoria_tecnica_antiga', title: 'Uma Técnica Que Você Nunca Aprendeu', rarity: 'comum', once: true, weight: 3,
+    id: 'memoria_licao_antiga', title: 'Um Método Que Você Nunca Aprendeu', rarity: 'comum', once: true, weight: 3,
     cond: { tierMin: 1, tierMax: 5, flags: ['reencarnado'] },
     text: 'Numa meditação comum, suas mãos formam, sozinhas, uma sequência de selos que você nunca estudou. Cada gesto parece mais natural do que respirar.',
     choices: [
-      { text: 'Seguir o fluxo das mãos até o fim.', check: { stat: ['comp', 'dao'], dif: 1, tag: 'mente' }, ok: { text: 'Uma técnica inteira se desdobra na sua memória, seca e precisa. Você a escreve antes que se vá.', fx: { tecnica: ['memoria_vida_passada'], xp: 12, stats: { comp: 2 } } }, fail: { text: 'As mãos se atrapalham. A técnica foge, mas a lembrança de que ela existe fica.', fx: { stats: { comp: 1 } } } },
+      { text: 'Seguir o fluxo das mãos até o fim.', check: { stat: ['comp', 'dao'], dif: 1, tag: 'mente' }, ok: { text: 'Um método inteiro se desdobra na sua memória, seco e preciso. Você o anota antes que se vá.', fx: {  xp: 12, stats: { comp: 2 } } }, fail: { text: 'As mãos se atrapalham. O método lhe escapa, mas a lembrança de que ele existe permanece.', fx: { stats: { comp: 1 } } } },
     ],
   },
   {
@@ -95,7 +95,7 @@ export const lote7Ceu: GameEvent[] = [
   {
     id: 'loja_do_registro', title: 'A Loja do Registro', rarity: 'comum', cooldown: 25, weight: 2,
     cond: { tierMin: 2, tierMax: 8, flags: ['sistema'], pedrasMin: 40 },
-    text: 'Uma aba nova aparece no quadro: "LOJA DO REGISTRO". Preços em pedras espirituais, itens em miniatura que cintilam: pílulas, talismãs, fragmentos de técnicas.',
+    text: 'Uma aba nova aparece no quadro: "LOJA DO REGISTRO". Preços em pedras espirituais, itens em miniatura que cintilam: pílulas, talismãs, fragmentos de método.',
     choices: [
       { text: 'Comprar uma pílula de Qi Densa (40 pedras).', custo: 40, res: { text: '"COMPRA EFETUADA." A pílula aparece na sua mão, ainda morna.', fx: { item: ['pilula_qi_media', 'pilula_qi_media'] } } },
       { text: 'Comprar um Talismã de Fuga (50 pedras).', custo: 50, res: { text: '"COMPRA EFETUADA." O talismã está quase vivo, de tão nítido.', fx: { item: ['talisma_fuga'] } } },
@@ -116,7 +116,7 @@ export const lote7Ceu: GameEvent[] = [
     cond: { tierMin: 3, flags: ['sistema'] },
     text: 'O quadro pisca em vermelho: "ERRO. ERRO. REGISTRO INCONSISTENTE." Por um instante, você enxerga atrás da luz: milhares de nomes, listados em colunas, em uma biblioteca sem fim. O seu está marcado com uma pequena anotação em branco.',
     choices: [
-      { text: 'Tentar ler a anotação.', check: { stat: ['comp', 'esp', 'dao'], dif: 5, tag: 'mente' }, ok: { text: 'Em letras minúsculas: "Alvo para revisão. Potencial acima do previsto." Algo em você sorri e se endurece ao mesmo tempo.', fx: { stats: { comp: 3, dao: 2 }, xp: 16, tecnica: ['olho_registro'] } }, fail: { text: 'A visão se fecha antes que você leia. Fica a sensação de que olhar demais tem preço.', fx: { ferida: 2, stats: { esp: -1 } } } },
+      { text: 'Tentar ler a anotação.', check: { stat: ['comp', 'esp', 'dao'], dif: 5, tag: 'mente' }, ok: { text: 'Em letras minúsculas: "Alvo para revisão. Potencial acima do previsto." Algo em você sorri e se endurece ao mesmo tempo.', fx: { stats: { comp: 3, dao: 2 }, xp: 16 } }, fail: { text: 'A visão se fecha antes que você leia. Fica a sensação de que olhar demais tem preço.', fx: { ferida: 2, stats: { esp: -1 } } } },
       { text: 'Apagar a anotação.', check: { stat: ['esp', 'sor'], dif: 5 }, ok: { text: 'Uma linha de luz desaparece. Você sente o peso de ser, de repente, um pouco menos observado.', fx: { stats: { sor: 3 }, corr: 4, xp: 10 } }, fail: { text: 'O quadro reage com um choque. Você cai, tonto, com a visão cheia de fagulhas.', fx: { ferida: 3 } } },
     ],
   },
@@ -138,7 +138,7 @@ export const lote7Ceu: GameEvent[] = [
     text: 'O céu não se escurece, não troveja. Em vez disso, o silêncio sobe em seus ouvidos, e as lembranças vêm: cada erro, cada medo, cada promessa quebrada. Uma tribulação sem raios, feita só de você.',
     choices: [
       { text: 'Atravessar a tribulação de olhos abertos.', check: { stat: ['dao', 'esp'], dif: 4, tag: 'mente' }, ok: { text: 'Cada lembrança passa, e você a aceita. Ao fim, o silêncio vira calma. Sua alma, polida por dentro, está firme como jade.', fx: { stats: { dao: 4, esp: 1 }, xp: 18, corr: -12 } }, fail: { text: 'As lembranças vencem, por algumas horas. Você acorda chorando, mais frágil, e mais sincero.', fx: { stats: { dao: 1 }, ferida: 2, corr: 4 } } },
-      { text: 'Fugir para dentro de uma técnica de meditação rígida.', check: { stat: ['comp', 'dao'], dif: 3 }, ok: { text: 'Um ritmo quase mecânico o carrega pelo pior. Funciona, mas deixa uma cicatriz seca.', fx: { stats: { dao: 2 }, xp: 8 } }, fail: { text: 'A técnica falha no meio, e a tribulação vem inteira.', fx: { ferida: 3, corr: 6 } } },
+      { text: 'Fugir para dentro de um método de meditação rígido.', check: { stat: ['comp', 'dao'], dif: 3 }, ok: { text: 'Um ritmo quase mecânico o carrega pelo pior. Funciona, mas deixa uma cicatriz seca.', fx: { stats: { dao: 2 }, xp: 8 } }, fail: { text: 'O método falha no meio, e a tribulação vem inteira.', fx: { ferida: 3, corr: 6 } } },
     ],
   },
   {
@@ -166,7 +166,7 @@ export const lote7Ceu: GameEvent[] = [
     text: 'Em um sonho límpido, você enxerga um fio vermelho que sai do seu dedo e se estende ao horizonte, ligando-o a coisas e pessoas ainda por vir. Você pode puxá-lo, cortá-lo ou segui-lo.',
     choices: [
       { text: 'Seguir o fio até onde ele leva.', check: { stat: ['sor', 'dao'], dif: 4 }, ok: { text: 'Semanas de caminhada levam você a uma cabana. Dentro, um velho tecelão lhe entrega um fio dourado e diz: "Não perca."', fx: { item: ['fio_destino_vermelho'], stats: { sor: 2, dao: 1 }, xp: 10 } }, fail: { text: 'O fio some numa neblina. Você volta com o coração cheio de uma saudade sem nome.', fx: { stats: { dao: 1 } } } },
-      { text: 'Cortar o fio, para ser dono do próprio destino.', check: { stat: ['dao', 'esp'], dif: 5 }, ok: { text: 'O fio se desfaz em fagulhas. Você sente o mundo ficar mais silencioso e mais seu.', fx: { stats: { dao: 4, sor: -1 }, xp: 14, tecnica: ['passo_destino'] } }, fail: { text: 'O fio resiste, depois se reconecta, mais forte. O destino, às vezes, é teimoso.', fx: { stats: { dao: 1 } } } },
+      { text: 'Cortar o fio, para ser dono do próprio destino.', check: { stat: ['dao', 'esp'], dif: 5 }, ok: { text: 'O fio se desfaz em fagulhas. Você sente o mundo ficar mais silencioso e mais seu.', fx: { stats: { dao: 4, sor: -1 }, xp: 14 } }, fail: { text: 'O fio resiste, depois se reconecta, mais forte. O destino, às vezes, é teimoso.', fx: { stats: { dao: 1 } } } },
     ],
   },
   {

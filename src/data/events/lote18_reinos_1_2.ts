@@ -119,7 +119,7 @@ export const lote18Reinos12: GameEvent[] = [
     choices: [
       { text: 'Escolher manuais da sua trilha.', res: { text: 'Cada pergaminho abre uma janela. Você sai da biblioteca com a cabeça cheia, e o Dao, mais firme.', fx: { xp: 7, stats: { comp: 1, dao: 1 } } } },
       { text: 'Escolher textos de trilhas distintas, para ampliar a visão.', res: { text: 'Você descobre pontes entre caminhos que ninguém liga. Uma ideia, em particular, se acende como lampião.', fx: { xp: 5, stats: { comp: 2 } } } },
-      { text: 'Perder-se entre as estantes, sem um plano.', check: { stat: ['sor', 'comp'], dif: 0 }, ok: { text: 'Num canto esquecido, um livro sem título. Dentro, uma técnica, escrita à mão, de um discípulo que desapareceu há séculos.', fx: { tecnica: ['passo_garca'], xp: 6, stats: { sor: 1 } } }, fail: { text: 'Você perde a tarde, e ganha poeira nos pulmões. Mas sai sorrindo, mesmo assim.', fx: { stats: { comp: 1 } } } },
+      { text: 'Perder-se entre as estantes, sem um plano.', check: { stat: ['sor', 'comp'], dif: 0 }, ok: { text: 'Num canto esquecido, um livro sem título. Dentro, um método, escrita à mão, de um discípulo que desapareceu há séculos.', fx: {  xp: 6, stats: { sor: 1 } } }, fail: { text: 'Você perde a tarde, e ganha poeira nos pulmões. Mas sai sorrindo, mesmo assim.', fx: { stats: { comp: 1 } } } },
     ],
   },
   {

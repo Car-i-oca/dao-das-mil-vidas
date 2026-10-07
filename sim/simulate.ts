@@ -14,7 +14,6 @@ import { playLife } from './bot';
 import { PATHS } from '../src/data/paths';
 import { EVENTS } from '../src/data/events';
 import { ITEMS } from '../src/data/items';
-import { TECHNIQUES } from '../src/data/techniques';
 import { ENDINGS, ACHIEVEMENTS, UPGRADES } from '../src/data/endings';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import type { Meta, State } from '../src/types';
@@ -40,7 +39,7 @@ interface Run {
   pathUse: Record<string, number>;
   originUse: Record<string, number>;
   talentUse: Record<string, number>;
-  /** Por técnica/artefato: vidas que o possuíam ao morrer, soma do reino relativo e ascensões. */
+  /** Por artefato: vidas que o possuíam ao morrer, soma do reino relativo e ascensões. */
   gear: Record<string, { n: number; rel: number; asc: number }>;
   relSum: number;
   finalMeta?: Meta;
@@ -64,7 +63,7 @@ function record(run: Run, s: State) {
   run.talentUse[s.talent] = (run.talentUse[s.talent] ?? 0) + 1;
   const rel = s.tier / (ladderOf(s).realms.length - 1);
   run.relSum += rel;
-  const gearIds = [...s.techniques.map((x) => "t:" + x), ...new Set(s.items.filter((i) => ITEMS.find((it) => it.id === i)?.passive).map((x) => "i:" + x))];
+  const gearIds = [...new Set(s.items.filter((i) => ITEMS.find((it) => it.id === i)?.passive).map((x) => "i:" + x))];
   for (const g of gearIds) {
     const e = (run.gear[g] ??= { n: 0, rel: 0, asc: 0 });
     e.n++; e.rel += rel; if (s.ending === "ascensao") e.asc++;
@@ -154,9 +153,9 @@ function formatRun(run: Run): string {
     const mean = run.relSum / run.total;
     const rows = Object.entries(run.gear).filter(([, g]) => g.n >= 60).map(([id, g]) => ({ id, n: g.n, d: g.rel / g.n - mean, asc: g.asc / g.n }));
     rows.sort((a, b) => b.d - a.d);
-    const name = (id: string) => (id.startsWith("t:") ? TECHNIQUES.find((x) => x.id === id.slice(2))?.name : ITEMS.find((x) => x.id === id.slice(2))?.name) ?? id;
+    const name = (id: string) => ITEMS.find((x) => x.id === id.slice(2))?.name ?? id;
     const fmt = (r: (typeof rows)[number]) => name(r.id) + " (n=" + r.n + ", reino relativo " + (r.d >= 0 ? "+" : "") + (100 * r.d).toFixed(1) + " pp, ascensão " + (100 * r.asc).toFixed(1) + "%)";
-    L.push("", "**Impacto de técnicas e artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)", "");
+    L.push("", "**Impacto de artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)", "");
     L.push("Maiores: " + rows.slice(0, 5).map(fmt).join("; ") + ".");
     L.push("Menores: " + rows.slice(-3).map(fmt).join("; ") + ".");
   }
@@ -183,7 +182,7 @@ if (report) {
     '# Balanceamento — linha de base',
     '',
     `Gerado por \`npm run sim -- ${N} --report\` em ${new Date().toISOString().slice(0, 10)}.`,
-    `Conteúdo: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${TECHNIQUES.length} técnicas, ${ENDINGS.length} finais, ${PATHS.length} trilhas.`,
+    `Conteúdo: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${ENDINGS.length} finais, ${PATHS.length} trilhas.`,
     '',
     '## Como o bot joga',
     '- 70% das vezes escolhe a opção de maior chance de sucesso; nos demais casos escolhe ao acaso entre as opções seguras.',

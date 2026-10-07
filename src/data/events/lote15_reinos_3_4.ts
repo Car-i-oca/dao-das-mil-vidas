@@ -19,7 +19,7 @@ export const lote15Reinos34: GameEvent[] = [
     ],
   },
   {
-    id: 'r3_primeiros_discipulos', title: 'Quem Pede Seu Ensinamento', rarity: 'comum', once: true, weight: 2.5, cooldown: 80,
+    id: 'r3_primeiros_discipulos', title: 'Quem Pede Seu Método', rarity: 'comum', once: true, weight: 2.5, cooldown: 80,
     cond: { tierMin: 3, tierMax: 5, noFlags: ['tem_discipulo'] },
     text: 'Na porta do seu pavilhão ajoelham-se três jovens. Um é talentoso e arrogante; outro, esforçado, mas sem talento; o terceiro é calado e traz no olhar uma tristeza antiga. Cada um pede para ser seu discípulo.',
     choices: [
@@ -66,6 +66,7 @@ export const lote15Reinos34: GameEvent[] = [
     choices: [
       { text: 'Gastar 80 pedras em ervas de reparo e anos de retiro.', custo: 80, check: { stat: ['comp', 'dao'], dif: 0 }, ok: { text: 'O núcleo se fecha sem emendas. O Qi circula sem tropeçar, e sua base fica firme como pedra de templo.', fx: { xp: 10, stats: { dao: 2, esp: 1, fis: 1 }, vida: 20 } }, fail: { text: 'O reparo é imperfeito. A rachadura diminui, mas não some.', fx: { xp: 4, stats: { dao: 1 } } } },
       { text: 'Ignorar: o futuro cuida de si.', res: { text: 'Você segue sem pausa. A rachadura, às vezes, lateja nas noites de lua nova.', fx: { xp: 5 } } },
+      { text: 'Ouvir a orientação gratuita do mestre.', res: { text: 'Sem ervas, o mestre ensina um exercício de respiração para estabilizar o núcleo aos poucos. Não resolve tudo, mas oferece um começo seguro.', fx: { stats: { dao: 1, comp: 1 } } } },
     ],
   },
   {
@@ -83,7 +84,7 @@ export const lote15Reinos34: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 4, faction: ['seita'] },
     text: 'Dois cargos de ancião, três candidatos. Pela regra antiga, os rivais se enfrentam no pátio da seita, diante de todos. Seu oponente é calmo, forte e bem-visto.',
     choices: [
-      { text: 'Lutar com a técnica que você mais domina.', check: { stat: ['fis', 'esp', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'A luta é longa e limpa. Quando seu oponente se curva, a seita inteira ergue as mãos para você.', fx: { fama: 10, setFlags: ['anciao'], xp: 5 } }, fail: { text: 'Você perde por um passe. Ele estende a mão, o que dói mais que a derrota.', fx: { fama: 2, ferida: 1, stats: { dao: 1 } } } },
+      { text: 'Lutar com o método que você mais domina.', check: { stat: ['fis', 'esp', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'A luta é longa e limpa. Quando seu oponente se curva, a seita inteira ergue as mãos para você.', fx: { fama: 10, setFlags: ['anciao'], xp: 5 } }, fail: { text: 'Você perde por um passe. Ele estende a mão, o que dói mais que a derrota.', fx: { fama: 2, ferida: 1, stats: { dao: 1 } } } },
       { text: 'Propor um desafio de outro tipo: formação, pílula ou etiqueta.', check: { stat: ['comp', 'car'], dif: 1 }, ok: { text: 'O conselho aprova o desafio alternativo. Você vence sem derramar uma gota de sangue.', fx: { fama: 8, setFlags: ['anciao'], stats: { comp: 1 } } }, fail: { text: 'O conselho recusa a ideia. O duelo vai acontecer de qualquer jeito, e você perde.', fx: { fama: -2 } } },
       { text: 'Desistir em favor do oponente.', res: { text: 'Ele aceita o cargo com surpresa. Você ganha um amigo, que lembrará disso nos tempos difíceis.', fx: { karma: 5, stats: { dao: 1 }, setFlags: ['amigo_do_anciao'] } } },
     ],
@@ -125,6 +126,7 @@ export const lote15Reinos34: GameEvent[] = [
       { text: 'Comprar o segredo do tesouro (150 pedras).', custo: 150, check: { stat: ['sor', 'comp'], dif: 0 }, ok: { text: 'O mapa é verdadeiro. A caverna guarda uma relíquia de uma era antiga.', fx: { pedras: 400, item: ['espelho_bronze'], xp: 4 } }, fail: { text: 'O mapa é velho, e a caverna, vazia. O mercador deu um sorriso, e você deu o dinheiro.', fx: { stats: { comp: 1 } } } },
       { text: 'Comprar o nome de quem quer sua morte (100 pedras).', custo: 100, res: { text: 'O nome é conhecido, e inesperado. Daqui por diante, você saberá de onde vem o perigo.', fx: { setFlags: ['inimigo_secreto'], stats: { comp: 1, dao: 1 } } } },
       { text: 'Recusar todos: o segredo mais perigoso é o que se paga para saber.', res: { text: 'O mercador faz uma reverência. "Poucos recusam", diz. "E os que recusam, costumam ir longe."', fx: { stats: { dao: 2 }, fama: 2 } } },
+      { text: 'Perguntar ao mercador sobre a própria história.', res: { text: 'Ele conta uma história curta, mas honesta, sobre o preço que pagou para aprender a guardar segredos. Você sai sem comprar nada, levando uma pergunta a mais.', fx: { stats: { comp: 1, dao: 1 } } } },
     ],
   },
 
@@ -174,7 +176,7 @@ export const lote15Reinos34: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 6, faction: ['seita'] },
     text: 'Atrás do salão dos fundadores existe uma câmara trancada há mil anos. Só um cultivador de Alma Nascente pode abrir. Lá dentro, uma estátua de pedra segura um pergaminho; ao seu pé, uma espada quebrada e uma tabuleta: "Ao digno, a herança. Ao indigno, a lição."',
     choices: [
-      { text: 'Pegar o pergaminho.', check: { stat: ['dao', 'comp'], dif: 2, tag: 'mente' }, ok: { text: 'A estátua se desfaz em poeira dourada. O pergaminho traz a técnica base da seita, perdida há séculos.', fx: { tecnica: ['sutra_do_anciao'], fama: 12, xp: 10, stats: { dao: 2 } } }, fail: { text: 'A estátua desperta e lança você para fora. A lição, afinal, é a vergonha.', fx: { ferida: 2, fama: -3 } } },
+      { text: 'Pegar o pergaminho.', check: { stat: ['dao', 'comp'], dif: 2, tag: 'mente' }, ok: { text: 'A estátua se desfaz em poeira dourada. O pergaminho traz o método base da seita, perdida há séculos.', fx: {  fama: 12, xp: 10, stats: { dao: 2 } } }, fail: { text: 'A estátua desperta e lança você para fora. A lição, afinal, é a vergonha.', fx: { ferida: 2, fama: -3 } } },
       { text: 'Pegar a espada quebrada.', res: { text: 'Quebrada há mil anos, ela ainda lembra cada corte. Você a embainha num pano e a guarda, com respeito.', fx: { item: ['espada_ferro_frio'], stats: { dao: 1 }, karma: 3 } } },
       { text: 'Deixar tudo como está.', res: { text: 'Você sai e fecha a porta. A câmara espera de novo, mais mil anos.', fx: { karma: 3, stats: { dao: 2 } } } },
     ],

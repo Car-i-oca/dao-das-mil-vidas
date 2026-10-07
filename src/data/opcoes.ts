@@ -2,10 +2,10 @@ import type { Choice, GameEvent } from '../types';
 import { eventTypeOf } from './event-type';
 
 /**
- * Opções exclusivas por traço (talento, defeito, trilha, origem, constituição, raiz, técnica, conduta).
+ * Opções exclusivas por traço (talento, defeito, trilha, origem, constituição, raiz, método, conduta).
  * Um MOLDE é uma escolha com condição própria (`cond`) que é acrescentada a todos os eventos de uma categoria
  * (ou a eventos específicos). Quem não tem o traço nunca vê a opção; quem tem, vê uma saída que só ele tem,
- * com consequência própria (flag lida depois, evento agendado, item, técnica, mudança de rumo).
+ * com consequência própria (flag lida depois, evento agendado, item, método, mudança de rumo).
  */
 export type Cat = 'combate' | 'social' | 'perigo' | 'tesouro' | 'cultivo' | 'viagem';
 

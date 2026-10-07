@@ -1,6 +1,6 @@
 /** Fuzzer: joga vidas com escolhas aleatórias e confere invariantes. Uso: npm run fuzz -- 4000 */
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, ITEM, TECH, ENDING, EVENT, STAT_KEYS } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, ITEM, ENDING, EVENT, STAT_KEYS } from '../src/engine/engine';
 import type { State } from '../src/types';
 
 const N = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? 3000);
@@ -16,10 +16,8 @@ function check(s: State, where: string) {
   if (s.xp < 0 || s.xp > 131) note(`${where}: xp fora da faixa (${s.xp})`);
   if (s.age > s.maxAge + 200 && !s.ending) note(`${where}: idade muito acima do máximo sem final`);
   for (const id of s.items) if (!ITEM[id]) note(`${where}: item desconhecido ${id}`);
-  for (const id of s.techniques) if (!TECH[id]) note(`${where}: técnica desconhecida ${id}`);
   if (s.ending && !ENDING[s.ending]) note(`${where}: final desconhecido ${s.ending}`);
   if (s.current && !s.current.breakthrough && !s.current.retiro && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
-  if (new Set(s.techniques).size !== s.techniques.length) note(`${where}: técnica duplicada`);
 }
 
 let lives = 0, turns = 0;

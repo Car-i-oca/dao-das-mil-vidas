@@ -1,10 +1,9 @@
 /** Gera docs/galeria.html com todos os ícones, retratos e cenários (para revisar a arte): npm run galeria */
 import { writeFileSync } from 'node:fs';
 import { ITEMS } from '../src/data/items';
-import { TECHNIQUES } from '../src/data/techniques';
 import { PATHS } from '../src/data/paths';
 import { ENDINGS } from '../src/data/endings';
-import { itemIcon, techIcon, pathIcon, realmIcon } from '../src/ui/art/icons';
+import { itemIcon, pathIcon, realmIcon } from '../src/ui/art/icons';
 import { sceneSvg, endingCard } from '../src/ui/art/scenes';
 import { portraitSvg, type Look } from '../src/ui/art/portrait';
 
@@ -12,7 +11,6 @@ const css = `:root{--bg:#14110f;--bg2:#1d1915;--card:#231e19;--line:#3a3128;--in
 body{background:var(--bg);color:var(--ink);font-family:Georgia,serif;margin:16px}h2{margin:22px 0 8px;color:var(--gold)}.g{display:flex;flex-wrap:wrap;gap:8px}.c{width:92px;text-align:center;font-size:10px}.w{width:300px;font-size:10px;text-align:center}.w svg{width:300px;height:auto}`;
 let h = `<!doctype html><meta charset=utf-8><style>${css}</style><h1>Galeria de arte</h1>`;
 h += '<h2>Itens</h2><div class=g>' + ITEMS.map((i) => `<div class=c>${itemIcon(i)}<br>${i.name}</div>`).join('') + '</div>';
-h += '<h2>Técnicas</h2><div class=g>' + TECHNIQUES.map((t) => `<div class=c>${techIcon(t)}<br>${t.name}</div>`).join('') + '</div>';
 h += '<h2>Trilhas</h2><div class=g>' + PATHS.map((p) => `<div class=c>${pathIcon(p.id)}<br>${p.name}</div>`).join('') + '</div>';
 h += '<h2>Reinos (xianxia / murim)</h2><div class=g>' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map((t) => `<div class=c>${realmIcon('xianxia', t)}<br>${t}</div>`).join('') + [0, 1, 2, 3, 4, 5, 6, 7].map((t) => `<div class=c>${realmIcon('murim', t)}<br>m${t}</div>`).join('') + '</div>';
 const kinds = ['vilarejo', 'cidade', 'seita', 'selva', 'montanha', 'ruinas', 'deserto', 'gelo', 'mar', 'reino_secreto', 'submundo', 'ceu'];

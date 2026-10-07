@@ -61,15 +61,15 @@ export const cultivo: GameEvent[] = [
     text: 'Numa noite de meditação, uma sombra com seu rosto surge e sussurra: "Para que sofrer? Pegue o atalho. Eu mostro o caminho."',
     choices: [
       { text: 'Enfrentar o demônio interior com o Coração do Dao.', check: { stat: 'dao', dif: 3, tag: 'mente' }, ok: { text: 'A sombra se curva. A cada pergunta, você responde sem medo. Ao fim, ela se dissolve.', fx: { stats: { dao: 3 }, xp: 15, corr: -10 } }, fail: { text: 'A sombra ri, e parte dela fica dentro de você.', fx: { corr: 12, ferida: 1, xp: -5 } } },
-      { text: 'Escutar a oferta.', res: { text: 'A sombra mostra uma técnica sombria. Você a memoriza e acorda suando. O desejo ficou.', fx: { corr: 15, xp: 15, tecnica: ['caminho_do_sangue'] } } },
+      { text: 'Escutar a oferta.', res: { text: 'A sombra mostra um método sombrio. Você o memoriza e acorda suando. O desejo ficou.', fx: { corr: 15, xp: 15, stats: { dao: 1 } } } },
     ],
   },
   {
     id: 'iluminacao_sonho', title: 'O Sonho do Dao', rarity: 'raro', cooldown: 30,
     cond: { tierMin: 1 },
-    text: 'Você sonha com um rio de luz fluindo para dentro de uma montanha. Ao acordar, os caracteres de uma técnica inteira estão na sua mente.',
+    text: 'Você sonha com um rio de luz fluindo para dentro de uma montanha. Ao acordar, os caracteres de um método inteiro estão na sua mente.',
     choices: [
-      { text: 'Anotar tudo antes que desapareça.', check: { stat: ['comp', 'esp'], dif: 1 }, ok: { text: 'As palavras fluem do pincel. É uma técnica real e poderosa.', fx: { xp: 18, stats: { comp: 2, dao: 1 }, tecnica: ['sutra_vazio_calmo'] } }, fail: { text: 'Você só consegue anotar fragmentos. Ainda assim, algo permanece.', fx: { xp: 8, stats: { comp: 1 } } } },
+      { text: 'Anotar tudo antes que desapareça.', check: { stat: ['comp', 'esp'], dif: 1 }, ok: { text: 'As palavras fluem do pincel. É um método real e poderoso.', fx: { xp: 18, stats: { comp: 2, dao: 1 } } }, fail: { text: 'Você só consegue anotar fragmentos. Ainda assim, algo permanece.', fx: { xp: 8, stats: { comp: 1 } } } },
     ],
   },
   {
@@ -106,7 +106,7 @@ export const cultivo: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 6, path: ['sopro', 'alquimia'] },
     text: 'Um velho estudioso lhe mostra um diagrama complexo e propõe um desafio: compreender como o Qi fluiria dentro dele.',
     choices: [
-      { text: 'Estudar o diagrama por meses.', check: { stat: 'comp', dif: 2, tag: 'formacao' }, ok: { text: 'Quando o último nó se resolve, uma onda de compreensão o atinge.', fx: { xp: 14, stats: { comp: 2 }, tecnica: ['selo_nove_portas'] } }, fail: { text: 'O diagrama é impenetrável. Mas você aprende o que não sabe.', fx: { xp: 4, stats: { comp: 1 } } } },
+      { text: 'Estudar o diagrama por meses.', check: { stat: 'comp', dif: 2, tag: 'formacao' }, ok: { text: 'Quando o último nó se resolve, uma onda de compreensão o atinge.', fx: { xp: 14, stats: { comp: 2 } } }, fail: { text: 'O diagrama é impenetrável. Mas você aprende o que não sabe.', fx: { xp: 4, stats: { comp: 1 } } } },
     ],
   },
   {
@@ -131,7 +131,7 @@ export const cultivo: GameEvent[] = [
     cond: { tierMin: 2, tierMax: 6, path: ['espada'] },
     text: 'Numa cabana de montanha, um velho mutilado afia uma lâmina sem fio. "Quem corta o céu, precisa antes cortar a si mesmo", diz.',
     choices: [
-      { text: 'Pedir para aprender com ele.', check: { stat: ['dao', 'comp'], dif: 3 }, ok: { text: 'Por três anos você recebe lições duras. Quando parte, sua lâmina corta a intenção.', fx: { tecnica: ['espada_tres_luas'], stats: { dao: 3, fis: 1 }, xp: 18, anos: 3 } }, fail: { text: 'Ele o expulsa. "Ainda não tem fome suficiente."', fx: { stats: { dao: 1 } } } },
+      { text: 'Pedir para aprender com ele.', check: { stat: ['dao', 'comp'], dif: 3 }, ok: { text: 'Por três anos você recebe lições duras. Quando parte, sua lâmina corta a intenção.', fx: {  stats: { dao: 3, fis: 1 }, xp: 18, anos: 3 } }, fail: { text: 'Ele o expulsa. "Ainda não tem fome suficiente."', fx: { stats: { dao: 1 } } } },
     ],
   },
   {
@@ -166,7 +166,7 @@ export const cultivo: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, noFlags: ['rejeitou_demonio'], faction: ['errante', 'nenhuma', 'cla', 'seita'] },
     text: 'Numa noite chuvosa, um homem de manto negro aparece em seu quarto. "Você está preso no gargalo. Eu posso destravá-lo, pelo preço certo."',
     choices: [
-      { text: 'Aceitar o pacto.', res: { text: 'Uma gota de sangue sela o acordo. Seu Qi aumenta de forma estranha e deliciosa.', fx: { faccao: 'demoniaca', corr: 20, xp: 25, tecnica: ['caminho_do_sangue'], karma: -10, setFlags: ['pacto_demoniaco', 'membro_demoniaca'] } } },
+      { text: 'Aceitar o pacto.', res: { text: 'Uma gota de sangue sela o acordo. Seu Qi aumenta de forma estranha e deliciosa.', fx: { faccao: 'demoniaca', corr: 20, xp: 25, stats: { dao: 1 }, karma: -10, setFlags: ['pacto_demoniaco', 'membro_demoniaca'] } } },
       { text: 'Rejeitar com firmeza.', check: { stat: 'dao', dif: 1 }, ok: { text: 'O homem recua com respeito. "Você é difícil de comprar."', fx: { stats: { dao: 2 }, setFlags: ['rejeitou_demonio'] } }, fail: { text: 'Ele sorri e deixa uma marca em sua mente antes de sumir.', fx: { corr: 8, setFlags: ['rejeitou_demonio'] } } },
     ],
   },

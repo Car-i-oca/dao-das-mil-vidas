@@ -61,7 +61,7 @@ export const lote10Regioes: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 7, local: ['deserto'] },
     text: 'Uma caravana de nômades de turbantes cor de areia o convida ao seu fogo. Eles não têm casa, só o caminho, e sabem ler o vento como se fosse um livro.',
     choices: [
-      { text: 'Aprender com eles a ler o vento.', check: { stat: ['comp', 'esp'], dif: 1 }, ok: { text: 'Semanas ao lado deles. Você aprende a ver a chuva três dias antes de ela cair, a sentir um estrangeiro a uma légua.', fx: { stats: { comp: 1, esp: 1, sor: 1 }, tecnica: ['passo_areia'], xp: 8 } }, fail: { text: 'O vento ainda é um livro em outra língua. Mas a hospitalidade valeu a viagem.', fx: { stats: { car: 1 } } } },
+      { text: 'Aprender com eles a ler o vento.', check: { stat: ['comp', 'esp'], dif: 1 }, ok: { text: 'Semanas ao lado deles. Você aprende a ver a chuva três dias antes de ela cair, a sentir um estrangeiro a uma légua.', fx: { stats: { comp: 1, esp: 1, sor: 1 },  xp: 8 } }, fail: { text: 'O vento ainda é um livro em outra língua. Mas a hospitalidade valeu a viagem.', fx: { stats: { car: 1 } } } },
       { text: 'Trocar suprimentos e seguir viagem.', res: { text: 'Água por pedras, pedras por água. Eles acenam, enquanto o sol se põe.', fx: { pedras: -10, ferida: -1 } } },
     ],
   },

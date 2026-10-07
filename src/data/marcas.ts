@@ -3,7 +3,7 @@ import { MARCAS_VIDA } from './marcas_vida';
 
 /**
  * Marcas de escolha. Toda escolha deixa um rastro lido no futuro:
- *  - efeitos fortes (flag, agenda, item, técnica, local, facção, final...) contam como marca própria;
+ *  - efeitos fortes (flag, agenda, item, método, local, facção, final...) contam como marca própria;
  *  - o resto alimenta o PERFIL de conduta do personagem (compaixão, violência, astúcia, cautela, ambição,
  *    disciplina, devoção, ganância), que vira alcunha, abre ou fecha opções, muda como NPCs reagem e os epitáfios.
  */
@@ -40,8 +40,8 @@ function fxOf(c: Choice): Outcome[] {
 export function temMarca(fx?: Effects): boolean {
   if (!fx) return false;
   return !!(
-    fx.setFlags?.length || fx.clearFlags?.length || fx.agenda?.length || fx.item?.length || fx.removeItem?.length || fx.tecnica?.length ||
-    fx.local || fx.faccao || fx.fim || fx.tier || fx.trilha || fx.rec || fx.perfil ||
+    fx.setFlags?.length || fx.clearFlags?.length || fx.agenda?.length || fx.item?.length || fx.removeItem?.length ||
+    fx.local || fx.faccao || fx.fim || fx.tier || fx.trilha || fx.perfil ||
     Math.abs(fx.karma ?? 0) >= 8 || Math.abs(fx.fama ?? 0) >= 10 || (fx.corr ?? 0) >= 8 || (fx.ferida ?? 0) >= 3 ||
     Math.abs(fx.pedras ?? 0) >= 150 || Math.abs(fx.vida ?? 0) >= 40
   );

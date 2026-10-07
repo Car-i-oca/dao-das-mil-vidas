@@ -8,7 +8,7 @@ export const cidade: GameEvent[] = [
     text: 'O Pavilhão de Tesouros realiza um leilão mensal. Pílulas, manuais e artefatos passam de mão em mão sob olhares famintos.',
     choices: [
       { text: 'Disputar uma pílula de rompimento (40 pedras).', custo: 40, check: { stat: ['car', 'sor'], dif: 1 }, ok: { text: 'Você vence a disputa por uma pílula rara.', fx: { item: ['pilula_passagem_2'] } }, fail: { text: 'Você é superado por um lance maior, mas recebe parte das pedras de volta.', fx: { pedras: 25 } } },
-      { text: 'Comprar um manual de técnica (30 pedras).', custo: 30, res: { text: 'Manual antigo, papel áspero e conteúdo valioso.', fx: { item: ['manual_olho_lotus'] } } },
+      { text: 'Comprar um manual de método (30 pedras).', custo: 30, res: { text: 'Manual antigo, papel áspero e conteúdo valioso.', fx: { item: ['manual_olho_lotus'] } } },
       { text: 'Apenas observar e aprender os preços.', res: { text: 'Observar é grátis. Você aprende sobre valor, desejo e ganância.', fx: { stats: { car: 1, comp: 1 } } } },
     ],
   },

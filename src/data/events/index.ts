@@ -28,7 +28,6 @@ import { lote15Reinos34 } from './lote15_reinos_3_4';
 import { lote16Reinos56 } from './lote16_reinos_5_6';
 import { lote17Reinos78 } from './lote17_reinos_7_8';
 import { lote18Reinos12 } from './lote18_reinos_1_2';
-import { lote19TrilhasPoder } from './lote19_trilhas_poder';
 import { lote20Tribulacao } from './lote20_tribulacao';
 import { lote21OrigensA } from './lote21_origens_a';
 import { lote22OrigensB } from './lote22_origens_b';
@@ -40,15 +39,11 @@ import { lote26Talentos, moldesTalentos } from './lote26_talentos';
 import { lote27Defeitos, moldesDefeitos } from './lote27_defeitos';
 import { lote28Origens, moldesOrigens } from './lote28_origens';
 import { lote29CorpoRaiz, moldesCorpoRaiz } from './lote29_corpo_raiz';
-import { moldesTrilhas } from './lote30_trilhas_molde';
-import { lote31Tecnicas } from './lote31_tecnicas';
-import { lote32TrilhasIndependentes } from './lote32_trilhas_independentes';
 import { mercador } from './mercador';
 import { biomas, biomaMercador } from './biomas';
 import { caldeirao } from './alquimia';
 import { chefeSelva, torneioExterno, torneioInterno, lojaVip } from './missoes_torneios';
 import { sagaFerro } from './saga_ferro';
-import { moldesDeTecnicas } from '../moldes_tecnicas';
 import { aplicarMoldes, type Molde } from '../opcoes';
 import { VARIANTES } from '../variantes';
 import { marcarEscolhas, registrarSoPerfil } from '../marcas';
@@ -59,7 +54,7 @@ const TODOS: GameEvent[] = [
   ...trilhas, ...mundo, ...alto, ...juventude,
   ...lote1Seita, ...lote2Reinos, ...lote3Alquimia, ...lote4Mundo, ...lote5Sangue, ...lote6Oeste, ...lote7Ceu, ...trilhaInicial,
   ...lote8Juventude, ...lote9Trilhas, ...lote10Regioes, ...lote11Ecos, ...lote12Torneio, ...lote13Mundo,
-  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote19TrilhasPoder, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia, ...lote26Talentos, ...lote27Defeitos, ...lote28Origens, ...lote29CorpoRaiz, ...lote31Tecnicas, ...lote32TrilhasIndependentes, ...mercador, ...biomas, biomaMercador, caldeirao, chefeSelva, torneioExterno, torneioInterno, lojaVip, ...sagaFerro,
+  ...lote14Poder, ...lote15Reinos34, ...lote16Reinos56, ...lote17Reinos78, ...lote18Reinos12, ...lote20Tribulacao, ...lote21OrigensA, ...lote22OrigensB, ...lote23Npcs, ...lote24Jianghu, ...lote25Mitologia, ...lote26Talentos, ...lote27Defeitos, ...lote28Origens, ...lote29CorpoRaiz, ...mercador, ...biomas, biomaMercador, caldeirao, chefeSelva, torneioExterno, torneioInterno, lojaVip, ...sagaFerro,
 ];
 
 /** Aplica os tetos de reino de src/data/faixas.ts. */
@@ -71,7 +66,7 @@ const COM_TETOS: GameEvent[] = TODOS.map((e0) => {
 });
 
 /** Toda escolha deixa marca: as que não têm efeito próprio ganham o perfil de conduta (src/data/marcas.ts). */
-const MOLDES: Molde[] = [...moldesTalentos, ...moldesDefeitos, ...moldesOrigens, ...moldesCorpoRaiz, ...moldesTrilhas, ...moldesDeTecnicas()];
+const MOLDES: Molde[] = [...moldesTalentos, ...moldesDefeitos, ...moldesOrigens, ...moldesCorpoRaiz];
 /** Cenas de passagem de tempo: sem consequência própria por desenho. */
 const PASSAGEM = new Set(['dia_comum', 'tarefas_da_casa', 'pesca_lago', 'aurora_norte', 'doenca_infantil', 'rotina_mortal']);
 export const EVENTS: GameEvent[] = registrarSoPerfil(

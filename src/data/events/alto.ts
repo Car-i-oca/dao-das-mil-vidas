@@ -25,7 +25,7 @@ export const alto: GameEvent[] = [
     cond: { tierMin: 5 },
     text: 'Um homem de vestes rasgadas senta-se no topo de uma colina. Sua aura é do tamanho do céu, mas está presa em correntes invisíveis. "Fui expulso do Reino Celeste", diz. "Ajude-me a quebrar estes selos."',
     choices: [
-      { text: 'Ajudar a quebrar os selos.', check: { stat: ['esp', 'comp', 'dao'], dif: 5, tag: 'formacao' }, ok: { text: 'Três dias de esforço. Os selos se quebram em luz. Em gratidão, o Imortal lhe dá um tesouro: uma lição.', fx: { xp: 40, stats: { esp: 3, comp: 3, dao: 3 }, tecnica: ['sutra_ceu_vazio'], karma: 15, fama: 15 } }, fail: { text: 'Os selos reagem e o expulsam para longe. O Imortal agradece pela tentativa, com um sorriso triste.', fx: { ferida: 4, karma: 6, stats: { dao: 1 } } } },
+      { text: 'Ajudar a quebrar os selos.', check: { stat: ['esp', 'comp', 'dao'], dif: 5, tag: 'formacao' }, ok: { text: 'Três dias de esforço. Os selos se quebram em luz. Em gratidão, o Imortal lhe dá um tesouro: uma lição.', fx: { xp: 40, stats: { esp: 3, comp: 3, dao: 3 },  karma: 15, fama: 15 } }, fail: { text: 'Os selos reagem e o expulsam para longe. O Imortal agradece pela tentativa, com um sorriso triste.', fx: { ferida: 4, karma: 6, stats: { dao: 1 } } } },
       { text: 'Recusar: ajudar um exilado pode custar caro.', res: { text: 'O Imortal acena em silêncio, sem rancor. Algum tempo depois, a colina está vazia.', fx: { stats: { dao: 1 } } } },
     ],
   },
@@ -118,7 +118,7 @@ export const alto: GameEvent[] = [
     cond: { tierMin: 4 },
     text: 'Entre dois pilares quebrados, o espaço dobra sobre si mesmo. Dentro do portal, não há nada: nem luz, nem escuridão. Quem entra raramente volta, mas os que voltam trazem coisas que não existem aqui.',
     choices: [
-      { text: 'Entrar no portal.', check: { stat: ['dao', 'esp'], dif: 5, tag: 'mente' }, ok: { text: 'Você caminha por um tempo sem tempo e retorna carregando um pedaço do Vazio no peito: um novo entendimento do Dao.', fx: { xp: 40, stats: { dao: 5, esp: 3 }, tecnica: ['sutra_ceu_vazio'], vida: 60, fama: 12 } }, fail: { text: 'O Vazio fecha a porta atrás de você. Você caminha para sempre, entre um passo e outro.', fx: { fim: 'vazio' } } },
+      { text: 'Entrar no portal.', check: { stat: ['dao', 'esp'], dif: 5, tag: 'mente' }, ok: { text: 'Você caminha por um tempo sem tempo e retorna carregando um pedaço do Vazio no peito: um novo entendimento do Dao.', fx: { xp: 40, stats: { dao: 5, esp: 3 },  vida: 60, fama: 12 } }, fail: { text: 'O Vazio fecha a porta atrás de você. Você caminha para sempre, entre um passo e outro.', fx: { fim: 'vazio' } } },
       { text: 'Estudar o portal sem entrar.', res: { text: 'Você mede, desenha, anota. Três meses depois, o portal se fecha. Você tem apenas notas, e uma estranha saudade.', fx: { stats: { comp: 3, dao: 1 }, xp: 15 } } },
     ],
   },

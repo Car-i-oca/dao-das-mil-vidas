@@ -1,8 +1,8 @@
-import type { Item, Technique } from '../../types';
+import type { Item } from '../../types';
 import { C, GRADE_COLOR, hash, plate, prng, svg } from './core';
 
 /* =====================================================================
- * Ícones de itens, técnicas, trilhas e reinos. Tudo em SVG 64x64.
+ * Ícones de itens, caminhos e reinos. Tudo em SVG 64x64.
  * Variação por id (cor, detalhes) e por grau (moldura, brilho, adornos).
  * ===================================================================== */
 
@@ -108,7 +108,6 @@ export function itemMotif(it: Item): Motif {
     case 'pilula': return 'pill';
     case 'erva': return n.includes('fruta') ? 'fruit' : n.includes('semente') ? 'seed' : 'herb';
     case 'talisma': return 'talisman';
-    case 'manual': return 'manual';
     case 'nucleo': return 'core';
     case 'anel': return 'ring';
     case 'artefato':
@@ -121,6 +120,7 @@ export function itemMotif(it: Item): Motif {
       if (has('lanterna', 'lampião')) return 'lantern';
       return 'fallback';
     default:
+      if (has('caderno', 'atlas', 'crônica', 'tratado', 'notas')) return 'scroll';
       if (has('cristal', 'gema', 'pérola', 'perola', 'jade', 'lingote', 'fragmento', 'escama')) return 'crystal';
       if (has('ovo')) return 'egg';
       if (has('mapa', 'pergaminho', 'escritura', 'carta')) return 'scroll';
@@ -143,53 +143,6 @@ export function itemIcon(it: Item, size = 56): string {
   const col = it.kind === 'artefato' || it.kind === 'anel' ? GRADE_COLOR[it.grade] === C.gold ? C.gold : PILL_COLORS[hash(it.id) % PILL_COLORS.length] : PILL_COLORS[hash(it.id) % PILL_COLORS.length];
   const body = DEFS + plate(it.grade, GLYPHS[itemMotif(it)](it.grade, r, col));
   return svg(64, 64, body, 'art art-item', it.name).replace(/width="64" height="64"/, `width="${size}" height="${size}"`);
-}
-
-/* ---------- Técnicas ---------- */
-const TAG_GLYPH: Record<string, (col: string) => string> = {
-  combate: (c) => `<path d="M20 44L44 20M44 44L20 20" ${stroke(c, 4)}/><path d="M44 20l4-1-1 4M20 20l-4-1 1 4" ${stroke(c, 2)}/>`,
-  mente: (c) => `<path d="M16 32q16-16 32 0-16 16-32 0z" ${stroke(c, 2.6)}/><circle cx="32" cy="32" r="6" fill="${c}"/><circle cx="32" cy="32" r="2.4" fill="${C.dark}"/>`,
-  qi: (c) => `<path d="M32 16a16 16 0 1 1-16 16 10 10 0 0 1 20 0 5 5 0 0 1-10 0" ${stroke(c, 3)}/>`,
-  formacao: (c) => `<path d="M32 14l16 9v18l-16 9-16-9V23z" ${stroke(c, 2.4)}/><path d="M32 14v36M16 23l32 18M48 23L16 41" ${stroke(c, 1.2)} opacity="0.7"/>`,
-  corpo: (c) => `<path d="M20 42V28q0-6 6-6h12q6 0 6 6v14q0 6-6 6H26q-6 0-6-6z" fill="${c}" opacity="0.9"/><path d="M26 28v8M32 26v10M38 28v8" ${stroke(C.dark, 1.6)}/>`,
-  espada: (c) => `<path d="M46 14L24 40l-4-4L42 12z" fill="${c}"/><path d="M20 40l-6 8M16 36l8 8" ${stroke(C.steel, 3)}/>`,
-  veneno: (c) => `<path d="M32 12c10 14 14 20 14 26a14 14 0 0 1-28 0c0-6 4-12 14-26z" fill="${c}" opacity="0.9"/><path d="M26 38a6 6 0 0 0 6 6" ${stroke('#fff', 1.6)} opacity="0.6"/>`,
-  besta: (c) => `<ellipse cx="32" cy="40" rx="10" ry="8" fill="${c}"/><circle cx="20" cy="28" r="4.4" fill="${c}"/><circle cx="28" cy="20" r="4.4" fill="${c}"/><circle cx="36" cy="20" r="4.4" fill="${c}"/><circle cx="44" cy="28" r="4.4" fill="${c}"/>`,
-  demonio: (c) => `<path d="M32 50c-10-6-14-14-8-24 2 6 6 6 8 0 2 6 6 6 8 0 6 10 2 18-8 24z" fill="${c}"/><path d="M20 20l4 6M44 20l-4 6" ${stroke(c, 2.6)}/>`,
-  alquimia: (c) => `<path d="M18 34h28v4c0 8-6 12-14 12s-14-4-14-12z" fill="${c}" opacity="0.9"/><path d="M26 28q-2-5 1-9M32 28q-2-6 2-11M38 28q-2-5 1-9" ${stroke(C.fire, 2)}/>`,
-  forja: (c) => `<path d="M18 38h28l-4 10H22z" fill="${c}"/><path d="M24 38V26h16v12" ${stroke(c, 2.6)}/><path d="M30 20l2-6 2 6" ${stroke(C.fire, 2)}/>`,
-  fuga: (c) => `<path d="M16 36q10-12 20-6t14-2M16 44q10-12 20-6t14-2" ${stroke(c, 2.6)}/><path d="M44 22l8 4-8 4" ${stroke(c, 2.4)}/>`,
-};
-
-export function glyphFromTags(tags: string[] | undefined, col: string, h: number): string {
-  const key = tags?.find((t) => TAG_GLYPH[t]);
-  if (key) return TAG_GLYPH[key](col);
-  // Sem tag: um selo abstrato único por id.
-  const r = prng(h);
-  let d = '';
-  const n = 3 + Math.floor(r() * 3);
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * Math.PI * 2 + r();
-    d += `${i ? 'L' : 'M'}${32 + Math.cos(a) * 15} ${32 + Math.sin(a) * 15}`;
-  }
-  return `<path d="${d}Z" ${stroke(col, 2.6)}/><circle cx="32" cy="32" r="${3 + r() * 3}" fill="${col}"/>`;
-}
-
-/** Selo circular da técnica: anéis e cor crescem com o grau (1 a 4). */
-export function techIcon(t: Technique, size = 52): string {
-  const h = hash(t.id);
-  const col = [C.steel, C.jade, C.blue, C.gold][t.grade - 1];
-  const rings = t.grade;
-  let o = `<circle cx="32" cy="32" r="28" fill="${C.bg2}" stroke="${col}" stroke-width="2.4"/>`;
-  for (let i = 1; i < rings; i++) o += `<circle cx="32" cy="32" r="${28 - i * 3.2}" fill="none" stroke="${col}" stroke-width="0.9" opacity="${0.8 - i * 0.15}"/>`;
-  if (t.grade >= 3) o += `<circle cx="32" cy="32" r="22" fill="${col}" opacity="0.1"/>`;
-  const dots = 4 + (h % 4);
-  for (let i = 0; i < dots; i++) {
-    const a = (i / dots) * Math.PI * 2 + (h % 7);
-    o += `<circle cx="${32 + Math.cos(a) * 27}" cy="${32 + Math.sin(a) * 27}" r="1.6" fill="${t.grade >= 4 ? C.gold : col}"/>`;
-  }
-  o += `<g transform="translate(32 32) scale(0.62) translate(-32 -32)">${glyphFromTags(t.tags, col, h)}</g>`;
-  return svg(64, 64, o, 'art art-tech', t.name).replace(/width="64" height="64"/, `width="${size}" height="${size}"`);
 }
 
 /* ---------- Trilhas ---------- */

@@ -39,7 +39,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['sopro'] },
     text: 'Um velho cultivador, magro como um galho, senta-se de pernas cruzadas sobre uma folha que flutua num lago. Quando você se aproxima, ele diz: "Seu fôlego é bom. Mas ainda respira como quem tem medo de gastar o ar."',
     choices: [
-      { text: 'Pedir para aprender o Ciclo de Cem Respirações.', check: { stat: ['comp', 'esp'], dif: 4, tag: 'qi' }, ok: { text: 'Cem respirações, cada uma diferente. Ao final, seu fôlego tem a largura de um rio.', fx: { tecnica: ['respiracao_cem_ciclos'], xp: 20, stats: { esp: 2, comp: 1 } } }, fail: { text: 'Você se perde na quadragésima respiração. O velho assente: "Volte em dez anos."', fx: { stats: { dao: 1 } } } },
+      { text: 'Pedir para aprender o Ciclo de Cem Respirações.', check: { stat: ['comp', 'esp'], dif: 4, tag: 'qi' }, ok: { text: 'Cem respirações, cada uma diferente. Ao final, seu fôlego tem a largura de um rio.', fx: {  xp: 20, stats: { esp: 2, comp: 1 } } }, fail: { text: 'Você se perde na quadragésima respiração. O velho assente: "Volte em dez anos."', fx: { stats: { dao: 1 } } } },
     ],
   },
 
@@ -74,7 +74,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 7, path: ['corpo'] },
     text: 'Depois de décadas de treino, sua pele começa a escurecer e brilhar como bronze polido. Um mestre idoso, de braços cobertos de cicatrizes antigas, diz: "É o corpo respondendo ao método. Agora, comece a aprender o resto."',
     choices: [
-      { text: 'Treinar o Corpo de Bronze por três anos.', check: { stat: ['fis', 'dao'], dif: 4, tag: 'corpo' }, ok: { text: 'Três anos de espancamento disciplinado. Sua pele agora aguenta golpes que quebrariam tijolos.', fx: { anos: 3, tecnica: ['pele_de_bronze'], stats: { fis: 3 }, xp: 14 } }, fail: { text: 'Você se machuca nas primeiras semanas e perde parte do progresso. Mas aprende o ritmo certo.', fx: { anos: 1, ferida: 3, stats: { fis: 1, dao: 1 }, xp: 6 } } },
+      { text: 'Treinar o Corpo de Bronze por três anos.', check: { stat: ['fis', 'dao'], dif: 4, tag: 'corpo' }, ok: { text: 'Três anos de espancamento disciplinado. Sua pele agora aguenta golpes que quebrariam tijolos.', fx: { anos: 3,  stats: { fis: 3 }, xp: 14 } }, fail: { text: 'Você se machuca nas primeiras semanas e perde parte do progresso. Mas aprende o ritmo certo.', fx: { anos: 1, ferida: 3, stats: { fis: 1, dao: 1 }, xp: 6 } } },
     ],
   },
 
@@ -109,7 +109,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['espada'] },
     text: 'Seu mestre antigo aparece no portão, mais velho, de cabelos brancos. "Você já corta tudo o que vê. Agora aprenda a cortar o que não vê: a intenção do inimigo, antes de ele erguer a lâmina."',
     choices: [
-      { text: 'Treinar a Intenção da Lâmina com o mestre.', check: { stat: ['dao', 'comp'], dif: 5, tag: 'espada' }, ok: { text: 'Meses de treino de olhos fechados. Quando abre os olhos, você já sabe onde cada golpe vai cair, antes de ele nascer.', fx: { tecnica: ['intencao_lamina'], stats: { dao: 3, comp: 1 }, xp: 18 } }, fail: { text: 'A intenção escapa como fumaça. O mestre diz que ainda não é a hora, e sorri.', fx: { stats: { dao: 2 } } } },
+      { text: 'Treinar a Intenção da Lâmina com o mestre.', check: { stat: ['dao', 'comp'], dif: 5, tag: 'espada' }, ok: { text: 'Meses de treino de olhos fechados. Quando abre os olhos, você já sabe onde cada golpe vai cair, antes de ele nascer.', fx: {  stats: { dao: 3, comp: 1 }, xp: 18 } }, fail: { text: 'A intenção escapa como fumaça. O mestre diz que ainda não é a hora, e sorri.', fx: { stats: { dao: 2 } } } },
     ],
   },
 
@@ -137,7 +137,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['alma'] },
     text: 'Depois de décadas de meditação, você vislumbra, no fundo do mar, um selo de luz antiga. Quem o ler e dominar, dizem, poderá ver e agir sobre almas alheias.',
     choices: [
-      { text: 'Mergulhar até o selo e lê-lo.', check: { stat: ['esp', 'dao', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'Palavras, símbolos, uma gramática inteira de almas. Quando você volta, sabe usar o selo.', fx: { tecnica: ['selo_da_consciencia'], stats: { esp: 3, dao: 1 }, xp: 22 } }, fail: { text: 'O selo reage com uma pressão esmagadora. Você sai tonto, mas guardou uma pista.', fx: { ferida: 3, stats: { esp: 1 }, xp: 6 } } },
+      { text: 'Mergulhar até o selo e lê-lo.', check: { stat: ['esp', 'dao', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'Palavras, símbolos, uma gramática inteira de almas. Quando você volta, sabe usar o selo.', fx: {  stats: { esp: 3, dao: 1 }, xp: 22 } }, fail: { text: 'O selo reage com uma pressão esmagadora. Você sai tonto, mas guardou uma pista.', fx: { ferida: 3, stats: { esp: 1 }, xp: 6 } } },
     ],
   },
 
@@ -164,7 +164,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['formacoes'] },
     text: 'Uma vez por século, mestres de formação de todo o continente se reúnem num torneio: cada um desenha um arranjo, e os outros tentam quebrá-lo. O vencedor ganha um tratado antigo.',
     choices: [
-      { text: 'Inscrever-se e desenhar sua melhor formação.', check: { stat: ['comp', 'esp', 'dao'], dif: 6, tag: 'formacao' }, ok: { text: 'Seu Labirinto das Mil Voltas resiste a nove desafiantes. O tratado antigo é seu, com uma técnica que muda sua compreensão.', fx: { tecnica: ['formacao_labirinto'], fama: 14, stats: { comp: 3 }, xp: 18 } }, fail: { text: 'Sua formação cai na quinta rodada. Mas as notas que você tira dos outros valem um tratado.', fx: { fama: 4, stats: { comp: 2 }, xp: 10 } } },
+      { text: 'Inscrever-se e desenhar sua melhor formação.', check: { stat: ['comp', 'esp', 'dao'], dif: 6, tag: 'formacao' }, ok: { text: 'Seu Labirinto das Mil Voltas resiste a nove desafiantes. O tratado antigo é seu, com um método que muda sua compreensão.', fx: {  fama: 14, stats: { comp: 3 }, xp: 18 } }, fail: { text: 'Sua formação cai na quinta rodada. Mas as notas que você tira dos outros valem um tratado.', fx: { fama: 4, stats: { comp: 2 }, xp: 10 } } },
     ],
   },
 
@@ -192,7 +192,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['budista'] },
     text: 'Um abade centenário, cego e sorridente, entrega a você um rolo de seda e uma pergunta: "Este sutra diz que tudo é ilusão, inclusive o sutra. Consegue lê-lo sem acreditar nele, e sem deixar de acreditar?"',
     choices: [
-      { text: 'Ler o sutra, com a mente aberta e leve.', check: { stat: ['dao', 'esp', 'comp'], dif: 5, tag: 'mente' }, ok: { text: 'As letras se dissolvem no papel e se recompõem na sua mente. O abade ri, e você ri junto, sem saber por quê.', fx: { tecnica: ['sutra_coracao_diamante'], stats: { dao: 4, esp: 1 }, xp: 20 } }, fail: { text: 'As letras ficam só letras. O abade pega o rolo de volta, com doçura: "Quem sabe numa próxima vida."', fx: { stats: { dao: 2 } } } },
+      { text: 'Ler o sutra, com a mente aberta e leve.', check: { stat: ['dao', 'esp', 'comp'], dif: 5, tag: 'mente' }, ok: { text: 'As letras se dissolvem no papel e se recompõem na sua mente. O abade ri, e você ri junto, sem saber por quê.', fx: {  stats: { dao: 4, esp: 1 }, xp: 20 } }, fail: { text: 'As letras ficam só letras. O abade pega o rolo de volta, com doçura: "Quem sabe numa próxima vida."', fx: { stats: { dao: 2 } } } },
     ],
   },
 
@@ -220,7 +220,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 7, path: ['venenos'] },
     text: 'Uma velha boticária, famosa por nunca ter perdido um paciente para qualquer toxina, convida você ao seu laboratório: "Quem conhece o veneno tão bem quanto você deveria conhecer também o antídoto."',
     choices: [
-      { text: 'Aprender os Antídotos com a boticária.', check: { stat: ['comp', 'dao'], dif: 3, tag: 'veneno' }, ok: { text: 'Dois anos aprendendo a desfazer o que você sabe fazer. A boticária lhe entrega seu caderno, e uma bênção.', fx: { anos: 2, tecnica: ['mestre_antidotos'], stats: { comp: 2, dao: 1 }, xp: 12 } }, fail: { text: 'A boticária se cansa dos erros e o dispensa, mas com um frasco e uma dica.', fx: { item: ['antidoto_sete_ervas'], stats: { comp: 1 } } } },
+      { text: 'Aprender os Antídotos com a boticária.', check: { stat: ['comp', 'dao'], dif: 3, tag: 'veneno' }, ok: { text: 'Dois anos aprendendo a desfazer o que você sabe fazer. A boticária lhe entrega seu caderno, e uma bênção.', fx: { anos: 2,  stats: { comp: 2, dao: 1 }, xp: 12 } }, fail: { text: 'A boticária se cansa dos erros e o dispensa, mas com um frasco e uma dica.', fx: { item: ['antidoto_sete_ervas'], stats: { comp: 1 } } } },
     ],
   },
 
@@ -257,7 +257,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['bestas'] },
     text: 'Numa clareira, uma fera anciã, mais velha que a história de qualquer vila, observa você em silêncio. Ela fala sem voz: "Você ouve as feras há décadas. Hoje, aprenda a falar de forma que elas obedeçam, sem medo."',
     choices: [
-      { text: 'Aprender a Voz das Feras.', check: { stat: ['esp', 'car', 'dao'], dif: 5, tag: 'besta' }, ok: { text: 'Um som novo sai da sua garganta, baixo, vasto. Pássaros, lobos e serpentes voltam a cabeça. Algo antigo fala por você.', fx: { tecnica: ['voz_das_feras'], stats: { esp: 2, car: 2 }, xp: 18 } }, fail: { text: 'A voz não vem. A fera anciã assente: "Ainda não."', fx: { stats: { esp: 1 } } } },
+      { text: 'Aprender a Voz das Feras.', check: { stat: ['esp', 'car', 'dao'], dif: 5, tag: 'besta' }, ok: { text: 'Um som novo sai da sua garganta, baixo, vasto. Pássaros, lobos e serpentes voltam a cabeça. Algo antigo fala por você.', fx: {  stats: { esp: 2, car: 2 }, xp: 18 } }, fail: { text: 'A voz não vem. A fera anciã assente: "Ainda não."', fx: { stats: { esp: 1 } } } },
     ],
   },
   {
@@ -294,7 +294,7 @@ export const lote9Trilhas: GameEvent[] = [
     cond: { tierMin: 4, tierMax: 8, path: ['demoniaca'] },
     text: 'No altar mais profundo da seita, uma chama preta queima sem lenha. Os Anciãos dizem que ela só se acende para quem já passou do ponto sem retorno. Você sente a chama chamar por você, com a voz de todas as vítimas.',
     choices: [
-      { text: 'Aceitar a Chama do Sangue Negro.', check: { stat: ['fis', 'esp', 'dao'], dif: 5, tag: 'demonio' }, ok: { text: 'A chama negra entra pelo peito e se acomoda no Dantian. Seu poder dispara, e a sombra no seu rosto não sai mais.', fx: { tecnica: ['chama_sangue_negro'], xp: 30, corr: 14, stats: { fis: 2, esp: 2 } } }, fail: { text: 'A chama queima por dentro. Você sobrevive, em ruínas, e com pouco além de dor.', fx: { ferida: 4, corr: 8, xp: 8 } } },
+      { text: 'Aceitar a Chama do Sangue Negro.', check: { stat: ['fis', 'esp', 'dao'], dif: 5, tag: 'demonio' }, ok: { text: 'A chama negra entra pelo peito e se acomoda no Dantian. Seu poder dispara, e a sombra no seu rosto não sai mais.', fx: {  xp: 30, corr: 14, stats: { fis: 2, esp: 2 } } }, fail: { text: 'A chama queima por dentro. Você sobrevive, em ruínas, e com pouco além de dor.', fx: { ferida: 4, corr: 8, xp: 8 } } },
       { text: 'Recusar a chama e sair do altar.', res: { text: 'A chama arde mais forte um instante, depois se aquieta. Algo em você sabe que não foi a última vez.', fx: { stats: { dao: 2 }, corr: -6 } } },
     ],
   },

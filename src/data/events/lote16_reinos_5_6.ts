@@ -32,7 +32,7 @@ export const lote16Reinos56: GameEvent[] = [
     text: 'Um patriarca de uma seita vizinha envia uma carta de duelo, em papel preto e tinta dourada. "Dois nomes grandes demais para um só continente", diz. "Que o monte decida." A carta chega junto com uma multidão que já aposta em quem cai primeiro.',
     choices: [
       { text: 'Aceitar o duelo no monte.', check: { stat: ['fis', 'esp', 'dao'], dif: 2, tag: 'combate' }, ok: { text: 'A luta dura sete dias e uma noite. Ao fim, ele cai de joelhos, e você, de pé, o ajuda a levantar. A lenda é de ambos.', fx: { fama: 22, karma: 3, xp: 10, stats: { dao: 2, fis: 1 } } }, fail: { text: 'Você perde, por um golpe. Ele o poupa, o que é pior que a derrota.', fx: { fama: -6, ferida: 3, stats: { dao: 2 } } } },
-      { text: 'Recusar com cortesia e propor uma troca de ensinamentos.', check: { stat: ['car', 'dao'], dif: 1 }, ok: { text: 'O rival aceita, perplexo. Duas seitas passam a trocar discípulos, e a rivalidade, aos poucos, vira estima.', fx: { fama: 12, karma: 7, stats: { car: 2, comp: 1 } } }, fail: { text: 'O rival entende como covardia. A cidade inteira ri, por um tempo.', fx: { fama: -5, karma: 1 } } },
+      { text: 'Recusar com cortesia e propor uma troca de métodos.', check: { stat: ['car', 'dao'], dif: 1 }, ok: { text: 'O rival aceita, perplexo. Duas seitas passam a trocar discípulos, e a rivalidade, aos poucos, vira estima.', fx: { fama: 12, karma: 7, stats: { car: 2, comp: 1 } } }, fail: { text: 'O rival entende como covardia. A cidade inteira ri, por um tempo.', fx: { fama: -5, karma: 1 } } },
     ],
   },
   {
@@ -169,7 +169,7 @@ export const lote16Reinos56: GameEvent[] = [
     text: 'Um templo inteiro, com pagode e jardim, flutua sobre as nuvens, deslizando devagar. Seus monges, de roupas brancas, não envelhecem. Eles o convidam para sentar numa varanda e provar um chá que nunca esfria.',
     choices: [
       { text: 'Aceitar o convite e ficar um mês.', res: { text: 'O mês vira ano, e o ano vira lição. Quando você desce, o templo some, e o seu coração está mais calmo do que nunca.', fx: { anos: 1, xp: 12, stats: { dao: 3, comp: 1 }, karma: 3 } } },
-      { text: 'Pedir um ensinamento específico.', check: { stat: ['comp', 'dao'], dif: 2, tag: 'mente' }, ok: { text: 'O monge mais velho lhe dá uma frase. A frase, aos poucos, vira técnica.', fx: { tecnica: ['respiracao_cem_ciclos'], xp: 8, stats: { comp: 2 } } }, fail: { text: 'Ele sorri e diz: "Quando você entender a pergunta, volte." O templo se afasta.', fx: { stats: { comp: 1 } } } },
+      { text: 'Pedir um método específico.', check: { stat: ['comp', 'dao'], dif: 2, tag: 'mente' }, ok: { text: 'O monge mais velho lhe dá uma frase. A frase, aos poucos, viro método.', fx: {  xp: 8, stats: { comp: 2 } } }, fail: { text: 'Ele sorri e diz: "Quando você entender a pergunta, volte." O templo se afasta.', fx: { stats: { comp: 1 } } } },
     ],
   },
   {
@@ -225,7 +225,7 @@ export const lote16Reinos56: GameEvent[] = [
     text: 'Você encontra um corredor sem fim, forrado de estantes que contêm todos os nomes de quem já cultivou neste mundo. Seu próprio nome está lá, em muitas linhas, em muitas vidas. Algumas linhas são mais longas que outras; algumas terminam no meio de uma frase.',
     choices: [
       { text: 'Ler a linha da sua vida atual.', res: { text: 'A linha é curta e cheia de espaços em branco. Parece que ainda não foi escrita, ou que alguém a apagou.', fx: { stats: { dao: 2, comp: 2 }, xp: 6 } } },
-      { text: 'Ler as linhas de vidas passadas.', check: { stat: ['dao', 'esp'], dif: 2, tag: 'mente' }, ok: { text: 'Fragmentos de vozes antigas voltam. Uma delas, de você mesmo, dá um conselho que mudará sua próxima respiração.', fx: { tecnica: ['memoria_vida_passada'], stats: { dao: 2, comp: 2 }, xp: 10 } }, fail: { text: 'As vozes se amontoam e o derrubam. Você acorda do lado de fora, com dor de cabeça.', fx: { ferida: 1, corr: 2, stats: { esp: 1 } } } },
+      { text: 'Ler as linhas de vidas passadas.', check: { stat: ['dao', 'esp'], dif: 2, tag: 'mente' }, ok: { text: 'Fragmentos de vozes antigas voltam. Uma delas, de você mesmo, dá um conselho que mudará sua próxima respiração.', fx: {  stats: { dao: 2, comp: 2 }, xp: 10 } }, fail: { text: 'As vozes se amontoam e o derrubam. Você acorda do lado de fora, com dor de cabeça.', fx: { ferida: 1, corr: 2, stats: { esp: 1 } } } },
       { text: 'Apagar uma linha que o assombra.', res: { text: 'A linha some. Algo, em algum lugar, esquece de existir. Você sente um vazio breve, e não sabe de quem.', fx: { karma: -6, stats: { dao: -1 }, xp: 4 } } },
     ],
   },

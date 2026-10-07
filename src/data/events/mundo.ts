@@ -37,7 +37,7 @@ export const mundo: GameEvent[] = [
     text: 'O Pavilhão de Tesouros promove um concurso: quem refinar a melhor pílula de Qi vence um forno raro e a admiração dos presentes.',
     choices: [
       { text: 'Inscrever-se.', check: { stat: 'comp', dif: 2, tag: 'alquimia' }, ok: { text: 'Sua pílula brilha em dourado. A plateia aplaude e o Pavilhão lhe entrega o prêmio.', fx: { fama: 8, pedras: 40, item: ['pilula_qi_maior'], stats: { comp: 1 } } }, fail: { text: 'A pílula racha no último minuto. Você sai com o rosto vermelho, mas aprende bastante.', fx: { xp: 4, fama: -1 } } },
-      { text: 'Assistir e anotar as técnicas dos finalistas.', res: { text: 'Cada alquimista tem um truque; você rouba o melhor deles, com o olhar.', fx: { xp: 8, stats: { comp: 1 } } } },
+      { text: 'Assistir e anotar as método dos finalistas.', res: { text: 'Cada alquimista tem um truque; você rouba o melhor deles, com o olhar.', fx: { xp: 8, stats: { comp: 1 } } } },
     ],
   },
   {

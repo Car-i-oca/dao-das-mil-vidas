@@ -1,4 +1,4 @@
-import type { Item, Technique } from '../../../types';
+import type { Item } from '../../../types';
 import { hash } from '../core';
 import { itemMotif, type Motif } from '../icons';
 import { claro, escuro, mix } from '../cor';
@@ -94,36 +94,6 @@ export function item(it: Item, size: number): string {
   const c = PAL[hash(it.id) % PAL.length];
   const cor = it.kind === 'pilula' || it.kind === 'nucleo' ? c : it.kind === 'artefato' || it.kind === 'anel' ? PAL[(hash(it.id) >>> 3) % PAL.length] : c;
   return svg(64, 64, cartao(GLIFOS[itemMotif(it)](cor, it.grade), cor, it.grade, hash(it.id)), 'art art-item', it.name, size);
-}
-
-/* ---------- Técnicas (selo circular, 64x64) ---------- */
-const TAG: Record<string, (c: string) => string> = {
-  combate: (c) => cel('M14 46L42 14l6 4-28 34z', ACO, { w: 1.8, off: 1.6 }) + cel('M50 46L22 14l-6 4 28 34z', c, { w: 1.8, off: 1.6 }) + estrela(46, 14, 3.4, '#fff'),
-  mente: (c) => cel('M8 32Q32 8 56 32 32 56 8 32z', '#f4f0ff', { w: 1.8, off: 2 }) + `<circle cx="32" cy="32" r="10" fill="${c}" stroke="${OL}" stroke-width="1.8"/><circle cx="32" cy="32" r="4.4" fill="${OL}"/><circle cx="35" cy="29" r="2" fill="#fff"/>` + raios(32, 32, 14, 24, 8, c, 0.6, 1.4),
-  qi: (c) => `<path d="M32 10a22 22 0 1 1-22 22 14 14 0 0 1 28 0 7 7 0 0 1-14 0" fill="none" stroke="${OL}" stroke-width="8.4" stroke-linecap="round"/><path d="M32 10a22 22 0 1 1-22 22 14 14 0 0 1 28 0 7 7 0 0 1-14 0" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>` + estrela(50, 14, 3, '#fff'),
-  formacao: (c) => cel('M32 6l22 12v28L32 58 10 46V18z', mix(c, '#20194a', 0.5), { w: 2, off: 2 }) + `<path d="M32 6v52M10 18l44 28M54 18L10 46" stroke="${c}" stroke-width="1.6" opacity=".9"/><circle cx="32" cy="32" r="7" fill="${c}" stroke="${OL}" stroke-width="1.6"/>`,
-  corpo: (c) => cel('M14 46V30q0-9 9-9h18q9 0 9 9v16q0 8-9 8H23q-9 0-9-8z', c) + `<path d="M23 31v10M32 29v12M41 31v10" stroke="${OL}" stroke-width="2.2" stroke-linecap="round"/>` + brilho('M18 30q1-6 7-7-4 5-4 11z', 0.7) + raios(32, 38, 22, 28, 10, '#fff', 0.5, 1.6),
-  espada: (c) => `<g transform="rotate(40 32 32)">` + cel('M32 4l5 8v32H27V12z', ACO) + `<path d="M32 8v34" stroke="#fff" stroke-width="1.8" opacity=".85"/>` + cel('M22 44h20l-2 4H24z', OURO, { w: 1.6, off: 1.2 }) + cel('M29 48h6v10h-6z', c, { w: 1.6, off: 1.2 }) + `</g>` + linha('M8 20q10 0 16 8M50 46q-8 2-14-4', claro(c, 0.5), 2, 0.7),
-  veneno: (c) => cel('M32 6C44 24 50 32 50 40a18 18 0 0 1-36 0c0-8 6-16 18-34z', c) + `<path d="M22 42a10 10 0 0 0 10 10" fill="none" stroke="#fff" stroke-width="2.2" opacity=".7" stroke-linecap="round"/>` + `<circle cx="38" cy="44" r="3" fill="#fff" opacity=".35"/>` + estrela(48, 14, 3, '#d8ffd0'),
-  besta: (c) => cel('M22 46q0-12 10-12t10 12q0 8-10 8t-10-8z', c) + cel('M12 30a5 6 0 1 0 0.01 0zM24 18a5 6 0 1 0 0.01 0zM40 18a5 6 0 1 0 0.01 0zM52 30a5 6 0 1 0 0.01 0z', c, { w: 1.6, off: 1.2 }),
-  demonio: (c) => cel('M32 56C18 48 14 34 22 20c3 8 8 8 10 0 2 8 7 8 10 0 8 14 4 28-10 36z', c) + cel('M12 14l8 12 2-10zM52 14l-8 12-2-10z', escuro(c, 0.15), { w: 1.6, off: 1.2 }) + `<circle cx="26" cy="40" r="2.6" fill="#fff"/><circle cx="38" cy="40" r="2.6" fill="#fff"/>`,
-  alquimia: (c) => `<path d="M24 20q-5-8 1-14M32 18q-5-9 1-16M40 20q-5-8 1-14" stroke="#ff9a3c" stroke-width="3" fill="none" stroke-linecap="round"/>` + cel('M12 26h40v8c0 12-8 20-20 20S12 46 12 34z', c) + cel('M10 24h44v5H10z', OURO, { w: 1.6, off: 1.2 }) + brilho('M17 32q0-4 4-5-2 4-2 10z', 0.6),
-  forja: (c) => cel('M10 38h44l-6 14H16z', mix(c, '#3a3560', 0.5)) + cel('M18 38V24h28v14', c, { w: 1.8, off: 1.6 }) + `<path d="M26 18l3-10 3 10M34 16l3-8 2 9" fill="#ff9a3c" stroke="${OL}" stroke-width="1.4" stroke-linejoin="round"/>`,
-  fuga: (c) => `<path d="M8 38q14-18 28-8t20-4M8 48q14-18 28-8t20-4" fill="none" stroke="${OL}" stroke-width="6.4" stroke-linecap="round"/><path d="M8 38q14-18 28-8t20-4M8 48q14-18 28-8t20-4" fill="none" stroke="${c}" stroke-width="3.4" stroke-linecap="round"/>` + cel('M46 14l12 6-12 6z', c, { w: 1.6, off: 1.2 }),
-};
-
-export function tech(t: Technique, size: number): string {
-  const g = Math.max(1, Math.min(4, t.grade)), h = hash(t.id);
-  const col = [ACO, VERDE, AZUL, OURO][g - 1] === ACO ? PAL[h % PAL.length] : [ACO, VERDE, AZUL, OURO][g - 1];
-  const tag = t.tags?.find((x) => TAG[x]);
-  const id = uid('t');
-  let o = fundo(id, 64, 64, col, 32, 0.5) + `<circle cx="32" cy="32" r="29.5" fill="none" stroke="${OL}" stroke-width="3"/>`;
-  for (let i = 0; i < g; i++) o += `<circle cx="32" cy="32" r="${29 - i * 2.8}" fill="none" stroke="${col}" stroke-width="${i === 0 ? 2.4 : 1}" opacity="${1 - i * 0.2}"/>`;
-  o += raios(32, 32, 14, 27, 12 + g * 2, '#fff', 0.1, 1.2) + particulas(h, 64, 64, 4 + g, claro(col, 0.6));
-  const glifo = tag ? TAG[tag](col) : cel(`M32 12l${8 + (h % 5)} 14-${8 + (h % 5)} 24-${12 + (h % 4)}-24z`, col) + estrela(32, 30, 4, '#fff');
-  o += `<g transform="translate(32 32) scale(0.62) translate(-32 -32)">${glifo}</g>`;
-  if (g >= 4) o += `<circle cx="32" cy="32" r="31" fill="none" stroke="${OURO}" stroke-width="1.4" stroke-dasharray="2 4" opacity=".9"/>`;
-  return svg(64, 64, o, 'art art-tech', t.name, size);
 }
 
 /* ---------- Trilhas ---------- */

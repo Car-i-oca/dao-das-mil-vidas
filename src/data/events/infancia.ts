@@ -144,7 +144,7 @@ export const infancia: GameEvent[] = [
     cond: { tierMax: 0, ageMin: 10, noFlags: ['despertou'], flags: ['reencarnado'] },
     text: 'Numa noite de febre, flashes de uma vida passada irrompem na sua mente: montanhas de nuvens, um nome esquecido e um método de respiração antigo.',
     choices: [
-      { text: 'Seguir o método da memória.', check: { stat: 'dao', dif: -4 }, ok: { text: 'O corpo jovem aceita a técnica antiga como se sempre a tivesse conhecido. O Qi desperta.', fx: { tier: 1, setFlags: ['despertou'], stats: { comp: 2 }, faccao: 'errante' } }, fail: { text: 'O método é mais difícil do que parecia: o corpo ainda é fraco demais. Mas a lembrança permanece.', fx: { stats: { dao: 1 } } } },
+      { text: 'Seguir o método da memória.', check: { stat: 'dao', dif: -4 }, ok: { text: 'O corpo jovem aceita o método antigo como se sempre a tivesse conhecido. O Qi desperta.', fx: { tier: 1, setFlags: ['despertou'], stats: { comp: 2 }, faccao: 'errante' } }, fail: { text: 'O método é mais difícil do que parecia: o corpo ainda é fraco demais. Mas a lembrança permanece.', fx: { stats: { dao: 1 } } } },
     ],
   },
   {
@@ -152,7 +152,7 @@ export const infancia: GameEvent[] = [
     cond: { tierMax: 0, ageMin: 11, noFlags: ['despertou'], flags: ['sangue_demoniaco'] },
     text: 'Na seita demoníaca, os mais jovens são levados ao Altar do Sangue. Ali, o poder acorda, mas cobra seu preço.',
     choices: [
-      { text: 'Aceitar o poder que sobe pelas veias.', check: { stat: ['fis', 'dao'], dif: -2 }, ok: { text: 'Você sente o poder queimando e algo dentro de você sorri. O Qi desperta, escuro e faminto.', fx: { tier: 1, setFlags: ['despertou', 'membro_demoniaca'], faccao: 'demoniaca', corr: 10, tecnica: ['caminho_do_sangue'] } }, fail: { text: 'O sangue rejeita seu corpo. Cuspindo vermelho, você sobrevive para tentar outra vez.', fx: { ferida: 1, stats: { dao: 1 } } } },
+      { text: 'Aceitar o poder que sobe pelas veias.', check: { stat: ['fis', 'dao'], dif: -2 }, ok: { text: 'Você sente o poder queimando e algo dentro de você sorri. O Qi desperta, escuro e faminto.', fx: { tier: 1, setFlags: ['despertou', 'membro_demoniaca'], faccao: 'demoniaca', corr: 10, stats: { dao: 1 } } }, fail: { text: 'O sangue rejeita seu corpo. Cuspindo vermelho, você sobrevive para tentar outra vez.', fx: { ferida: 1, stats: { dao: 1 } } } },
     ],
   },
   {

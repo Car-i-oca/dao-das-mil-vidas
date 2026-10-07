@@ -1,4 +1,4 @@
-import type { Item, Technique } from '../../../types';
+import type { Item } from '../../../types';
 import { hash } from '../core';
 import { itemMotif, type Motif } from '../icons';
 import { CINZA, PAPEL, TINTA, VERM, arco, lavis, papel, selo, svg, traco as t } from './base';
@@ -45,36 +45,6 @@ export function item(it: Item, size: number): string {
   if (g >= 5) for (let i = 0; i < 9; i++) o += `<circle cx="${6 + ((r >> (i * 2)) & 31) * 1.7}" cy="${6 + ((r >> (i + 3)) & 31) * 1.7}" r="${0.8 + (i % 3) * 0.4}" fill="#d8b040" opacity=".85"/>`;
   o += selo(50, 49, g >= 3 ? 9 : 7, it.id, g >= 4 ? VERM : '#b0494a');
   return svg(64, 64, o, 'art art-item', it.name, size);
-}
-
-/* ---------- Técnicas: círculo de pincel (ensō) que fecha com o grau ---------- */
-const TAG: Record<string, (c: string) => string> = {
-  combate: (c) => t([[14, 50], [50, 14]], 5.4, { seco: true }) + t([[50, 50], [14, 14]], 4, { cor: c }),
-  mente: (c) => t([[8, 32], [32, 14], [56, 32]], 3, { ataque: 0.2 }) + t([[8, 32], [32, 50], [56, 32]], 2.4, { fim: 0.2 }) + lavis(circ(32, 32, 9), c, 0.85) + lavis(circ(32, 32, 4), TINTA, 0.95),
-  qi: (c) => t(arco(32, 32, 20, 20, -1.2, 4.6, 12), 5, { cor: c, ataque: 0.1, fim: 0.1 }) + t(arco(32, 32, 10, 10, 1, 6.4, 8), 3.4, { fim: 0.1 }),
-  formacao: (c) => t([[32, 8], [54, 20], [54, 44], [32, 56], [10, 44], [10, 20], [32, 8]], 3, { fim: 0.9 }) + t([[32, 8], [32, 56]], 1.4, { cor: c }) + t([[10, 20], [54, 44]], 1.4, { cor: c }) + t([[54, 20], [10, 44]], 1.4, { cor: c }),
-  corpo: (c) => lavis('M16 48V30q0-10 10-10h14q10 0 10 10v18q0 6-8 6H24q-8 0-8-6z', c, 0.7) + t([[16, 48], [16, 30], [24, 21], [40, 21]], 3.2) + t([[26, 30], [26, 40]], 2.4) + t([[33, 28], [33, 40]], 2.4) + t([[40, 30], [40, 40]], 2.4),
-  espada: (c) => t([[14, 52], [52, 12]], 4.6, { seco: true, fim: 0.1 }) + t([[18, 36], [30, 48]], 4, { cor: c }) + t([[22, 44], [14, 54]], 3.2, { cor: MARROM }),
-  veneno: (c) => lavis('M32 8C44 26 50 34 50 42a18 18 0 0 1-36 0c0-8 6-16 18-34z', c, 0.8) + t([[32, 8], [14, 40], [22, 54]], 2.6) + t([[32, 8], [50, 40]], 2, { fim: 0.2 }) + t([[22, 40], [24, 48]], 2, { cor: PAPEL }),
-  besta: (c) => lavis('M20 46q0-12 12-12t12 12q0 9-12 9t-12-9z', c, 0.8) + lavis('M10 30a5 6 0 1 0 0.01 0zM22 17a5 6 0 1 0 0.01 0zM38 17a5 6 0 1 0 0.01 0zM50 30a5 6 0 1 0 0.01 0z', c, 0.8) + t([[20, 46], [32, 36], [44, 46]], 2, { fim: 0.9 }),
-  demonio: (c) => t([[32, 56], [18, 42], [22, 24], [30, 30], [32, 12], [34, 30], [42, 24], [46, 42], [32, 56]], 3.4, { cor: c, fim: 0.8 }) + t([[14, 14], [22, 26]], 3, { cor: TINTA }) + t([[50, 14], [42, 26]], 3, { cor: TINTA }),
-  alquimia: (c) => lavis('M14 30h36v8c0 11-7 18-18 18S14 49 14 38z', c, 0.75) + t([[10, 30], [54, 30]], 3.6, { fim: 0.4 }) + t([[24, 24], [21, 14], [26, 6]], 2, { op: 0.6 }) + t([[34, 24], [32, 12], [37, 5]], 2.2, { cor: VERM, op: 0.85 }),
-  forja: (c) => lavis('M10 38h44l-6 14H16z', '#4a4650', 0.8) + t([[10, 38], [54, 38]], 3.6, { fim: 0.5 }) + t([[18, 38], [18, 24], [46, 24], [46, 38]], 2.8, { cor: c }) + t([[28, 18], [31, 8], [35, 18]], 2.2, { cor: VERM }),
-  fuga: (c) => t([[8, 38], [22, 24], [36, 32], [56, 22]], 4.2, { cor: c, seco: true }) + t([[8, 48], [22, 36], [36, 44], [56, 34]], 3, { op: 0.8 }) + t([[46, 14], [58, 20], [46, 26]], 2.4),
-};
-
-export function tech(tc: Technique, size: number): string {
-  const g = Math.max(1, Math.min(4, tc.grade)), h = hash(tc.id), c = PIG[h % PIG.length];
-  const tag = tc.tags?.find((x) => TAG[x]);
-  let o = papel(64, 64, PAPEL, 32);
-  const fecha = g >= 4 ? 6.5 : 3.6 + g * 0.5;
-  o += t(arco(32, 32, 28, 28, -2.3 + (h % 5) * 0.1, -2.3 + fecha, 16), 2.2 + g * 0.9, { ataque: 0.06, fim: g >= 4 ? 0.7 : 0.08, seco: true, seed: tc.id });
-  if (g >= 3) o += t(arco(32, 32, 24.4, 24.4, -1.6, -1.6 + 5.4, 14), 0.9, { op: 0.6, fim: 0.4 });
-  const glifo = tag ? TAG[tag](c) : t([[32, 12], [48, 32], [32, 52], [16, 32], [32, 12]], 3, { cor: c, fim: 0.9 }) + lavis(circ(32, 32, 5), VERM, 0.9);
-  o += `<g transform="translate(32 32) scale(0.56) translate(-32 -32)">${glifo}</g>`;
-  if (g >= 4) for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + 0.3; o += `<circle cx="${32 + Math.cos(a) * 30}" cy="${32 + Math.sin(a) * 30}" r="1.1" fill="#d8b040"/>`; }
-  o += selo(46, 46, 9, tc.id);
-  return svg(64, 64, o, 'art art-tech', tc.name, size);
 }
 
 /* ---------- Trilhas ---------- */

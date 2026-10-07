@@ -19,14 +19,14 @@ const pct = (x: number) => `${(100 * x).toFixed(0)}%`;
 
 interface Row { tier: number; gap: number; chance: number }
 const rows: Row[] = [];
-type Agg = { stats: number[][]; tier: number[]; age: number[]; endings: Record<string, number>; asc: number; chance: Record<string, number[]>; rec: number[] };
+type Agg = { stats: number[][]; tier: number[]; age: number[]; endings: Record<string, number>; asc: number; chance: Record<string, number[]> };
 const perPath: Record<string, Agg> = {};
 /** Vida de exemplo: a primeira que chega ao 6º reino (eventos por reino). */
 let sample: { path: string; byTier: Record<number, string[]> } | null = null;
 
 for (const p of PATHS) {
   if (p.unlock) continue;
-  const agg: Agg = (perPath[p.id] = { stats: [], tier: [], age: [], endings: {}, asc: 0, chance: {}, rec: [] });
+  const agg: Agg = (perPath[p.id] = { stats: [], tier: [], age: [], endings: {}, asc: 0, chance: {} });
   for (let i = 0; i < N; i++) {
     const seed = 5000 + i * 104729;
     const rng = new Rng(seed);
@@ -55,7 +55,6 @@ for (const p of PATHS) {
     agg.stats.push(STAT_KEYS.map((k) => s.stats[k]));
     agg.tier.push(s.tier);
     agg.age.push(s.age);
-    agg.rec.push(s.rec ?? 0);
     agg.endings[s.ending ?? '??'] = (agg.endings[s.ending ?? '??'] ?? 0) + 1;
     if (s.ending === 'ascensao') agg.asc++;
   }
@@ -81,13 +80,13 @@ for (let t = 1; t <= 8; t++) {
   out.push(`| ${t} | ${av.length} | ${sp.length} | ${ex.length} | ${pct(sp.length / av.length)} |`);
 }
 out.push('', `Eventos que valem para 6 reinos ou mais: ${EVENTS.filter((e) => hi(e) - lo(e) >= 5).length} de ${EVENTS.length}.`);
-out.push('', '## Comparação entre trilhas', '', '| Trilha | Reino máx. médio | Idade média | Ascensão | Final mais comum | FIS | ESP | COMP | SOR | CAR | DAO | Recurso médio |', '|---|---|---|---|---|---|---|---|---|---|---|---|');
+out.push('', '## Comparação entre trilhas', '', '| Trilha | Reino máx. médio | Idade média | Ascensão | Final mais comum | FIS | ESP | COMP | SOR | CAR | DAO |', '|---|---|---|---|---|---|---|---|---|---|---|');
 for (const p of PATHS) {
   const a = perPath[p.id];
   if (!a) continue;
   const top = Object.entries(a.endings).sort((x, y) => y[1] - x[1])[0];
   const st = STAT_KEYS.map((_, i) => mean(a.stats.map((x) => x[i])).toFixed(0));
-  out.push(`| ${p.name} | ${mean(a.tier).toFixed(2)} | ${mean(a.age).toFixed(0)} | ${((100 * a.asc) / N).toFixed(1)}% | ${(ENDINGS.find((e) => e.id === top[0])?.name ?? top[0])} ${pct(top[1] / N)} | ${st.join(' | ')} | ${mean(a.rec).toFixed(1)} |`);
+  out.push(`| ${p.name} | ${mean(a.tier).toFixed(2)} | ${mean(a.age).toFixed(0)} | ${((100 * a.asc) / N).toFixed(1)}% | ${(ENDINGS.find((e) => e.id === top[0])?.name ?? top[0])} ${pct(top[1] / N)} | ${st.join(' | ')} |`);
 }
 out.push('', `Escadas: ${PATHS.filter((p) => !p.unlock).map((p) => `${p.name} → ${p.ladder}`).join('; ')}.`);
 const smp = sample as { path: string; byTier: Record<number, string[]> } | null;

@@ -41,7 +41,7 @@ export const lote2Reinos: GameEvent[] = [
     cond: { flags: ['guardiao_ouvido'] },
     text: 'No coração do reino há um salão de pedra clara. No centro, quatro presentes brilham: um pergaminho, uma lanterna, uma semente e um trono vazio. Uma voz diz: "Um só, filho do tempo."',
     choices: [
-      { text: 'O pergaminho: um método de caminhar entre névoas.', res: { text: 'As palavras se imprimem na sua pele em luz. Você aprende o Passo da Névoa.', fx: { tecnica: ['passo_nevoa'], xp: 10, setFlags: ['saiu_com_heranca'] } } },
+      { text: 'O pergaminho: um método de caminhar entre névoas.', res: { text: 'As palavras se imprimem na sua pele em luz. Você aprende o Passo da Névoa.', fx: { stats: { dao: 1 }, xp: 10, setFlags: ['saiu_com_heranca'] } } },
       { text: 'A lanterna: um tesouro de sopro de dragão.', res: { text: 'A lanterna acende sozinha, em dourado. Dentro, uma chama antiga o reconhece.', fx: { item: ['lanterna_dragao'], xp: 10, setFlags: ['saiu_com_heranca'] } } },
       { text: 'A semente: um fruto do jardim dos imortais.', res: { text: 'A semente pulsa. Você a engole inteira e sente o tempo desacelerar nos ossos.', fx: { vida: 30, xp: 20, setFlags: ['saiu_com_heranca'] } } },
       { text: 'O trono: tornar-se o novo Guardião do reino.', check: { stat: ['dao', 'car'], dif: 4 }, ok: { text: 'O trono aceita você. A névoa dourada o envolve, e a porta do reino se fecha. Você nunca mais sairá, e seu nome virará lenda sussurrada.', fx: { fim: 'guardiao' } }, fail: { text: 'O trono rejeita você, devolvendo-o ao vale com uma sacudida. Pelo menos você ainda tem a vida.', fx: { ferida: 2, stats: { dao: 1 }, setFlags: ['saiu_com_heranca'] } } },
@@ -56,7 +56,7 @@ export const lote2Reinos: GameEvent[] = [
     choices: [
       { text: 'Tomar a lança do general.', check: { stat: ['fis', 'dao'], dif: 3, tag: 'combate' }, ok: { text: 'Os soldados de barro se movem, mas o general apenas observa. A lança é sua, e o fardo também: uma dívida de honra que você nunca entendeu direito.', fx: { item: ['espada_aprendiz'], xp: 10, fama: 4, karma: -2, stats: { fis: 1 } } }, fail: { text: 'Os soldados despertam. Você escapa por pouco, sem lança e com hematomas.', fx: { ferida: 3, xp: 3 } } },
       { text: 'Prestar homenagem aos mortos e partir.', res: { text: 'Uma pausa respeitosa. O ar parece mais quente quando você sai.', fx: { karma: 6, stats: { dao: 2 } } } },
-      { text: 'Estudar a formação que mantém os soldados de pé.', check: { stat: ['comp', 'esp'], dif: 3, tag: 'formacao' }, ok: { text: 'Cada soldado é um nó em uma teia. Você desenha tudo e sai com uma lição preciosa.', fx: { xp: 14, stats: { comp: 2 }, tecnica: ['selo_nove_portas'] } }, fail: { text: 'A formação se rearranja. Você foge com anotações incompletas.', fx: { xp: 4, ferida: 1 } } },
+      { text: 'Estudar a formação que mantém os soldados de pé.', check: { stat: ['comp', 'esp'], dif: 3, tag: 'formacao' }, ok: { text: 'Cada soldado é um nó em uma teia. Você desenha tudo e sai com uma lição preciosa.', fx: { xp: 14, stats: { comp: 2 } } }, fail: { text: 'A formação se rearranja. Você foge com anotações incompletas.', fx: { xp: 4, ferida: 1 } } },
     ],
   },
   {
@@ -82,7 +82,7 @@ export const lote2Reinos: GameEvent[] = [
     cond: { tierMin: 3, tierMax: 7 },
     text: 'Uma nascente seca revela uma escada que desce para a escuridão. No fundo, estantes de pedra alinham rolos de bambu intactos, cercados por traças que brilham como estrelas.',
     choices: [
-      { text: 'Ler por semanas, até a luz das traças apagar.', check: { stat: ['comp', 'dao'], dif: 3, tag: 'mente' }, ok: { text: 'Você sai com a cabeça cheia de uma civilização esquecida. Um novo método de cultivo se forma.', fx: { anos: 1, xp: 26, stats: { comp: 3 }, tecnica: ['sutra_espelho'] } }, fail: { text: 'As traças guiam mal. Os rolos se esfarelam, e você aprende só o que sobra.', fx: { anos: 1, xp: 8, stats: { comp: 1 } } } },
+      { text: 'Ler por semanas, até a luz das traças apagar.', check: { stat: ['comp', 'dao'], dif: 3, tag: 'mente' }, ok: { text: 'Você sai com a cabeça cheia de uma civilização esquecida. Um novo método de cultivo se forma.', fx: { anos: 1, xp: 26, stats: { comp: 3 } } }, fail: { text: 'As traças guiam mal. Os rolos se esfarelam, e você aprende só o que sobra.', fx: { anos: 1, xp: 8, stats: { comp: 1 } } } },
       { text: 'Copiar rapidamente o que puder e sair.', res: { text: 'Você leva uma pilha de rolos e algumas lições esparsas.', fx: { xp: 10, stats: { comp: 1 } } } },
     ],
   },
@@ -92,7 +92,7 @@ export const lote2Reinos: GameEvent[] = [
     text: 'Numa montanha oca, uma forja gigantesca ainda conserva brasas. Enigmas gravados em martelos e tenazes guardam o segredo de metais que cantam sob golpes.',
     choices: [
       { text: 'Tentar forjar algo com as brasas antigas.', check: { stat: ['fis', 'comp'], dif: 3 }, ok: { text: 'O metal cede como manteiga sob seu martelo. Você sai com um escudo que parece cantar.', fx: { item: ['escudo_tartaruga', 'espelho_bronze'], xp: 8, stats: { fis: 1 } } }, fail: { text: 'Uma fagulha explosiva queima seu braço. A forja guarda seu segredo.', fx: { ferida: 2, xp: 3 } } },
-      { text: 'Estudar as inscrições nos martelos.', check: { stat: 'comp', dif: 2 }, ok: { text: 'Uma técnica de percepção metálica se revela. Seus golpes ganham ritmo.', fx: { xp: 10, stats: { comp: 1, fis: 1 } } }, fail: { text: 'Os enigmas são impenetráveis. Mas você os copia para tentar de novo.', fx: { xp: 3 } } },
+      { text: 'Estudar as inscrições nos martelos.', check: { stat: 'comp', dif: 2 }, ok: { text: 'Um método de percepção metálica se revela. Seus golpes ganham ritmo.', fx: { xp: 10, stats: { comp: 1, fis: 1 } } }, fail: { text: 'Os enigmas são impenetráveis. Mas você os copia para tentar de novo.', fx: { xp: 3 } } },
     ],
   },
   {
@@ -123,7 +123,7 @@ export const lote2Reinos: GameEvent[] = [
     choices: [
       { text: 'Perguntar: "Qual é o maior perigo da minha jornada?"', res: { text: 'Bai Ze enumera ameaças com precisão cruel. Você sai com uma lista de males a evitar, e a cabeça girando.', fx: { stats: { sor: 3, comp: 2 }, xp: 14 } } },
       { text: 'Perguntar: "Como posso superar meu gargalo?"', res: { text: 'A fera responde em três frases de pedra. Cada uma desmonta uma crença sua. Quando você parte, a barra do cultivo parece mais leve.', fx: { xp: 40, stats: { dao: 2 } } } },
-      { text: 'Perguntar: "Qual é o segredo do Dao?"', check: { stat: ['dao', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'Bai Ze ri baixo. "Você já sabe. Apenas ainda não acredita." Em seu peito, algo se acende.', fx: { tecnica: ['olhar_bai_ze'], xp: 30, stats: { dao: 4, comp: 2 } } }, fail: { text: 'A fera o encara por muito tempo. "Ainda não." Ela some entre as ondas.', fx: { stats: { dao: 2 } } } },
+      { text: 'Perguntar: "Qual é o segredo do Dao?"', check: { stat: ['dao', 'comp'], dif: 6, tag: 'mente' }, ok: { text: 'Bai Ze ri baixo. "Você já sabe. Apenas ainda não acredita." Em seu peito, algo se acende.', fx: {  xp: 30, stats: { dao: 4, comp: 2 } } }, fail: { text: 'A fera o encara por muito tempo. "Ainda não." Ela some entre as ondas.', fx: { stats: { dao: 2 } } } },
     ],
   },
   {
@@ -140,7 +140,7 @@ export const lote2Reinos: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 7, local: ['selva', 'montanha', 'cidade'] },
     text: 'Numa praia, uma ave minúscula leva uma pedrinha no bico do cume da montanha até o mar, e a deixa cair. Voa de volta. Repete. Um pescador explica: "Dizem que ela quer encher o oceano, que matou sua dona. Está nisso há mil anos."',
     choices: [
-      { text: 'Observar a ave por um dia inteiro, em silêncio.', res: { text: 'Ao fim do dia, você entende: não se trata de encher o mar, mas de nunca parar. O ensinamento fica gravado.', fx: { stats: { dao: 3 }, xp: 10, tecnica: ['canto_jingwei'] } } },
+      { text: 'Observar a ave por um dia inteiro, em silêncio.', res: { text: 'Ao fim do dia, você entende: não se trata de encher o mar, mas de nunca parar. O método fica gravado.', fx: { stats: { dao: 3 }, xp: 10 } } },
       { text: 'Ajudar a ave carregando pedras por uma semana.', res: { text: 'Costas doloridas, mãos cortadas. A ave pousa em seu ombro ao fim da semana, e você sente um laço antigo e simples.', fx: { stats: { fis: 1, dao: 2 }, karma: 6, ferida: 1 } } },
       { text: 'Rir da tolice e seguir.', res: { text: 'A ave não se importa. O mar continua cheio, e você continua rindo.', fx: { stats: { dao: -1 } } } },
     ],
@@ -150,7 +150,7 @@ export const lote2Reinos: GameEvent[] = [
     cond: { tierMin: 5 },
     text: 'No extremo noroeste, onde nunca há sol, uma serpente imensa de rosto humano e pele escarlate dorme enrolada em torno de uma montanha. Quando ela abre os olhos, amanhece. Quando os fecha, a noite cai.',
     choices: [
-      { text: 'Esperar em silêncio que ele abra os olhos.', check: { stat: ['dao', 'esp'], dif: 6 }, ok: { text: 'Um dia inteiro de luz cai sobre você. Um olho do dragão o observa por um instante. Uma lanterna de luz nasce na sua mão.', fx: { item: ['lanterna_dragao'], xp: 40, stats: { esp: 3, dao: 3 }, fama: 12 } }, fail: { text: 'A escuridão perpétua devora sua noção de tempo. Você volta após muitos anos, com cabelos brancos e ensinamentos obscuros.', fx: { anos: 5, xp: 15, stats: { dao: 2 } } } },
+      { text: 'Esperar em silêncio que ele abra os olhos.', check: { stat: ['dao', 'esp'], dif: 6 }, ok: { text: 'Um dia inteiro de luz cai sobre você. Um olho do dragão o observa por um instante. Uma lanterna de luz nasce na sua mão.', fx: { item: ['lanterna_dragao'], xp: 40, stats: { esp: 3, dao: 3 }, fama: 12 } }, fail: { text: 'A escuridão perpétua devora sua noção de tempo. Você volta após muitos anos, com cabelos brancos e métodos obscuros.', fx: { anos: 5, xp: 15, stats: { dao: 2 } } } },
       { text: 'Tentar roubar uma escama.', check: { stat: ['fis', 'esp', 'sor'], dif: 7, tag: 'fuga' }, ok: { text: 'Um brilho nas mãos, um rugido distante. Você foge, com uma escama quente como brasa.', fx: { item: ['nucleo_besta_alto'], pedras: 300, karma: -12, ferida: 2 } }, fail: { text: 'Os olhos do dragão se abrem. A luz o cega por meses. Você sobrevive, mas a lição é cruel.', fx: { ferida: 4, anos: 1 } } },
     ],
   },
@@ -190,7 +190,7 @@ export const lote2Reinos: GameEvent[] = [
     text: 'Numa câmara de pedra, o chão pesa mais a cada passo. Gravuras na parede contam: "Quem atravessar sem ajoelhar leva consigo o peso do mundo e a força para carregá-lo."',
     choices: [
       { text: 'Atravessar a câmara a pé.', check: { stat: ['fis', 'dao'], dif: 4, tag: 'corpo' }, ok: { text: 'Cada passo é uma batalha. No fim, o peso se dissolve, e seus ossos zumbem de força nova.', fx: { stats: { fis: 3, dao: 2 }, xp: 14 } }, fail: { text: 'Você se ajoelha no meio do caminho e é expulso pela formação, com ossos doloridos.', fx: { ferida: 3, stats: { fis: 1 } } } },
-      { text: 'Usar o Qi para aliviar o peso.', check: { stat: ['esp', 'comp'], dif: 3 }, ok: { text: 'Você descobre uma técnica de redistribuição. Passa sem esforço, mas sem a mesma lição.', fx: { xp: 10, stats: { esp: 1, comp: 1 } } }, fail: { text: 'A formação detecta o truque e redobra o peso.', fx: { ferida: 2 } } },
+      { text: 'Usar o Qi para aliviar o peso.', check: { stat: ['esp', 'comp'], dif: 3 }, ok: { text: 'Você descobre um método de redistribuição. Passa sem esforço, mas sem a mesma lição.', fx: { xp: 10, stats: { esp: 1, comp: 1 } } }, fail: { text: 'A formação detecta o truque e redobra o peso.', fx: { ferida: 2 } } },
     ],
   },
   {

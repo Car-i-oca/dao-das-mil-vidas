@@ -32,13 +32,13 @@ export const lote27Defeitos: GameEvent[] = [
     id: 'fl_mer_3', title: 'Os Meridianos Escondidos', rarity: 'raro', once: true, weight: 0, cond: F('meridianos_estreitos', 2, 7),
     text: 'Um velho médico, ao examinar seu pulso, ergue as sobrancelhas: "Seus meridianos principais são estreitos, sim. Mas você tem, escondidos, oito meridianos extras que quase ninguém tem. Só ninguém te ensinou a usá-los."',
     choices: [
-      { text: 'Estudar com o velho médico o uso dos meridianos escondidos.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'Em meses, você aprende a passar o Qi por rotas que ninguém mais conhece. O defeito vira atalho.', fx: { setFlags: ['f_me_escondidos'], tecnica: ['agulha_de_alma'], stats: { comp: 2, esp: 1 }, xp: 8, agenda: [{ event: 'fl_mer_4', em: [8, 16] }] } }, fail: { text: 'Os meridianos extras reagem mal. Você passa semanas de cama, com um formigamento que não passa.', fx: { setFlags: ['f_me_escondidos'], ferida: 2, stats: { comp: 1 }, agenda: [{ event: 'fl_mer_4', em: [8, 16] }] } } },
+      { text: 'Estudar com o velho médico o uso dos meridianos escondidos.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'Em meses, você aprende a passar o Qi por rotas que ninguém mais conhece. O defeito vira atalho.', fx: { setFlags: ['f_me_escondidos'],  stats: { comp: 2, esp: 1 }, xp: 8, agenda: [{ event: 'fl_mer_4', em: [8, 16] }] } }, fail: { text: 'Os meridianos extras reagem mal. Você passa semanas de cama, com um formigamento que não passa.', fx: { setFlags: ['f_me_escondidos'], ferida: 2, stats: { comp: 1 }, agenda: [{ event: 'fl_mer_4', em: [8, 16] }] } } },
       { text: 'Recusar: a lentidão já virou o seu caminho.', cond: { flags: ['f_me_paciente'] }, res: { text: 'O velho concorda, com um sorriso curto. Quem já fez as pazes com o fio, não precisa de outra porta.', fx: { stats: { dao: 3 }, setFlags: ['f_me_aceitou'], agenda: [{ event: 'fl_mer_4', em: [8, 16] }] } } },
     ],
   },
   {
     id: 'fl_mer_4', title: 'O Fio Que Corta', rarity: 'raro', once: true, weight: 0, cond: F('meridianos_estreitos', 2, 7),
-    text: 'Um mestre de técnicas de precisão percebe que os seus canais estreitos concentram o Qi num fio finíssimo, perfeito para golpes cirúrgicos. "Outros jogam um rio", diz. "Você pode jogar uma agulha."',
+    text: 'Um mestre de método de precisão percebe que os seus canais estreitos concentram o Qi num fio finíssimo, perfeito para golpes cirúrgicos. "Outros jogam um rio", diz. "Você pode jogar uma agulha."',
     choices: [
       { text: 'Treinar o Golpe do Fio: um único ponto, uma única vez.', check: { stat: ['esp', 'comp', 'dao'], dif: 1, tag: 'combate' }, ok: { text: 'Seu primeiro golpe de fio atravessa uma tábua de ferro. A fama de quem derrota gigantes com uma agulha de Qi começa ali.', fx: { setFlags: ['f_me_golpe_fio'], fama: 10, stats: { esp: 2, dao: 1 }, xp: 6, agenda: [{ event: 'fl_mer_5', em: [10, 22] }] } }, fail: { text: 'O fio vacila, e o golpe falha. Mas o mestre diz: "Quem acerta de primeira não aprende."', fx: { ferida: 2, stats: { esp: 1 }, agenda: [{ event: 'fl_mer_5', em: [10, 22] }] } } },
       { text: 'Recusar: não quer ser lembrado só pelo que o defeito deu.', res: { text: 'O mestre entende, e se despede com cortesia. O defeito segue, sem estandarte.', fx: { stats: { dao: 2 }, agenda: [{ event: 'fl_mer_5', em: [10, 22] }] } } },
@@ -120,7 +120,7 @@ export const lote27Defeitos: GameEvent[] = [
     id: 'fl_qin_3', title: 'A Seita Que Quer a Tempestade', rarity: 'raro', once: true, weight: 0, cond: F('qi_instavel', 2, 7),
     text: 'Uma seita militar descobre que o seu Qi instável pode ser usado como arma: explosões controladas, armadilhas, minas de energia. Oferecem posto, soldo e proteção. Em troca, você seria um explosivo de carne e osso.',
     choices: [
-      { text: 'Aceitar o posto como Arma da Seita.', res: { text: 'As explosões viram técnica, e o soldo, rotina. Mas a seita passa a decidir quando você deve estourar, e isso pesa na alma.', fx: { setFlags: ['f_qi_arma'], pedras: 220, fama: 8, karma: -3, faccao: 'seita', stats: { esp: 2 } } } },
+      { text: 'Aceitar o posto como Arma da Seita.', res: { text: 'As explosões viram método, e o soldo, rotina. Mas a seita passa a decidir quando você deve estourar, e isso pesa na alma.', fx: { setFlags: ['f_qi_arma'], pedras: 220, fama: 8, karma: -3, faccao: 'seita', stats: { esp: 2 } } } },
       { text: 'Recusar e buscar um jeito próprio de usar o Qi.', res: { text: 'Você passa anos desenhando sequências de contenção e liberação. O Qi, antes selvagem, aprende a dançar, e você aprende a dirigir a dança.', fx: { setFlags: ['f_qi_proprio'], stats: { esp: 2, dao: 2 }, xp: 8 } } },
     ],
   },
@@ -128,7 +128,7 @@ export const lote27Defeitos: GameEvent[] = [
     id: 'fl_qin_4', title: 'A Tempestade Dentro', rarity: 'raro', once: true, weight: 0, cond: F('qi_instavel', 2, 7),
     text: 'Numa noite, o Qi chega a um ponto crítico. Um raio de verdade, vindo de nuvem nenhuma, desce sobre o seu pavilhão, e o Qi, em vez de explodir, sobe como espiral. Algo novo, mais fundo, está para acontecer.',
     choices: [
-      { text: 'Abraçar a espiral e deixar o Qi te levar.', check: { stat: ['dao', 'esp'], dif: 2, tag: 'qi' }, ok: { text: 'A espiral cresce, gira, assenta. Quando acaba, você sente o Qi pela primeira vez como parte de si, não como inimigo.', fx: { setFlags: ['f_qi_espiral'], stats: { esp: 3, dao: 2 }, xp: 10, tecnica: ['respiracao_coletiva'], agenda: [{ event: 'fl_qin_5', em: [10, 22] }] } }, fail: { text: 'A espiral se rompe em faíscas. Você acorda chamuscado, vivo, e um pouco mais sábio.', fx: { ferida: 3, stats: { dao: 2 }, agenda: [{ event: 'fl_qin_5', em: [10, 22] }] } } },
+      { text: 'Abraçar a espiral e deixar o Qi te levar.', check: { stat: ['dao', 'esp'], dif: 2, tag: 'qi' }, ok: { text: 'A espiral cresce, gira, assenta. Quando acaba, você sente o Qi pela primeira vez como parte de si, não como inimigo.', fx: { setFlags: ['f_qi_espiral'], stats: { esp: 3, dao: 2 }, xp: 10,  agenda: [{ event: 'fl_qin_5', em: [10, 22] }] } }, fail: { text: 'A espiral se rompe em faíscas. Você acorda chamuscado, vivo, e um pouco mais sábio.', fx: { ferida: 3, stats: { dao: 2 }, agenda: [{ event: 'fl_qin_5', em: [10, 22] }] } } },
       { text: 'Conter o Qi, mesmo que custe a oportunidade.', res: { text: 'A espiral é cortada. Você poupa o pavilhão e perde a chance. Às vezes, ser prudente também tem um preço.', fx: { stats: { dao: 2 }, agenda: [{ event: 'fl_qin_5', em: [10, 22] }] } } },
     ],
   },
@@ -244,7 +244,7 @@ export const lote27Defeitos: GameEvent[] = [
     text: 'Um mestre de renome oferece ensinar você, mas exige que você peça formalmente, de joelhos, diante dos outros alunos. A cerimônia é antiga e dura dois minutos. Seu orgulho dói só de pensar.',
     choices: [
       { text: 'Recusar a cerimônia e perder a chance.', res: { text: 'O mestre assente, sem rancor, e escolhe outro aluno. Você segue sozinho, de cabeça erguida e sem mestre.', fx: { setFlags: ['f_or_sem_mestre'], stats: { dao: 1 }, fama: 2, agenda: [{ event: 'fl_org_3', em: [8, 16] }] } } },
-      { text: 'Ajoelhar-se, engolindo o orgulho.', cond: { flags: ['defeito_superado'] }, res: { text: 'Você se ajoelha, e algo, dentro, se solta. Dois minutos depois, é aluno de um dos maiores mestres do continente.', fx: { tecnica: ['sutra_do_anciao'], stats: { dao: 2, comp: 2 }, fama: 4, agenda: [{ event: 'fl_org_3', em: [8, 16] }] } } },
+      { text: 'Ajoelhar-se, engolindo o orgulho.', cond: { flags: ['defeito_superado'] }, res: { text: 'Você se ajoelha, e algo, dentro, se solta. Dois minutos depois, é aluno de um dos maiores mestres do continente.', fx: {  stats: { dao: 2, comp: 2 }, fama: 4, agenda: [{ event: 'fl_org_3', em: [8, 16] }] } } },
       { text: 'Propor uma cerimônia alternativa, de igual para igual.', check: { stat: ['car', 'comp'], dif: 1 }, ok: { text: 'O mestre, divertido, aceita: uma xícara de chá, sem joelhos. Nasce uma relação diferente, de respeito mútuo.', fx: { setFlags: ['f_or_alternativa'], stats: { car: 2, dao: 1 }, fama: 4, agenda: [{ event: 'fl_org_3', em: [8, 16] }] } }, fail: { text: 'O mestre acha a proposta uma petulância. A porta se fecha, com cortesia.', fx: { fama: -3, stats: { dao: 1 }, agenda: [{ event: 'fl_org_3', em: [8, 16] }] } } },
     ],
   },
@@ -285,9 +285,9 @@ export const lote27Defeitos: GameEvent[] = [
   },
   {
     id: 'fl_dis_2', title: 'A Ideia Que Veio do Nada', rarity: 'raro', once: true, weight: 0, cond: F('distraido', 1, 6),
-    text: 'Em meio a uma conversa, você divaga, e uma ideia cai na sua cabeça, absurda e brilhante: uma forma de misturar duas técnicas que ninguém mistura. Os outros acham graça. Você anota, e os dias seguintes giram em torno dela.',
+    text: 'Em meio a uma conversa, você divaga, e uma ideia cai na sua cabeça, absurda e brilhante: uma forma de misturar duas método que ninguém mistura. Os outros acham graça. Você anota, e os dias seguintes giram em torno dela.',
     choices: [
-      { text: 'Perseguir a ideia até ver se funciona.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'Depois de semanas, a mistura funciona, de um jeito torto e belo. Uma técnica nova nasce, e leva o seu nome.', fx: { setFlags: ['f_di_tecnica'], tecnica: ['respiracao_coletiva'], stats: { comp: 2, esp: 1 }, fama: 6, agenda: [{ event: 'fl_dis_3', em: [8, 16] }] } }, fail: { text: 'A ideia não funciona, e o Qi, bagunçado, se vinga. Mas você aprende o que não fazer, e isso é metade do caminho.', fx: { ferida: 1, stats: { comp: 1 }, agenda: [{ event: 'fl_dis_3', em: [8, 16] }] } } },
+      { text: 'Perseguir a ideia até ver se funciona.', check: { stat: ['comp', 'esp'], dif: 1, tag: 'qi' }, ok: { text: 'Depois de semanas, a mistura funciona, de um jeito torto e belo. Um método novo nasce, e leva o seu nome.', fx: { setFlags: ['f_di_licao'],  stats: { comp: 2, esp: 1 }, fama: 6, agenda: [{ event: 'fl_dis_3', em: [8, 16] }] } }, fail: { text: 'A ideia não funciona, e o Qi, bagunçado, se vinga. Mas você aprende o que não fazer, e isso é metade do caminho.', fx: { ferida: 1, stats: { comp: 1 }, agenda: [{ event: 'fl_dis_3', em: [8, 16] }] } } },
       { text: 'Deixar a ideia de lado: a meditação vem primeiro.', cond: { flags: ['f_di_foco'] }, res: { text: 'A ideia espera, paciente. Aprender a escolher é metade do foco.', fx: { stats: { dao: 2 }, agenda: [{ event: 'fl_dis_3', em: [8, 16] }] } } },
     ],
   },
@@ -303,7 +303,7 @@ export const lote27Defeitos: GameEvent[] = [
     id: 'fl_dis_4', title: 'O Mestre Que Entendeu Você', rarity: 'raro', once: true, weight: 0, cond: F('distraido', 2, 7),
     text: 'Um mestre estranho, famoso por dar aulas de pé num pé só, diz que a sua dispersão é uma forma de atenção: você vê tudo, só não escolhe o que olhar. Ele propõe ensinar a escolher sem calar o resto.',
     choices: [
-      { text: 'Aprender o Olhar Aberto, com o mestre.', check: { stat: ['comp', 'dao'], dif: 1, tag: 'mente' }, ok: { text: 'O mestre ensina a atenção larga: ver o todo, e escolher o ponto. A dispersão, antes inimiga, vira um tipo de visão.', fx: { setFlags: ['f_di_olhar_aberto'], tecnica: ['olho_lotus'], stats: { comp: 2, esp: 2 }, agenda: [{ event: 'fl_dis_5', em: [10, 22] }] } }, fail: { text: 'O mestre elogia o esforço, e manda treinar mais. A mente, teimosa, ainda vagueia, mas agora sabe que há outro jeito.', fx: { stats: { comp: 1, dao: 1 }, agenda: [{ event: 'fl_dis_5', em: [10, 22] }] } } },
+      { text: 'Aprender o Olhar Aberto, com o mestre.', check: { stat: ['comp', 'dao'], dif: 1, tag: 'mente' }, ok: { text: 'O mestre ensina a atenção larga: ver o todo, e escolher o ponto. A dispersão, antes inimiga, vira um tipo de visão.', fx: { setFlags: ['f_di_olhar_aberto'],  stats: { comp: 2, esp: 2 }, agenda: [{ event: 'fl_dis_5', em: [10, 22] }] } }, fail: { text: 'O mestre elogia o esforço, e manda treinar mais. A mente, teimosa, ainda vagueia, mas agora sabe que há outro jeito.', fx: { stats: { comp: 1, dao: 1 }, agenda: [{ event: 'fl_dis_5', em: [10, 22] }] } } },
       { text: 'Recusar: a mente, desse jeito, já funciona.', res: { text: 'O mestre assente. Cada um tem sua forma de ver o mundo, e a sua é peculiar, e basta.', fx: { stats: { dao: 1, comp: 1 }, agenda: [{ event: 'fl_dis_5', em: [10, 22] }] } } },
     ],
   },

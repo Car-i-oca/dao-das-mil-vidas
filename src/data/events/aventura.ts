@@ -58,7 +58,7 @@ export const aventura: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, local: ['selva', 'montanha', 'ruinas'] },
     text: 'Atrás de uma cortina de cipós, uma caverna exala Qi antigo. Nas paredes, runas se acendem quando você se aproxima.',
     choices: [
-      { text: 'Entrar e seguir as runas.', check: { stat: ['comp', 'esp'], dif: 2, tag: 'formacao' }, ok: { text: 'No fundo, um esqueleto sentado segura um anel. A herança de um cultivador esquecido é sua.', fx: { item: ['anel_armazenamento', 'pilula_qi_maior'], tecnica: ['olho_lotus'], xp: 15, setFlags: ['heranca_caverna'] } }, fail: { text: 'As runas explodem em luz. Você escapa, cego por horas.', fx: { ferida: 2, stats: { comp: 1 } } } },
+      { text: 'Entrar e seguir as runas.', check: { stat: ['comp', 'esp'], dif: 2, tag: 'formacao' }, ok: { text: 'No fundo, um esqueleto sentado segura um anel. A herança de um cultivador esquecido é sua.', fx: { item: ['anel_armazenamento', 'pilula_qi_maior'], stats: { dao: 1 }, xp: 15, setFlags: ['heranca_caverna'] } }, fail: { text: 'As runas explodem em luz. Você escapa, cego por horas.', fx: { ferida: 2, stats: { comp: 1 } } } },
       { text: 'Não arriscar. Registrar o local e partir.', res: { text: 'Cavernas assim têm donos pacientes. Você parte, curioso e vivo.', fx: { item: ['mapa_fragmentado'], stats: { dao: 1 } } } },
     ],
   },

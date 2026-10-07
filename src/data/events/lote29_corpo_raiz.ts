@@ -46,15 +46,15 @@ export const lote29CorpoRaiz: GameEvent[] = [
     id: 'cs_esp_1', title: 'A Lâmina Que Nasceu em Você', rarity: 'raro', once: true, weight: 3, cond: C('corpo_espada', 1, 4),
     text: 'Espadas penduradas na parede vibram quando você passa. Numa feira de ferreiros, uma lâmina de três mil anos, trancada em vidro, estremece a ponto de rachar a vitrine. O dono, atônito, pergunta quem você é.',
     choices: [
-      { text: 'Pegar a lâmina que o chamou.', res: { text: 'Ela se encaixa na sua mão como uma costela perdida. Ao tocá-la, uma técnica antiga volta à superfície do seu corpo, sem você ter estudado.', fx: { setFlags: ['cs_esp_lamina'], item: ['lamina_vento_sul'], tecnica: ['intencao_lamina'], stats: { dao: 2, fis: 1 }, agenda: [{ event: 'cs_esp_2', em: [8, 16] }] } } },
+      { text: 'Pegar a lâmina que o chamou.', res: { text: 'Ela se encaixa na sua mão como uma costela perdida. Ao tocá-la, um método antigo volta à superfície do seu corpo, sem você ter estudado.', fx: { setFlags: ['cs_esp_lamina'], item: ['lamina_vento_sul'],  stats: { dao: 2, fis: 1 }, agenda: [{ event: 'cs_esp_2', em: [8, 16] }] } } },
       { text: 'Deixar a lâmina e sair sem dizer nada.', res: { text: 'Você deixa a vitrine rachada para trás. A lâmina, de dentro do vidro, o acompanha com um silvo longo. Uma espada que o escolheu não esquece.', fx: { setFlags: ['cs_esp_recusou'], stats: { dao: 2 }, agenda: [{ event: 'cs_esp_2', em: [8, 16] }] } } },
     ],
   },
   {
     id: 'cs_esp_2', title: 'A Seita das Lâminas Quebradas', rarity: 'raro', once: true, weight: 0, cond: C('corpo_espada', 1, 6),
-    text: 'Uma seita de espadachins, cujos fundadores tinham o seu corpo, sente a sua presença e manda convite: querem que você assuma como herdeiro, aprenda a técnica final e proteja o templo. Mas a técnica final cobra a espada do próprio mestre.',
+    text: 'Uma seita de espadachins, cujos fundadores tinham o seu corpo, sente a sua presença e manda convite: querem que você assuma como herdeiro, aprenda o método final e proteja o templo. Mas o método final cobra a espada do próprio mestre.',
     choices: [
-      { text: 'Aceitar o posto de herdeiro e aprender a técnica final.', res: { text: 'Anos de treino, uma noite de cerimônia. A técnica é sua, e a lâmina do velho mestre, quebrada em dois, repousa a seus pés.', fx: { setFlags: ['cs_esp_herdeiro'], tecnica: ['espada_corta_ceu'], faccao: 'seita', stats: { dao: 3, fis: 1 }, fama: 8 } } },
+      { text: 'Aceitar o posto de herdeiro e aprender o método final.', res: { text: 'Anos de treino, uma noite de cerimônia. O método agora é seu, e a lâmina do velho mestre, quebrada em dois, repousa a seus pés.', fx: { setFlags: ['cs_esp_herdeiro'],  faccao: 'seita', stats: { dao: 3, fis: 1 }, fama: 8 } } },
       { text: 'Recusar: a espada que nasceu em você não tem seita.', res: { text: 'A seita aceita, sem honra e sem rancor. Você segue com a espada que nasceu em seu corpo, e sem herança que obrigue.', fx: { stats: { dao: 2, sor: 1 }, fama: 3 } } },
     ],
   },
