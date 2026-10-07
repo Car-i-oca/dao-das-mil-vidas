@@ -3,7 +3,7 @@
 Jogo de texto de cultivação (xianxia / wuxia / murim) em português do Brasil.
 
 > **Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.** O repositório é público para consulta e para distribuir o jogo; não há licença aberta (ver `LICENSE`, `docs/autoria.md` e `docs/licencas.md`).
- Sua vida avança por eventos aleatórios; escolhas e testes de sorte decidem o rumo; sua trilha de cultivo nasce de cenas da própria história; você envelhece, morre e herda algo para a próxima vida.
+ Sua vida avança por eventos aleatórios; escolhas e testes de D20 com atributos, equipamento e companheiros decidem o rumo; sua trilha de cultivo nasce de cenas da própria história; você envelhece, morre e herda algo para a próxima vida.
 
 ## Rodar no computador
 ```bash
@@ -43,15 +43,14 @@ O save fica no navegador ou no app (localStorage), separado entre site, PWA e AP
 | `npm run impacto -- 50` | verifica o impacto das escolhas: escolhas sem marca, flags nunca lidas, mínimos por talento/defeito/origem/raiz/constituição, semelhança entre vidas (`docs/impacto.md`; `--baseline` fixa o "antes") |
 | `npm run galeria` | gera `docs/galeria.html` com todos os ícones, retratos e cenários |
 | `npm run e2e:arte -- manhwa` | tira prints da galeria de arte de um estilo (`manhwa`, `tinta` ou `pixel`) a 390 px (precisa de `npm run preview -- --port 4173`) |
-| `npm run e2e:estilo` | troca de estilo pela interface, começa uma vida e toca um duelo em cada estilo |
-| `npm run e2e:duelo` | teste de navegador dos duelos animados (precisa de `npm run preview -- --port 4173`) |
+| `npm run e2e:estilo` | testa a tela inicial de áudio, o layout fixo 35/35/30 e os estilos (precisa de `npm run preview -- --port 4173`) |
 | `npm run registro` | gera, em `registro/` (fora do git), o .zip do código-fonte e o hash SHA-512 para o registro no INPI (`docs/registro-inpi.md`) |
 
 ## Estrutura
 ```
 src/engine/   motor do jogo (sem DOM; usado pelo jogo e pelo simulador)
 src/data/     conteúdo: eventos, itens, técnicas, reinos, finais, trilhas
-src/ui/       interface mobile; art/ (três estilos de arte gerados por código: manhwa, tinta e pixel 16-bit), duelo.ts (cena animada), galeria.ts (página de teste da arte)
+src/ui/       interface mobile, rolagem D20/modal, áudio Web Audio; art/ (três estilos de arte gerados por código: manhwa, tinta e pixel 16-bit), galeria.ts (página de teste da arte)
 sim/          simulador de vidas e validador de conteúdo
 docs/         pesquisa.md, design.md, eventos.md (como escrever eventos), lotes.md, balanceamento.md
 public/       manifest, service worker, ícones do PWA e as primeiras amostras de estilo de arte (estilos.html, só registro)
@@ -68,12 +67,12 @@ Três estilos, todos desenhados por código (sem imagens de terceiros): **Manhwa
 - **Técnicas:** têm estágios de domínio (Iniciante a Perfeição), o mundo reage a elas, podem ser fundidas e algumas vêm de seitas extintas.
 - **Marcas da vida:** decisões que gravam flags viram linhas do que você deixou para trás, e rendem um pouco de Herança.
 - **Missões e progressão da seita:** contratos aceitos na aba Missões acompanham caçadas, coletas e receitas; torneios podem elevar seu rank e abrir o Pavilhão VIP.
-- **Chefões regionais:** sobreviva a encontros num bioma para atrair seu guardião; chefões têm padrões de ataque e podem resistir a efeitos de status.
-- **Técnicas marciais e status:** técnicas ativas gastam Qi, entram em recarga e podem aplicar efeitos; o Qi recupera com a passagem dos turnos.
+- **Chefões regionais:** sobreviva a encontros num bioma para atrair seu guardião; chefões elevam a dificuldade dos testes e aparecem antes da escolha de lutar ou fugir.
+- **Técnicas marciais:** técnicas aprendidas oferecem bônus de poder nas rolagens de combate; não usam turnos, Qi ou recargas.
 - **Equipamentos, companheiros e facções:** armas e armaduras ocupam slots e alteram atributos; até dois aliados dão bônus passivos, enquanto reputação com três facções pode atrair apoio ou emboscadas.
 - **Sagas de aventura:** mapas e escolhas iniciam cadeias de eventos; testes usam bônus do equipamento e dos companheiros, e desfechos podem conceder peças complementares. A Forja Silenciosa é o arco de referência.
 - **Mundo dinâmico:** o dia, horário e clima variam durante a jornada; chuva, nevasca e noite alteram testes, com proteção contra frio fornecida por equipamento.
-- **Aventura mobile:** arte 16-bit em painel próprio, narrativa e escolhas com rolagens de D20 em combate; música e efeitos só são iniciados após a interação inicial do jogador.
+- **Aventura mobile:** layout fixo com arte 16-bit, narrativa com rolagem interna e escolhas sempre visíveis; todos os testes usam D20. BGM e SFX sintetizados só iniciam após a interação inicial do jogador.
 
 ## Adicionar eventos
 Leia `docs/eventos.md`. Em resumo: crie ou edite um arquivo em `src/data/events/`, exporte um array de eventos e registre em `src/data/events/index.ts`. Depois rode `npm run validate` e `npm run sim -- 4000`.

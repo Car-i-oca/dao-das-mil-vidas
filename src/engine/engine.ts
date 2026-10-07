@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank, EquipmentSlot, GuildFaction, CombatRoll, Weather,
+  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank, EquipmentSlot, GuildFaction, DiceRoll, Weather,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -10,7 +10,6 @@ import { TECHNIQUES } from '../data/techniques';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
-import { buildCombat } from './combate';
 import { FOE, foeFor } from '../data/combates';
 import { eventTypeOf } from '../data/event-type';
 import { REGION_POOLS } from '../data/regions';
@@ -146,22 +145,39 @@ function weatherPenalty(s: State, stat: StatKey): number {
   return 0;
 }
 
-function combatModifier(s: State, check: Check, ev?: GameEvent, techniqueId?: string): { modifier: number; dc: number; stat: StatKey } {
+function diceCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: string): Omit<DiceRoll, 'd20' | 'total'> {
   const keys = Array.isArray(check.stat) ? check.stat : [check.stat];
   const stat = keys[0];
   const rating = keys.reduce((sum, key) => sum + eff(s, key) + weatherPenalty(s, key), 0) / keys.length;
-  const skill = check.tag && PATH[s.path]?.tags.includes(check.tag) ? 2 + Math.floor(recStage(s) / 2) : 0;
-  const trained = check.tag ? s.techniques.reduce((sum, id) => sum + (TECH[id]?.tags?.includes(check.tag!) ? Math.max(1, Math.floor((TECH[id].grade ?? 1) / 2)) : 0), 0) : 0;
+  const statusBonus = (s.statuses ?? []).reduce((sum, status) => {
+    if (status.id === 'focused') return sum + status.potency;
+    if (status.id === 'frozen') return sum - status.potency;
+    return sum;
+  }, 0);
+  const isCombat = check.tag === 'combate';
+  const skill = check.tag && PATH[s.path]?.tags.includes(check.tag)
+    ? (isCombat ? 2 : 1) + Math.floor(recStage(s) / 2)
+    : 0;
+  const weakness = check.tag && PATH[s.path]?.fraco?.includes(check.tag) ? -1.5 : 0;
+  const trained = check.tag ? s.techniques.reduce((sum, id) =>
+    sum + (TECH[id]?.tags?.includes(check.tag!) ? TECH[id].grade + [0, 0, 1, 1, 2][dominioEstagio(s, id)] : 0), 0) : 0;
   const technique = techniqueId ? TECH[techniqueId]?.martial?.power ?? 0 : 0;
+  const dc = checkDifficulty(s, check, ev) + (isCombat && ev?.combate?.boss ? 2 : 0) + (isNight(s) ? 2 : 0);
+  const playerPower = isCombat ? eff(s, 'fis') + eff(s, 'esp') + eff(s, 'dao') + s.tier * 3 : undefined;
+  const enemyPower = isCombat ? dc * 2 : undefined;
+  const powerBonus = playerPower !== undefined && enemyPower !== undefined
+    ? Math.max(-4, Math.min(4, Math.trunc((playerPower - enemyPower) / 6)))
+    : 0;
   const guildRep = s.guild ? factionReputation(s, s.guild) : 0;
-  const guildBonus = guildRep >= 30 ? 2 : guildRep <= -30 ? -2 : 0;
-  const modifier = Math.floor((rating - 10) / 3) + skill + trained + Math.floor(technique / 2) + guildBonus;
-  const dc = checkDifficulty(s, check, ev) + (ev?.combate?.boss ? 2 : 0) + (isNight(s) ? 2 : 0);
-  return { modifier, dc, stat };
+  const guildBonus = isCombat ? (guildRep >= 30 ? 2 : guildRep <= -30 ? -2 : 0) : 0;
+  const modifier = Math.floor((rating + statusBonus - 10) / 3) + skill + Math.floor(trained / 3)
+    + Math.floor(technique / 2) + guildBonus + powerBonus + weakness
+    + Math.round((s.legacyBonus.luck ?? 0) * 0.16) - Math.round(s.wounds * 0.6) - (s.dif ?? 0) * 2;
+  return { modifier, dc, stat, ...(playerPower !== undefined ? { playerPower, enemyPower } : {}) };
 }
 
-export function combatCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: string): Omit<CombatRoll, 'd20' | 'total'> {
-  return combatModifier(s, check, ev, techniqueId);
+export function combatCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: string): Omit<DiceRoll, 'd20' | 'total'> {
+  return diceCheckPreview(s, check, ev, techniqueId);
 }
 
 function xpMult(s: State): number {
@@ -359,37 +375,10 @@ export function recStage(s: State): number {
 }
 
 export function checkChance(s: State, ch: Check, ev?: GameEvent, techniqueId?: string): number {
-  if (ch.tag === 'combate') {
-    const { modifier, dc } = combatModifier(s, ch, ev, techniqueId);
-    const firstRegularHit = Math.max(2, Math.ceil(dc - modifier));
-    const regularHits = Math.min(18, Math.max(0, 20 - firstRegularHit));
-    return (1 + regularHits) / 20;
-  }
-  const keys = Array.isArray(ch.stat) ? ch.stat : [ch.stat];
-  let total = keys.reduce((a, k) => a + eff(s, k), 0) / keys.length;
-  total += keys.reduce((sum, key) => sum + weatherPenalty(s, key), 0) / keys.length;
-  total += (s.statuses ?? []).filter((status) => status.id === 'focused').reduce((sum, status) => sum + status.potency, 0);
-  total -= (s.statuses ?? []).filter((status) => status.id === 'frozen').reduce((sum, status) => sum + status.potency, 0);
-  if (ch.tag) {
-    if (PATH[s.path].tags.includes(ch.tag)) total += 1 + Math.floor(recStage(s) / 2);
-    if (PATH[s.path].fraco?.includes(ch.tag)) total -= 1.5;
-    for (const t of s.techniques) {
-      const tech = TECH[t];
-      if (tech?.tags?.includes(ch.tag)) total += tech.grade + [0, 0, 1, 1, 2][dominioEstagio(s, t)];
-    }
-  }
-  const technique = techniqueId ? TECH[techniqueId]?.martial : undefined;
-  const techniquePower = technique?.power ?? 0;
-  const foeId = s.current?.foe ?? (ev ? foeFor(ev.id, ev.title, ev.text, ev.combate?.oponente) : undefined);
-  const statusBonus = technique?.targetStatus && !FOE[foeId ?? '']?.immunities?.includes(technique.targetStatus.id)
-    ? technique.targetStatus.potency
-    : 0;
-  const bossPenalty = ev?.combate?.boss ? 2 : 0;
-  const p = 0.5 + (total - checkDifficulty(s, ch, ev) + techniquePower + statusBonus - bossPenalty) * 0.035 + (eff(s, 'sor') - 10) * 0.004 - s.wounds * 0.03 + s.legacyBonus.luck * 0.008 - (s.dif ?? 0) * 0.06;
-  // Ameaças de reinos abaixo do seu ficam fáceis: quanto maior a diferença de reino, maior o piso.
-  const gap = s.tier - threatTier(s, ch, ev);
-  const floor = gap >= 4 ? 0.95 : gap === 3 ? 0.88 : gap === 2 ? 0.78 : 0;
-  return Math.min(0.95, Math.max(0.05, floor, p + Math.max(0, gap) * 0.04));
+  const { modifier, dc } = diceCheckPreview(s, ch, ev, techniqueId);
+  const firstRegularHit = Math.max(2, Math.ceil(dc - modifier));
+  const regularHits = Math.min(18, Math.max(0, 20 - firstRegularHit));
+  return (1 + regularHits) / 20;
 }
 
 /* ---------- Criação ---------- */
@@ -459,7 +448,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     items: ['espada_ferro_viagem', 'manto_peles'], techniques: path.tecnica ? [path.tecnica] : [], names, scheduled: [], seen: {}, log: [],
     counts: {}, world: null, nextWorldAt: 24 + rng.int(0, 30),
     equipment: { rightWeapon: 'espada_ferro_viagem', armor: 'manto_peles' }, companions: [], factionReputation: {}, day: 1, hour: 8, weather: 'sunny',
-    turn: 0, current: null, qi: 8, techniqueCooldowns: {}, statuses: [], result: null, ending: null, endingText: null,
+    turn: 0, current: null, statuses: [], result: null, ending: null, endingText: null,
     found: { items: ['espada_ferro_viagem', 'manto_peles'], techs: path.tecnica ? [path.tecnica] : [] },
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
@@ -850,10 +839,7 @@ export interface View {
 export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
 
 function availableMartialTechniques(s: State): string[] {
-  return s.techniques.filter((id) => {
-    const martial = TECH[id]?.martial;
-    return !!martial && (s.qi ?? 8) >= martial.qiCost && (s.techniqueCooldowns?.[id] ?? 0) <= 0;
-  });
+  return s.techniques.filter((id) => !!TECH[id]?.martial);
 }
 
 export function visibleChoices(s: State): Visible[] {
@@ -898,6 +884,30 @@ export function visibleChoices(s: State): Visible[] {
       })),
     ];
   });
+  if (eventType === 'combat' && !out.some((entry) => entry.choice?.check?.tag === 'combate')) {
+    const fight: Choice = {
+      text: 'Enfrentar o inimigo',
+      check: { stat: ['fis', 'esp'], tag: 'combate' },
+      ok: { text: 'Seu golpe decisivo faz o inimigo recuar.', fx: { fama: 1 } },
+      fail: { text: 'O inimigo vence a troca e deixa um ferimento.', fx: { ferida: 1 } },
+    };
+    out.unshift({ choice: fight });
+    for (const id of selectedMartial) {
+      out.splice(1 + selectedMartial.indexOf(id), 0, {
+        choice: { ...fight, activeTechnique: id, text: `${fight.text} · ${TECH[id].name}` },
+      });
+    }
+  }
+  if (eventType === 'combat' && !out.some((entry) => entry.choice?.check?.tag === 'fuga')) {
+    out.push({
+      choice: {
+        text: 'Fugir',
+        check: { stat: ['fis', 'sor'], tag: 'fuga', dif: -1 },
+        ok: { text: 'Você encontra uma abertura e escapa do confronto.' },
+        fail: { text: 'A tentativa de fuga é interrompida por um golpe.', fx: { ferida: 1 } },
+      },
+    });
+  }
   if (!out.length) out.push({ choice: { text: 'Seguir em frente.', res: { text: 'Você deixa o momento passar.' } } });
   return out;
 }
@@ -934,11 +944,14 @@ export function view(s: State): View {
   const ev = EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
-    const vc: ViewChoice = { text: fill(s, c.text), selo: choiceBadge(c), check: c.check, activeTechnique: c.activeTechnique };
+    const actionLabel = c.check?.tag === 'combate' ? '[Lutar] '
+      : c.check?.tag === 'fuga' ? '[Fugir] '
+        : c.activeTechnique ? '[Técnica] ' : '';
+    const vc: ViewChoice = { text: `${actionLabel}${fill(s, c.text)}`, selo: choiceBadge(c), check: c.check, activeTechnique: c.activeTechnique };
     if (c.check) vc.chance = checkChance(s, c.check, ev, c.activeTechnique);
     if (c.activeTechnique) {
       const martial = TECH[c.activeTechnique]?.martial;
-      if (martial) vc.note = `${martial.qiCost} Qi · ${martial.cooldown} turno(s) de recarga`;
+      if (martial) vc.note = `+${martial.power} poder na rolagem`;
     }
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
@@ -1047,9 +1060,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
       eventTypeOf(ev) !== 'combat' ||
       v.choice.check?.tag !== 'combate' ||
       !s.techniques.includes(v.choice.activeTechnique) ||
-      !technique ||
-      (s.qi ?? 8) < technique.qiCost ||
-      (s.techniqueCooldowns?.[v.choice.activeTechnique] ?? 0) > 0
+      !technique
     ) return;
   }
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
@@ -1090,25 +1101,17 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const previousItems = [...s.items];
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
   const martial = c.activeTechnique ? TECH[c.activeTechnique]?.martial : undefined;
-  if (c.activeTechnique && martial) {
-    s.qi = Math.max(0, (s.qi ?? 8) - martial.qiCost);
-    s.techniqueCooldowns ??= {};
-    s.techniqueCooldowns[c.activeTechnique] = martial.cooldown;
-    addLog(s, `Técnica usada: ${TECH[c.activeTechnique].name}.`);
-  }
+  if (c.activeTechnique && martial) addLog(s, `Técnica usada: ${TECH[c.activeTechnique].name}.`);
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
-  let roll: CombatRoll | undefined;
+  let roll: DiceRoll | undefined;
   if (c.check) {
     const chance = checkChance(s, c.check, ev, c.activeTechnique);
-    let success: boolean;
-    if (c.check.tag === 'combate') {
-      const preview = combatModifier(s, c.check, ev, c.activeTechnique);
-      const d20 = rng.int(1, 20);
-      const total = d20 + preview.modifier;
-      success = d20 === 20 || (d20 !== 1 && total >= preview.dc);
-      roll = { ...preview, d20, total };
-    } else success = rng.chance(chance);
+    const preview = diceCheckPreview(s, c.check, ev, c.activeTechnique);
+    const d20 = rng.int(1, 20);
+    const total = d20 + preview.modifier;
+    const success = d20 === 20 || (d20 !== 1 && total >= preview.dc);
+    roll = { ...preview, d20, total };
     // Domínio: cada teste bem-sucedido treina as técnicas da mesma etiqueta; opções exclusivas de técnica treinam a própria técnica.
     if (c.check.tag) for (const t of s.techniques) if (TECH[t]?.tags?.includes(c.check.tag)) addDominio(s, t, success ? 1 : 0);
     if (success && c.check.tag && PATH[s.path]?.tags.includes(c.check.tag) && PATH[s.path].rec && rng.chance(0.25)) s.rec = (s.rec ?? 0) + 1;
@@ -1125,29 +1128,15 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.seen[ev.id] = s.age;
   s.counts ??= {};
   s.counts[ev.id] = (s.counts[ev.id] ?? 0) + 1;
-  const foeId = s.current?.foe ?? (ev.combate?.oponente ?? (c.check?.tag === 'combate' ? foeFor(ev.id, ev.title, ev.text) : undefined));
-  const combat = check && ((c.check?.tag === 'combate') || ev.combate)
-    ? buildCombat(s, s.current?.foe ? { ...ev, combate: { ...ev.combate, oponente: s.current.foe } } : ev, check.success, out.fx?.ferida ?? 0, choiceBadge(c), c.activeTechnique)
-    : undefined;
-  if (combat?.patternTriggered && !check?.success) {
-    out = { ...out, fx: { ...out.fx, ferida: (out.fx?.ferida ?? 0) + 1 } };
-    addLog(s, 'O padrão de ataque do chefão culmina num golpe devastador.');
-  }
+  const foeId = s.current?.foe ?? (ev.combate?.oponente ?? (eventTypeOf(ev) === 'combat' ? foeFor(ev.id, ev.title, ev.text) : undefined));
   const txt = fill(s, out.alt?.length ? rng.pick([out.text, ...out.alt]) : out.text);
-  const rollText = roll ? `[Teste de ${STAT_NAMES[roll.stat]}: ${roll.d20} ${roll.modifier >= 0 ? '+' : '−'} ${Math.abs(roll.modifier)} = ${roll.total} vs CD ${roll.dc}] ` : '';
-  s.result = { text: `${rollText}${txt}`, check, ...(roll ? { roll } : {}), ...(combat ? { combate: combat } : {}) };
+  s.result = { text: txt, check, ...(roll ? { roll } : {}) };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
   if (check && c.check?.tag === 'combate' && s.guild) {
     s.factionReputation ??= {};
     const delta = check.success ? 2 : -3;
     s.factionReputation[s.guild] = Math.max(-100, Math.min(100, (s.factionReputation[s.guild] ?? 0) + delta));
-  }
-  if (check?.success && martial?.status) applyFx(s, { status: [martial.status] }, rng);
-  if (check?.success && martial?.targetStatus) {
-    const target = foeId ? FOE[foeId] : undefined;
-    if (target?.immunities?.includes(martial.targetStatus.id)) addLog(s, `${target.name} é imune a ${martial.targetStatus.id}.`);
-    else addLog(s, `${TECH[c.activeTechnique!]?.name} afeta ${target?.name ?? 'o adversário'} com ${martial.targetStatus.id}.`);
   }
   if (!s.ending && s.place === encounterPlace && REGION_POOLS[encounterPlace]) {
     s.regionalEncounters ??= {};
@@ -1179,12 +1168,6 @@ function advance(s: State, rng: Rng) {
     s.weather = rng.pick(weather);
   }
   s.wounds = Math.max(0, s.wounds - Math.floor(dt * 0.4 + rng.next()));
-  s.qi = Math.min(10, (s.qi ?? 8) + 2);
-  s.techniqueCooldowns ??= {};
-  for (const id of Object.keys(s.techniqueCooldowns)) {
-    s.techniqueCooldowns[id] = Math.max(0, s.techniqueCooldowns[id] - 1);
-    if (!s.techniqueCooldowns[id]) delete s.techniqueCooldowns[id];
-  }
   s.statuses ??= [];
   for (const status of s.statuses) {
     if (status.id === 'poisoned' || status.id === 'bleeding' || status.id === 'burning') {
@@ -1419,4 +1402,18 @@ export function useItem(s: State, id: string, rng: Rng): string | null {
   const msg = `Usou ${it.name}.`;
   addLog(s, msg);
   return msg;
+}
+
+/** Permite consumir um item como ação de encontro, sem aplicar a resolução de uma luta por turnos. */
+export function useItemInEncounter(s: State, id: string, rng: Rng): boolean {
+  const event = s.current ? EVENT[s.current.id] : undefined;
+  if (!event || eventTypeOf(event) !== 'combat') return false;
+  const message = useItem(s, id, rng);
+  if (!message) return false;
+  s.turn++;
+  s.seen[event.id] = s.age;
+  s.counts ??= {};
+  s.counts[event.id] = (s.counts[event.id] ?? 0) + 1;
+  s.result = { text: `${message} Você aproveita o instante para se preparar.` };
+  return true;
 }

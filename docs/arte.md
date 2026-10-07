@@ -4,9 +4,9 @@ Toda a arte é **desenhada por código** (SVG e pixel art em `src/ui/art/`), sem
 
 ## Como funciona
 - `estilo.ts`: tipo `Estilo` (`manhwa` | `tinta` | `pixel`), estilo ativo e o contrato `Pacote` (item, técnica, trilha, reino, retrato, cenário, final, lutador do jogador, oponente).
-- `index.ts`: fachada. `main.ts` e `duelo.ts` só chamam `itemIcon`, `portraitSvg`, `sceneSvg`…; a fachada escolhe o desenho do estilo ativo e, se um estilo não desenha algo, cai na arte "clássica" original (`icons.ts`, `portrait.ts`, `scenes.ts`, `lutadores.ts`, que também guardam os dados compartilhados: motivos dos itens, trilhas e oponentes).
+- `index.ts`: fachada. `main.ts` só chama `itemIcon`, `portraitSvg`, `sceneSvg`…; a fachada escolhe o desenho do estilo ativo e, se um estilo não desenha algo, cai na arte "clássica" original (`icons.ts`, `portrait.ts`, `scenes.ts`, `lutadores.ts`, que também guardam os dados compartilhados: motivos dos itens, trilhas e oponentes).
 - Trocar de estilo refaz a tela na hora (toda a interface é redesenhada a cada ação). `amostraDe()` mostra a prévia de cada estilo nas opções sem trocar o ativo.
-- Teste: `?arte=<estilo>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores>` abre a galeria interna daquele estilo; `node tools/e2e/arte.mjs <estilo> [seções] [pasta]` tira prints a 390 px; `node tools/e2e/estilo.mjs` troca de estilo pela interface, começa uma vida e toca um duelo em cada um.
+- Teste: `?arte=<estilo>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores>` abre a galeria interna daquele estilo; `node tools/e2e/arte.mjs <estilo> [seções] [pasta]` tira prints a 390 px; `node tools/e2e/estilo.mjs` verifica a tela inicial de áudio, o layout de aventura e a troca de estilo.
 
 ## Os estilos
 **Manhwa** (`manhwa/`): cara de web novel atual. Contorno firme, cel-shading com gradiente, brilho especular, luz de contorno colorida pela aura do reino, círculos mágicos atrás dos retratos (mais anéis e runas a cada reino), partículas, vinheta e raridade por moldura neon (grau 4 ganha cantoneiras, grau 5 ganha coroa). Retratos com olhos grandes e brilhantes, cabelo em camadas com mechas e acessórios por trilha.
@@ -22,4 +22,4 @@ Toda a arte é **desenhada por código** (SVG e pixel art em `src/ui/art/`), sem
 Itens: moldura por grau (1 cinza, 2 bronze, 3 jade, 4 azul, 5 ouro; no tinta, o grau 5 ganha folhas de ouro). Técnicas: anéis e cor crescem com o grau. Cada item tem cor e detalhes fixos por `hash(id)`. Os finais têm um motivo próprio (sol, lâminas, raio, chama, fio, árvore, montanha, pagode, moeda, roda, caldeirão, garra, vaso, estrada, vazio, livro, sino, olho, rio, trono, mão, coração) e cada final de traço de personagem aponta para um deles em `scenes.ts`.
 
 ## Onde aparece
-HUD (retrato), cartão do evento (cenário + retrato do NPC citado), Status (emblemas, técnicas), Mochila e Códice (ícones), tela final (cartão + retrato) e duelos (cenário, lutadores e efeitos).
+HUD (retrato), cartão do evento (cenário + retrato do NPC citado), encontros (cenário + retratos do jogador e do inimigo), Status (emblemas, técnicas), Mochila e Códice (ícones), e tela final (cartão + retrato).

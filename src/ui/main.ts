@@ -1,13 +1,13 @@
 import './style.css';
 import { Rng } from '../engine/rng';
 import {
-  newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, buyUpgrade,
+  newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
   realmOf, ladderOf, eff, cultivationRate, recStage, EVENT, dominioEstagio, DOMINIO_NOMES, DOMINIO_LIMITES, virtudeDominante, PATH, ORIGIN, TALENT, FLAW, ITEM, TECH, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, acceptQuest, abandonQuest, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, joinGuild, factionReputation, combatCheckPreview,
   type Creation,
 } from '../engine/engine';
 import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
 import { ORIGINS, TALENTS } from '../data/character';
-import type { Change, EquipmentSlot, GuildFaction, Meta, State, UiNotification } from '../types';
+import type { Change, DiceRoll, EquipmentSlot, GuildFaction, Meta, State, UiNotification } from '../types';
 import { TECHNIQUES } from '../data/techniques';
 import { ITEMS } from '../data/items';
 import { WORLD } from '../data/mundo';
@@ -19,7 +19,6 @@ import { itemIcon, techIcon, pathIcon, realmIcon, definirEstilo, estiloValido, E
 import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { hash } from './art';
-import { playDuel } from './duelo';
 import { FOES, foeFor } from '../data/combates';
 import { QUESTS } from '../data/quests';
 import { COMPANIONS } from '../data/companions';
@@ -29,9 +28,9 @@ const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.
 
 /* ---------- Persistência ---------- */
 const KEY = 'dao-mil-vidas-save-v1';
-interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number; duelos: boolean }
+interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0, duelos: x?.duelos ?? true };
+  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -67,6 +66,8 @@ let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | 
 let audioStarted = false;
 let audioGateError = '';
 let audioStarting = false;
+let diceModal: { roll: DiceRoll; combat: boolean; success: boolean; face: number; settled: boolean } | null = null;
+let diceTimer = 0;
 
 const app = document.getElementById('app')!;
 
@@ -168,6 +169,50 @@ function render() {
     case 'end': renderEnd(); break;
     case 'meta': renderMeta(); break;
   }
+  if (diceModal) app.insertAdjacentHTML('beforeend', diceModalHtml(diceModal));
+}
+
+function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
+  const { roll } = modal;
+  const result = modal.settled ? `${roll.d20} ${roll.modifier >= 0 ? '+' : '−'} ${Math.abs(roll.modifier)} = ${roll.total}` : '…';
+  const combat = modal.combat && roll.enemyPower !== undefined
+    ? `<div class="dice-power"><span>Seu poder <b>${roll.playerPower}</b></span><span>Inimigo <b>${roll.enemyPower}</b></span></div>`
+    : '';
+  return `<div class="dice-overlay" role="dialog" aria-modal="true" aria-label="Resultado da rolagem">
+    <div class="dice-card ${modal.settled ? (modal.success ? 'success' : 'failure') : ''}">
+      <span class="dice-kicker">${modal.combat ? 'CONFRONTO' : 'TESTE DE ATRIBUTO'}</span>
+      <div class="dice-face" aria-live="polite">${modal.settled ? roll.d20 : modal.face}</div>
+      <h2>${modal.settled ? (modal.success ? 'Sucesso' : 'Falha') : 'O destino decide'}</h2>
+      <p class="dice-equation">${result}<span> vs CD ${roll.dc}</span></p>
+      <p class="dice-stat">${STAT_NAMES[roll.stat]} · modificador de atributos, equipamento e cultivo</p>
+      ${combat}
+      ${modal.settled ? '<button class="btn primary" data-act="roll-close">Ver consequência</button>' : '<div class="dice-wait">Rolando…</div>'}
+    </div>
+  </div>`;
+}
+
+function showDiceModal(s: State) {
+  const roll = s.result?.roll;
+  if (!roll) return;
+  window.clearInterval(diceTimer);
+  diceModal = { roll, combat: roll.enemyPower !== undefined, success: !!s.result?.check?.success, face: 1, settled: false };
+  playSfx('roll');
+  render();
+  const timerStarted = performance.now();
+  diceTimer = window.setInterval(() => {
+    if (!diceModal) { window.clearInterval(diceTimer); return; }
+    if (performance.now() - timerStarted >= 900) {
+      window.clearInterval(diceTimer);
+      diceModal.face = roll.d20;
+      diceModal.settled = true;
+      if (diceModal.combat) playSfx(diceModal.success ? 'victory' : 'defeat');
+      render();
+      return;
+    }
+    diceModal.face = 1 + Math.floor(Math.random() * 20);
+    const face = app.querySelector<HTMLElement>('.dice-face');
+    if (face) face.textContent = String(diceModal.face);
+  }, 65);
 }
 
 function renderHome() {
@@ -231,7 +276,7 @@ function hudHtml(s: State): string {
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
       <div class="row between"><span class="name">${esc(s.name)}${alcunhaHtml(s)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}${s.world ? ` · <span style="color:var(--gold)">Era: ${esc(WORLD[s.world.id].name)}</span>` : ''}</div>
-      <div class="hud-resources"><span>Dia ${s.day ?? 1} · ${String(s.hour ?? 8).padStart(2, '0')}:00</span><span>${weatherLabel(s.weather)}</span><span>Qi marcial: ${s.qi ?? 8}/10</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
+      <div class="hud-resources"><span>Dia ${s.day ?? 1} · ${String(s.hour ?? 8).padStart(2, '0')}:00</span><span>${weatherLabel(s.weather)}</span><span>Reputação: ${s.reputation ?? 0}</span>${sectRankOf(s) ? `<span>Seita: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
       <div class="bar age"><i style="width:${ageRatio * 100}%"></i></div>
       </div></div>
@@ -284,14 +329,13 @@ function weatherLabel(weather?: State['weather']): string {
 }
 
 function adventureArt(s: State, eventId: string, title: string, eventType?: string): string {
-  const script = s.result?.combate;
   const event = EVENT[eventId];
-  const foeId = script?.foe ?? s.current?.foe ?? event?.combate?.oponente
+  const foeId = s.current?.foe ?? event?.combate?.oponente
     ?? (eventType === 'combat' && event ? foeFor(event.id, event.title, event.text) : undefined);
-  const duel = (eventType === 'combat' || !!script) && foeId && pixelArt.player && pixelArt.foe
-    ? `<div class="combat-pair"><div class="combatant"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(s.name)}">${pixelArt.player(s.path, s.tier)}</svg><div class="hp-track"><i style="width:${script?.fim.p ?? 100}%"></i></div><small>${esc(s.name)}</small></div><b>VS</b><div class="combatant"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(FOE_NAMES[foeId] ?? foeId)}"><g transform="translate(120 0) scale(-1 1)">${pixelArt.foe(foeId)}</g></svg><div class="hp-track enemy"><i style="width:${script?.fim.f ?? 100}%"></i></div><small>${esc(FOE_NAMES[foeId] ?? foeId)}</small></div></div>`
+  const encounter = eventType === 'combat' && foeId && pixelArt.player && pixelArt.foe
+    ? `<div class="encounter-pair"><div class="encounter-fighter player-fighter"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(s.name)}">${pixelArt.player(s.path, s.tier)}</svg><small>${esc(s.name)}</small></div><b>VS</b><div class="encounter-fighter"><svg viewBox="0 0 120 140" role="img" aria-label="${esc(FOE_NAMES[foeId] ?? foeId)}"><g transform="translate(120 0) scale(-1 1)">${pixelArt.foe(foeId)}</g></svg><small>${esc(FOE_NAMES[foeId] ?? foeId)}</small></div></div>`
     : '';
-  return `<section class="adventure-art">${sceneFor(s, eventId)}${duel}<div class="art-caption"><span class="badge">${weatherLabel(s.weather)} · Dia ${s.day ?? 1}</span><h2>${esc(title)}</h2></div></section>`;
+  return `<section class="adventure-art">${sceneFor(s, eventId)}${encounter}<div class="art-caption"><span class="badge">${weatherLabel(s.weather)} · Dia ${s.day ?? 1}</span><h2>${esc(title)}</h2></div></section>`;
 }
 
 function lifeHtml(s: State): string {
@@ -301,16 +345,22 @@ function lifeHtml(s: State): string {
   const title = v.kind === 'event' ? v.title : (s.ending ? ENDING[s.ending]?.name ?? 'O destino se revela' : 'Consequências');
   const eventType = v.eventType ?? EVENT[eventId]?.type;
   const chk = s.result?.check;
+  const combatItems = eventType === 'combat'
+    ? [...new Set(s.items)].filter((id) => ITEM[id]?.use).map((id) => {
+      const item = ITEM[id];
+      return `<div class="choice combat-item-choice" data-act="use-combat-item" data-id="${id}" role="button" tabindex="0" aria-label="Usar ${esc(item.name)}"><span>${itemIcon(item, 24)} Usar ${esc(item.name)}</span><span class="note">Preparação</span></div>`;
+    }).join('')
+    : '';
   const choicesHtml = v.kind === 'result' || v.kind === 'ending'
-    ? `${chipsHtml(s.result?.changes)}${s.result?.roll ? `<div class="dice-result">D20 ${s.result.roll.d20} ${s.result.roll.modifier >= 0 ? '+' : '−'} ${Math.abs(s.result.roll.modifier)} = ${s.result.roll.total} · CD ${s.result.roll.dc}</div>` : ''}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
+    ? `${chipsHtml(s.result?.changes)}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
     : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
-      const preview = c.check?.tag === 'combate' ? combatCheckPreview(s, c.check, EVENT[eventId], c.activeTechnique) : null;
+      const preview = c.check ? combatCheckPreview(s, c.check, EVENT[eventId], c.activeTechnique) : null;
       const rollPrompt = preview ? `[Teste de ${STAT_NAMES[preview.stat]} · D20 ${preview.modifier >= 0 ? '+' : '−'}${Math.abs(preview.modifier)} vs CD ${preview.dc}] ` : '';
       return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(rollPrompt + c.text)}">
         <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(rollPrompt + c.text)}</span>
         <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${preview ? '<span class="dice-icon">D20</span>' : c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
       </div>`;
-    }).join('')}`;
+    }).join('')}${combatItems}`;
   return `
     <div class="adventure-layout">
       ${adventureArt(s, eventId || 'x', title, eventType)}
@@ -397,10 +447,7 @@ function statusHtml(s: State): string {
     ...Object.entries(t.stats ?? {}).map(([k, v]) => `${(v as number) > 0 ? '+' : ''}${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`),
     ...(t.xpMult && t.xpMult !== 1 ? [`cultivo +${Math.round((t.xpMult - 1) * 100)}%`] : []),
     ...(t.tags?.length ? [`bônus em testes de ${t.tags.join(', ')} (+${t.grade})`] : []),
-    ...(t.martial ? [
-      `técnica ativa: ${t.martial.qiCost} Qi · recarga ${t.martial.cooldown} turno(s)`,
-      ...((s.techniqueCooldowns?.[t.id] ?? 0) > 0 ? [`disponível em ${s.techniqueCooldowns![t.id]} turno(s)`] : []),
-    ] : []),
+    ...(t.martial ? [`técnica ativa: +${t.martial.power} poder na rolagem`] : []),
   ].join(' · ');
   const techs = s.techniques.map((id) => { const t = TECH[id]; return `<div class="tech tech-ico"><div class="ico">${techIcon(t, 44)}</div><div><span class="pill g${t.grade}">${esc(t.name)}</span> <span class="muted small">${GRADE[t.grade]}</span> <span class="dom">${dominioHtml(s, t.id)}</span><div class="small">${esc(t.desc)}</div>${t.origem ? `<div class="muted small">Origem: ${esc(t.origem)}</div>` : ''}<div class="muted small">${esc(techEffects(t))}</div></div></div>`; }).join('') || '<span class="muted">Nenhuma ainda</span>';
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
@@ -619,7 +666,7 @@ function renderMeta() {
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${FONT_NAMES.map((n, i) => `<button class="btn ${save.settings.font === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="font" data-i="${i}">${n}</button>`).join('')}</div></div>
       <div class="card"><div class="muted small">VELOCIDADE DO TEXTO</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${SPEED_NAMES.map((n, i) => `<button class="btn ${save.settings.speed === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="speed" data-i="${i}">${n}</button>`).join('')}</div></div>
-      <div class="card"><div class="muted small">DUELOS ANIMADOS</div><div class="row" style="flex-wrap:wrap;margin-top:8px"><button class="btn ${save.settings.duelos ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="duelos" data-i="1">Ligados</button><button class="btn ${!save.settings.duelos ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="duelos" data-i="0">Desligados</button></div><div class="muted small" style="margin-top:6px">Uma cena curta que encena as lutas. Não muda o resultado; dá para pular a qualquer momento.</div></div>
+      <div class="card"><div class="muted small">SISTEMA DE TESTES</div><p class="small">Toda escolha com teste é resolvida com um D20, atributos, equipamento, cultivo e companheiros. O resultado aparece antes da consequência narrativa.</p></div>
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
@@ -650,6 +697,7 @@ app.addEventListener('click', (ev) => {
   const target = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!target) return;
   const act = target.dataset.act!;
+  if (diceModal && act !== 'roll-close') return;
   if (act === 'start-audio') {
     if (audioStarting) return;
     audioStarting = true;
@@ -673,6 +721,11 @@ app.addEventListener('click', (ev) => {
   playSfx('tap');
   const s = save.run;
   switch (act) {
+    case 'roll-close':
+      window.clearInterval(diceTimer);
+      diceModal = null;
+      render();
+      break;
     case 'skip': skipTyper(); break;
     case 'home': screen = 'home'; render(); break;
     case 'new': newCreation(); screen = 'create'; render(); break;
@@ -724,11 +777,16 @@ app.addEventListener('click', (ev) => {
       break;
     case 'choose':
       if (!s) break;
+      {
+        const previousWounds = s.wounds;
       withRng(s, (r) => choose(s, Number(target.dataset.i), r));
       flushEngineNotifications(s);
       persist();
-      if (s.result?.combate && save.settings.duelos) playDuel(s.result.combate, { nome: s.name, onDone: () => render() });
-      else render();
+        if (s.result?.roll) {
+          showDiceModal(s);
+          if (s.wounds > previousWounds) playSfx('impact');
+        } else render();
+      }
       break;
     case 'next':
       if (!s) break;
@@ -748,13 +806,20 @@ app.addEventListener('click', (ev) => {
       if (s.ending) { s.result = { text: 'Seu corpo não resistiu.' }; tab = 'aventura'; }
       render();
       break;
+    case 'use-combat-item':
+      if (!s) break;
+      if (withRng(s, (r) => useItemInEncounter(s, target.dataset.id!, r))) {
+        flushEngineNotifications(s);
+        persist();
+        render();
+      }
+      break;
     case 'buy': {
       const u = UPGRADES.find((x) => x.id === target.dataset.id)!;
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }
     case 'estilo': if (estiloValido(target.dataset.id)) { save.settings.estilo = target.dataset.id; applySettings(); persist(); render(); } break;
-    case 'duelos': save.settings.duelos = target.dataset.i === '1'; persist(); render(); break;
     case 'speed': save.settings.speed = Number(target.dataset.i); persist(); render(); break;
     case 'theme': save.settings.theme = target.dataset.id as Settings['theme']; applySettings(); persist(); render(); break;
     case 'font': save.settings.font = Number(target.dataset.i); applySettings(); persist(); render(); break;
@@ -808,19 +873,6 @@ render();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-}
-
-/** Depuração: ?duelo=<oponente>&trilha=<id>&reino=<n>&derrota=1 toca um duelo de exemplo. */
-{
-  const q = new URLSearchParams(location.search);
-  const f = q.get('duelo');
-  if (f) {
-    const win = !q.get('derrota');
-    const beats = win
-      ? [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 20 }, { a: 'p' as const, mov: 'Técnica Secreta', tec: true, dano: 30 }, { a: 'f' as const, mov: 'Ataque', dano: 0, esq: true }, { a: 'p' as const, mov: 'Golpe Final', dano: 40, crit: true }]
-      : [{ a: 'p' as const, mov: 'Golpe de Teste', dano: 25 }, { a: 'f' as const, mov: 'Ataque', dano: 35 }, { a: 'f' as const, mov: 'Golpe Final', dano: 45, crit: true }];
-    setTimeout(() => playDuel({ foe: f, foeName: (FOE_NAMES[f] ?? f), scene: q.get('cenario') ?? 'selva', vitoria: win, desfecho: win ? 'vitoria' : ((q.get('desfecho') as 'derrota' | 'fuga' | 'salvo') ?? 'derrota'), beats, fim: win ? { p: 50, f: 0 } : { p: 20, f: 45 }, fraseFim: 'tomba', path: q.get('trilha') ?? 'espada', tier: Number(q.get('reino') ?? 2) }, { nome: 'Teste', onDone: () => { document.title = 'duelo-fim'; } }), 300);
-  }
 }
 
 /** Depuração: ?arte=<pixel|manhwa|tinta>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores> */

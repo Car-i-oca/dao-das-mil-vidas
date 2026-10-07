@@ -23,7 +23,7 @@ Depois de escrever, rode `npm run sim` — o relatório lista eventos que nunca 
 ```
 
 Sorte (`sor`) aumenta o peso de eventos raros e lendários.
-O catálogo final infere `type` quando omitido. Declare-o explicitamente em eventos de loja, alquimia ou combate sempre que o contexto não puder ser inferido com segurança. Opções de combate injetadas por moldes devem usar `requiresEventType: 'combat'`; a engine oculta essas opções fora do contexto permitido e também valida a escolha ao executá-la.
+O catálogo final infere `type` quando omitido. Declare-o explicitamente em eventos de loja, alquimia ou combate sempre que o contexto não puder ser inferido com segurança. Opções de combate injetadas por moldes devem usar `requiresEventType: 'combat'`; a engine oculta essas opções fora do contexto permitido e também valida a escolha ao executá-la. Eventos de combate sempre exibem uma opção para lutar e outra para fugir.
 
 ## Condições (`cond`)
 
@@ -62,8 +62,8 @@ Eventos narrativos com escolhas próprias não recebem opções globais de traç
 - `stat`: um atributo ou uma lista (usa a média). Atributos: `fis esp comp sor car dao`.
 - `dif`: dificuldade **relativa ao reino**. 0 = normal, +3/+4 = difícil, −2/−3 = fácil. (Dificuldade real = `8 + reino×6 + dif`.)
 - `tag`: opcional. Técnicas e trilhas com a mesma tag dão bônus (`combate`, `espada`, `corpo`, `qi`, `alquimia`, `formacao`, `mente`, `fuga`, `social`, `demonio`...).
-- Chance = `0,5 + (atributo + bônus − dificuldade) × 0,035 + ajuste de Sorte − ferimentos×0,03`, entre 5% e 95%. O jogador vê a chance no botão.
-- Testes com `tag: 'combate'` usam um D20: modificador de atributo, equipamento, companheiros, trilha e facção contra uma CD. Chuva reduz Espírito; noite favorece inimigos furtivos e nevasca penaliza quem não usa proteção contra frio.
+- Todo teste usa um D20: `d20 + modificador >= CD`; 1 natural falha e 20 natural tem sucesso. A interface anima o dado e mostra modificador, CD e resultado antes da consequência narrativa.
+- O modificador incorpora atributos efetivos (atributos base, equipamento, artefatos passivos e companheiros), trilha, técnicas, facção e condições do personagem. Em combate, o poder de combate derivado dos atributos/equipamento/companheiros ajusta a rolagem contra o poder do inimigo. Chuva reduz Espírito; noite favorece inimigos furtivos e nevasca penaliza quem não usa proteção contra frio.
 
 ## Efeitos (`fx`)
 
@@ -109,7 +109,7 @@ O personagem não escolhe a trilha na criação. Depois do despertar, o motor s�
 
 ## Combate visual (campo `combate`)
 
-Qualquer teste com `tag: 'combate'` (ou qualquer teste de um evento com `combate`) gera um **roteiro de combate** (`src/engine/combate.ts`) guardado em `state.result.combate`. A interface (`src/ui/duelo.ts`) encena o roteiro como uma cena de 5 a 15 segundos; o **resultado já foi decidido pelo motor**, então o equilíbrio não muda.
+Os testes, narrativos e de combate, são resolvidos pelo mesmo D20 na Engine. Em encontros de combate, o jogador vê o inimigo antes de agir e escolhe lutar, fugir ou uma das opções específicas do evento/técnicas disponíveis. O resultado da rolagem é mostrado num modal animado; não há sequência de turnos ou segunda resolução visual do combate.
 
 ```ts
 {

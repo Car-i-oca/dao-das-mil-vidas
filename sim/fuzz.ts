@@ -39,8 +39,15 @@ for (let i = 0; i < N; i++) {
       if (v.kind === 'event') {
         if (!v.choices.length) { note(`evento ${s.current?.id}: sem opções visíveis`); break; }
         if (v.choices.every((c) => c.disabled)) note(`evento ${s.current?.id}: todas as opções desabilitadas`);
+        if (v.eventType === 'combat') {
+          if (!v.choices.some((c) => c.text.startsWith('[Lutar]'))) note(`encontro ${s.current?.id}: sem ação de luta`);
+          if (!v.choices.some((c) => c.text.startsWith('[Fugir]'))) note(`encontro ${s.current?.id}: sem ação de fuga`);
+        }
         const open = v.choices.map((_, k) => k).filter((k) => !v.choices[k].disabled);
-        choose(s, open.length ? bot.pick(open) : 0, rng);
+        const selected = open.length ? bot.pick(open) : 0;
+        const selectedChoice = v.choices[selected];
+        choose(s, selected, rng);
+        if (selectedChoice.check && !s.result?.roll) note(`evento ${s.current?.id}: teste não gerou D20`);
         turns++;
         check(s, `evento ${s.current?.id ?? '?'}`);
         // usa itens consumíveis ao acaso

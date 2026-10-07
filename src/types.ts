@@ -19,12 +19,14 @@ export interface Companion {
   price: number;
 }
 
-export interface CombatRoll {
+export interface DiceRoll {
   d20: number;
   modifier: number;
   total: number;
   dc: number;
   stat: StatKey;
+  playerPower?: number;
+  enemyPower?: number;
 }
 
 export interface QuestObjective {
@@ -195,7 +197,7 @@ export interface Choice {
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
   custo?: number;
-  /** Id da técnica ativa escolhida para este teste de combate. */
+  /** Id da técnica ativa escolhida para este teste de dados. */
   activeTechnique?: string;
   /** Estado de missão rastreado na UI/engine. */
   questAction?: { type: 'accept' | 'abandon'; questId?: string };
@@ -226,7 +228,7 @@ export interface GameEvent {
   escala?: boolean;
   /** Cena de passagem de tempo: não precisa de consequência própria. */
   passagem?: boolean;
-  /** Marca o evento como luta: tipo de oponente e cenário do duelo animado (opcionais; há inferência). */
+  /** Marca o evento como encontro com inimigo (oponente e dificuldade de chefe opcionais). */
   combate?: { oponente?: string; oponentes?: string[]; cenario?: string; boss?: boolean };
   /** Anos mínimos antes de repetir (padrão: 8). */
   cooldown?: number;
@@ -299,13 +301,9 @@ export interface Technique {
   stats?: Partial<Stats>;
   xpMult?: number;
   tags?: string[];
-  /** Técnica marcial selecionável em encontros de combate. */
+  /** Técnica de combate disponível para somar poder à rolagem em um encontro. */
   martial?: {
-    qiCost: number;
-    cooldown: number;
     power: number;
-    status?: StatusEffect;
-    targetStatus?: StatusEffect;
   };
   /** Seita ou escola de origem (método de seita extinta): quem a reconhece, a cobiça ou a quer de volta. */
   origem?: string;
@@ -430,14 +428,10 @@ export interface State {
   turn: number;
   /** Evento atual (null quando em resultado/final). */
   current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
-  /** Qi disponível para técnicas marciais; opcional para compatibilidade com saves antigos. */
-  qi?: number;
-  /** Recargas restantes, em turnos de jogo, por técnica marcial. */
-  techniqueCooldowns?: Record<string, number>;
   /** Efeitos temporários e sua duração restante em turnos. */
   statuses?: StatusEffect[];
   /** Resultado exibido após uma escolha. */
-  result: { text: string; check?: { chance: number; success: boolean }; roll?: CombatRoll; changes?: Change[]; combate?: import('./engine/combate').CombatScript } | null;
+  result: { text: string; check?: { chance: number; success: boolean }; roll?: DiceRoll; changes?: Change[] } | null;
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
   /** Pontos do recurso próprio da trilha. */

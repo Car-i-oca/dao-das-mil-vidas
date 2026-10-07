@@ -70,7 +70,7 @@ for (const e of EVENTS) {
   }
 }
 // Leituras fora dos eventos: motor, interface e dados (finais, conquistas, origens).
-const srcFiles = ['src/engine/engine.ts', 'src/engine/combate.ts', 'src/ui/main.ts', 'src/data/endings.ts', 'src/data/character.ts', 'src/data/mundo.ts'];
+const srcFiles = ['src/engine/engine.ts', 'src/ui/main.ts', 'src/data/endings.ts', 'src/data/character.ts', 'src/data/mundo.ts'];
 const code = srcFiles.filter(existsSync).map((f) => readFileSync(f, 'utf8')).join('\n');
 const codeRead = (f: string) => code.includes(`'${f}'`) || code.includes(`"${f}"`);
 const unreadFlags = [...written.keys()].filter((f) => !read.has(f) && !codeRead(f) && !MARCAS_VIDA[f]);

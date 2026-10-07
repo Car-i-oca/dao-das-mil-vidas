@@ -1,8 +1,5 @@
-import type { StatusEffect } from '../types';
-
 /**
- * Oponentes dos duelos animados. A animação só encena o resultado que o motor já decidiu
- * (ver src/engine/combate.ts); nada aqui altera o equilíbrio.
+ * Identidade e arte dos oponentes mostrados antes da resolução de um encontro por dados.
  */
 export interface Foe {
   id: string;
@@ -14,12 +11,6 @@ export interface Foe {
   /** Frase de derrota dele. */
   down: string;
   scene: string;
-  /** Statuses que não afetam este oponente (relevante para técnicas que acertam o alvo). */
-  immunities?: StatusEffect['id'][];
-  /** Ataque especial emitido a cada Nª investida do oponente no roteiro. */
-  attackPattern?: { everyTurns: number; move: string; damageMultiplier: number };
-  /** Rivais cultivadores espelham o reino e as técnicas marciais do jogador. */
-  mirrorCultivator?: boolean;
 }
 
 export const FOES: Foe[] = [
@@ -35,27 +26,12 @@ export const FOES: Foe[] = [
   { id: 'tigre', name: 'Tigre de Listras Brancas', moves: ['Garrada', 'Salto do Tigre', 'Rugido', 'Mordida Fatal'], finisher: 'Bote Final', down: 'recua, rosnando', scene: 'montanha' },
   { id: 'dragao', name: 'Dragão Jovem', moves: ['Sopro de Fogo', 'Cauda de Trovão', 'Garras de Nuvem', 'Rugido do Céu'], finisher: 'Tempestade Dragônica', down: 'sobe aos céus, vencido', scene: 'ceu' },
   { id: 'raio', name: 'Tribulação do Céu', moves: ['Raio Roxo', 'Trovão Duplo', 'Chuva de Faíscas', 'Fúria das Nuvens'], finisher: 'Raio Final', down: 'dispersa-se em nuvens calmas', scene: 'ceu' },
-  { id: 'chefe_selva', name: 'Tigre Ancião das Raízes', moves: ['Garras de Raiz', 'Bote do Guardião', 'Uivo da Floresta', 'Cauda Sísmica'], finisher: 'Devorar o Núcleo', down: 'cai, e a floresta enfim volta a respirar', scene: 'selva', immunities: ['poisoned'], attackPattern: { everyTurns: 3, move: 'Rugido Sísmico em Área', damageMultiplier: 1.8 } },
-  { id: 'guardiao_ferro', name: 'Guardião da Forja Invernal', moves: ['Martelo de Geada', 'Círculo de Escamas', 'Estilhaço de Qi', 'Investida de Aço'], finisher: 'Nevasca de Ferro', down: 'se ajoelha e deixa o núcleo cair na neve', scene: 'gelo', immunities: ['frozen'], attackPattern: { everyTurns: 3, move: 'Avalanche da Forja', damageMultiplier: 1.7 } },
-  { id: 'rival_seita', name: 'Rival do Pavilhão Interno', moves: ['Palma de Qi', 'Lâmina Espelhada', 'Selo de Duelo', 'Passo da Nuvem'], finisher: 'Técnica Final do Pavilhão', down: 'saúda você com respeito e aceita a derrota', scene: 'seita', mirrorCultivator: true },
+  { id: 'chefe_selva', name: 'Tigre Ancião das Raízes', moves: ['Garras de Raiz', 'Bote do Guardião', 'Uivo da Floresta', 'Cauda Sísmica'], finisher: 'Devorar o Núcleo', down: 'cai, e a floresta enfim volta a respirar', scene: 'selva' },
+  { id: 'guardiao_ferro', name: 'Guardião da Forja Invernal', moves: ['Martelo de Geada', 'Círculo de Escamas', 'Estilhaço de Qi', 'Investida de Aço'], finisher: 'Nevasca de Ferro', down: 'se ajoelha e deixa o núcleo cair na neve', scene: 'gelo' },
+  { id: 'rival_seita', name: 'Rival do Pavilhão Interno', moves: ['Palma de Qi', 'Lâmina Espelhada', 'Selo de Duelo', 'Passo da Nuvem'], finisher: 'Técnica Final do Pavilhão', down: 'saúda você com respeito e aceita a derrota', scene: 'seita' },
 ];
 
 export const FOE: Record<string, Foe> = Object.fromEntries(FOES.map((f) => [f.id, f]));
-
-/** Movimentos do jogador por trilha (usados quando não há técnica de combate). */
-export const PATH_MOVES: Record<string, string[]> = {
-  espada: ['Corte de Orvalho', 'Estocada Veloz', 'Lâmina Ascendente', 'Arco de Aço'],
-  corpo: ['Soco de Ferro', 'Cotovelada', 'Chute Girado', 'Investida de Montanha'],
-  sopro: ['Palma de Vento', 'Onda de Qi', 'Passo da Nuvem', 'Sopro Cortante'],
-  alquimia: ['Frasco Incendiário', 'Fumaça Tóxica', 'Chama do Caldeirão', 'Pílula Explosiva'],
-  alma: ['Agulha de Alma', 'Pressão Mental', 'Eco do Mar', 'Lança de Consciência'],
-  formacoes: ['Selo Prisão', 'Linhas de Jade', 'Muralha de Giz', 'Formação Cortante'],
-  budista: ['Palma do Mérito', 'Punho do Vajra', 'Sutra Luminoso', 'Escudo de Lótus'],
-  venenos: ['Agulha Verde', 'Névoa Doce', 'Dardo Sombrio', 'Mil Agulhas'],
-  bestas: ['Ataque da Companheira', 'Rugido Duplo', 'Salto de Fera', 'Garra Gêmea'],
-  demoniaca: ['Garra de Sangue', 'Chama Rubra', 'Drenar Vida', 'Mão Carmesim'],
-  '': ['Soco', 'Chute', 'Golpe de Ombro', 'Pancada Rápida'],
-};
 
 /**
  * Escolhe o tipo de oponente de um evento. Prioridade: campo `combate` do evento, tabela explícita,

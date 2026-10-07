@@ -23,8 +23,7 @@ const gateState = await page.evaluate(() => ({
 if (!gateState.text.includes('Toque para Iniciar o Cultivo') || gateState.zIndex !== '9999' || gateState.gameRendered) errors.push(`tela inicial de áudio inválida: ${JSON.stringify(gateState)}`);
 await page.click('[data-act="start-audio"]');
 await page.waitForFunction(() => {
-  const bgm = document.getElementById('adventure-bgm');
-  return !!document.querySelector('[data-act="new"]') && !!bgm && !bgm.paused;
+  return !!document.querySelector('[data-act="new"]') && document.documentElement.dataset.audioReady === 'true';
 });
 await page.waitForSelector('[data-act="new"]');
 // Configurações: tela de Herança > aba de opções
@@ -38,7 +37,7 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
   if (atual !== est) errors.push(`estilo não aplicado: ${est} → ${atual}`);
   await page.screenshot({ path: `${OUT}/estilo-${est}-opcoes.png`, clip: { x: 0, y: 0, width: 390, height: 380 } });
 }
-// Cada estilo: nova vida, tela de jogo, status, duelo
+// Cada estilo: nova vida, tela fixa de aventura e abas do jogo
 for (const est of ['manhwa', 'tinta', 'pixel']) {
   await page.click(`[data-act="estilo"][data-id="${est}"]`);
   await page.click('[data-act="home"]');
@@ -66,13 +65,17 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
       } : null,
     };
   });
-  if (!layout || layout.sections.some((part, index) => Math.abs(part - [0.4, 0.3, 0.3][index]) > 0.02) || layout.storyOverflow !== 'auto' || layout.pageScrollable || (layout.choice && (layout.choice.tag !== 'DIV' || layout.choice.role !== 'button'))) {
+  if (!layout || layout.sections.some((part, index) => Math.abs(part - [0.35, 0.35, 0.3][index]) > 0.02) || layout.storyOverflow !== 'auto' || layout.pageScrollable || (layout.choice && (layout.choice.tag !== 'DIV' || layout.choice.role !== 'button'))) {
     errors.push(`layout de aventura inválido: ${JSON.stringify(layout)}`);
   }
   await page.screenshot({ path: `${OUT}/estilo-${est}-jogo.png` });
   if (est === 'manhwa' && layout?.choice) {
     await page.locator('.choice[role="button"]').first().focus();
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(1050);
+    if (await page.$('.dice-overlay')) {
+      await page.click('[data-act="roll-close"]');
+    }
     await page.waitForSelector('[data-act="next"], [data-act="toEnd"]');
   }
   for (const aba of ['equipamentos', 'inventario']) {
@@ -85,18 +88,6 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
   await openHome();
   await page.click('[data-act="meta"]');
   await page.click('[data-act="mtab"][data-id="opcoes"]');
-}
-// Duelo em cada estilo (parâmetro de depuração)
-for (const est of ['manhwa', 'tinta', 'pixel']) {
-  await openHome();
-  await page.click('[data-act="meta"]');
-  await page.click('[data-act="mtab"][data-id="opcoes"]');
-  await page.click(`[data-act="estilo"][data-id="${est}"]`);
-  await page.goto('http://localhost:4173/?duelo=tigre&trilha=espada&reino=4&cenario=montanha');
-  await page.click('[data-act="start-audio"]');
-  await page.waitForSelector('.duel-stage');
-  await page.waitForTimeout(3600);
-  await page.screenshot({ path: `${OUT}/estilo-${est}-duelo.png`, clip: { x: 0, y: 0, width: 390, height: 340 } });
 }
 console.log('ERROS:', errors.length ? errors : 'nenhum');
 await browser.close();

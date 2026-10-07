@@ -16,7 +16,6 @@
     "poder": "tsx sim/poder.ts",
     "galeria": "tsx sim/galeria.ts",
     "impacto": "tsx sim/impacto.ts",
-    "e2e:duelo": "node tools/e2e/duelo.mjs",
     "registro": "node tools/registro.mjs",
     "e2e:arte": "node tools/e2e/arte.mjs",
     "e2e:estilo": "node tools/e2e/estilo.mjs"
