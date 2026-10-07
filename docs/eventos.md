@@ -85,12 +85,14 @@ Eventos narrativos com escolhas próprias não recebem opções globais de traç
 | `local`, `faccao` | muda o lugar / a facção |
 | `fim: 'id'` | termina a vida com o final `id` (`src/data/endings.ts`) |
 
-## Cadeias de eventos
+## Sagas e cadeias de eventos
 1. Evento A marca uma flag e/ou agenda o evento B (`agenda`).
 2. Evento B exige a flag em `cond.flags` e normalmente é `once: true`.
 3. Eventos agendados disparam assim que a idade chega, mesmo se a `cond` do evento não bater por acaso.
 
-Exemplo real: `rival_aparece_crianca` → `rival_reaparece` → `rival_vinganca_final`.
+Use cadeias de várias etapas para que descobertas, testes, combate e recompensas pertençam ao mesmo arco; cada etapa deve avançar, encerrar ou abandonar a saga com clareza. Exemplo: `partir_viagem` → `saga_ferro_inicio` → `saga_ferro_forja` → `saga_ferro_guardiao` → `saga_ferro_legado`. O arco da Forja Silenciosa oferece uma escolha entre espada e armadura, usa um chefe e concede o equipamento complementar no desfecho.
+
+Os testes comuns e de combate usam `eff()`: atributos base mais bônus de equipamentos equipados, artefatos passivos e companheiros ativos. Entregue itens com `fx.item`; o jogador pode equipá-los na aba **Equipamentos** e levar os bônus às etapas seguintes da saga.
 
 ## Outros arquivos de dados
 - `realms.ts`: escadas de reinos (vida, anos para encher a barra, chance de rompimento, tribulação).

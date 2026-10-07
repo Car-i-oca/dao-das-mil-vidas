@@ -5,6 +5,10 @@ export const ITEMS: Item[] = [
   { id: 'adaga_guarda', name: 'Adaga da Guarda', kind: 'arma', grade: 1, desc: 'Lâmina curta para aparar golpes e contra-atacar.', equipmentSlot: 'leftWeapon', bonuses: { esp: 2 }, value: 18 },
   { id: 'manto_peles', name: 'Manto Forrado de Peles', kind: 'armadura', grade: 2, desc: 'Protege contra o vento e a neve das regiões altas.', equipmentSlot: 'armor', bonuses: { fis: 2 }, coldProtection: true, value: 45 },
   { id: 'pingente_jade', name: 'Pingente de Jade', kind: 'artefato', grade: 1, desc: 'Uma lembrança que firma o espírito.', equipmentSlot: 'accessory', bonuses: { dao: 2 }, value: 22 },
+  { id: 'espada_inverno', name: 'Espada do Inverno', kind: 'arma', grade: 4, desc: 'Forjada no frio da Forja Silenciosa, fortalece ataques físicos e a disciplina do Dao.', equipmentSlot: 'rightWeapon', bonuses: { fis: 7, dao: 2 }, value: 480 },
+  { id: 'espada_inverno_fragil', name: 'Espada do Inverno Trincada', kind: 'arma', grade: 2, desc: 'A têmpera falhou, mas a lâmina ainda guarda um fragmento do frio ancestral.', equipmentSlot: 'rightWeapon', bonuses: { fis: 3, dao: 1 }, value: 110 },
+  { id: 'armadura_qi_escamas', name: 'Armadura de Qi Escamas', kind: 'armadura', grade: 4, desc: 'Escamas de fera seladas em camadas de Qi desviam golpes e isolam o corpo da neve espiritual.', equipmentSlot: 'armor', bonuses: { fis: 4, dao: 4 }, coldProtection: true, value: 520 },
+  { id: 'armadura_qi_escamas_trincada', name: 'Armadura de Qi Escamas Trincada', kind: 'armadura', grade: 2, desc: 'Uma peça rachada da forja, ainda quente de Qi e resistente ao frio.', equipmentSlot: 'armor', bonuses: { fis: 2, dao: 1 }, coldProtection: true, value: 130 },
   // Pílulas de cultivo
   { id: 'pilula_qi_menor', name: 'Pílula de Qi Menor', kind: 'pilula', grade: 1, desc: 'Acelera um pouco o cultivo.', use: { xp: 8 }, value: 4 },
   { id: 'pilula_qi_media', name: 'Pílula de Qi Densa', kind: 'pilula', grade: 2, desc: 'Qi concentrado em uma gota de luz.', use: { xp: 15 }, value: 12 },

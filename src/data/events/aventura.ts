@@ -11,6 +11,7 @@ export const aventura: GameEvent[] = [
       { text: 'Embrenhar-se na selva espiritual.', res: { text: 'Árvores gigantes, névoa e olhos observando das sombras.', fx: { local: 'selva', xp: 2 } } },
       { text: 'Escalar as montanhas sagradas.', res: { text: 'O ar rareia, o Qi engrossa. Um paraíso de cultivo, ou um túmulo.', fx: { local: 'montanha', xp: 2 } } },
       { text: 'Voltar à seita.', cond: { flags: ['membro_seita'] }, res: { text: 'Os portões da seita parecem menores que antes.', fx: { local: 'seita', faccao: 'seita', xp: 2 } } },
+      { text: 'Seguir as marcas no mapa até a antiga forja.', cond: { item: 'mapa_fragmentado' }, res: { text: 'O fragmento se encaixa nas marcas do caminho. Uma linha fria de luz aponta para além das montanhas.', fx: { setFlags: ['saga_ferro_chamado'], agenda: [{ event: 'saga_ferro_inicio', em: [1, 1] }] } } },
     ],
   },
   {

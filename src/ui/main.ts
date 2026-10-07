@@ -66,6 +66,7 @@ let creation: { c: Creation; seed: number; rerolls: number } | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 let audioStarted = false;
 let audioGateError = '';
+let audioStarting = false;
 
 const app = document.getElementById('app')!;
 
@@ -156,6 +157,10 @@ function render() {
   app.classList.toggle('alignment-daoic', alignment === 'daoico');
   if (alignment) document.documentElement.dataset.alignment = alignment;
   else delete document.documentElement.dataset.alignment;
+  if (!audioStarted) {
+    app.innerHTML = `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">道</div><h1>Dao das Mil Vidas</h1><p>Uma jornada entre vidas, escolhas e destinos.</p><div class="btn primary audio-start" data-act="start-audio" role="button" tabindex="0" aria-disabled="${audioStarting}">${audioStarting ? 'Preparando o Cultivo…' : 'Toque para Iniciar o Cultivo'}</div><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`;
+    return;
+  }
   switch (screen) {
     case 'home': renderHome(); break;
     case 'create': renderCreate(); break;
@@ -163,7 +168,6 @@ function render() {
     case 'end': renderEnd(); break;
     case 'meta': renderMeta(); break;
   }
-  if (!audioStarted) app.insertAdjacentHTML('beforeend', `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">道</div><h1>Dao das Mil Vidas</h1><p>Uma jornada entre vidas, escolhas e destinos.</p><button class="btn primary audio-start" data-act="start-audio">Tocar para Iniciar a Aventura</button><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`);
 }
 
 function renderHome() {
@@ -302,10 +306,10 @@ function lifeHtml(s: State): string {
     : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
       const preview = c.check?.tag === 'combate' ? combatCheckPreview(s, c.check, EVENT[eventId], c.activeTechnique) : null;
       const rollPrompt = preview ? `[Teste de ${STAT_NAMES[preview.stat]} · D20 ${preview.modifier >= 0 ? '+' : '−'}${Math.abs(preview.modifier)} vs CD ${preview.dc}] ` : '';
-      return `<button class="choice" data-act="choose" data-i="${i}">
+      return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(rollPrompt + c.text)}">
         <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(rollPrompt + c.text)}</span>
         <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${preview ? '<span class="dice-icon">D20</span>' : c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
-      </button>`;
+      </div>`;
     }).join('')}`;
   return `
     <div class="adventure-layout">
@@ -647,14 +651,22 @@ app.addEventListener('click', (ev) => {
   if (!target) return;
   const act = target.dataset.act!;
   if (act === 'start-audio') {
+    if (audioStarting) return;
+    audioStarting = true;
     audioGateError = '';
+    target.setAttribute('aria-disabled', 'true');
+    target.textContent = 'Preparando o Cultivo…';
     void startAudioExperience().then(() => {
       audioStarted = true;
-      app.querySelector('.audio-gate')?.remove();
+      audioStarting = false;
+      render();
     }).catch((error: unknown) => {
+      audioStarting = false;
       audioGateError = error instanceof Error ? error.message : 'Não foi possível iniciar o áudio.';
       const message = app.querySelector<HTMLElement>('.audio-error');
       if (message) message.textContent = audioGateError;
+      target.setAttribute('aria-disabled', 'false');
+      target.textContent = 'Toque para Iniciar o Cultivo';
     });
     return;
   }
@@ -775,6 +787,14 @@ app.addEventListener('click', (ev) => {
       }
       break;
   }
+});
+
+app.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  const target = (ev.target as HTMLElement).closest<HTMLElement>('[role="button"][data-act]');
+  if (!target) return;
+  ev.preventDefault();
+  target.click();
 });
 
 /* ---------- Início ---------- */

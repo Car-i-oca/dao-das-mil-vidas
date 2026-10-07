@@ -216,7 +216,7 @@ export const lote3Alquimia: GameEvent[] = [
     text: 'Num leilão discreto, uma lâmina com runas gastas é oferecida por um preço absurdamente baixo. O leiloeiro tem pressa de se livrar dela. Algo na lâmina sussurra em línguas esquecidas.',
     choices: [
       { text: 'Comprar a lâmina (30 pedras).', custo: 30, check: { stat: ['dao', 'esp'], dif: 3, tag: 'mente' }, ok: { text: 'Você controla o sussurro. A lâmina é poderosa e fica sob seu domínio, por ora.', fx: { item: ['espada_aprendiz'], corr: 8, stats: { dao: 1 }, xp: 8 } }, fail: { text: 'O sussurro vence. Em dias, você não dorme mais, e sente a lâmina pensando por você.', fx: { item: ['espada_aprendiz'], corr: 20, ferida: 1 } } },
-      { text: 'Recusar e denunciar o leiloeiro.', res: { text: 'O leiloeiro é preso, a lâmina é selada. A cidade dorme melhor.', fx: { karma: 8, fama: 4 } } },
+      { text: 'Alertar os guardas sobre o leilão.', res: { text: 'O leiloeiro é preso, a lâmina é selada. A cidade dorme melhor.', fx: { karma: 8, fama: 4 } } },
     ],
   },
   {

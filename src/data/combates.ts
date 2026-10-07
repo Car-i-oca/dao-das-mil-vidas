@@ -36,6 +36,7 @@ export const FOES: Foe[] = [
   { id: 'dragao', name: 'Dragão Jovem', moves: ['Sopro de Fogo', 'Cauda de Trovão', 'Garras de Nuvem', 'Rugido do Céu'], finisher: 'Tempestade Dragônica', down: 'sobe aos céus, vencido', scene: 'ceu' },
   { id: 'raio', name: 'Tribulação do Céu', moves: ['Raio Roxo', 'Trovão Duplo', 'Chuva de Faíscas', 'Fúria das Nuvens'], finisher: 'Raio Final', down: 'dispersa-se em nuvens calmas', scene: 'ceu' },
   { id: 'chefe_selva', name: 'Tigre Ancião das Raízes', moves: ['Garras de Raiz', 'Bote do Guardião', 'Uivo da Floresta', 'Cauda Sísmica'], finisher: 'Devorar o Núcleo', down: 'cai, e a floresta enfim volta a respirar', scene: 'selva', immunities: ['poisoned'], attackPattern: { everyTurns: 3, move: 'Rugido Sísmico em Área', damageMultiplier: 1.8 } },
+  { id: 'guardiao_ferro', name: 'Guardião da Forja Invernal', moves: ['Martelo de Geada', 'Círculo de Escamas', 'Estilhaço de Qi', 'Investida de Aço'], finisher: 'Nevasca de Ferro', down: 'se ajoelha e deixa o núcleo cair na neve', scene: 'gelo', immunities: ['frozen'], attackPattern: { everyTurns: 3, move: 'Avalanche da Forja', damageMultiplier: 1.7 } },
   { id: 'rival_seita', name: 'Rival do Pavilhão Interno', moves: ['Palma de Qi', 'Lâmina Espelhada', 'Selo de Duelo', 'Passo da Nuvem'], finisher: 'Técnica Final do Pavilhão', down: 'saúda você com respeito e aceita a derrota', scene: 'seita', mirrorCultivator: true },
 ];
 

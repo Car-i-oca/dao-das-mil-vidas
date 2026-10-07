@@ -15,7 +15,9 @@ import { ORIGINS, TALENTS } from '../src/data/character';
 import { QUESTS } from '../src/data/quests';
 import { FOES } from '../src/data/combates';
 import { COMPANIONS } from '../src/data/companions';
-import type { Cond, Effects, EquipmentSlot } from '../src/types';
+import { checkChance, choose, newMeta, proceed, startLife, visibleChoices } from '../src/engine/engine';
+import { Rng } from '../src/engine/rng';
+import type { Cond, Effects, EquipmentSlot, State } from '../src/types';
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -97,6 +99,94 @@ for (const ev of EVENTS) {
     if (!c.check && !c.res && !c.ok) errors.push(`${w}: escolha sem resultado`);
     fx(w, c.res?.fx); fx(w, c.ok?.fx); fx(w, c.fail?.fx);
   });
+}
+
+const eventById = new Map(EVENTS.map((event) => [event.id, event]));
+const sagaTransitions = [
+  { from: 'partir_viagem', to: 'saga_ferro_inicio', flag: 'saga_ferro_chamado' },
+  { from: 'saga_ferro_inicio', to: 'saga_ferro_forja', flag: 'saga_ferro_rastro' },
+  { from: 'saga_ferro_forja', to: 'saga_ferro_guardiao', flag: 'saga_ferro_fundida' },
+  { from: 'saga_ferro_guardiao', to: 'saga_ferro_legado', flag: null },
+];
+for (const { from, to, flag } of sagaTransitions) {
+  const source = eventById.get(from);
+  const target = eventById.get(to);
+  if (!source || !target) {
+    errors.push(`saga da Forja Silenciosa: etapa inexistente em "${from}" → "${to}"`);
+    continue;
+  }
+  const routes = source.choices.flatMap((choice) => [choice.res, choice.ok, choice.fail])
+    .filter((outcome) => outcome?.fx?.agenda?.some((scheduled) => scheduled.event === to));
+  if (!routes.length) errors.push(`saga da Forja Silenciosa: "${from}" não agenda "${to}"`);
+  if (flag && (!routes.some((outcome) => outcome?.fx?.setFlags?.includes(flag)) || !target.cond?.flags?.includes(flag))) {
+    errors.push(`saga da Forja Silenciosa: flag "${flag}" não liga "${from}" a "${to}"`);
+  }
+  if (!target.once) errors.push(`saga da Forja Silenciosa: etapa "${to}" deve ocorrer uma vez por vida`);
+}
+
+const bonusProbe = startLife(newMeta(), {
+  origin: ORIGINS[0].id,
+  talent: TALENTS[0].id,
+  flaw: 'covarde',
+  root: { name: 'Raiz de Metal', mult: 1, elements: ['Metal'] },
+  constitution: null,
+}, 'sopro', 0x51a9);
+bonusProbe.stats = { fis: 10, esp: 10, comp: 10, sor: 10, car: 10, dao: 10 };
+const probeCheck = { stat: 'fis' as const };
+const baseCheckChance = checkChance(bonusProbe, probeCheck);
+bonusProbe.companions = ['lin_yue'];
+if (checkChance(bonusProbe, probeCheck) <= baseCheckChance) errors.push('teste de integração: companheiro não aumenta a chance do teste');
+bonusProbe.companions = [];
+bonusProbe.items.push('espada_inverno');
+bonusProbe.equipment = { ...bonusProbe.equipment, rightWeapon: 'espada_inverno' };
+if (checkChance(bonusProbe, probeCheck) <= baseCheckChance) errors.push('teste de integração: equipamento não aumenta a chance do teste');
+
+const sagaProbe = startLife(newMeta(), {
+  origin: ORIGINS[0].id,
+  talent: TALENTS[0].id,
+  flaw: 'covarde',
+  root: { name: 'Raiz de Metal', mult: 1, elements: ['Metal'] },
+  constitution: null,
+}, 'sopro', 0x51aa);
+sagaProbe.tier = 1;
+sagaProbe.age = 20;
+sagaProbe.maxAge = 5000;
+sagaProbe.xp = 0;
+sagaProbe.stats = { fis: 18, esp: 18, comp: 18, sor: 18, car: 18, dao: 18 };
+sagaProbe.items.push('mapa_fragmentado');
+sagaProbe.scheduled = [];
+sagaProbe.seen = {};
+sagaProbe.counts = {};
+sagaProbe.current = { id: 'partir_viagem' };
+const sagaRng = new Rng(0x51ab);
+const chooseSagaOption = (state: State, text: string): boolean => {
+  const index = visibleChoices(state).findIndex((visible) => visible.choice?.text.startsWith(text));
+  if (index < 0) {
+    errors.push(`teste de integração: opção "${text}" indisponível em "${state.current?.id}"`);
+    return false;
+  }
+  choose(state, index, sagaRng);
+  return true;
+};
+const advanceSaga = (state: State, expected: string) => {
+  proceed(state, sagaRng);
+  if (state.current?.id !== expected) errors.push(`teste de integração: saga esperava "${expected}", recebeu "${state.current?.id ?? 'nenhum evento'}"`);
+};
+if (chooseSagaOption(sagaProbe, 'Seguir as marcas')) {
+  advanceSaga(sagaProbe, 'saga_ferro_inicio');
+  if (chooseSagaOption(sagaProbe, 'Ler as inscrições')) {
+    advanceSaga(sagaProbe, 'saga_ferro_forja');
+    if (chooseSagaOption(sagaProbe, 'Forjar a Espada')) {
+      advanceSaga(sagaProbe, 'saga_ferro_guardiao');
+      if (chooseSagaOption(sagaProbe, 'Enfrentar o Guardião')) {
+        advanceSaga(sagaProbe, 'saga_ferro_legado');
+        if (chooseSagaOption(sagaProbe, 'Completar a matriz da armadura') &&
+            !sagaProbe.items.some((id) => id.startsWith('armadura_qi_escamas'))) {
+          errors.push('teste de integração: o desfecho da saga não concedeu a armadura escolhida');
+        }
+      }
+    }
+  }
 }
 
 /* Todo módulo de eventos precisa estar ligado ao catálogo e todo evento literal precisa chegar ao runtime. */

@@ -8,7 +8,24 @@ const errors = [];
 const page = await ctx.newPage();
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+async function openHome() {
+  await page.goto('http://localhost:4173/');
+  await page.click('[data-act="start-audio"]');
+  await page.waitForSelector('[data-act="new"]');
+}
 await page.goto('http://localhost:4173/');
+await page.waitForSelector('[data-act="start-audio"]');
+const gateState = await page.evaluate(() => ({
+  text: document.querySelector('.audio-gate')?.textContent ?? '',
+  zIndex: getComputedStyle(document.querySelector('.audio-gate')).zIndex,
+  gameRendered: !!document.querySelector('.game-frame, .story-text'),
+}));
+if (!gateState.text.includes('Toque para Iniciar o Cultivo') || gateState.zIndex !== '9999' || gateState.gameRendered) errors.push(`tela inicial de áudio inválida: ${JSON.stringify(gateState)}`);
+await page.click('[data-act="start-audio"]');
+await page.waitForFunction(() => {
+  const bgm = document.getElementById('adventure-bgm');
+  return !!document.querySelector('[data-act="new"]') && !!bgm && !bgm.paused;
+});
 await page.waitForSelector('[data-act="new"]');
 // Configurações: tela de Herança > aba de opções
 await page.click('[data-act="meta"]');
@@ -31,27 +48,52 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
   await page.click('[data-act="start"]');
   await page.waitForSelector('[data-act="choose"], [data-act="skip"]', { timeout: 15000 });
   await page.waitForTimeout(800);
+  const layout = await page.evaluate(() => {
+    const root = document.querySelector('.adventure-layout');
+    const art = root?.querySelector('.adventure-art');
+    const story = root?.querySelector('.story-panel');
+    const choices = root?.querySelector('.choice-panel');
+    if (!root || !art || !story || !choices) return null;
+    const height = root.getBoundingClientRect().height;
+    const ratio = (el) => el.getBoundingClientRect().height / height;
+    return {
+      sections: [ratio(art), ratio(story), ratio(choices)],
+      storyOverflow: getComputedStyle(story).overflowY,
+      pageScrollable: document.documentElement.scrollHeight > innerHeight + 1,
+      choice: root.querySelector('.choice') ? {
+        tag: root.querySelector('.choice').tagName,
+        role: root.querySelector('.choice').getAttribute('role'),
+      } : null,
+    };
+  });
+  if (!layout || layout.sections.some((part, index) => Math.abs(part - [0.4, 0.3, 0.3][index]) > 0.02) || layout.storyOverflow !== 'auto' || layout.pageScrollable || (layout.choice && (layout.choice.tag !== 'DIV' || layout.choice.role !== 'button'))) {
+    errors.push(`layout de aventura inválido: ${JSON.stringify(layout)}`);
+  }
   await page.screenshot({ path: `${OUT}/estilo-${est}-jogo.png` });
-  for (const aba of ['status', 'itens']) {
+  if (est === 'manhwa' && layout?.choice) {
+    await page.locator('.choice[role="button"]').first().focus();
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('[data-act="next"], [data-act="toEnd"]');
+  }
+  for (const aba of ['equipamentos', 'inventario']) {
     const b = await page.$(`[data-act="tab"][data-id="${aba}"]`);
     if (b) { await b.click(); await page.waitForTimeout(250); await page.screenshot({ path: `${OUT}/estilo-${est}-${aba}.png` }); }
   }
   // volta ao menu e apaga a vida para a próxima rodada
   await page.evaluate(() => { localStorage.removeItem('dao-mil-vidas-save-v1'); });
   await page.evaluate((e) => { const s = { meta: undefined, run: null, settings: { estilo: e } }; void s; }, est);
-  await page.goto('http://localhost:4173/');
-  await page.waitForSelector('[data-act="new"]');
+  await openHome();
   await page.click('[data-act="meta"]');
   await page.click('[data-act="mtab"][data-id="opcoes"]');
 }
 // Duelo em cada estilo (parâmetro de depuração)
 for (const est of ['manhwa', 'tinta', 'pixel']) {
-  await page.goto('http://localhost:4173/');
-  await page.waitForSelector('[data-act="new"]');
+  await openHome();
   await page.click('[data-act="meta"]');
   await page.click('[data-act="mtab"][data-id="opcoes"]');
   await page.click(`[data-act="estilo"][data-id="${est}"]`);
   await page.goto('http://localhost:4173/?duelo=tigre&trilha=espada&reino=4&cenario=montanha');
+  await page.click('[data-act="start-audio"]');
   await page.waitForSelector('.duel-stage');
   await page.waitForTimeout(3600);
   await page.screenshot({ path: `${OUT}/estilo-${est}-duelo.png`, clip: { x: 0, y: 0, width: 390, height: 340 } });
