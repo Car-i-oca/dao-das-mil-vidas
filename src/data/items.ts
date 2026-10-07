@@ -1,6 +1,6 @@
 import type { Item } from '../types';
 
-export const ITEMS: Item[] = [
+const ITEM_DEFS: Omit<Item, 'rarity'>[] = [
   { id: 'espada_ferro_viagem', name: 'Espada de Viagem', kind: 'arma', grade: 1, desc: 'Uma lâmina honesta, equilibrada para o combate.', equipmentSlot: 'rightWeapon', bonuses: { fis: 3 }, value: 24 },
   { id: 'adaga_guarda', name: 'Adaga da Guarda', kind: 'arma', grade: 1, desc: 'Lâmina curta para aparar golpes e contra-atacar.', equipmentSlot: 'leftWeapon', bonuses: { esp: 2 }, value: 18 },
   { id: 'manto_peles', name: 'Manto Forrado de Peles', kind: 'armadura', grade: 2, desc: 'Protege contra o vento e a neve das regiões altas.', equipmentSlot: 'armor', bonuses: { fis: 2 }, coldProtection: true, value: 45 },
@@ -147,3 +147,16 @@ export const ITEMS: Item[] = [
   { id: 'pilula_purificadora', name: 'Pílula Purificadora de Campo', kind: 'pilula', grade: 2, desc: 'Uma fórmula simples que cura feridas e elimina toxinas comuns.', use: { ferida: -2, clearStatus: ['poisoned', 'bleeding', 'burning', 'frozen'] }, value: 24 },
   { id: 'lamina_bioma', name: 'Lâmina Forjada de Minério Antigo', kind: 'arma', grade: 3, desc: 'Uma lâmina equilibrada, reforçada com uma pérola das marés.', passive: { fis: 2, dao: 1 }, value: 110 },
 ];
+
+const GRADE_RARITY = {
+  1: 'comum',
+  2: 'incomum',
+  3: 'raro',
+  4: 'epico',
+  5: 'lendario',
+} as const;
+
+export const ITEMS: Item[] = ITEM_DEFS.map((item) => ({
+  ...item,
+  rarity: GRADE_RARITY[item.grade],
+}));

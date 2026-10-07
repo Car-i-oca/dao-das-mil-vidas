@@ -1,6 +1,6 @@
 export type StatKey = 'fis' | 'esp' | 'comp' | 'sor' | 'car' | 'dao';
 export type Stats = Record<StatKey, number>;
-export type Rarity = 'comum' | 'raro' | 'lendario';
+export type Rarity = 'comum' | 'incomum' | 'raro' | 'epico' | 'lendario';
 export type Alignment = 'daoico' | 'demoniaco';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
@@ -22,6 +22,12 @@ export interface Companion {
 export interface DiceRoll {
   d20: number;
   modifier: number;
+  /** Parcela baseada nos atributos efetivos, excluindo equipamento vestido. */
+  statBonus: number;
+  /** Parcela adicional dos bônus do equipamento vestido. */
+  equipmentBonus: number;
+  /** Técnicas, clima, companheiros e demais modificadores do teste. */
+  otherBonus: number;
   total: number;
   dc: number;
   stat: StatKey;
@@ -277,6 +283,7 @@ export interface Item {
   name: string;
   kind: 'pilula' | 'erva' | 'material' | 'arma' | 'armadura' | 'artefato' | 'talisma' | 'manual' | 'nucleo' | 'anel' | 'misc';
   grade: 1 | 2 | 3 | 4 | 5;
+  rarity: Rarity;
   desc: string;
   /** Consumível: efeitos ao usar. */
   use?: Effects;
@@ -453,7 +460,7 @@ export interface State {
   ending: string | null;
   endingText: string | null;
   /** Preenchido quando a vida é encerrada (finalizeLife). */
-  summary?: { legacy: number; ach: string[]; tierName: string; marcas?: string[] };
+  summary?: { legacy: number; ach: string[]; tierName: string; marcas?: string[]; equipment?: Partial<Record<EquipmentSlot, string>> };
   legacyBonus: { stats: number; xp: number; luck: number; pedras: number };
 }
 

@@ -70,17 +70,40 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
   }
   await page.screenshot({ path: `${OUT}/estilo-${est}-jogo.png` });
   if (est === 'manhwa' && layout?.choice) {
-    await page.locator('.choice[role="button"]').first().focus();
+    const testedChoice = page.locator('.choice[aria-label*="D20"]').first();
+    await (await testedChoice.count() ? testedChoice : page.locator('.choice[role="button"]').first()).focus();
     await page.keyboard.press('Enter');
     await page.waitForTimeout(1050);
     if (await page.$('.dice-overlay')) {
+      const formula = await page.locator('.dice-equation').innerText();
+      if (!formula.includes('Status') || !formula.includes('Equipamento') || !formula.includes('Dificuldade')) {
+        errors.push(`fórmula de rolagem incompleta: ${formula}`);
+      }
+      const resultClass = await page.locator('.dice-card').getAttribute('class');
+      if (!resultClass?.includes('success') && !resultClass?.includes('failure')) {
+        errors.push(`resultado da rolagem sem estado visual: ${resultClass}`);
+      }
       await page.click('[data-act="roll-close"]');
     }
     await page.waitForSelector('[data-act="next"], [data-act="toEnd"]');
   }
   for (const aba of ['equipamentos', 'inventario']) {
     const b = await page.$(`[data-act="tab"][data-id="${aba}"]`);
-    if (b) { await b.click(); await page.waitForTimeout(250); await page.screenshot({ path: `${OUT}/estilo-${est}-${aba}.png` }); }
+    if (b) {
+      await b.click();
+      await page.waitForTimeout(250);
+      if (aba === 'inventario') {
+        if (!await page.$('.inventory-overlay') || !await page.$('.adventure-art')) errors.push('inventário não sobrepõe apenas os painéis inferiores');
+        const gear = page.locator('.inventory-slot[data-act="item-detail"]').first();
+        if (await gear.count()) {
+          await gear.click();
+          if (!await page.$('.item-detail .rarity-label')) errors.push('detalhes do equipamento não exibem raridade');
+          await page.click('[data-act="item-detail-close"]');
+        }
+        await page.click('.inventory-header [data-act="inventory-close"]');
+      }
+      await page.screenshot({ path: `${OUT}/estilo-${est}-${aba}.png` });
+    }
   }
   // volta ao menu e apaga a vida para a próxima rodada
   await page.evaluate(() => { localStorage.removeItem('dao-mil-vidas-save-v1'); });

@@ -149,6 +149,10 @@ function diceCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: 
   const keys = Array.isArray(check.stat) ? check.stat : [check.stat];
   const stat = keys[0];
   const rating = keys.reduce((sum, key) => sum + eff(s, key) + weatherPenalty(s, key), 0) / keys.length;
+  const equipmentRating = keys.reduce((sum, key) =>
+    sum + Object.values(s.equipment ?? {}).reduce((bonus, id) => bonus + (ITEM[id]?.bonuses?.[key] ?? 0), 0), 0) / keys.length;
+  const statBonus = Math.floor((rating - equipmentRating - 10) / 3);
+  const equipmentBonus = Math.floor((rating - 10) / 3) - statBonus;
   const statusBonus = (s.statuses ?? []).reduce((sum, status) => {
     if (status.id === 'focused') return sum + status.potency;
     if (status.id === 'frozen') return sum - status.potency;
@@ -173,7 +177,15 @@ function diceCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: 
   const modifier = Math.floor((rating + statusBonus - 10) / 3) + skill + Math.floor(trained / 3)
     + Math.floor(technique / 2) + guildBonus + powerBonus + weakness
     + Math.round((s.legacyBonus.luck ?? 0) * 0.16) - Math.round(s.wounds * 0.6) - (s.dif ?? 0) * 2;
-  return { modifier, dc, stat, ...(playerPower !== undefined ? { playerPower, enemyPower } : {}) };
+  return {
+    modifier,
+    statBonus,
+    equipmentBonus,
+    otherBonus: modifier - statBonus - equipmentBonus,
+    dc,
+    stat,
+    ...(playerPower !== undefined ? { playerPower, enemyPower } : {}),
+  };
 }
 
 export function combatCheckPreview(s: State, check: Check, ev?: GameEvent, techniqueId?: string): Omit<DiceRoll, 'd20' | 'total'> {
@@ -1190,7 +1202,7 @@ export function proceed(s: State, rng: Rng) {
   pickNext(s, rng);
 }
 
-const RARITY_W = { comum: 10, raro: 2.5, lendario: 0.5 } as const;
+const RARITY_W = { comum: 10, incomum: 6, raro: 2.5, epico: 1.2, lendario: 0.5 } as const;
 
 /** Evento "genérico": repetível e sem nenhuma condição além de reino/idade. */
 function isGeneric(e: GameEvent): boolean {
@@ -1381,7 +1393,7 @@ export function finalizeLife(meta: Meta, s: State): void {
   meta.recent = [Object.keys(s.seen).filter((k) => !k.startsWith('__')), ...(meta.recent ?? [])].slice(0, 3);
   meta.history.unshift({ name: s.name, path: PATH[s.path].name, tierName: realmName(s), age: Math.floor(s.age), ending: end.name, techName: topTech ? TECH[topTech]?.name : undefined });
   if (meta.history.length > 30) meta.history.pop();
-  s.summary = { legacy: gain, ach: newAch, tierName: realmName(s), marcas };
+  s.summary = { legacy: gain, ach: newAch, tierName: realmName(s), marcas, equipment: { ...s.equipment } };
 }
 
 export function buyUpgrade(meta: Meta, id: string, cost: number, max: number): boolean {

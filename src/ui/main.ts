@@ -68,6 +68,7 @@ let audioGateError = '';
 let audioStarting = false;
 let diceModal: { roll: DiceRoll; combat: boolean; success: boolean; face: number; settled: boolean } | null = null;
 let diceTimer = 0;
+let selectedInventoryItem: string | null = null;
 
 const app = document.getElementById('app')!;
 
@@ -174,7 +175,11 @@ function render() {
 
 function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
   const { roll } = modal;
-  const result = modal.settled ? `${roll.d20} ${roll.modifier >= 0 ? '+' : '−'} ${Math.abs(roll.modifier)} = ${roll.total}` : '…';
+  const signed = (value: number) => `${value >= 0 ? '+' : '−'} ${Math.abs(value)}`;
+  const statusBonus = roll.statBonus + roll.otherBonus;
+  const result = modal.settled
+    ? `<span class="formula-part">D20 <b>${roll.d20}</b></span><span>${signed(statusBonus)} Status do Jogador</span><span>${signed(roll.equipmentBonus)} Equipamento</span><b>= ${roll.total}</b>`
+    : '<span class="formula-part">D20 <b>?</b></span><span>+ Status do Jogador</span><span>+ Equipamento</span>';
   const combat = modal.combat && roll.enemyPower !== undefined
     ? `<div class="dice-power"><span>Seu poder <b>${roll.playerPower}</b></span><span>Inimigo <b>${roll.enemyPower}</b></span></div>`
     : '';
@@ -183,8 +188,8 @@ function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
       <span class="dice-kicker">${modal.combat ? 'CONFRONTO' : 'TESTE DE ATRIBUTO'}</span>
       <div class="dice-face" aria-live="polite">${modal.settled ? roll.d20 : modal.face}</div>
       <h2>${modal.settled ? (modal.success ? 'Sucesso' : 'Falha') : 'O destino decide'}</h2>
-      <p class="dice-equation">${result}<span> vs CD ${roll.dc}</span></p>
-      <p class="dice-stat">${STAT_NAMES[roll.stat]} · modificador de atributos, equipamento e cultivo</p>
+      <div class="dice-equation">${result}<span class="dice-dc">vs Dificuldade ${roll.dc}</span></div>
+      <p class="dice-stat">${STAT_NAMES[roll.stat]} · status inclui atributos, cultivo e efeitos; equipamento aparece à parte.</p>
       ${combat}
       ${modal.settled ? '<button class="btn primary" data-act="roll-close">Ver consequência</button>' : '<div class="dice-wait">Rolando…</div>'}
     </div>
@@ -313,14 +318,15 @@ function renderGame() {
   let body = '';
   if (tab === 'aventura') body = lifeHtml(s);
   else if (tab === 'equipamentos') body = equipmentHtml(s);
-  else if (tab === 'inventario') body = bagHtml(s);
+  else if (tab === 'inventario') body = lifeHtml(s);
   else if (tab === 'faccoes') body = factionsHtml(s);
   else body = logHtml(s);
-  app.innerHTML = `<div class="game-frame" data-tab="${tab}">${hudHtml(s)}<button class="journal-link" data-act="tab" data-id="diario">Abrir diário da vida <span>↗</span></button><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
-  if (tab === 'aventura') startTyping(s);
+  const frameTab = tab === 'inventario' ? 'aventura' : tab;
+  app.innerHTML = `<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<button class="journal-link" data-act="tab" data-id="diario">Abrir diário da vida <span>↗</span></button><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
+  if (tab === 'aventura' || tab === 'inventario') startTyping(s);
 }
 
-const RAR_LABEL: Record<string, string> = { raro: 'Raro', lendario: 'Lendário' };
+const RARITY_LABEL: Record<string, string> = { comum: 'Comum', incomum: 'Incomum', raro: 'Raro', epico: 'Épico', lendario: 'Lendário' };
 
 const INTRO_HTML = `<details class="intro"><summary>Como jogar</summary><p>Cada acontecimento traz escolhas; os testes dependem de atributos e equipamentos. O tempo passa a cada decisão e o clima pode alterar seus testes. Explore as abas para cuidar do equipamento, inventário e facções.</p><button class="btn ghost" data-act="intro">Entendi</button></details>`;
 
@@ -372,6 +378,7 @@ function lifeHtml(s: State): string {
         ${v.kind === 'event' ? '<div class="hint" id="hint">toque para pular</div>' : ''}
       </section>
       <section class="choice-panel"><div class="choices show" id="choices">${choicesHtml}</div></section>
+      ${tab === 'inventario' ? inventoryModalHtml(s) : ''}
     </div>`;
 }
 
@@ -532,16 +539,45 @@ function relationsHtml(s: State): string {
   return `<div class="card"><div class="muted small" style="margin-bottom:4px">RELAÇÕES</div>${rows.map(([a, b]) => `<div class="tech"><b>${esc(a)}</b><div class="small muted">${esc(b)}</div></div>`).join('')}</div>`;
 }
 
-function bagHtml(s: State): string {
-  if (!s.items.length) return '<div class="card muted">Sua mochila está vazia.</div>';
+function inventoryModalHtml(s: State): string {
   const counts = new Map<string, number>();
   for (const id of s.items) counts.set(id, (counts.get(id) ?? 0) + 1);
-  const rows = [...counts.entries()].map(([id, n]) => {
-    const it = ITEM[id];
-    const usable = !!it.use;
-    return `<div class="item"><div class="ico">${itemIcon(it, 46)}</div><div class="grow"><b>${esc(it.name)}</b>${n > 1 ? ` ×${n}` : ''}<div class="muted small">${esc(it.desc)}${it.passive ? ' · ' + Object.entries(it.passive).map(([k, v]) => `${STAT_NAMES[k as keyof typeof STAT_NAMES]} +${v}`).join(', ') : ''}${it.breakBonus ? ` · ajuda no rompimento (+${Math.round(it.breakBonus.bonus * 100)}%)` : ''}</div></div>${usable ? `<button class="btn" data-act="use" data-id="${id}">Usar</button>` : ''}</div>`;
+  const slots = EQUIPMENT_SLOTS.map(({ id: slot, label }) => {
+    const itemId = s.equipment?.[slot];
+    const item = itemId ? ITEM[itemId] : undefined;
+    return `<button class="inventory-slot ${item ? `rarity-${item.rarity}` : ''}" data-act="${item ? 'item-detail' : 'noop'}" data-id="${item?.id ?? ''}" ${item ? '' : 'disabled'}>
+      <span class="slot-label">${esc(label)}</span><b>${item ? esc(item.name) : 'Vazio'}</b>
+      ${item ? `<span class="item-stats">${Object.entries(item.bonuses ?? {}).map(([k, v]) => `+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`).join(' · ') || 'Sem bônus numéricos'}</span>` : ''}
+    </button>`;
   }).join('');
-  return `<div class="card list">${rows}</div>`;
+  const rows = [...counts.entries()].map(([id, count]) => {
+    const item = ITEM[id];
+    if (!item) return '';
+    const usable = !!item.use;
+    const equipped = Object.values(s.equipment ?? {}).includes(id);
+    return `<div class="inventory-item-row">
+      <button class="inventory-item rarity-${item.rarity}" data-act="item-detail" data-id="${item.id}">
+        <span class="item-icon">${itemIcon(item, 40)}</span><span class="item-copy"><b>${esc(item.name)}${count > 1 ? ` ×${count}` : ''}</b><small>${RARITY_LABEL[item.rarity]}${equipped ? ' · Equipado' : ''}</small></span>
+      </button>${usable ? `<button class="btn inventory-use" data-act="use" data-id="${item.id}">Usar</button>` : ''}
+    </div>`;
+  }).join('') || '<div class="muted small inventory-empty">Sua mochila está vazia.</div>';
+  const selected = selectedInventoryItem ? ITEM[selectedInventoryItem] : undefined;
+  const details = selected ? `<section class="item-detail rarity-${selected.rarity}">
+    <div class="row between"><span class="rarity-label">${RARITY_LABEL[selected.rarity]}</span><button class="btn ghost item-detail-close" data-act="item-detail-close" aria-label="Fechar detalhes">×</button></div>
+    <h3>${esc(selected.name)}</h3><p>${esc(selected.desc)}</p>
+    ${selected.bonuses ? `<div class="item-detail-stats"><b>Bônus de equipamento</b>${Object.entries(selected.bonuses).map(([k, v]) => `<span>+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}</span>`).join('')}</div>` : ''}
+    ${selected.passive ? `<div class="item-detail-stats"><b>Bônus passivos</b>${Object.entries(selected.passive).map(([k, v]) => `<span>+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}</span>`).join('')}</div>` : ''}
+    ${selected.equipmentSlot ? `<div class="muted small">Slot: ${esc(EQUIPMENT_SLOTS.find((slot) => slot.id === selected.equipmentSlot)?.label ?? selected.equipmentSlot)}</div>` : ''}
+    ${selected.equipmentSlot && !Object.values(s.equipment ?? {}).includes(selected.id) ? `<button class="btn" data-act="gear-equip" data-id="${selected.id}">Equipar</button>` : ''}
+  </section>` : '';
+  return `<div class="inventory-overlay" role="dialog" aria-modal="true" aria-label="Inventário">
+    <div class="inventory-backdrop" data-act="inventory-close"></div>
+    <section class="inventory-modal">
+      <header class="inventory-header"><div><span class="muted small">MOCHILA · ${s.items.length} ITENS</span><h2>Inventário</h2></div><button class="btn ghost" data-act="inventory-close" aria-label="Fechar inventário">×</button></header>
+      <div class="inventory-equipped"><div class="muted small">EQUIPADOS</div><div class="inventory-slots">${slots}</div></div>
+      <div class="inventory-list"><div class="muted small">MOCHILA</div>${rows}${details}</div>
+    </section>
+  </div>`;
 }
 
 const EQUIPMENT_SLOTS: { id: EquipmentSlot; label: string }[] = [
@@ -601,6 +637,10 @@ function renderEnd() {
   const e = ENDING[s.ending!];
   const sm = s.summary!;
   const ach = sm.ach.map((id) => ACHIEVEMENTS.find((a) => a.id === id)!).filter(Boolean);
+  const finalGear = EQUIPMENT_SLOTS.map(({ id, label }) => {
+    const item = ITEM[sm.equipment?.[id] ?? s.equipment?.[id] ?? ''];
+    return `<span>${esc(label)}</span><b class="${item ? `rarity-text-${item.rarity}` : 'muted'}">${item ? esc(item.name) : 'Nenhum'}</b>`;
+  }).join('');
   app.innerHTML = `
     <div class="screen end">
       <div class="end-card">${endingCard(e.id, e.name)}<div class="end-pt">${portraitSvg(lookFromState(s), 64)}</div></div>
@@ -608,13 +648,15 @@ function renderEnd() {
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
       <div class="card sum">
-        <span>Reino alcançado</span><b>${esc(sm.tierName)}</b>
-        <span>Idade ao morrer</span><b>${Math.floor(s.age)} anos</b>
+        <span>Rank de Cultivo</span><b>${esc(sm.tierName)}</b>
+        <span>Idade alcançada</span><b>${Math.floor(s.age)} anos</b>
+        <span>Causa do fim</span><b>${esc(e.name)}</b>
+        <span>Herança ganha nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
         <span>Fama</span><b>${s.fama}</b>
         <span>Karma</span><b>${s.karma > 0 ? '+' : ''}${s.karma}</b>
         <span>Técnicas</span><b>${s.techniques.length}</b>
-        <span>Herança do Dao</span><b style="color:var(--gold)">+${sm.legacy}</b>
       </div>
+      <div class="card sum final-equipment"><div class="muted small equipment-summary-title">EQUIPAMENTOS FINAIS</div>${finalGear}</div>
       <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
       ${sm.marcas?.length ? `<div class="card"><div class="muted small">O QUE VOCÊ DEIXOU PARA TRÁS</div>${sm.marcas.map((m) => `<div class="tech small">${esc(m)}</div>`).join('')}<div class="muted small" style="margin-top:6px">Cada quatro marcas rendem +1 de Herança (até +2).</div></div>` : ''}
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
@@ -742,7 +784,24 @@ app.addEventListener('click', (ev) => {
       render();
       break;
     case 'start': startRun(); break;
-    case 'tab': tab = target.dataset.id as typeof tab; render(); break;
+    case 'tab':
+      tab = target.dataset.id as typeof tab;
+      selectedInventoryItem = null;
+      render();
+      break;
+    case 'inventory-close':
+      tab = 'aventura';
+      selectedInventoryItem = null;
+      render();
+      break;
+    case 'item-detail':
+      selectedInventoryItem = target.dataset.id ?? null;
+      render();
+      break;
+    case 'item-detail-close':
+      selectedInventoryItem = null;
+      render();
+      break;
     case 'gear-equip':
       if (!s) break;
       if (equipItem(s, target.dataset.id!)) { persist(); render(); }
