@@ -1,6 +1,6 @@
 import { Rng } from './rng';
 import type {
-  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank, EquipmentSlot, GuildFaction, DiceRoll, Weather,
+  Alignment, Change, Check, Choice, Cond, Effects, GameEvent, Meta, Outcome, State, StatKey, Stats, Root, Realm, Item, PassiveArtifact, Path, UiNotification, SectRank, EquipmentSlot, DiceRoll, Weather,
 } from '../types';
 import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
@@ -12,13 +12,10 @@ import { EVENTS } from '../data/events';
 import { FOE, foeFor } from '../data/combates';
 import { eventTypeOf } from '../data/event-type';
 import { REGION_POOLS } from '../data/regions';
-import { VIRTUDE_NOME } from '../data/marcas';
 import { MARCAS_VIDA } from '../data/marcas_vida';
 import { AFINIDADES } from '../data/afinidades';
 import { categorias, type Cat } from '../data/opcoes';
-import { WORLDS, WORLD } from '../data/mundo';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from '../data/retiros';
-import { QUESTS } from '../data/quests';
 import { COMPANIONS } from '../data/companions';
 
 /* ---------- Índices ---------- */
@@ -33,7 +30,6 @@ export const ITEM = byId(ITEMS);
 export const ENDING = byId(ENDINGS);
 export const EVENT = byId(EVENTS);
 export const CONSTITUTION = byId(CONSTITUTIONS);
-const QUEST = byId(QUESTS);
 
 export const STAT_NAMES: Record<StatKey, string> = {
   fis: 'Físico', esp: 'Percepção', comp: 'Técnica', sor: 'Instinto', car: 'Carisma', dao: 'Vontade',
@@ -101,7 +97,7 @@ export function tradeItem(s: State, action: 'buy' | 'sell', itemId: string): str
     s.items.push(item.id);
     s.found ??= { items: [] };
     if (!s.found.items.includes(item.id)) s.found.items.push(item.id);
-    const message = `Comprou ${item.name} por ${item.value} pedras espirituais.`;
+    const message = `Comprou ${item.name} por ${item.value} moedas.`;
     addLog(s, message);
     return message;
   }
@@ -110,7 +106,7 @@ export function tradeItem(s: State, action: 'buy' | 'sell', itemId: string): str
   s.items.splice(index, 1);
   const price = Math.max(1, Math.floor(item.value / 2));
   s.pedras += price;
-  const message = `Vendeu ${item.name} por ${price} pedras espirituais.`;
+  const message = `Vendeu ${item.name} por ${price} moedas.`;
   addLog(s, message);
   return message;
 }
@@ -132,25 +128,6 @@ export function dismissCompanion(s: State, id: string): boolean {
   party.splice(index, 1);
   addLog(s, `Seu companheiro deixou a jornada.`);
   return true;
-}
-
-export function joinGuild(s: State, guild: GuildFaction): boolean {
-  if (s.guild === guild) return false;
-  s.guild = guild;
-  s.factionReputation ??= {};
-  s.factionReputation[guild] ??= 0;
-  addLog(s, `Você se afiliou a ${GUILD_NAMES[guild]}.`);
-  return true;
-}
-
-const GUILD_NAMES: Record<GuildFaction, string> = {
-  sword_sect: 'Escola da Garça',
-  demon_cult: 'Casa da Lua Oca',
-  merchant_guild: 'Associação de Caravanas',
-};
-
-export function factionReputation(s: State, guild: GuildFaction): number {
-  return s.factionReputation?.[guild] ?? 0;
 }
 
 function hasColdProtection(s: State): boolean {
@@ -188,10 +165,8 @@ function diceCheckPreview(s: State, check: Check, ev?: GameEvent): Omit<DiceRoll
   const powerBonus = playerPower !== undefined && enemyPower !== undefined
     ? Math.max(-4, Math.min(4, Math.trunc((playerPower - enemyPower) / 6)))
     : 0;
-  const guildRep = s.guild ? factionReputation(s, s.guild) : 0;
-  const guildBonus = isCombat ? (guildRep >= 30 ? 2 : guildRep <= -30 ? -2 : 0) : 0;
   const modifier = Math.floor((rating + statusBonus - 10) / 3)
-    + guildBonus + powerBonus
+    + powerBonus
     + Math.round((s.legacyBonus.luck ?? 0) * 0.16) - Math.round(s.wounds * 0.6) - (s.dif ?? 0) * 2;
   return {
     modifier,
@@ -284,13 +259,6 @@ export function apparentStage(s: State): number {
   return forever ? Math.min(st, 1) : st;
 }
 
-/** Virtude dominante do perfil (a partir de 10 pontos) e a alcunha correspondente. */
-export function virtudeDominante(s: State): string | null {
-  const p = s.perfil ?? {};
-  const top = Object.entries(p).sort((a, b) => b[1] - a[1])[0];
-  return top && top[1] >= 10 ? top[0] : null;
-}
-
 /** Selo mostrado na opção exclusiva: o que a torna possível. */
 export function choiceBadge(c: Choice): string | undefined {
   const k = c.cond;
@@ -301,7 +269,6 @@ export function choiceBadge(c: Choice): string | undefined {
   if (k.constitution?.length) return CONSTITUTION[k.constitution[0]]?.name;
   if (k.root?.length) return 'Raiz: ' + k.root[0];
   if (k.origin?.length) return ORIGIN[k.origin[0]]?.name;
-  if (k.perfil) return 'Conduta: ' + (VIRTUDE_NOME[Object.keys(k.perfil)[0] as keyof typeof VIRTUDE_NOME] ?? Object.keys(k.perfil)[0]);
   if (k.item) return ITEM[k.item]?.name;
   return undefined;
 }
@@ -312,7 +279,6 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.ageMax !== undefined && s.age > c.ageMax) return false;
   if (c.tierMin !== undefined && s.tier < c.tierMin) return false;
   if (c.tierMax !== undefined && s.tier > c.tierMax) return false;
-  if (c.noActiveQuest && s.activeQuest) return false;
   if (c.regionalEncounters && (s.regionalEncounters?.[c.regionalEncounters.place] ?? 0) < c.regionalEncounters.min) return false;
   if (c.sectRank && !(sectRankOf(s) && c.sectRank.includes(sectRankOf(s)!))) return false;
   if (c.path && !c.path.includes(s.path)) return false;
@@ -324,6 +290,7 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.master && !(s.master && c.master.includes(s.master))) return false;
   if (c.origin && !c.origin.includes(s.origin)) return false;
   if (c.flags && !c.flags.every((f) => has(s, f))) return false;
+  if (c.flagsAny?.length && !c.flagsAny.some((f) => has(s, f))) return false;
   if (c.noFlags && c.noFlags.some((f) => has(s, f))) return false;
   if (c.stat) for (const k of Object.keys(c.stat) as StatKey[]) if (eff(s, k) < (c.stat[k] as number)) return false;
   if (c.pedrasMin !== undefined && s.pedras < c.pedrasMin) return false;
@@ -336,13 +303,10 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.itemsAll && !c.itemsAll.every((id) => s.items.includes(id))) return false;
   if (c.itemsAny && !c.itemsAny.some((id) => s.items.includes(id))) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
-  if (c.perfil) for (const [k, v] of Object.entries(c.perfil)) if ((s.perfil?.[k] ?? 0) < v) return false;
-  if (c.perfilMax) for (const [k, v] of Object.entries(c.perfilMax)) if ((s.perfil?.[k] ?? 0) > v) return false;
   if (c.talent && !c.talent.includes(s.talent)) return false;
   if (c.flaw && !c.flaw.includes(s.flaw)) return false;
   if (c.constitution && !(s.constitution && c.constitution.includes(s.constitution))) return false;
   if (c.root && !rootTags(s.root).some((k) => c.root!.includes(k))) return false;
-  if (c.mundo && !(s.world && c.mundo.includes(s.world.id))) return false;
   return true;
 }
 
@@ -350,7 +314,7 @@ export function condMet(s: State, c?: Cond): boolean {
 /** Reino da ameaça: explícito no teste ou no evento; senão, testes de combate/fuga de eventos de reino baixo viram ameaças de reino baixo. */
 export function threatTier(s: State, ch: Check, ev?: GameEvent): number {
   let t = ch.amea ?? ev?.amea;
-  if (t === undefined && ev && !ev.escala && (ch.tag === 'combate' || ch.tag === 'fuga') && !ev.cond?.mundo) {
+  if (t === undefined && ev && !ev.escala && (ch.tag === 'combate' || ch.tag === 'fuga')) {
     const lo = ev.cond?.tierMin ?? 1;
     t = Math.max(1, lo) + 1;
   }
@@ -358,7 +322,7 @@ export function threatTier(s: State, ch: Check, ev?: GameEvent): number {
 }
 
 export function checkDifficulty(s: State, ch: Check, ev?: GameEvent): number {
-  return 8 + threatTier(s, ch, ev) * 6 + (ch.dif ?? 0);
+  return 8 + threatTier(s, ch, ev) * 2.5 + (ch.dif ?? 0);
 }
 
 export function checkChance(s: State, ch: Check, ev?: GameEvent): number {
@@ -429,17 +393,17 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
-    maxAge: Math.round(LADDERS[path.ladder].realms[0].lifespan * lifeMult),
+    maxAge: Math.round(75 * lifeMult),
     place: origin.place, faction: origin.faction, flags: [...(origin.flags ?? []), ...(last ? ['tem_eco'] : [])],
     items: ['espada_ferro_viagem', 'manto_peles'], names, scheduled: [], seen: {}, log: [],
-    counts: {}, world: null, nextWorldAt: 24 + rng.int(0, 30),
-    equipment: { rightWeapon: 'espada_ferro_viagem', armor: 'manto_peles' }, companions: [], factionReputation: {}, day: 1, hour: 8, weather: 'sunny',
+    counts: {},
+    equipment: { rightWeapon: 'espada_ferro_viagem', armor: 'manto_peles' }, companions: [], day: 1, hour: 8, weather: 'sunny',
     turn: 0, current: null, statuses: [], result: null, ending: null, endingText: null,
     found: { items: ['espada_ferro_viagem', 'manto_peles'] },
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
-  pickNext(s, rng);
+  setCurrent(s, 'murim_ferro_inicio', rng);
   return s;
 }
 
@@ -456,9 +420,14 @@ function noteFound(s: State, id: string) {
 
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function oldAgeEnding(s: State): string {
+  if (s.flags.includes('final_justica') || s.flags.includes('legado_verificacao')) return 'murim_justica';
+  if (s.flags.includes('final_duelo')) return 'murim_duelo';
+  if (s.flags.includes('final_acordo')) return 'murim_acordo';
+  if (s.flags.includes('final_tregua') || s.flags.includes('final_exilio') || s.flags.includes('legado_contestado')) return 'murim_tregua';
   if (s.flags.includes('fundou_escola')) return 'murim_escola';
   if (s.flags.includes('guardiao_estradas')) return 'murim_guardiao';
-  if (s.fama >= 50) return 'murim_mestre';
+  if (s.flags.includes('tecnica_aberta') || s.flags.includes('metodo_verificado')) return 'murim_mestre';
+  if (s.flags.includes('legado_silenciado')) return 'murim_heranca';
   return 'velhice';
 }
 
@@ -484,8 +453,6 @@ function tierUp(s: State, delta: number) {
   }
   s.tier = t;
   s.xp = 0;
-  const lifeMult = (TALENT[s.talent].lifeMult ?? 1) * (flawFx(s).lifeMult ?? 1);
-  s.maxAge = Math.max(s.maxAge, Math.round(realmOf(s).lifespan * lifeMult));
   addLog(s, `Faixa alcançada: ${realmName(s)}.`);
 }
 
@@ -497,8 +464,6 @@ function setPath(s: State, id: string) {
   for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (p.stats[k] ?? 0)));
   if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
   if (!s.flags.includes('trilha_definida')) s.flags.push('trilha_definida');
-  const lifeMult = (TALENT[s.talent].lifeMult ?? 1) * (flawFx(s).lifeMult ?? 1);
-  s.maxAge = Math.max(s.maxAge, Math.round(realmOf(s).lifespan * lifeMult));
   addLog(s, `Encontrou seu método: ${p.name}.`);
 }
 
@@ -523,7 +488,6 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
     for (const k of Object.keys(pen) as StatKey[]) if ((pen[k] ?? 0) < 0) s.stats[k] = Math.min(99, s.stats[k] - (pen[k] as number));
     addLog(s, `Superou o defeito: ${FLAW[s.flaw]?.name}.`);
   }
-  if (fx.perfil) { s.perfil ??= {}; for (const [k, v] of Object.entries(fx.perfil)) s.perfil[k] = (s.perfil[k] ?? 0) + v; }
   if (fx.morality) {
     s.morality ??= { good: 0, evil: 0, order: 0, chaos: 0 };
     for (const [axis, value] of Object.entries(fx.morality) as [keyof NonNullable<State['morality']>, number][]) {
@@ -534,13 +498,6 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.pedras) s.pedras = Math.max(0, s.pedras + fx.pedras);
   if (fx.karma) s.karma += fx.karma;
   if (fx.fama) s.fama = Math.max(0, s.fama + fx.fama);
-  if (fx.reputation) s.reputation = Math.max(0, (s.reputation ?? 0) + fx.reputation);
-  if (fx.factionReputation) {
-    s.factionReputation ??= {};
-    for (const [guild, value] of Object.entries(fx.factionReputation) as [GuildFaction, number][]) {
-      s.factionReputation[guild] = Math.max(-100, Math.min(100, (s.factionReputation[guild] ?? 0) + value));
-    }
-  }
   if (fx.sectRankUp) {
     const current = sectRankOf(s);
     const next = Math.min(SECT_RANKS.length - 1, (current ? SECT_RANKS.indexOf(current) : -1) + 1);
@@ -597,49 +554,6 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (!s.ending && s.wounds >= 6) endLife(s, 'combate');
   if (!s.ending && s.corr >= 100) endLife(s, 'demonio');
   if (!s.ending && s.age >= s.maxAge) endLife(s, s.tier === 0 ? 'mortal' : 'velhice');
-}
-
-export function acceptQuest(s: State, id: string): boolean {
-  if (s.ending || s.activeQuest || !['cidade', 'seita'].includes(s.place) || !QUEST[id]) return false;
-  s.activeQuest = { id, progress: 0 };
-  notify(s, { kind: 'quest', message: `Contrato aceito: ${QUEST[id].title}.` });
-  addLog(s, `Aceitou o contrato: ${QUEST[id].title}.`);
-  return true;
-}
-
-export function abandonQuest(s: State): boolean {
-  if (!s.activeQuest) return false;
-  const title = QUEST[s.activeQuest.id]?.title ?? 'missão';
-  s.activeQuest = undefined;
-  notify(s, { kind: 'quest', message: `Contrato abandonado: ${title}.` });
-  addLog(s, `Abandonou o contrato: ${title}.`);
-  return true;
-}
-
-function updateQuest(s: State, ev: GameEvent, place: State['place'], foeId: string | undefined, success: boolean, gained: string[]) {
-  const active = s.activeQuest;
-  if (!active) return;
-  const quest = QUEST[active.id];
-  if (!quest) { s.activeQuest = undefined; return; }
-  const objective = quest.objective;
-  if (objective.place && objective.place !== place) return;
-  if (objective.eventId && objective.eventId !== ev.id) return;
-  let amount = 0;
-  if (objective.kind === 'defeat' && success && foeId === objective.foe) amount = 1;
-  if ((objective.kind === 'collect' || objective.kind === 'craft') && objective.item) {
-    amount = gained.filter((id) => id === objective.item).length;
-  }
-  if (!amount) return;
-  active.progress = Math.min(objective.count, active.progress + amount);
-  if (active.progress < objective.count) {
-    notify(s, { kind: 'quest', message: `${quest.title}: ${active.progress}/${objective.count}.` });
-    return;
-  }
-  s.pedras += quest.reward.pedras;
-  s.reputation = (s.reputation ?? 0) + quest.reward.reputation;
-  s.activeQuest = undefined;
-  notify(s, { kind: 'quest', message: `Contrato concluído: ${quest.title} · +${quest.reward.pedras} pedras · +${quest.reward.reputation} reputação.` });
-  addLog(s, `Concluiu ${quest.title}; recebeu ${quest.reward.pedras} pedras e ${quest.reward.reputation} de reputação.`);
 }
 
 /* ---------- Rompimento (evento virtual) ---------- */
@@ -1011,7 +925,6 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const c = v.choice!;
   const ev = EVENT[s.current!.id];
   const encounterPlace = s.place;
-  const previousItems = [...s.items];
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
   let out: Outcome;
   let check: { chance: number; success: boolean } | undefined;
@@ -1044,21 +957,10 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.result = { text: txt, check, ...(roll ? { roll } : {}) };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
-  if (check && c.check?.tag === 'combate' && s.guild) {
-    s.factionReputation ??= {};
-    const delta = check.success ? 2 : -3;
-    s.factionReputation[s.guild] = Math.max(-100, Math.min(100, (s.factionReputation[s.guild] ?? 0) + delta));
-  }
   if (!s.ending && s.place === encounterPlace && REGION_POOLS[encounterPlace]) {
     s.regionalEncounters ??= {};
     s.regionalEncounters[encounterPlace] = (s.regionalEncounters[encounterPlace] ?? 0) + 1;
   }
-  const gained = s.items.slice();
-  for (const id of previousItems) {
-    const index = gained.indexOf(id);
-    if (index >= 0) gained.splice(index, 1);
-  }
-  updateQuest(s, ev, encounterPlace, foeId, !!check?.success && check && c.check?.tag === 'combate', gained);
 }
 
 /* ---------- Passagem do tempo e próximo evento ---------- */
@@ -1108,7 +1010,7 @@ function isGeneric(e: GameEvent): boolean {
   const c = e.cond;
   if (e.once) return false;
   if (!c) return true;
-  return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.itemsAll?.length || c.itemsAny?.length || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.mundo);
+  return !(c.path || c.origin || c.flags?.length || c.flagsAny?.length || c.local || c.faction || c.item || c.itemsAll?.length || c.itemsAny?.length || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin);
 }
 const GENERIC_IDS = new Set(EVENTS.filter(isGeneric).map((e) => e.id));
 
@@ -1120,41 +1022,6 @@ function setCurrent(s: State, id: string, rng: Rng) {
     s.current.foe = rng.pick(opponents);
     s.current.foeName = FOE[s.current.foe]?.name;
   }
-}
-
-/** Atualiza a era do mundo. Devolve true se já definiu o próximo turno (abertura de era ou fim de vida). */
-function updateWorld(s: State, rng: Rng): boolean {
-  if (s.world && s.age >= s.world.until) {
-    addLog(s, `Termina a era: ${WORLD[s.world.id].name}.`);
-    s.lastWorld = s.world.id;
-    s.world = null;
-    s.nextWorldAt = s.age + rng.int(35, 110);
-  }
-  if (!s.world && s.age >= (s.nextWorldAt ?? 1e9) && rng.chance(0.5)) {
-    const cands = WORLDS.filter((w) => s.tier >= w.minTier && s.tier <= (w.maxTier ?? 99) && w.id !== s.lastWorld && EVENT[w.startEvent]);
-    if (cands.length) {
-      const w = rng.weighted(cands, (x) => x.weight);
-      s.world = { id: w.id, until: s.age + rng.int(w.years[0], w.years[1]) };
-      addLog(s, `Começa a era: ${w.name}.`);
-      setCurrent(s, w.startEvent, rng);
-      return true;
-    }
-  }
-  const w = s.world ? WORLD[s.world.id] : null;
-  if (w?.hazard && s.tier >= w.hazard.minTier && s.tier <= w.hazard.maxTier) {
-    const prot = Math.min(0.75, (eff(s, 'fis') + eff(s, 'dao')) / 130);
-    if (rng.chance(w.hazard.base * (1 - prot))) {
-      if (s.items.includes('talisma_escudo')) {
-        s.items.splice(s.items.indexOf('talisma_escudo'), 1);
-        addLog(s, `O Talismã de Escudo absorve o golpe da era (${w.name}).`);
-      } else {
-        addLog(s, fill(s, w.hazard.text));
-        endLife(s, w.hazard.fim);
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 export function eligibleEvents(s: State): GameEvent[] {
@@ -1195,14 +1062,12 @@ export function pickNext(s: State, rng: Rng) {
     return;
   }
   // 2) eventos agendados
-  const dueIdx = s.scheduled.findIndex((x) => x.at <= s.age && EVENT[x.event] && s.seen[x.event] === undefined);
+  const dueIdx = s.scheduled.findIndex((x) => x.at <= s.age && EVENT[x.event] && s.seen[x.event] === undefined && condMet(s, EVENT[x.event].cond));
   if (dueIdx >= 0) {
     const due = s.scheduled.splice(dueIdx, 1)[0];
     setCurrent(s, due.event, rng);
     return;
   }
-  // 2b) eras do mundo
-  if (updateWorld(s, rng)) return;
   // 2c) reclusão (reinos altos): em vez de mais um evento genérico, passam-se anos
   if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)]) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
     const years = realmOf(s).years;
@@ -1221,16 +1086,6 @@ export function pickNext(s: State, rng: Rng) {
     const scenes = pool.filter((e) => e.cond?.noFlags?.includes('trilha_definida'));
     if (scenes.length) pool = scenes;
   }
-  const guildRep = s.guild ? factionReputation(s, s.guild) : 0;
-  if (s.guild && guildRep <= -40 && rng.chance(0.2)) {
-    const ambushes = pool.filter((event) => event.type === 'combat' && condMet(s, event.cond));
-    if (ambushes.length) {
-      const ambush = rng.pick(ambushes);
-      setCurrent(s, ambush.id, rng);
-      addLog(s, `${GUILD_NAMES[s.guild]} enviou uma patrulha hostil.`);
-      return;
-    }
-  }
   const regionalPool = REGION_POOLS[s.place]
     ?.map(({ eventId }) => EVENT[eventId])
     .filter((e): e is GameEvent => !!e && pool.includes(e));
@@ -1248,10 +1103,6 @@ export function pickNext(s: State, rng: Rng) {
     else if ((e.cond?.tierMin ?? 0) >= 2 && (e.cond?.tierMax ?? 8) - (e.cond?.tierMin ?? 0) <= 3) w *= 1.35; // específicos do reino
     if (!e.once && s.pen?.[e.id]) w *= s.pen[e.id];
     w *= afinidade(e, porCat);
-    if (s.world) {
-      if (e.cond?.mundo?.includes(s.world.id)) w *= 3; // a era do mundo puxa seus próprios eventos
-      else if (generic) w *= 0.7;
-    }
     return w;
   });
   setCurrent(s, ev ? ev.id : 'murim_dia_comum', rng);

@@ -7,10 +7,8 @@ export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 export type SectRank = 'externo' | 'interno' | 'anciao';
 export type EventType = 'narrative' | 'combat' | 'shop' | 'alchemy';
-export type QuestObjectiveKind = 'defeat' | 'collect' | 'craft';
 export type EquipmentSlot = 'rightWeapon' | 'leftWeapon' | 'armor' | 'accessory';
 export type Weather = 'sunny' | 'rain' | 'blizzard';
-export type GuildFaction = 'sword_sect' | 'demon_cult' | 'merchant_guild';
 
 export interface Companion {
   id: string;
@@ -34,23 +32,6 @@ export interface DiceRoll {
   stat: StatKey;
   playerPower?: number;
   enemyPower?: number;
-}
-
-export interface QuestObjective {
-  kind: QuestObjectiveKind;
-  count: number;
-  place?: Place;
-  foe?: string;
-  item?: string;
-  eventId?: string;
-}
-
-export interface QuestDefinition {
-  id: string;
-  title: string;
-  description: string;
-  objective: QuestObjective;
-  reward: { pedras: number; reputation: number };
 }
 
 export interface StatusEffect {
@@ -85,14 +66,10 @@ export interface Effects {
   master?: string;
   /** Avança um nível na hierarquia da seita, sem rebaixar personagens veteranos. */
   sectRankUp?: boolean;
-  reputation?: number;
-  factionReputation?: Partial<Record<GuildFaction, number>>;
   /** Aplica estados temporários no jogador. */
   status?: StatusEffect[];
   /** Remove estados temporários pelo id. */
   clearStatus?: StatusEffect['id'][];
-  /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). */
-  perfil?: Record<string, number>;
   /** Supera o defeito de nascença (arco de redenção): ele deixa de valer e a penalidade de atributos some. */
   superar?: boolean;
   setFlags?: string[];
@@ -110,7 +87,7 @@ export interface Effects {
 }
 
 export interface UiNotification {
-  kind: 'master' | 'alignment' | 'rare-item' | 'quest';
+  kind: 'master' | 'alignment' | 'rare-item' | 'info';
   message: string;
 }
 
@@ -131,12 +108,12 @@ export interface Cond {
   itemsAll?: string[];
   /** Exige qualquer um dos itens listados. */
   itemsAny?: string[];
-  /** Exige que o personagem ainda não esteja em missão. */
-  noActiveQuest?: boolean;
   /** Mínimo de encontros sobrevividos em um bioma. */
   regionalEncounters?: { place: Place; min: number };
   sectRank?: SectRank[];
   flags?: string[];
+  /** Exige ao menos uma destas flags (alternativa a `flags`, que exige todas). */
+  flagsAny?: string[];
   noFlags?: string[];
   stat?: Partial<Stats>;
   pedrasMin?: number;
@@ -149,17 +126,11 @@ export interface Cond {
   corrMin?: number;
   /** Marco mínimo da progressão universal de sagas. */
   sagaStageMin?: number;
-  /** Perfil de conduta mínimo (ex.: { compaixao: 8 }). */
-  perfil?: Record<string, number>;
-  /** Perfil de conduta máximo (ex.: { violencia: 3 }). */
-  perfilMax?: Record<string, number>;
   /** Talento, defeito, raiz (tipo ou elemento) e constituição exigidos (qualquer um da lista). */
   talent?: string[];
   flaw?: string[];
   root?: string[];
   constitution?: string[];
-  /** Só vale durante uma era do mundo (ids em src/data/mundo.ts). */
-  mundo?: string[];
 }
 
 export interface Outcome {
@@ -187,8 +158,6 @@ export interface Choice {
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
   custo?: number;
-  /** Estado de missão rastreado na UI/engine. */
-  questAction?: { type: 'accept' | 'abandon'; questId?: string };
   check?: Check;
   ok?: Outcome;
   fail?: Outcome;
@@ -226,8 +195,6 @@ export interface GameEvent {
 
 export interface Realm {
   name: string;
-  /** Idade máxima absoluta ao atingir este reino. */
-  lifespan: number;
   /** Anos típicos para encher a barra. */
   years: number;
   /** Chance base de rompimento para entrar NESTE reino. */
@@ -345,12 +312,6 @@ export interface State {
   master?: string | null;
   /** Contagem de encontros concluídos e sobrevividos em cada região. */
   regionalEncounters?: Partial<Record<Place, number>>;
-  /** Missão ativa e seu progresso (ausente em saves antigos). */
-  activeQuest?: { id: string; progress: number };
-  /** Reputação obtida ao cumprir contratos. */
-  reputation?: number;
-  factionReputation?: Partial<Record<GuildFaction, number>>;
-  guild?: GuildFaction;
   equipment?: Partial<Record<EquipmentSlot, string>>;
   companions?: string[];
   day?: number;
@@ -395,13 +356,8 @@ export interface State {
   /** Quantas vezes cada evento já ocorreu nesta vida (alimenta a fadiga de repetição). */
   counts?: Record<string, number>;
   /** Perfil de conduta acumulado pelas escolhas. */
-  perfil?: Record<string, number>;
   /** Multiplicador de peso por evento, vindo das vidas anteriores (novidade entre vidas). */
   pen?: Record<string, number>;
-  /** Era do mundo em curso. */
-  world?: { id: string; until: number } | null;
-  nextWorldAt?: number;
-  lastWorld?: string;
   /** Dificuldade escolhida: -1 calmo, 0 normal, 1 desafio. */
   dif?: number;
   /** Itens já obtidos nesta vida (alimenta o Códice). */

@@ -39,7 +39,6 @@ function markOf(fx?: Effects): string[] {
   if (fx.fim) m.push('fim');
   if (fx.tier) m.push('reino');
   if (fx.trilha) m.push('trilha');
-  if (fx.perfil) m.push('perfil');
   if (Math.abs(fx.karma ?? 0) >= 8) m.push('karma');
   if (Math.abs(fx.fama ?? 0) >= 10) m.push('fama');
   if ((fx.corr ?? 0) >= 8) m.push('corrupção');
@@ -56,7 +55,7 @@ function signature(c: Choice): string {
 /* ---------- Flags lidas e gravadas ---------- */
 const written = new Map<string, string>();
 const read = new Set<string>();
-const readCond = (c?: Cond) => { c?.flags?.forEach((f) => read.add(f)); c?.noFlags?.forEach((f) => read.add(f)); };
+const readCond = (c?: Cond) => { c?.flags?.forEach((f) => read.add(f)); c?.flagsAny?.forEach((f) => read.add(f)); c?.noFlags?.forEach((f) => read.add(f)); };
 for (const e of EVENTS) {
   readCond(e.cond);
   for (const c of e.choices) {
@@ -67,7 +66,7 @@ for (const e of EVENTS) {
   }
 }
 // Leituras fora dos eventos: motor, interface e dados (finais, conquistas, origens).
-const srcFiles = ['src/engine/engine.ts', 'src/ui/main.ts', 'src/data/endings.ts', 'src/data/character.ts', 'src/data/mundo.ts'];
+const srcFiles = ['src/engine/engine.ts', 'src/ui/main.ts', 'src/data/endings.ts', 'src/data/character.ts'];
 const code = srcFiles.filter(existsSync).map((f) => readFileSync(f, 'utf8')).join('\n');
 const codeRead = (f: string) => code.includes(`'${f}'`) || code.includes(`"${f}"`);
 const unreadFlags = [...written.keys()].filter((f) => !read.has(f) && !codeRead(f) && !MARCAS_VIDA[f]);

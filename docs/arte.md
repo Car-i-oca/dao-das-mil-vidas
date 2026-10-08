@@ -1,25 +1,19 @@
-# Arte — três estilos, todos gerados por código
+# Arte e interface
 
-Toda a arte é **desenhada por código** (SVG e pixel art em `src/ui/art/`), sem imagens nem fontes de terceiros: funciona offline no PWA e no APK e pesa poucos KB. **Nenhum recurso externo é usado, então não há licença de terceiros para registrar** (ver `docs/licencas.md`). O jogador troca de estilo em **Herança do Dao → Opções → Estilo de arte** (ou pelo botão "Estilo de arte" da tela inicial); a escolha fica salva. O padrão é o **Manhwa**.
+Murim Quest tem três estilos de ilustração gerados pelo código em `src/ui/art/`: Manhwa, Tinta e Pixel. A seleção fica nas opções do app e é lembrada no aparelho. A tela de galeria permite conferir ícones, cenários, personagens, itens e faixas.
 
-## Como funciona
-- `estilo.ts`: tipo `Estilo` (`manhwa` | `tinta` | `pixel`), estilo ativo e o contrato `Pacote` (item, técnica, trilha, reino, retrato, cenário, final, lutador do jogador, oponente).
-- `index.ts`: fachada. `main.ts` só chama `itemIcon`, `portraitSvg`, `sceneSvg`…; a fachada escolhe o desenho do estilo ativo e, se um estilo não desenha algo, cai na arte "clássica" original (`icons.ts`, `portrait.ts`, `scenes.ts`, `lutadores.ts`, que também guardam os dados compartilhados: motivos dos itens, trilhas e oponentes).
-- Trocar de estilo refaz a tela na hora (toda a interface é redesenhada a cada ação). `amostraDe()` mostra a prévia de cada estilo nas opções sem trocar o ativo.
-- Teste: `?arte=<estilo>&sec=<itens|tecnicas|trilhas|reinos|cenarios|finais|retratos|lutadores>` abre a galeria interna daquele estilo; `node tools/e2e/arte.mjs <estilo> [seções] [pasta]` tira prints a 390 px; `node tools/e2e/estilo.mjs` verifica a tela inicial de áudio, o layout de aventura e a troca de estilo.
+## Limites de interface
 
-## Os estilos
-**Manhwa** (`manhwa/`): cara de web novel atual. Contorno firme, cel-shading com gradiente, brilho especular, luz de contorno colorida pela aura do reino, círculos mágicos atrás dos retratos (mais anéis e runas a cada reino), partículas, vinheta e raridade por moldura neon (grau 4 ganha cantoneiras, grau 5 ganha coroa). Retratos com olhos grandes e brilhantes, cabelo em camadas com mechas e acessórios por trilha.
+- O app ocupa a altura útil do celular e considera as áreas seguras do sistema.
+- Cabeçalho, cena, narrativa, escolhas e abas permanecem em áreas separadas.
+- Texto da narrativa e lista de escolhas têm rolagem própria; a página inteira não deve criar uma segunda barra horizontal.
+- Mantenha controles com área de toque clara e não dependa só de cor para indicar sucesso, falha ou estado.
+- Teste 320×568, 360×640, 390×844 e 430×932 com `npm run e2e:layout`.
 
-**Tinta** (`tinta/`): pintura chinesa de poucos traços. O traço é uma **pincelada de verdade**: um polígono de largura variável (começa firme, sustenta e afina até a ponta, com leve aspereza só na borda e fios de papel no pincel seco), calculado em `traco()`; nada de tremor por filtro. As cores são lavis translúcidos com a borda mais carregada, muito papel em branco, névoa entre os planos e **um selo vermelho** em cada peça (marca geométrica, sem depender de fontes). O grau da técnica fecha o círculo de pincel (ensō).
+## Áudio
 
-**Pixel 16-bit** (`pixel/`): sprites de verdade (`surf.ts`): formas com sombreamento automático por faixas (brilho em cima/esquerda, sombra embaixo/direita, pontilhado na transição), contorno escuro, céus em degradê pontilhado e cenários em camadas (céu, sol, nuvens, duas cordilheiras com perspectiva atmosférica, elementos do lugar, primeiro plano e vinheta). Cada sprite vira um PNG minúsculo em cache, ampliado sem suavizar.
+A trilha `public/audio/murim-wuxia.ogg` é local e deve carregar dentro do pacote Android e da PWA. Ela começa após o toque inicial, fica em loop e pausa quando o app entra em segundo plano. Efeitos curtos são opcionais e gerados por Web Audio. Verifique `npm run e2e:audio-start` após mudanças de endereço, formato ou carregamento da mídia.
 
-## Tamanhos
-Ícones 64×64 (manhwa e tinta) ou 32×32 (pixel), exibidos a 26–64 px. Retratos 120×120 (pixel: 48×48). Cenários e finais 320×120 (pixel: 160×60). Lutadores 120×140 (pixel: 60×70).
+## Diagnóstico visual
 
-## Raridade e variação
-Itens: moldura por grau (1 cinza, 2 bronze, 3 jade, 4 azul, 5 ouro; no tinta, o grau 5 ganha folhas de ouro). Técnicas: anéis e cor crescem com o grau. Cada item tem cor e detalhes fixos por `hash(id)`. Os finais têm um motivo próprio (sol, lâminas, raio, chama, fio, árvore, montanha, pagode, moeda, roda, caldeirão, garra, vaso, estrada, vazio, livro, sino, olho, rio, trono, mão, coração) e cada final de traço de personagem aponta para um deles em `scenes.ts`.
-
-## Onde aparece
-HUD (retrato), cartão do evento (cenário + retrato do NPC citado), encontros (cenário + retratos do jogador e do inimigo), Status (emblemas, técnicas), Mochila e Códice (ícones), e tela final (cartão + retrato).
+`npm run galeria` atualiza `docs/galeria.html`. Para conferir cada linguagem visual, execute `npm run e2e:arte -- manhwa`, `-- tinta` ou `-- pixel` com o servidor de preview em `http://localhost:4173`.

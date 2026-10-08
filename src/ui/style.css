@@ -199,19 +199,10 @@ p { margin-top: 0; }
 .tab-item.on { background: #c7a66a12; color: var(--gold-bright); }
 .tab-item.on .tab-icon { filter: drop-shadow(0 0 8px #d1ad6b66); }
 
-/* Character status, inventory, quests and diary */
+/* Character status, inventory and diary */
 .stat { display: grid; grid-template-columns: minmax(90px, 110px) 1fr 42px; align-items: center; gap: 8px; padding: 4px 0; }
 .stat .bar { height: 5px; margin: 0; }
 .stat .n { text-align: right; font-variant-numeric: tabular-nums; }
-.quest-card h3 { margin: 4px 0; }
-.quest-card p { margin: 4px 0 8px; }
-.quest-progress { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
-.quest-progress .bar { flex: 1; margin: 0; }
-.quest-progress .bar > i { background: linear-gradient(90deg, var(--blue), var(--gold)); }
-.quest-offer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
-.quest-offer:last-child { border-bottom: 0; }
-.quest-offer .btn { width: auto; min-width: 90px; min-height: 38px; padding: 7px 11px; }
-.quest-card .btn { margin-top: 10px; }
 .pill { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-raised); font-size: .82rem; }
 .pill.g2 { border-color: var(--jade); }
 .pill.g3 { border-color: var(--blue); }
@@ -230,14 +221,8 @@ p { margin-top: 0; }
 .equipment-slot > div { display: grid; gap: 2px; }
 .equipment-slot > div small { color: var(--gold); font-size: .68rem; text-transform: uppercase; }
 .equipment-slot .btn { width: auto; flex: none; min-height: 38px; padding: 7px 10px; font-size: .78rem; }
-.faction-card { padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
-.faction-card:last-child { border-bottom: 0; }
-.faction-card p { margin: 5px 0; }
-.faction-card .btn { min-height: 38px; margin-top: 8px; padding: 7px 12px; }
-.rep-line { display: flex; justify-content: space-between; color: var(--muted); font-size: .78rem; }
 .bar.reputation { height: 7px; margin-top: 4px; }
 .bar.reputation > i { background: linear-gradient(90deg, var(--red), var(--gold), var(--jade)); }
-.faction-hostile { color: var(--red); }
 .faction-friendly { color: var(--jade); }
 .emblems { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .intro ul { margin: 8px 0 12px; padding-left: 18px; font-size: .9rem; }

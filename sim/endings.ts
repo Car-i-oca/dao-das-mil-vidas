@@ -22,7 +22,7 @@ function satisfy(s: State, c?: Cond) {
   if (c.tierMax !== undefined && s.tier > c.tierMax) s.tier = c.tierMax;
   if (c.path?.length) s.path = c.path[0];
   if (c.origin?.length) s.origin = c.origin[0];
-  for (const f of c.flags ?? []) if (!s.flags.includes(f)) s.flags.push(f);
+  for (const f of [...(c.flags ?? []), ...(c.flagsAny?.length ? [c.flagsAny[0]] : [])]) if (!s.flags.includes(f)) s.flags.push(f);
   for (const k of Object.keys(c.stat ?? {}) as StatKey[]) s.stats[k] = Math.max(s.stats[k], c.stat![k]!);
   if (c.pedrasMin !== undefined) s.pedras = Math.max(s.pedras, c.pedrasMin + 400);
   if (c.karmaMin !== undefined) s.karma = Math.max(s.karma, c.karmaMin);
@@ -36,21 +36,20 @@ function satisfy(s: State, c?: Cond) {
   if (c.flaw?.length) s.flaw = c.flaw[0];
   if (c.constitution?.length) s.constitution = c.constitution[0];
   if (c.sagaStageMin !== undefined) s.turn = Math.max(s.turn, c.sagaStageMin * 6);
-  for (const [k, v] of Object.entries(c.perfil ?? {})) { s.perfil ??= {}; s.perfil[k] = Math.max(s.perfil[k] ?? 0, v); }
 }
 
 const results: { ending: string; event: string; ok: boolean; note?: string }[] = [];
 for (const ev of EVENTS as GameEvent[]) {
   ev.choices.forEach((ch, ci) => {
-    const outs: [string, Outcome | undefined, number][] = [['res', ch.res, 0], ['ok', ch.ok, 0], ['fail', ch.fail, 0.9999]];
-    for (const [kind, out, roll] of outs) {
+    const outs: [string, Outcome | undefined][] = [['res', ch.res], ['ok', ch.ok], ['fail', ch.fail]];
+    for (const [kind, out] of outs) {
       const fim = out?.fx?.fim;
       if (!fim) continue;
       const meta = newMeta();
       const r0 = new Rng(5);
       const s = startLife(meta, rollCreation(meta, r0), '', r0.seed);
       s.ending = null; s.current = { id: ev.id }; s.result = null;
-      s.stats = { fis: 40, esp: 40, comp: 40, sor: 40, car: 40, dao: 40 };
+      s.stats = { fis: 100, esp: 100, comp: 100, sor: 100, car: 100, dao: 100 };
       satisfy(s, ev.cond); satisfy(s, ch.cond);
       if (s.tier >= 1 && !s.path) s.path = 'sopro';
       if (s.path && !PATHS.some((p) => p.id === s.path)) s.path = '';
@@ -61,8 +60,9 @@ for (const ev of EVENTS as GameEvent[]) {
       if (idx < 0) { results.push({ ending: fim, event: `${ev.id}#${ci + 1}/${kind}`, ok: false, note: 'escolha não aparece com as condições montadas' }); continue; }
       const sv = view(s);
       if (sv.choices[idx]?.disabled) { s.pedras += 1000; }
-      // kind 'res' não rola dado; 'ok' força sucesso (v=0) e 'fail' força falha (v=0.9999)
-      choose(s, idx, new FixedRng(kind === 'ok' ? 0 : kind === 'fail' ? roll : 0.5));
+      // D20 natural 1 sempre falha e 20 sempre passa; o teste força 2 com atributo máximo/mínimo.
+      if (kind === 'fail') s.stats = { fis: 0, esp: 0, comp: 0, sor: 0, car: 0, dao: 0 };
+      choose(s, idx, new FixedRng(kind === 'ok' ? 0.075 : kind === 'fail' ? 0 : 0.5));
       results.push({ ending: fim, event: `${ev.id}#${ci + 1}/${kind}`, ok: s.ending === fim, note: s.ending === fim ? undefined : `terminou com ${s.ending ?? 'nada'}` });
     }
   });

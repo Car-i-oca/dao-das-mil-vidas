@@ -20,11 +20,11 @@ As dependências indiretas (listadas em `package-lock.json`) têm licenças perm
 O APK inclui o AndroidX e o Capacitor Android (Apache-2.0 e MIT). Nenhum outro componente de terceiros.
 
 ## Fontes e imagens
-- **Fontes:** nenhuma fonte baixada; o jogo usa a pilha de fontes do sistema (`Noto Serif`, `Songti SC`, `Source Han Serif`, `Palatino Linotype`, `Georgia`...), que é a do aparelho de cada jogador.
+- **Fontes:** a interface solicita fontes externas ao Google Fonts e usa fontes de sistema como alternativa.
 - **Arte (ícones, retratos, cenários, lutadores):** gerada por código em `src/ui/art/`; original.
 - **Ícones do app e telas de abertura:** gerados por `scripts/gen-icons.mjs`; originais.
-- **Sons e música:** o jogo não tem.
+- **Sons e música:** efeitos sintetizados no app e uma faixa local em `public/audio/murim-wuxia.ogg`.
 - **Pacotes de arte prontos:** nenhum até agora. Se algum for usado (somente CC0 ou licença livre equivalente), será registrado aqui com fonte e licença.
 
 ## Conteúdo narrativo
-Convenções de gênero (xianxia, wuxia, xuanhuan, murim, mitologia chinesa) foram usadas só como referência de estilo. Personagens, seitas, técnicas, itens e textos são originais; ver `docs/pesquisa.md` e a auditoria de originalidade em `docs/autoria.md`.
+O conteúdo ativo acompanha escolas, famílias e comunidades do Jianghu. Personagens, locais, itens, textos e arte são criados para este projeto; a evolução da campanha está descrita em `docs/autoria.md`.

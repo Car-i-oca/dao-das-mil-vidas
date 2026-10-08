@@ -133,7 +133,7 @@ const delta = (k: keyof typeof metrics, fmt: (x: number) => string) => {
 const L: string[] = [];
 L.push('# Diagnóstico de variedade', '');
 L.push(`Gerado por \`npm run variedade -- ${N}\` em ${new Date().toISOString().slice(0, 10)} (vidas independentes, meta vazia, bot de \`sim/bot.ts\`).`);
-L.push(base && !saveBaseline ? 'Comparação **antes → depois** em relação ao baseline (`docs/variedade.baseline.json`).' : 'Este é o **baseline**: os números que as próximas etapas precisam melhorar.', '');
+L.push(saveBaseline ? 'Este relatório foi gravado como nova referência de comparação.' : base ? 'Comparação **antes → depois** em relação ao baseline atual.' : 'Relatório atual da campanha; ainda não há baseline comparativo.', '');
 L.push('## Resumo', '', '| Métrica | Valor |', '|---|---|');
 L.push(`| Eventos no jogo | ${delta('totalEventos', (x) => String(x))} |`);
 L.push(`| Eventos (turnos) por vida | ${delta('eventosPorVida', (x) => x.toFixed(1))} |`);

@@ -1,23 +1,7 @@
-import type { Choice, GameEvent } from '../types';
-import { eventTypeOf } from './event-type';
+import type { GameEvent } from '../types';
 
-/**
- * Opções exclusivas por traço (talento, defeito, trilha, origem, constituição, raiz, método, conduta).
- * Um MOLDE é uma escolha com condição própria (`cond`) que é acrescentada a todos os eventos de uma categoria
- * (ou a eventos específicos). Quem não tem o traço nunca vê a opção; quem tem, vê uma saída que só ele tem,
- * com consequência própria (flag lida depois, evento agendado, item, método, mudança de rumo).
- */
+/** Categorias usadas para ajustar a frequência dos eventos ao personagem. */
 export type Cat = 'combate' | 'social' | 'perigo' | 'tesouro' | 'treino' | 'viagem';
-
-export interface Molde {
-  /** Categorias de evento que recebem a opção, ou ids de eventos. */
-  alvo: Cat[] | string[];
-  /** Id curto do molde (evita duplicar no mesmo evento). */
-  id: string;
-  /** A opção encena combate direto e só pode ser oferecida num encontro explicitamente combativo. */
-  combatOnly?: boolean;
-  choice: Choice;
-}
 
 const RE: Record<Cat, RegExp> = {
   combate: /duelo|emboscada|luta|lutar|fera|lobo|tigre|serpente|bandid|assassin|guerra|cerco|torneio|desafio|combate|ataque|batalha|inimigo|ca[cç]ador/i,
@@ -38,44 +22,4 @@ export function categorias(e: GameEvent): Cat[] {
   if (tags.some((t) => t === 'treino' || t === 'mente' || t === 'formacao')) cats.add('treino');
   for (const c of Object.keys(RE) as Cat[]) if (RE[c].test(txt)) cats.add(c);
   return [...cats];
-}
-
-/** Eventos que nunca recebem opções extras (cenas de transição, finais, aberturas de era). */
-function elegivel(e: GameEvent): boolean {
-  if ((e.weight ?? 1) === 0 && !e.once) return false;
-  if (e.id.startsWith('mundo_') || e.id.startsWith('marco_') || e.id.startsWith('og_') || e.id.startsWith('npc_')) return false;
-  if (e.choices.length < 2) return false;
-  if (e.passagem) return false;
-  return true;
-}
-
-export function aplicarMoldes(events: GameEvent[], moldes: Molde[]): GameEvent[] {
-  const porId = new Map<string, Molde[]>();
-  for (const m of moldes) for (const a of m.alvo as string[]) {
-    if (['combate', 'social', 'perigo', 'tesouro', 'treino', 'viagem'].includes(a)) continue;
-    (porId.get(a) ?? porId.set(a, []).get(a)!).push(m);
-  }
-  return events.map((e) => {
-    if (eventTypeOf(e) === 'narrative' && e.choices.length > 0 && e.allowGlobalTraits !== true) return e;
-    if (!elegivel(e) && !porId.has(e.id)) return e;
-    const cats = categorias(e);
-    const combatContext = !!e.combate || e.choices.some((choice) => !choice.ex && choice.check?.tag === 'combate');
-    const extra: Choice[] = [];
-    const usados = new Set<string>();
-    for (const m of moldes) {
-      if (usados.has(m.id)) continue;
-      const alvos = m.alvo as string[];
-      const porCat = alvos.some((a) => (cats as string[]).includes(a));
-      const porEv = alvos.includes(e.id);
-      const combatOnly = m.combatOnly || (m.choice.check?.tag === 'combate' && (m.alvo as string[]).includes('combate'));
-      if ((porCat || porEv) && (!combatOnly || combatContext)) {
-        usados.add(m.id);
-        const choice = m.choice.cond?.root
-          ? { ...m.choice, cond: { ...m.choice.cond, tierMin: Math.max(1, m.choice.cond.tierMin ?? 0) } }
-          : m.choice;
-        extra.push({ ...choice, ex: true, ...(combatOnly ? { requiresEventType: 'combat' as const } : {}) });
-      }
-    }
-    return extra.length ? { ...e, choices: [...e.choices, ...extra] } : e;
-  });
 }

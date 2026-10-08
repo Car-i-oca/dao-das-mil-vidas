@@ -16,14 +16,12 @@ const ITEM_DEFS: Omit<Item, 'rarity'>[] = [
   { id: 'pilula_qi_maior', name: 'Tônico de Longa Jornada', kind: 'pilula', grade: 3, desc: 'Uma mistura concentrada para retomar o treinamento.', use: { xp: 30 }, value: 40 },
   { id: 'pilula_cura', name: 'Unguento de Ervas', kind: 'pilula', grade: 1, desc: 'Limpa e fecha cortes superficiais.', use: { ferida: -2 }, value: 5 },
   { id: 'pilula_cura_maior', name: 'Cataplasma de Casca', kind: 'pilula', grade: 2, desc: 'Alivia dores e ajuda a recuperar ferimentos.', use: { ferida: -5 }, value: 18 },
-  { id: 'talisma_fuga', name: 'Fumaça de Fuga', kind: 'talisma', grade: 2, desc: 'Uma cápsula de fumaça para romper contato e escapar.', value: 20 },
   { id: 'talisma_escudo', name: 'Broquel de Emergência', kind: 'talisma', grade: 2, desc: 'Placa leve presa ao antebraço; pode absorver um golpe fatal.', value: 25 },
   { id: 'espada_ferro_frio', name: 'Faca de Acampamento', kind: 'artefato', grade: 1, desc: 'Ferramenta resistente que também serve de arma reserva.', passive: { fis: 1 }, value: 8 },
   { id: 'espada_aprendiz', name: 'Espada de Treino Reforçada', kind: 'artefato', grade: 2, desc: 'Arma de madeira densa, pesada o bastante para corrigir a postura.', passive: { fis: 1, dao: 1 }, value: 40 },
   { id: 'erva_orvalho', name: 'Folha de Hortelã Selvagem', kind: 'erva', grade: 1, desc: 'Erva fresca que reduz o cansaço e acalma o estômago.', use: { xp: 5 }, value: 3 },
   { id: 'erva_cem_anos', name: 'Raiz de Ginseng', kind: 'erva', grade: 2, desc: 'Raiz amarga usada em caldos para restaurar o vigor.', use: { xp: 12, stats: { esp: 1 } }, value: 15 },
   { id: 'erva_mil_anos', name: 'Raiz de Cordilheira', kind: 'erva', grade: 3, desc: 'Ingrediente raro, colhido em encostas difíceis.', use: { xp: 25, vida: 10 }, value: 80 },
-  { id: 'cristal_qi', name: 'Ficha de Cobre Antiga', kind: 'misc', grade: 2, desc: 'Uma moeda de colecionador que também compra suprimentos.', use: { xp: 10 }, value: 10 },
   { id: 'lamina_bioma', name: 'Lâmina da Costa', kind: 'arma', grade: 3, desc: 'Espada curta feita para convés molhado e combate próximo.', equipmentSlot: 'rightWeapon', bonuses: { fis: 2, dao: 1 }, value: 110 },
 ];
 

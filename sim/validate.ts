@@ -4,9 +4,7 @@ import { hasCombatMechanics } from '../src/data/event-type';
 import { ITEMS } from '../src/data/items';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
-import { WORLDS, WORLD } from '../src/data/mundo';
 import { ORIGINS, TALENTS } from '../src/data/character';
-import { QUESTS } from '../src/data/quests';
 import { FOES } from '../src/data/combates';
 import { COMPANIONS } from '../src/data/companions';
 import { checkChance, choose, newMeta, proceed, startLife, visibleChoices } from '../src/engine/engine';
@@ -26,7 +24,7 @@ function dupes(label: string, list: { id: string }[]) {
     seen.add(x.id);
   }
 }
-dupes('evento', EVENTS); dupes('item', ITEMS); dupes('final', ENDINGS); dupes('missão', QUESTS); dupes('oponente', FOES); dupes('companheiro', COMPANIONS);
+dupes('evento', EVENTS); dupes('item', ITEMS); dupes('final', ENDINGS); dupes('oponente', FOES); dupes('companheiro', COMPANIONS);
 
 const equipmentSlots = new Set<EquipmentSlot>(['rightWeapon', 'leftWeapon', 'armor', 'accessory']);
 for (const item of ITEMS) {
@@ -37,13 +35,6 @@ for (const item of ITEMS) {
 for (const companion of COMPANIONS) {
   if (companion.price < 0 || !Number.isFinite(companion.price)) errors.push(`companheiro ${companion.id}: preço inválido`);
   if (Object.values(companion.bonus).some((value) => !Number.isFinite(value))) errors.push(`companheiro ${companion.id}: bônus não numérico`);
-}
-
-for (const quest of QUESTS) {
-  if (quest.objective.item && !itemIds.has(quest.objective.item)) errors.push(`missão ${quest.id}: item inexistente "${quest.objective.item}"`);
-  if (quest.objective.foe && !foeIds.has(quest.objective.foe)) errors.push(`missão ${quest.id}: oponente inexistente "${quest.objective.foe}"`);
-  if (quest.objective.eventId && !evIds.has(quest.objective.eventId)) errors.push(`missão ${quest.id}: evento inexistente "${quest.objective.eventId}"`);
-  if (quest.objective.count < 1) errors.push(`missão ${quest.id}: objetivo deve exigir ao menos uma unidade`);
 }
 
 const setFlags = new Set<string>(['tem_eco', 'trilha_definida']); // flags definidas pelo motor
@@ -60,13 +51,13 @@ function fx(where: string, e?: Effects) {
 function cond(where: string, c?: Cond) {
   if (!c) return;
   c.flags?.forEach((f) => needFlags.set(f, where));
+  c.flagsAny?.forEach((f) => needFlags.set(f, where));
   c.root?.forEach((root) => !ROOT_TAGS.has(root) && errors.push(`${where}: raiz ou elemento inexistente "${root}"`));
   if (c.item && !itemIds.has(c.item)) errors.push(`${where}: cond.item inexistente "${c.item}"`);
   c.itemsAll?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAll inexistente "${id}"`));
   c.itemsAny?.forEach((id) => !itemIds.has(id) && errors.push(`${where}: cond.itemsAny inexistente "${id}"`));
   c.path?.forEach((p) => !PATHS.some((x) => x.id === p) && errors.push(`${where}: trilha inexistente "${p}"`));
   c.origin?.forEach((o) => !ORIGINS.some((x) => x.id === o) && errors.push(`${where}: origem inexistente "${o}"`));
-  c.mundo?.forEach((m) => !WORLD[m] && errors.push(`${where}: era do mundo inexistente "${m}"`));
   if (c.tierMin !== undefined && c.tierMax !== undefined && c.tierMin > c.tierMax) errors.push(`${where}: tierMin > tierMax`);
 }
 
@@ -169,12 +160,6 @@ if (chooseSagaOption(sagaProbe, 'Entrar na Escola da Lâmina Errante')) {
 for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {
   if (p.unlock && !achIds.has(p.unlock)) errors.push(`trilha ${p.id}: conquista inexistente "${p.unlock}"`);
-}
-for (const w of WORLDS) {
-  if (!evIds.has(w.startEvent)) errors.push(`era ${w.id}: evento de abertura inexistente "${w.startEvent}"`);
-  if (w.hazard && !endIds.has(w.hazard.fim)) errors.push(`era ${w.id}: final de perigo inexistente "${w.hazard.fim}"`);
-  const own = EVENTS.filter((e) => e.cond?.mundo?.includes(w.id) && e.id !== w.startEvent);
-  if (own.length < 3) warnings.push(`era ${w.id}: só ${own.length} eventos próprios`);
 }
 for (const o of ORIGINS) {
   if (o.unlock && !achIds.has(o.unlock)) errors.push(`origem ${o.id}: conquista inexistente "${o.unlock}"`);

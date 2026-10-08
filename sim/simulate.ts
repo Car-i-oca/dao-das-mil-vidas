@@ -6,7 +6,6 @@
  *   npm run sim -- 4000 --report        roda os dois modos e grava docs/balanceamento.md
  */
 import { writeFileSync } from 'node:fs';
-import { Rng } from '../src/engine/rng';
 import {
   newMeta, finalizeLife, buyUpgrade, ladderOf, PATH,
 } from '../src/engine/engine';
@@ -85,12 +84,9 @@ const UPGRADE_ORDER = ['ritmo', 'mente', 'corpo', 'destino', 'bolso', 'memoria',
 function runMeta(): Run {
   const run = emptyRun('Meta-progressão (vidas em sequência, como um jogador de verdade)');
   const meta = newMeta();
-  const rng = new Rng(424242);
   for (let i = 0; i < N; i++) {
-    // Busca o caminho demoníaco em metade das vidas até desbloquear a conquista.
-    const seekDemon = !meta.achievements.includes('ach_demonio') && rng.chance(0.5);
     const before = new Set(meta.achievements);
-    const s = playLife(meta, 5000 + i * 104729, '', seekDemon, run.events, run.tierAges);
+    const s = playLife(meta, 5000 + i * 104729, '', false, run.events, run.tierAges);
     finalizeLife(meta, s);
     for (const a of meta.achievements) if (!before.has(a)) run.timeline.push({ id: a, life: i + 1 });
     run.pathUse[s.path] = (run.pathUse[s.path] ?? 0) + 1;
@@ -117,7 +113,7 @@ function formatRun(run: Run): string {
   const L: string[] = [];
   const ages = [...run.ages].sort((a, b) => a - b);
   L.push(`### ${run.title}`, '', `${run.total} vidas.`, '');
-  L.push(`**Taxa de ascensão:** ${run.ascensions} (${pc(run.ascensions, run.total)})  `);
+  L.push(`**Nomes imortalizados pela graduação final:** ${run.ascensions} (${pc(run.ascensions, run.total)})`);
   L.push(`**Idade de morte:** mín ${q(ages, 0)} · p10 ${q(ages, 0.1)} · mediana ${q(ages, 0.5)} · p90 ${q(ages, 0.9)} · p99 ${q(ages, 0.99)} · máx ${q(ages, 1)}`, '');
   L.push('**Finais**', '', '| Final | Vidas | % |', '|---|---:|---:|');
   for (const e of ENDINGS) L.push(`| ${e.name} | ${run.ends[e.id] ?? 0} | ${pc(run.ends[e.id] ?? 0, run.total)} |`);
@@ -187,23 +183,20 @@ if (report) {
     '## Como o bot joga',
     '- 70% das vezes escolhe a opção de maior chance de sucesso; nos demais casos escolhe ao acaso entre as opções seguras.',
     '- Evita escolhas que encerram a vida (risco de final > 12%), exceto quando a idade passa de 90% da vida máxima ou resta menos de 15 anos.',
-    '- No modo meta, busca o caminho demoníaco (aceita ofertas, sacrifícios e pactos) em metade das vidas até liberar a conquista, escolhe trilhas liberadas ao acaso e gasta a Herança do Dao em ritmo → mente → corpo → destino → bolso.',
+    '- No modo meta, joga vidas consecutivas, escolhe entre as trilhas liberadas e gasta pontos de Legado nos aprimoramentos disponíveis.',
     '',
     '## Metas de balanceamento',
-    '- Ascender é raro (~1% no bot), mas possível; um jogador atento deve superar o bot.',
-    '- A maioria das vidas termina entre o 3º e o 5º reino.',
-    '- Nenhum final voluntário (eremita, sacrifício, reencarnação) passa de ~5% das vidas.',
+    '- A vida acompanha uma carreira marcial humana; a faixa deve refletir domínio e reputação, sem longevidade sobrenatural.',
+    '- As escolhas da campanha Hwayang devem aparecer ao longo das vidas e produzir finais distintos.',
     '',
     formatRun(a),
     '',
     formatRun(b),
     '',
     '## Observações',
-    '- Os 4 eventos que dependem de desbloqueio (despertar_alquimista, despertar_reencarnado, despertar_demoniaco, regressao_visao) aparecem normalmente no modo meta.',
-    '- A conquista Sombra Escolhida (que libera a trilha do Sangue) vale também com Corrupção ≥ 60 ao morrer; terminar como demônio é raro demais (~1% mesmo buscando).',
-    '- Finais voluntários (eremita, sacrifício, reencarnação, vazio) ficam abaixo de ~1% porque o bot os evita; jogadores humanos devem escolhê-los mais.',
-    '- A trilha de cultivo nasce de eventos (cenas de primeiro método depois do despertar); a tabela por trilha reflete essas escolhas.',
-    '- Preços da Herança: custo × (nível+1)^1,5. Efeitos por nível: +1 atributo inicial (até nv 5), +2% de cultivo (até nv 6), +10 pedras, +1 re-sorteio, +0,8% de chance em testes (até nv 4). Os pontos ainda sobram no fim (o ganho médio por vida é maior que o total comprável); novos sumidouros podem entrar em ciclos futuros.',
+    '- A campanha Hwayang possui rotas de justiça, trégua, duelo, acordo e exílio; compare as frequências com a cobertura pretendida para escolhas humanas.',
+    '- As faixas mais altas são raras no bot. Ajuste o ritmo de treinamento e as chances de rompimento em conjunto para manter a progressão alcançável sem torná-la automática.',
+    '- O relatório usa um bot heurístico; distribuições descrevem esse comportamento e não substituem testes de jogo manual.',
     '',
   ].join('\n');
   writeFileSync('docs/balanceamento.md', doc);

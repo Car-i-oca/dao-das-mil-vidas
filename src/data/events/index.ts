@@ -33,12 +33,13 @@ export const EVENTS: GameEvent[] = ([
     id: 'murim_escola', title: 'O portão da escola', rarity: 'incomum', once: true, cooldown: 99,
     cond: { ageMin: 12 }, text: 'Aos doze anos, você precisa decidir o que fazer com a vontade de entrar no Jianghu. Uma escola aceita aprendizes, uma médica procura ajudante, uma mestra errante oferece treino individual e a Casa de Chá da Lua Oca promete poder sem registro.',
     choices: [
-      { text: 'Entrar na Escola da Lâmina Errante', res: { text: 'Você recebe uma espada de treino e uma regra: nunca desembainhe por uma disputa que possa ser resolvida de outro modo.', fx: { trilha: 'espada', tier: 1, morality: { good: 1, order: 1 }, setFlags: ['im_seol_aluna'] } } },
-      { text: 'Aprender o Punho de Ferro', res: { text: 'O mestre do pátio ensina postura, queda e como proteger quem está atrás de você.', fx: { trilha: 'corpo', tier: 1, morality: { order: 1 } } } },
-      { text: 'Tornar-se aprendiz do Ofício dos Cem Remédios', res: { text: 'Você troca o pátio por um balcão cheio de ervas, frascos e pacientes que não podem pagar.', fx: { trilha: 'alquimia', tier: 1, setFlags: ['medica_aprendiz'] } } },
-      { text: 'Aceitar a disciplina do Templo Silencioso', res: { text: 'O templo não promete vitória. Oferece rotina, abrigo e uma maneira de interromper uma luta antes que comece.', fx: { trilha: 'budista', tier: 1, morality: { good: 1, chaos: -1 }, setFlags: ['templo_aprendiz'] } } },
-      { text: 'Aprender com uma escola clandestina', check: { stat: ['sor', 'esp'], dif: 1 }, ok: { text: 'A Lua Oca lhe ensina a sair de um lugar sem ser seguido e a não confiar numa porta aberta.', fx: { trilha: 'demoniaca', tier: 1, setFlags: ['lua_oca_aprendiz'] } }, fail: { text: 'A escola recusa ensinar alguém que chegou sem observar as entradas. Ainda há outros caminhos.', fx: { fama: 1 } } },
-      { text: 'Continuar sem escola por enquanto', res: { text: 'Você decide que o Jianghu pode esperar. O trabalho e as estradas também ensinam, ainda que cobrem de outro jeito.', fx: { setFlags: ['sem_escola'] } } },
+      { text: 'Entrar na Escola da Lâmina Errante', cond: { noFlags: ['trilha_definida'] }, res: { text: 'Você recebe uma espada de treino e uma regra: nunca desembainhe por uma disputa que possa ser resolvida de outro modo.', fx: { trilha: 'espada', tier: 1, morality: { good: 1, order: 1 }, setFlags: ['im_seol_aluna'] } } },
+      { text: 'Aprender o Punho de Ferro', cond: { noFlags: ['trilha_definida'] }, res: { text: 'O mestre do pátio ensina postura, queda e como proteger quem está atrás de você.', fx: { trilha: 'corpo', tier: 1, morality: { order: 1 } } } },
+      { text: 'Tornar-se aprendiz do Ofício dos Cem Remédios', cond: { noFlags: ['trilha_definida'] }, res: { text: 'Você troca o pátio por um balcão cheio de ervas, frascos e pacientes que não podem pagar.', fx: { trilha: 'alquimia', tier: 1, setFlags: ['medica_aprendiz'] } } },
+      { text: 'Aceitar a disciplina do Templo Silencioso', cond: { noFlags: ['trilha_definida'] }, res: { text: 'O templo não promete vitória. Oferece rotina, abrigo e uma maneira de interromper uma luta antes que comece.', fx: { trilha: 'budista', tier: 1, morality: { good: 1, chaos: -1 }, setFlags: ['templo_aprendiz'] } } },
+      { text: 'Aprender com uma escola clandestina', cond: { noFlags: ['trilha_definida'] }, check: { stat: ['sor', 'esp'], dif: 1 }, ok: { text: 'A Lua Oca lhe ensina a sair de um lugar sem ser seguido e a não confiar numa porta aberta.', fx: { trilha: 'demoniaca', tier: 1, setFlags: ['lua_oca_aprendiz'] } }, fail: { text: 'A escola recusa ensinar alguém que chegou sem observar as entradas. Ainda há outros caminhos.', fx: { fama: 1 } } },
+      { text: 'Continuar sem escola por enquanto', cond: { noFlags: ['trilha_definida'] }, res: { text: 'Você decide que o Jianghu pode esperar. O trabalho e as estradas também ensinam, ainda que cobrem de outro jeito.', fx: { setFlags: ['sem_escola'] } } },
+      { text: 'Manter o método que já encontrou', cond: { flags: ['trilha_definida'] }, res: { text: 'Você agradece a oferta, mas segue com o caminho que escolheu. O pátio continua aberto para treinar quando quiser.', fx: { fama: 1 } } },
     ],
   },
   {
@@ -70,11 +71,11 @@ export const EVENTS: GameEvent[] = ([
   },
   {
     id: 'murim_conselho', title: 'A audiência de Hwayang', rarity: 'lendario', once: true, cooldown: 99,
-    cond: { ageMin: 17, flags: ['mapa_rotas'] }, text: 'Diante do conselho, Gwon Tae-seok nega tudo. Jang Hwa-ryeon espera na galeria, Baek Mu-jin permanece junto à porta e o livro de contas pesa em sua manga. Uma acusação sem testemunhas pode virar contra você.',
+    cond: { ageMin: 17, flags: ['mapa_rotas'], noFlags: ['hwayang_resolvido'] }, text: 'Diante do conselho, Gwon Tae-seok nega tudo. Jang Hwa-ryeon espera na galeria, Baek Mu-jin permanece junto à porta e o livro de contas pesa em sua manga. Uma acusação sem testemunhas pode virar contra você.',
     choices: [
-      { text: 'Apresentar documentos e chamar as famílias', cond: { flags: ['jang_testemunha'] }, check: { stat: ['car', 'comp'], dif: 0 }, ok: { text: 'O conselho congela os bens do clã e abre investigação pública. As famílias retornam às terras; Mu-jin escolhe ficar para reconstruir a ponte.', fx: { fama: 8, setFlags: ['final_justica'], pedras: 40, fim: 'murim_justica' } }, fail: { text: 'A sentença não chega, mas o conselho reconhece as testemunhas e suspende as expulsões. A disputa seguirá nos tribunais.', fx: { fama: 5, setFlags: ['final_tregua'], fim: 'murim_tregua' } } },
-      { text: 'Desafiar Gwon Tae-seok diante de todos', check: { stat: ['fis', 'dao'], dif: 2 }, ok: { text: 'Você vence o duelo e obriga Gwon a confessar o esquema. As famílias recuperam suas casas, mas a lei não esquece quem a humilhou.', fx: { fama: 7, setFlags: ['final_duelo'], fim: 'murim_duelo' } }, fail: { text: 'Gwon vence e você cai diante do conselho. Mu-jin leva as provas adiante em seu nome.', fx: { fim: 'duelo' } } },
-      { text: 'Aceitar o acordo secreto e proteger sua escola', res: { text: 'O clã paga a dívida e as expulsões cessam. Em troca, você mantém silêncio; sua escola prospera sob uma paz que não é limpa.', fx: { pedras: 80, fama: -2, setFlags: ['final_acordo'], fim: 'murim_acordo' } } },
+      { text: 'Apresentar documentos e chamar as famílias', cond: { flags: ['jang_testemunha'] }, check: { stat: ['car', 'comp'], dif: 0 }, ok: { text: 'O conselho congela os bens do clã e abre investigação pública. As famílias retornam às terras; Mu-jin escolhe ficar para reconstruir a ponte.', fx: { fama: 8, setFlags: ['hwayang_resolvido', 'final_justica'], pedras: 40, agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }, { event: 'murim_heranca_final', em: [18, 24] }] } }, fail: { text: 'A sentença não chega, mas o conselho reconhece as testemunhas e suspende as expulsões. A disputa seguirá nos tribunais.', fx: { fama: 5, setFlags: ['hwayang_resolvido', 'final_tregua'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
+      { text: 'Desafiar Gwon Tae-seok diante de todos', check: { stat: ['fis', 'dao'], dif: 2 }, ok: { text: 'Você vence o duelo e obriga Gwon a confessar o esquema. O conselho abre uma investigação, mas as escolas agora querem decidir quem pode falar em nome das famílias.', fx: { fama: 7, setFlags: ['hwayang_resolvido', 'final_duelo'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } }, fail: { text: 'Gwon vence o duelo, mas Mu-jin leva as provas ao conselho. Você sai ferido; as expulsões são suspensas enquanto a disputa segue nos tribunais.', fx: { ferida: 2, fama: 2, setFlags: ['hwayang_resolvido', 'final_tregua'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
+      { text: 'Aceitar o acordo secreto e proteger sua escola', res: { text: 'O clã paga a dívida e as expulsões cessam. Em troca, você mantém silêncio; sua escola prospera sob uma paz que não é limpa.', fx: { pedras: 80, fama: -2, setFlags: ['hwayang_resolvido', 'final_acordo'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
     ],
   },
   {
@@ -125,11 +126,11 @@ export const EVENTS: GameEvent[] = ([
   },
   {
     id: 'murim_julgamento', title: 'A noite dos nomes apagados', rarity: 'lendario', once: true, cooldown: 99,
-    cond: { ageMin: 21, flags: ['provas_suborno'] }, text: 'Os registros do torneio foram queimados. Resta uma cópia incompleta, o depoimento do guarda e a palavra das famílias. Gwon Tae-seok oferece retirar a acusação se você entregar a página original.',
+    cond: { ageMin: 21, flags: ['provas_suborno'], noFlags: ['hwayang_resolvido'] }, text: 'Os registros do torneio foram queimados. Resta uma cópia incompleta, o depoimento do guarda e a palavra das famílias. Gwon Tae-seok oferece retirar a acusação se você entregar a página original.',
     choices: [
-      { text: 'Publicar as provas e assumir o risco', cond: { flags: ['guarda_aliado'] }, check: { stat: ['car', 'comp'], dif: 1 }, ok: { text: 'O depoimento confirma a fraude. O conselho remove Gwon do cargo e convoca novas eleições entre as escolas.', fx: { fama: 9, setFlags: ['final_justica'], fim: 'murim_justica' } }, fail: { text: 'O conselho não condena Gwon, mas o depoimento impede novas expulsões. Você deixa Hwayang sem aliados no palácio.', fx: { fama: 4, setFlags: ['final_tregua'], fim: 'murim_tregua' } } },
-      { text: 'Entregar a página e aceitar o exílio', res: { text: 'Você protege os refugiados de uma retaliação imediata, mas perde o direito de retornar a Hwayang.', fx: { fama: 1, setFlags: ['final_exilio'], fim: 'exilio' } } },
-      { text: 'Desafiar o clã a um julgamento marcial', check: { stat: ['fis', 'dao'], dif: 2 }, ok: { text: 'O duelo termina quando Gwon admite que não pode vencer sem recorrer a truques. O conselho reabre o caso.', fx: { fama: 7, setFlags: ['final_duelo'], fim: 'murim_duelo' } }, fail: { text: 'Seu rival vence. As escolas guardam seu nome, mas as provas sobrevivem com o guarda.', fx: { fim: 'duelo' } } },
+      { text: 'Publicar as provas e assumir o risco', cond: { flags: ['guarda_aliado'] }, check: { stat: ['car', 'comp'], dif: 1 }, ok: { text: 'O depoimento confirma a fraude. O conselho remove Gwon do cargo e convoca novas eleições entre as escolas.', fx: { fama: 9, setFlags: ['hwayang_resolvido', 'final_justica'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }, { event: 'murim_heranca_final', em: [18, 24] }] } }, fail: { text: 'O conselho não condena Gwon, mas o depoimento impede novas expulsões. Você deixa Hwayang sem aliados no palácio.', fx: { fama: 4, setFlags: ['hwayang_resolvido', 'final_tregua'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
+      { text: 'Entregar a página e aceitar o exílio', res: { text: 'Você protege os refugiados de uma retaliação imediata e perde o direito de retornar a Hwayang. Mu-jin mantém uma cópia das provas.', fx: { fama: 1, setFlags: ['hwayang_resolvido', 'final_exilio'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
+      { text: 'Desafiar o clã a um julgamento marcial', check: { stat: ['fis', 'dao'], dif: 2 }, ok: { text: 'O duelo termina quando Gwon admite que não pode vencer sem recorrer a truques. O conselho reabre o caso e aceita ouvir as famílias.', fx: { fama: 7, setFlags: ['hwayang_resolvido', 'final_duelo'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } }, fail: { text: 'Seu rival vence, mas Mu-jin entrega as provas. O conselho suspende as expulsões enquanto decide como ouvir as escolas.', fx: { ferida: 2, fama: 2, setFlags: ['hwayang_resolvido', 'final_tregua'], agenda: [{ event: 'murim_pos_conselho', em: [3, 6] }] } } },
     ],
   },
   {
@@ -175,6 +176,7 @@ export const EVENTS: GameEvent[] = ([
       { text: 'Reunir todos à mesa', res: { text: 'A casa fica cheia de vozes e tigelas. Você escuta histórias que começaram muito antes de sua espada e terminam depois dela.', fx: { fim: 'murim_heranca' } } },
       { text: 'Ensinar uma última lição no pátio', res: { text: 'Seus alunos repetem os movimentos, cada qual com um erro diferente. Você ri, corrige o primeiro e deixa os outros descobrirem sozinhos.', fx: { fim: 'murim_mestre' } } },
       { text: 'Caminhar sozinho até a ponte de Pedra Baixa', res: { text: 'A ponte foi reconstruída tantas vezes que nenhuma pedra é a mesma. Você reconhece o rio, o vento e o silêncio que abriu sua primeira pergunta.', fx: { fim: 'velhice' } } },
+      { text: 'Passar mais um ano com os seus antes de decidir', res: { text: 'Você deixa a decisão para depois. Há tempo para outra refeição, outra carta e mais uma conversa que não precisa terminar em despedida.', fx: { setFlags: ['adiou_ultimo_inverno'] } } },
     ],
   },
   {
@@ -227,9 +229,9 @@ export const EVENTS: GameEvent[] = ([
     id: 'murim_ancora', title: 'A escolha de Im Seol', rarity: 'lendario', once: true, cooldown: 99,
     cond: { ageMin: 25, flags: ['im_seol_aluna'] }, text: 'Mestra Im Seol reúne seus alunos no pátio reconstruído. A escola não pode sustentar todos: alguém precisa levar seu nome adiante, alguém precisa proteger as aldeias, e alguém precisa guardar as técnicas no arquivo.',
     choices: [
-      { text: 'Assumir a escola e formar novos discípulos', res: { text: 'Você aceita o pátio, suas dívidas e seus alunos. A Escola da Garça renasce sem exigir que todos pensem igual.', fx: { fama: 6, setFlags: ['fundou_escola'], fim: 'murim_escola' } } },
-      { text: 'Deixar o título e proteger as estradas', res: { text: 'Você parte sem faixa ou cargo. As aldeias passam a acender uma lanterna quando ouvem passos na estrada.', fx: { fama: 5, setFlags: ['guardiao_estradas'], fim: 'murim_guardiao' } } },
-      { text: 'Ensinar os métodos a todas as escolas', res: { text: 'Im Seol entrega os rolos ao conselho aberto. Nenhuma linhagem poderá reivindicar domínio exclusivo sobre aquelas técnicas.', fx: { fama: 7, setFlags: ['tecnica_aberta'], fim: 'murim_mestre' } } },
+      { text: 'Assumir a escola e formar novos discípulos', res: { text: 'Você aceita o pátio, suas dívidas e seus alunos. A Escola da Garça renasce sem exigir que todos pensem igual.', fx: { fama: 6, setFlags: ['fundou_escola'], agenda: [{ event: 'murim_escola_aberta', em: [2, 4] }] } } },
+      { text: 'Deixar o título e proteger as estradas', res: { text: 'Você parte sem faixa ou cargo. As aldeias passam a acender uma lanterna quando ouvem passos na estrada.', fx: { fama: 5, setFlags: ['guardiao_estradas'], agenda: [{ event: 'murim_rota_guardiao', em: [2, 4] }] } } },
+      { text: 'Ensinar os métodos a todas as escolas', res: { text: 'Im Seol entrega os rolos ao conselho aberto. Nenhuma linhagem poderá reivindicar domínio exclusivo sobre aquelas técnicas.', fx: { fama: 7, setFlags: ['tecnica_aberta'], agenda: [{ event: 'murim_metodo_aberto', em: [2, 4] }] } } },
     ],
   },
   {
@@ -242,7 +244,7 @@ export const EVENTS: GameEvent[] = ([
     ],
   },
   {
-    id: 'murim_retorno', title: 'O retorno à ponte', rarity: 'incomum', cond: { ageMin: 40, flags: ['livro_ferro_seo', 'livro_ferro_oculto', 'livro_ferro_magistrado'] },
+    id: 'murim_retorno', title: 'O retorno à ponte', rarity: 'incomum', cond: { ageMin: 40, flagsAny: ['livro_ferro_seo', 'livro_ferro_oculto', 'livro_ferro_magistrado'] },
     text: 'Você retorna a Pedra Baixa e encontra a ponte reconstruída. Uma criança tenta alcançar o vão entre as pedras onde encontrou o livro tantos anos atrás.',
     choices: [
       { text: 'Contar a história sem esconder os erros', res: { text: 'A criança ouve tudo, inclusive as partes em que você hesitou. Ela pergunta o que faria diferente; pela primeira vez, você tem uma resposta.', fx: { stats: { dao: 1 }, fama: 2 } } },
@@ -272,9 +274,71 @@ export const EVENTS: GameEvent[] = ([
     id: 'murim_heranca_final', title: 'As páginas que ficaram', rarity: 'lendario', once: true, cooldown: 99,
     cond: { ageMin: 35, flags: ['final_justica'] }, text: 'Anos depois, uma cópia do livro de contas reaparece numa escola distante. As anotações nas margens são suas. Um jovem pede licença para continuar a investigação que você começou.',
     choices: [
-      { text: 'Entregar as páginas e ensinar como verificar cada nome', res: { text: 'O jovem parte com um método, não com uma lista de culpados. Dessa vez, ninguém terá de confiar apenas na sua palavra.', fx: { fama: 5, setFlags: ['legado_verificacao'], fim: 'murim_mestre' } } },
-      { text: 'Guardar as páginas para evitar outra crise', res: { text: 'Você esconde a cópia. A paz dura, embora a dúvida também.', fx: { fama: -1, fim: 'murim_heranca' } } },
-      { text: 'Publicar tudo sem revisão', res: { text: 'Os nomes vêm a público e alguns são inocentes. A investigação recomeça com mais ruído que clareza.', fx: { fama: 1, fim: 'murim_tregua' } } },
+      { text: 'Entregar as páginas e ensinar como verificar cada nome', res: { text: 'O jovem parte com um método, não com uma lista de culpados. Dessa vez, ninguém terá de confiar apenas na sua palavra.', fx: { fama: 5, setFlags: ['legado_verificacao'] } } },
+      { text: 'Guardar as páginas para evitar outra crise', res: { text: 'Você esconde a cópia. A paz dura, embora a dúvida também.', fx: { fama: -1, setFlags: ['legado_silenciado'] } } },
+      { text: 'Publicar tudo sem revisão', res: { text: 'Os nomes vêm a público e alguns são inocentes. A investigação recomeça com mais ruído que clareza.', fx: { fama: 1, setFlags: ['legado_contestado'] } } },
+    ],
+  },
+  {
+    id: 'murim_estilos_errantes', title: 'Aprender sem um salão', rarity: 'incomum', once: true, cooldown: 99,
+    cond: { ageMin: 13, noFlags: ['trilha_definida'] },
+    text: 'Sem mestre fixo, você pergunta a trabalhadores, curandeiros e viajantes como aprender sem jurar lealdade a uma escola. Cinco pessoas oferecem ensinar o que sabem, cada qual com limites e responsabilidades diferentes.',
+    choices: [
+      { text: 'Treinar respiração e equilíbrio com uma barqueira', res: { text: 'A barqueira ensina a usar o fôlego para manter o corpo estável numa correnteza e durante um esforço longo.', fx: { trilha: 'sopro', tier: 1, stats: { dao: 1 }, setFlags: ['metodo_barqueira'] } } },
+      { text: 'Estudar postura e intenção com um ex-árbitro', res: { text: 'Ele não ensina golpes. Ensina a perceber quando o adversário mudou de ideia e ainda não mudou o corpo.', fx: { trilha: 'alma', tier: 1, stats: { comp: 1 }, setFlags: ['metodo_arbitro'] } } },
+      { text: 'Organizar treinos em grupo nas Quatro Pontes', res: { text: 'Você aprende a coordenar posições e a confiar que cada pessoa protege uma parte diferente da formação.', fx: { trilha: 'formacoes', tier: 1, setFlags: ['metodo_formacao'] } } },
+      { text: 'Aprender agulhas e antídotos com uma médica', res: { text: 'A médica exige que você memorize primeiro doses, riscos e sinais de intoxicação; só depois permite tocar nas agulhas.', fx: { trilha: 'venenos', tier: 1, stats: { comp: 1 }, setFlags: ['metodo_agulhas'] } } },
+      { text: 'Rastrear e caçar com uma guia das colinas', res: { text: 'A guia ensina a seguir rastros sem encurralar o animal e a escolher uma rota de volta antes de entrar na mata.', fx: { trilha: 'bestas', tier: 1, stats: { sor: 1 }, setFlags: ['metodo_rastreio'] } } },
+    ],
+  },
+  {
+    id: 'murim_pos_conselho', title: 'O preço da decisão', rarity: 'raro', once: true, cooldown: 99,
+    cond: { ageMin: 18, flags: ['hwayang_resolvido'] },
+    text: 'A decisão de Hwayang muda a vida comum: mercadores deixam de viajar, famílias voltam às aldeias e as escolas disputam quem conduzirá a reconstrução. Baek Mu-jin pede que você escolha onde colocar seu esforço agora.',
+    choices: [
+      { text: 'Ajudar as famílias a reconstruir as casas', cond: { flagsAny: ['final_justica', 'final_tregua', 'final_exilio'] }, check: { stat: ['car', 'comp'], dif: -1 }, ok: { text: 'As famílias organizam um fundo comum e escolhem representantes. A ajuda não apaga o conflito, mas lhes devolve voz.', fx: { fama: 3, pedras: -10, setFlags: ['aldeias_reconstruidas'], agenda: [{ event: 'murim_assembleia', em: [4, 8] }] } }, fail: { text: 'Os materiais acabam cedo. Você não resolve tudo, mas deixa ferramentas e um plano que pode ser retomado.', fx: { fama: 1, setFlags: ['aldeias_reconstruidas'], agenda: [{ event: 'murim_assembleia', em: [4, 8] }] } } },
+      { text: 'Negociar a reabertura das escolas', cond: { flagsAny: ['final_duelo', 'final_acordo'] }, check: { stat: ['car', 'dao'], dif: 0 }, ok: { text: 'As escolas aceitam uma mesa de negociação com representantes das aldeias. Gwon conserva aliados, mas perde o controle exclusivo do conselho.', fx: { fama: 2, setFlags: ['escolas_em_conselho'], agenda: [{ event: 'murim_assembleia', em: [4, 8] }] } }, fail: { text: 'A mesa se reúne, mas ninguém abre mão de seus privilégios. Ainda assim, o acordo impede um novo confronto imediato.', fx: { setFlags: ['escolas_em_conselho'], agenda: [{ event: 'murim_assembleia', em: [4, 8] }] } } },
+      { text: 'Seguir a própria estrada por enquanto', res: { text: 'Você recusa transformar uma decisão em obrigação para o resto da vida. Mu-jin concorda: algumas reparações precisam de mais mãos que uma só.', fx: { stats: { dao: 1 }, setFlags: ['hwayang_distancia', 'aldeias_reconstruidas'], agenda: [{ event: 'murim_assembleia', em: [4, 8] }] } } },
+    ],
+  },
+  {
+    id: 'murim_assembleia', title: 'A primeira assembleia', rarity: 'lendario', once: true, cooldown: 99,
+    cond: { ageMin: 20, flagsAny: ['aldeias_reconstruidas', 'escolas_em_conselho'] },
+    text: 'Representantes das aldeias e das escolas chegam à ponte de Pedra Baixa. A reunião corre o risco de terminar antes de começar: ninguém concorda sobre quem deve falar primeiro ou quem pagará a guarda da estrada.',
+    choices: [
+      { text: 'Dar a palavra às famílias deslocadas', check: { stat: ['car', 'comp'], dif: 0 }, ok: { text: 'Jang Hwa-ryeon descreve o custo das expulsões sem pedir vingança. Pela primeira vez, as escolas escutam a lista de necessidades antes da lista de acusações.', fx: { fama: 4, setFlags: ['assembleia_popular', 'rede_apoio'] } }, fail: { text: 'A discussão interrompe Jang várias vezes, mas sua presença evita que a reunião se desfaça. Uma comissão menor fica encarregada de continuar.', fx: { fama: 2, setFlags: ['assembleia_aberta'] } } },
+      { text: 'Propor uma guarda mantida por várias escolas', cond: { flags: ['escolas_em_conselho'] }, check: { stat: ['fis', 'dao'], dif: 1 }, ok: { text: 'As escolas aceitam turnos conjuntos e regras públicas para a patrulha. Nenhuma delas pode usar a estrada para cobrar pedágio.', fx: { fama: 3, setFlags: ['guarda_comum', 'rede_apoio'] } }, fail: { text: 'A proposta não passa, mas o debate fixa um limite: nenhuma escola patrulhará a ponte sozinha.', fx: { setFlags: ['limite_patrulha'] } } },
+      { text: 'Registrar cada compromisso antes de encerrar', check: { stat: ['comp', 'sor'], dif: -1 }, ok: { text: 'Mu-jin registra responsáveis, prazos e uma forma de contestar cada decisão. Os compromissos sobrevivem à reunião.', fx: { fama: 2, setFlags: ['ata_publica', 'rede_apoio'] } }, fail: { text: 'A ata fica incompleta, mas registra quem se comprometeu a voltar. A reunião ganha uma segunda data.', fx: { setFlags: ['assembleia_aberta'] } } },
+    ],
+  },
+  {
+    id: 'murim_escola_aberta', title: 'As portas da Garça', rarity: 'raro', once: true, cooldown: 99,
+    cond: { ageMin: 28, flags: ['fundou_escola'] },
+    text: 'A escola recebe aprendizes com histórias e níveis diferentes. Alguns querem formar uma guarda, outros só querem aprender a cair sem quebrar um braço. Um patrocinador oferece pagar as despesas em troca de escolher quem pode treinar.',
+    choices: [
+      { text: 'Manter as portas abertas a quem precisa', check: { stat: ['car', 'comp'], dif: 0 }, ok: { text: 'A escola cresce devagar, sustentada por refeições compartilhadas e mensalidades proporcionais à renda.', fx: { fama: 4, pedras: 20, setFlags: ['escola_comunitaria'] } }, fail: { text: 'O caixa aperta, mas os alunos organizam turnos de cozinha e manutenção para continuar treinando.', fx: { fama: 2, setFlags: ['escola_comunitaria'] } } },
+      { text: 'Aceitar o patrocínio com regras públicas', check: { stat: ['comp', 'dao'], dif: 1 }, ok: { text: 'O contrato limita a influência do patrocinador e publica as contas. A escola consegue pagar o telhado sem vender suas decisões.', fx: { fama: 3, pedras: 35, setFlags: ['escola_autonoma'] } }, fail: { text: 'O patrocinador recusa as condições. Você mantém a independência, mas terá de adiar os reparos.', fx: { fama: 1, setFlags: ['escola_autonoma'] } } },
+      { text: 'Transformar o pátio numa escola itinerante', res: { text: 'Os alunos levam o treino às aldeias. Não há muro para defender, mas há mais gente capaz de proteger a própria casa.', fx: { fama: 3, setFlags: ['escola_itinerante'] } } },
+    ],
+  },
+  {
+    id: 'murim_rota_guardiao', title: 'Lanternas na rota', rarity: 'raro', once: true, cooldown: 99,
+    cond: { ageMin: 28, flags: ['guardiao_estradas'] },
+    text: 'Duas caravanas pedem escolta para atravessar a mesma passagem. Uma transporta remédios para uma aldeia; a outra leva uma pessoa acusada de deserção. O caminho permite proteger apenas uma delas antes do anoitecer.',
+    choices: [
+      { text: 'Escoltar os remédios e pedir ajuda às aldeias', check: { stat: ['car', 'fis'], dif: 0 }, ok: { text: 'Os moradores se revezam na trilha. A carga chega e a rota deixa de depender de um único protetor.', fx: { fama: 4, setFlags: ['rota_compartilhada'] } }, fail: { text: 'Você leva os remédios, mas chega ferido. As aldeias combinam de organizar a próxima escolta.', fx: { ferida: 1, fama: 2, setFlags: ['rota_compartilhada'] } } },
+      { text: 'Ouvir a pessoa acusada antes de decidir', check: { stat: ['comp', 'sor'], dif: 0 }, ok: { text: 'A acusação encobria uma recusa a atacar civis. Você reúne testemunhas e os dois grupos seguem sob vigilância mútua.', fx: { fama: 3, setFlags: ['desertor_ouvido'] } }, fail: { text: 'Você não consegue confirmar a história e não força uma sentença. A pessoa segue para responder perante um magistrado.', fx: { fama: 1, setFlags: ['desertor_ouvido'] } } },
+      { text: 'Ensinar os viajantes a sinalizar perigo', res: { text: 'Sinais simples de fumaça e lanternas permitem que as aldeias respondam antes de uma emboscada.', fx: { setFlags: ['sinais_rota'], stats: { comp: 1 } } } },
+    ],
+  },
+  {
+    id: 'murim_metodo_aberto', title: 'O manual sem dono', rarity: 'raro', once: true, cooldown: 99,
+    cond: { ageMin: 28, flags: ['tecnica_aberta'] },
+    text: 'Uma escola publica uma versão do método de Im Seol sem citar a origem. Outra alega que algumas posturas são perigosas para iniciantes. Você pode responder como professor, guardião ou autor.',
+    choices: [
+      { text: 'Publicar as fontes e as limitações da técnica', check: { stat: ['comp', 'car'], dif: 0 }, ok: { text: 'Outras escolas acrescentam correções. O método fica mais seguro porque suas falhas também ficam visíveis.', fx: { fama: 4, setFlags: ['metodo_verificado', 'legado_verificacao'] } }, fail: { text: 'A discussão continua, mas sua publicação dá aos alunos um ponto de partida verificável.', fx: { fama: 2, setFlags: ['metodo_verificado'] } } },
+      { text: 'Retirar as posturas perigosas da cópia pública', check: { stat: ['dao', 'comp'], dif: 0 }, ok: { text: 'A versão para iniciantes preserva os princípios e evita movimentos que exigem supervisão avançada.', fx: { fama: 3, setFlags: ['metodo_seguro'] } }, fail: { text: 'Você marca os riscos e recomenda treino supervisionado. A versão corrigida ainda precisará de revisão.', fx: { setFlags: ['metodo_seguro'] } } },
+      { text: 'Deixar que as escolas debatam sem reivindicar autoria', res: { text: 'O método ganha variações. Algumas funcionam melhor que a original, e ninguém precisa fingir que a tradição ficou imóvel.', fx: { fama: 2, setFlags: ['metodo_compartilhado'] } } },
     ],
   },
 ] satisfies GameEvent[]).map((event) => ({ ...event, type: event.id === 'murim_ataque' || event.id === 'murim_duelo_ponte' ? 'combat' : 'narrative' }));
