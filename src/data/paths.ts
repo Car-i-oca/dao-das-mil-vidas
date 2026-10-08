@@ -1,66 +1,15 @@
 import type { Path } from '../types';
 
+/** Escolas e estilos marciais do novo cenário. IDs legados preservam saves existentes. */
 export const PATHS: Path[] = [
-  {
-    id: 'sopro', name: 'Caminho do Sopro', ladder: 'xianxia',
-    desc: 'Absorver o Qi do Céu e da Terra. Equilibrado, de vida longa e muita compreensão.',
-    stats: { esp: 2, comp: 1 },
-
-  },
-  {
-    id: 'espada', name: 'Caminho da Espada', ladder: 'murim',
-    desc: 'Unir intenção e lâmina. Golpes decisivos e Coração do Dao firme, mas poucos recursos.',
-    stats: { fis: 1, dao: 2 },
-
-  },
-  {
-    id: 'alquimia', name: 'Caminho da Alquimia', ladder: 'xianxia',
-    desc: 'Refinar pílulas e ervas. Cultivo mais lento, mas riqueza, aliados e rompimentos assistidos.',
-    stats: { comp: 2, sor: 1 },
-
-  },
-  {
-    id: 'corpo', name: 'Caminho do Corpo', ladder: 'murim',
-    desc: 'Temperar ossos, carne e sangue. Resistente e letal em combate, de avanço firme.',
-    stats: { fis: 3 },
-
-  },
-  {
-    id: 'alma', name: 'Caminho da Consciência', ladder: 'xianxia',
-    desc: 'Fortalecer o Mar da Consciência. Percepção afiada e golpes de alma; corpo frágil.',
-    stats: { esp: 3, comp: 1, fis: -1 },
-
-  },
-  {
-    id: 'formacoes', name: 'Caminho das Formações', ladder: 'xianxia',
-    desc: 'Arranjos de runas e geomancia. Defesa sublime, ataque lento; precisa de muito estudo.',
-    stats: { comp: 3, sor: 1 },
-
-  },
-  {
-    id: 'budista', name: 'Caminho do Mérito', ladder: 'murim',
-    desc: 'Compaixão, mérito e corpo sagrado. Coração do Dao firme, resistência a demônios.',
-    stats: { dao: 3, fis: 1 },
-
-  },
-  {
-    id: 'venenos', name: 'Caminho dos Venenos', ladder: 'murim',
-    desc: 'Toxinas, antídotos e discrição. Letal e sutil, mas a reputação é suja.',
-    stats: { comp: 1, sor: 1, car: -1 },
-
-  },
-  {
-    id: 'bestas', name: 'Caminho das Bestas', ladder: 'xianxia',
-    desc: 'Pactos com feras espirituais. Aliados poderosos; sua força cresce com a deles.',
-    stats: { esp: 2, car: 1 },
-
-  },
-  {
-    id: 'demoniaca', name: 'Caminho do Sangue', ladder: 'xianxia',
-    desc: 'Poder rápido, preço escuro. Avanço veloz, corrupção constante e perseguição.',
-    stats: { fis: 2, esp: 1, car: -1 },
-
-
-    unlock: 'ach_demonio', startCorr: 12,
-  },
+  { id: 'sopro', name: 'Punho da Respiração Serena', ladder: 'murim', desc: 'Controle do fôlego, equilíbrio e golpes que vencem pela precisão.', stats: { esp: 2, comp: 1 } },
+  { id: 'espada', name: 'Escola da Lâmina Errante', ladder: 'murim', desc: 'Uma espada simples, uma intenção clara e nenhuma promessa de vitória fácil.', stats: { fis: 1, dao: 2 } },
+  { id: 'alquimia', name: 'Ofício dos Cem Remédios', ladder: 'murim', desc: 'Conhecimento de ervas, venenos e antídotos, aprendido entre aldeias e estradas.', stats: { comp: 2, sor: 1 } },
+  { id: 'corpo', name: 'Punho de Ferro', ladder: 'murim', desc: 'Condicionamento severo, base firme e resistência para continuar de pé.', stats: { fis: 3 } },
+  { id: 'alma', name: 'Olho que Lê o Combate', ladder: 'murim', desc: 'Estude postura, intenção e ritmo antes de escolher onde agir.', stats: { esp: 3, comp: 1, fis: -1 } },
+  { id: 'formacoes', name: 'Formações das Quatro Pontes', ladder: 'murim', desc: 'Coordene aliados e terreno para vencer sem depender de força bruta.', stats: { comp: 3, sor: 1 } },
+  { id: 'budista', name: 'Disciplina do Templo Silencioso', ladder: 'murim', desc: 'Defesa paciente e compromisso de não usar força além do necessário.', stats: { dao: 3, fis: 1 } },
+  { id: 'venenos', name: 'Mão das Agulhas Ocultas', ladder: 'murim', desc: 'Agulhas, compostos e leitura cuidadosa de cada risco.', stats: { comp: 1, sor: 1, car: -1 } },
+  { id: 'bestas', name: 'Trilha do Caçador das Colinas', ladder: 'murim', desc: 'Rastreio e sobrevivência nas rotas distantes do Jianghu.', stats: { esp: 2, car: 1 } },
+  { id: 'demoniaca', name: 'Método da Lua Oca', ladder: 'murim', desc: 'Uma escola clandestina que ensina disfarce, fuga e o preço das escolhas.', stats: { fis: 2, esp: 1, car: -1 } },
 ];

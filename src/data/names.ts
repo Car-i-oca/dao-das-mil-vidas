@@ -1,33 +1,33 @@
 import type { Rng } from '../engine/rng';
 import type { Root, Stats } from '../types';
 
-const SURNAMES = ['Lin', 'Qin', 'Han', 'Mo', 'Su', 'Yan', 'Bai', 'Shen', 'Tang', 'Gu', 'Luo', 'Xu', 'Wen', 'Feng', 'Ji', 'Ning', 'Duan', 'Jiang', 'Fu', 'Cao'];
-const GIVEN_A = ['Yun', 'Ming', 'Lian', 'Hao', 'Xue', 'Zhi', 'Wei', 'Qing', 'Ruo', 'Tian', 'Jing', 'Chen', 'An', 'Yu', 'Shan'];
-const GIVEN_B = ['feng', 'lan', 'yan', 'shu', 'hua', 'rui', 'xin', 'ge', 'lei', 'wen', 'ning', 'zhao', 'mei', 'jun'];
+const SURNAMES = ['Jang', 'Baek', 'Seo', 'Choi', 'Kang', 'Yoon', 'Han', 'Im', 'Gwon', 'Noh', 'Ryu', 'Jeong', 'Hwang', 'Kwon', 'Moon', 'Shin', 'Nam', 'Bae', 'Oh', 'Heo'];
+const GIVEN_A = ['Ha', 'Mu', 'Hwa', 'Seol', 'Tae', 'Rin', 'Dae', 'Min', 'Eun', 'Jin', 'Soo', 'Yeon', 'Gye', 'Do', 'Yu'];
+const GIVEN_B = ['-ryeon', '-jin', '-seok', '-hyeon', '-hwa', '-min', '-yeon', '-su', '-won', '-hee', '-tae', '-seo', '-mi', '-gyeong'];
 
 export function personName(rng: Rng): string {
   return `${rng.pick(SURNAMES)} ${rng.pick(GIVEN_A)}${rng.pick(GIVEN_B)}`;
 }
 
-const SEITA_A = ['Seita do Pico', 'Seita do Vale', 'Seita do Lago', 'Templo do Monte', 'Pavilhão do Rio', 'Seita da Montanha'];
-const SEITA_B = ['Nublado', 'das Mil Agulhas', 'do Orvalho Cinzento', 'da Lua Rachada', 'do Pinheiro Cego', 'das Cinzas Verdes', 'do Sino Mudo', 'da Garça Branca'];
+const SEITA_A = ['Escola', 'Pavilhão', 'Casa Marcial', 'Salão', 'Dojo'];
+const SEITA_B = ['da Garça', 'das Quatro Pontes', 'da Lâmina Errante', 'do Rio Calmo', 'do Punho de Ferro', 'do Passo Norte', 'da Agulha Oculta', 'da Colina Baixa'];
 export function sectName(rng: Rng): string {
   return `${rng.pick(SEITA_A)} ${rng.pick(SEITA_B)}`;
 }
 
 export function clanName(rng: Rng): string {
-  return `Clã ${rng.pick(SURNAMES)}`;
+  return `Casa ${rng.pick(SURNAMES)}`;
 }
 
-const VILA_A = ['Vila', 'Aldeia', 'Povoado'];
-const VILA_B = ['do Salgueiro', 'das Três Pontes', 'do Arroz Dourado', 'da Pedra Quieta', 'do Poço Fundo', 'dos Bambus'];
+const VILA_A = ['Aldeia', 'Vila', 'Povoado'];
+const VILA_B = ['Pedra Baixa', 'das Quatro Pontes', 'do Cais Velho', 'do Campo de Arroz', 'da Colina Sul', 'dos Pinhais'];
 export function villageName(rng: Rng): string {
   return `${rng.pick(VILA_A)} ${rng.pick(VILA_B)}`;
 }
 
-/* ---------- Raízes Espirituais ---------- */
-const ELEMS = ['Metal', 'Madeira', 'Água', 'Fogo', 'Terra'];
-const MUTANTS = ['Raio', 'Gelo', 'Vento'];
+/* ---------- Aptidões e estilos de aprendizado ---------- */
+const ELEMS = ['Passo', 'Respiração', 'Postura', 'Leitura', 'Ritmo'];
+const MUTANTS = ['Improviso', 'Equilíbrio', 'Reflexo'];
 
 export function rollRoot(rng: Rng): Root {
   const kinds: { n: number; w: number; mult: number }[] = [
@@ -41,12 +41,12 @@ export function rollRoot(rng: Rng): Root {
   const k = rng.weighted(kinds, (x) => x.w);
   if (k.n === 0) {
     const m = rng.pick(MUTANTS);
-    return { name: `Raiz Mutante de ${m}`, mult: k.mult, elements: [m] };
+    return { name: `Aptidão para ${m}`, mult: k.mult, elements: [m] };
   }
   const pool = [...ELEMS];
   const chosen: string[] = [];
   for (let i = 0; i < k.n; i++) chosen.push(pool.splice(rng.int(0, pool.length - 1), 1)[0]);
-  const label = k.n === 1 ? 'Raiz Única' : k.n === 5 ? 'Raiz Caótica (cinco elementos)' : `Raiz de ${k.n} elementos`;
+  const label = k.n === 1 ? 'Tendência marcial singular' : k.n === 5 ? 'Talento versátil' : `Aptidões combinadas (${k.n})`;
   return { name: `${label}: ${chosen.join(', ')}`, mult: k.mult, elements: chosen };
 }
 
@@ -62,10 +62,10 @@ export interface Constitution {
 }
 
 export const CONSTITUTIONS: Constitution[] = [
-  { id: 'yin_puro', name: 'Corpo de Yin Puro', desc: 'Qi gélido e límpido.', stats: { esp: 3, car: 1 }, xpMult: 1.08 },
-  { id: 'ossos_dragao', name: 'Ossos de Dragão', desc: 'Densidade óssea absurda.', stats: { fis: 5 }, xpMult: 1.04 },
-  { id: 'corpo_espada', name: 'Corpo de Espada Celestial', desc: 'Você nasceu afiado.', stats: { dao: 3, fis: 2 }, xpMult: 1.05 },
-  { id: 'caos', name: 'Corpo Caótico', desc: 'Absorve tudo, controla pouco.', xpMult: 1.3, breakMod: -0.08 },
-  { id: 'jade_eterno', name: 'Corpo de Jade Eterno', desc: 'A carne se recusa a envelhecer à vista.', stats: { car: 2, sor: 1 }, xpMult: 1.02, juventude: true },
-  { id: 'veias_quebradas', name: 'Veias Quebradas', desc: 'Selo antigo oculta um potencial imenso.', stats: { dao: 2 }, xpMult: 0.8, breakMod: 0.06 },
+  { id: 'yin_puro', name: 'Fôlego sereno', desc: 'Respiração estável mesmo em momentos tensos.', stats: { esp: 3, car: 1 }, xpMult: 1.08 },
+  { id: 'ossos_dragao', name: 'Ossatura robusta', desc: 'Suporta treino físico prolongado.', stats: { fis: 5 }, xpMult: 1.04 },
+  { id: 'corpo_espada', name: 'Reflexos de duelista', desc: 'Reage rapidamente a mudanças de postura.', stats: { dao: 3, fis: 2 }, xpMult: 1.05 },
+  { id: 'caos', name: 'Instinto imprevisível', desc: 'Improvisa bem, mas precisa controlar o ritmo.', xpMult: 1.3, breakMod: -0.08 },
+  { id: 'jade_eterno', name: 'Saúde excepcional', desc: 'Envelhece devagar e se recupera bem.', stats: { car: 2, sor: 1 }, xpMult: 1.02, juventude: true },
+  { id: 'veias_quebradas', name: 'Tendões sensíveis', desc: 'Treino exige mais cuidado para evitar lesões.', stats: { dao: 2 }, xpMult: 0.8, breakMod: 0.06 },
 ];

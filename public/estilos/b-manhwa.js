@@ -148,7 +148,7 @@
   }
 
   window.EstiloB = {
-    items: [['Pílula de Qi Profundo', 'pilula'], ['Lâmina do Vento do Sul', 'espada'], ['Manual do Punho Vajra', 'manual'], ['Raiz de Mil Anos', 'erva'], ['Núcleo de Besta', 'nucleo'], ['Talismã de Escudo', 'talisma']].map(([n, k]) => ({ nome: n, html: items[k]() })),
+    items: [['Tônico de Recuperação', 'pilula'], ['Sabre de Viagem', 'espada'], ['Ficha de Jade', 'manual'], ['Raiz de Cordilheira', 'erva'], ['Broquel de Emergência', 'nucleo'], ['Fumaça de Fuga', 'talisma']].map(([n, k]) => ({ nome: n, html: items[k]() })),
     jovem: () => portrait(false), ancião: () => portrait(true), cenario: scene, duelo: duel,
   };
 })();

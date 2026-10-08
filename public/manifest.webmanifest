@@ -1,14 +1,14 @@
 {
-  "name": "Dao das Mil Vidas",
-  "short_name": "Dao",
-  "description": "Jogo de texto de cultivação: viva mil vidas em busca do Dao. © 2026 Andre Barbosa Vieira.",
+  "name": "Murim Quest",
+  "short_name": "Murim Quest",
+  "description": "Uma vida no Jianghu com escolhas, escolas marciais e histórias originais. © 2026 Andre Barbosa Vieira.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#14110f",
-  "theme_color": "#14110f",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
   "icons": [
     {
       "src": "icons/icon-192.png",

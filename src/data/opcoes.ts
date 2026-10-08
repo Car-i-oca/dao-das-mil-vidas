@@ -7,7 +7,7 @@ import { eventTypeOf } from './event-type';
  * (ou a eventos específicos). Quem não tem o traço nunca vê a opção; quem tem, vê uma saída que só ele tem,
  * com consequência própria (flag lida depois, evento agendado, item, método, mudança de rumo).
  */
-export type Cat = 'combate' | 'social' | 'perigo' | 'tesouro' | 'cultivo' | 'viagem';
+export type Cat = 'combate' | 'social' | 'perigo' | 'tesouro' | 'treino' | 'viagem';
 
 export interface Molde {
   /** Categorias de evento que recebem a opção, ou ids de eventos. */
@@ -24,7 +24,7 @@ const RE: Record<Cat, RegExp> = {
   social: /conversa|negoci|convite|mercador|anci[aã]o|mestre|rival|rumor|festival|taberna|alian[cç]a|casamento|pedido|encontro|visita|discuss|conselho|embaixad|banquete|recrut|emiss[aá]rio|discípulo|disc[ií]pulo|amigo|irm[aã]o/i,
   perigo: /perigo|amea[cç]a|veneno|tribula|armadilha|trai[cç]|persegui|fuga|fugir|cerco|praga|maldi|demôni|demoni|espectro|fantasma|ru[ií]nas|selo|abismo|fenda|vazio/i,
   tesouro: /tesouro|rel[ií]quia|heran[cç]a|manual|p[ií]lula|artefato|erva|mapa|leil[aã]o|roubad|ba[uú]|raro|segredo|pergaminho|mercado|loja|jade|n[uú]cleo|forja/i,
-  cultivo: /medit|retiro|gargalo|\bqi\b|respira|cultiv|rompimento|ilumina|koan|mantra|sutra|forma[cç][aã]o|alquimia|caldeir|fornalha|dao/i,
+  treino: /trein|pratic|postura|respira|t[eé]cnica|disciplina|escola marcial|forma[cç][aã]o/i,
   viagem: /viagem|estrada|caminho|deserto|mar |montanha|fronteira|floresta|selva|trilha|porto|cidade|vila|atravess|expedi|partir|ilha/i,
 };
 
@@ -35,7 +35,7 @@ export function categorias(e: GameEvent): Cat[] {
   const tags = e.choices.map((c) => c.check?.tag).filter(Boolean);
   if (tags.includes('combate') || e.combate) cats.add('combate');
   if (tags.includes('fuga')) cats.add('perigo');
-  if (tags.some((t) => t === 'qi' || t === 'mente' || t === 'formacao' || t === 'alquimia')) cats.add('cultivo');
+  if (tags.some((t) => t === 'treino' || t === 'mente' || t === 'formacao')) cats.add('treino');
   for (const c of Object.keys(RE) as Cat[]) if (RE[c].test(txt)) cats.add(c);
   return [...cats];
 }
@@ -52,7 +52,7 @@ function elegivel(e: GameEvent): boolean {
 export function aplicarMoldes(events: GameEvent[], moldes: Molde[]): GameEvent[] {
   const porId = new Map<string, Molde[]>();
   for (const m of moldes) for (const a of m.alvo as string[]) {
-    if (['combate', 'social', 'perigo', 'tesouro', 'cultivo', 'viagem'].includes(a)) continue;
+    if (['combate', 'social', 'perigo', 'tesouro', 'treino', 'viagem'].includes(a)) continue;
     (porId.get(a) ?? porId.set(a, []).get(a)!).push(m);
   }
   return events.map((e) => {

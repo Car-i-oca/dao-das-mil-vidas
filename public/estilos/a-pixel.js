@@ -200,7 +200,7 @@
   }
 
   window.EstiloA = {
-    items: [['Pílula de Qi Profundo', items.pilula], ['Lâmina do Vento do Sul', items.espada], ['Manual do Punho Vajra', items.manual], ['Raiz de Mil Anos', items.erva], ['Núcleo de Besta', items.nucleo], ['Talismã de Escudo', items.talisma]].map(([n, f]) => ({ nome: n, el: f().draw(5, '#2d2440') })),
+    items: [['Tônico de Recuperação', items.pilula], ['Sabre de Viagem', items.espada], ['Ficha de Jade', items.manual], ['Raiz de Cordilheira', items.erva], ['Broquel de Emergência', items.nucleo], ['Fumaça de Fuga', items.talisma]].map(([n, f]) => ({ nome: n, el: f().draw(5, '#2d2440') })),
     jovem: () => portrait(false).draw(5, '#3d2a66'),
     ancião: () => portrait(true).draw(5, '#1f3d34'),
     cenario: () => scene().draw(2),

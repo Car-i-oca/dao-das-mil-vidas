@@ -39,7 +39,7 @@ interface Run {
   pathUse: Record<string, number>;
   originUse: Record<string, number>;
   talentUse: Record<string, number>;
-  /** Por artefato: vidas que o possuíam ao morrer, soma do reino relativo e ascensões. */
+  /** Por artefato: vidas que o possuíam ao morrer, soma da faixa relativa e consagrações. */
   gear: Record<string, { n: number; rel: number; asc: number }>;
   relSum: number;
   finalMeta?: Meta;
@@ -96,7 +96,7 @@ function runMeta(): Run {
     run.pathUse[s.path] = (run.pathUse[s.path] ?? 0) + 1;
     record(run, s);
     if (s.ending === 'ascensao') run.ascByQuartile[Math.min(3, Math.floor((4 * i) / N))]++;
-    // Gasta a Herança do Dao.
+    // Gasta pontos de Legado.
     for (let again = true; again;) {
       again = false;
       for (const id of UPGRADE_ORDER) {
@@ -121,14 +121,14 @@ function formatRun(run: Run): string {
   L.push(`**Idade de morte:** mín ${q(ages, 0)} · p10 ${q(ages, 0.1)} · mediana ${q(ages, 0.5)} · p90 ${q(ages, 0.9)} · p99 ${q(ages, 0.99)} · máx ${q(ages, 1)}`, '');
   L.push('**Finais**', '', '| Final | Vidas | % |', '|---|---:|---:|');
   for (const e of ENDINGS) L.push(`| ${e.name} | ${run.ends[e.id] ?? 0} | ${pc(run.ends[e.id] ?? 0, run.total)} |`);
-  for (const ladder of ['xianxia', 'murim']) {
+  for (const ladder of ['murim']) {
     const rows = Object.entries(run.tiers).filter(([k]) => k.startsWith(ladder + ':')).sort((a, b) => Number(a[0].split(':')[1]) - Number(b[0].split(':')[1]));
     const tot = rows.reduce((a, [, n]) => a + n, 0);
     const probe = PATHS.find((p) => p.ladder === ladder)!;
-    L.push('', `**Reino máximo — ${ladder}** (${tot} vidas)`, '', '| Reino | Vidas | % |', '|---|---:|---:|');
+    L.push('', `**Faixa máxima — ${ladder}** (${tot} vidas)`, '', '| Faixa | Vidas | % |', '|---|---:|---:|');
     for (const [k, n] of rows) L.push(`| ${ladderOf({ path: probe.id } as State).realms[Number(k.split(':')[1])].name} | ${n} | ${pc(n, tot)} |`);
   }
-  L.push('', '**Por trilha**', '', '| Trilha | Vidas | Reino médio | Idade média | Ascensões |', '|---|---:|---:|---:|---:|');
+  L.push('', '**Por escola e estilo**', '', '| Estilo | Vidas | Faixa média | Idade média | Consagrações |', '|---|---:|---:|---:|---:|');
   for (const p of [{ id: '', name: 'Sem trilha (não despertou)' }, ...PATHS]) {
     const b = run.byPath[p.id];
     if (b) L.push(`| ${p.name} | ${b.n} | ${(b.tierSum / b.n).toFixed(2)} | ${(b.ageSum / b.n).toFixed(0)} | ${b.asc} |`);
@@ -139,7 +139,7 @@ function formatRun(run: Run): string {
     for (const t of run.timeline) L.push(`| ${t.life} | ${ACHIEVEMENTS.find((a) => a.id === t.id)?.name ?? t.id} |`);
     const missing = ACHIEVEMENTS.filter((a) => !m.achievements.includes(a.id)).map((a) => a.name);
     L.push('', `Conquistas não obtidas: ${missing.length ? missing.join(', ') : 'nenhuma'}.`);
-    L.push('', `Upgrades finais de Herança: ${UPGRADES.map((u) => `${u.name} ${m.upgrades[u.id] ?? 0}/${u.max}`).join(' · ')}. Pontos sobrando: ${m.legacy}.`);
+    L.push('', `Aprimoramentos permanentes: ${UPGRADES.map((u) => `${u.name} ${m.upgrades[u.id] ?? 0}/${u.max}`).join(' · ')}. Pontos de Legado sobrando: ${m.legacy}.`);
     L.push('', `Ascensões por quartil de vidas (1º → 4º): ${run.ascByQuartile.join(' → ')}`);
     L.push('', `Uso de trilhas: ${PATHS.map((p) => `${p.name} ${run.pathUse[p.id] ?? 0}`).join(' · ')}`);
     const usedOrigins = ORIGINS.filter((o) => run.originUse[o.id]).length;
@@ -154,8 +154,8 @@ function formatRun(run: Run): string {
     const rows = Object.entries(run.gear).filter(([, g]) => g.n >= 60).map(([id, g]) => ({ id, n: g.n, d: g.rel / g.n - mean, asc: g.asc / g.n }));
     rows.sort((a, b) => b.d - a.d);
     const name = (id: string) => ITEMS.find((x) => x.id === id.slice(2))?.name ?? id;
-    const fmt = (r: (typeof rows)[number]) => name(r.id) + " (n=" + r.n + ", reino relativo " + (r.d >= 0 ? "+" : "") + (100 * r.d).toFixed(1) + " pp, ascensão " + (100 * r.asc).toFixed(1) + "%)";
-    L.push("", "**Impacto de artefatos** (reino relativo = reino/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)", "");
+    const fmt = (r: (typeof rows)[number]) => name(r.id) + " (n=" + r.n + ", faixa relativa " + (r.d >= 0 ? "+" : "") + (100 * r.d).toFixed(1) + " pp, consagração " + (100 * r.asc).toFixed(1) + "%)";
+    L.push("", "**Impacto de artefatos** (faixa relativa = faixa/máximo, diferença para a média; há viés: quem vai longe acumula mais coisas)", "");
     L.push("Maiores: " + rows.slice(0, 5).map(fmt).join("; ") + ".");
     L.push("Menores: " + rows.slice(-3).map(fmt).join("; ") + ".");
   }

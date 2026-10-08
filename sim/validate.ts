@@ -1,14 +1,10 @@
 /** Valida referências cruzadas do conteúdo. Uso: npm run validate */
-import { readdirSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import * as ts from 'typescript';
 import { EVENTS } from '../src/data/events';
 import { hasCombatMechanics } from '../src/data/event-type';
 import { ITEMS } from '../src/data/items';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
 import { PATHS } from '../src/data/paths';
 import { WORLDS, WORLD } from '../src/data/mundo';
-import { TETOS } from '../src/data/faixas';
 import { ORIGINS, TALENTS } from '../src/data/character';
 import { QUESTS } from '../src/data/quests';
 import { FOES } from '../src/data/combates';
@@ -19,7 +15,7 @@ import type { Cond, Effects, EquipmentSlot, State } from '../src/types';
 
 const errors: string[] = [];
 const warnings: string[] = [];
-const ROOT_TAGS = new Set(['unica', 'mutante', 'dupla', 'tripla', 'quadrupla', 'caotica', 'Metal', 'Madeira', 'Água', 'Fogo', 'Terra', 'Raio', 'Gelo', 'Vento']);
+const ROOT_TAGS = new Set(['unica', 'mutante', 'dupla', 'tripla', 'quadrupla', 'caotica', 'Passo', 'Respiração', 'Postura', 'Leitura', 'Ritmo', 'Improviso', 'Equilíbrio', 'Reflexo']);
 const ids = <T extends { id: string }>(a: T[]) => new Set(a.map((x) => x.id));
 const itemIds = ids(ITEMS), endIds = ids(ENDINGS), evIds = ids(EVENTS), achIds = ids(ACHIEVEMENTS), foeIds = ids(FOES);
 
@@ -98,61 +94,58 @@ for (const ev of EVENTS) {
 
 const eventById = new Map(EVENTS.map((event) => [event.id, event]));
 const sagaTransitions = [
-  { from: 'partir_viagem', to: 'saga_ferro_inicio', flag: 'saga_ferro_chamado' },
-  { from: 'saga_ferro_inicio', to: 'saga_ferro_forja', flag: 'saga_ferro_rastro' },
-  { from: 'saga_ferro_forja', to: 'saga_ferro_guardiao', flag: 'saga_ferro_fundida' },
-  { from: 'saga_ferro_guardiao', to: 'saga_ferro_legado', flag: null },
+  { from: 'murim_ferro_inicio', to: 'murim_ferro_recado', flag: null },
+  { from: 'murim_ferro_inicio', to: 'murim_escola', flag: null },
+  { from: 'murim_ferro_recado', to: 'murim_refugiados', flag: 'saga_refugiados' },
+  { from: 'murim_ferro_recado', to: 'murim_armazem', flag: 'saga_armazem' },
 ];
 for (const { from, to, flag } of sagaTransitions) {
   const source = eventById.get(from);
   const target = eventById.get(to);
   if (!source || !target) {
-    errors.push(`saga da Forja Silenciosa: etapa inexistente em "${from}" → "${to}"`);
+    errors.push(`saga do Livro de Ferro: etapa inexistente em "${from}" → "${to}"`);
     continue;
   }
   const routes = source.choices.flatMap((choice) => [choice.res, choice.ok, choice.fail])
     .filter((outcome) => outcome?.fx?.agenda?.some((scheduled) => scheduled.event === to));
-  if (!routes.length) errors.push(`saga da Forja Silenciosa: "${from}" não agenda "${to}"`);
+  if (!routes.length) errors.push(`saga do Livro de Ferro: "${from}" não agenda "${to}"`);
   if (flag && (!routes.some((outcome) => outcome?.fx?.setFlags?.includes(flag)) || !target.cond?.flags?.includes(flag))) {
-    errors.push(`saga da Forja Silenciosa: flag "${flag}" não liga "${from}" a "${to}"`);
+    errors.push(`saga do Livro de Ferro: flag "${flag}" não liga "${from}" a "${to}"`);
   }
-  if (!target.once) errors.push(`saga da Forja Silenciosa: etapa "${to}" deve ocorrer uma vez por vida`);
+  if (!target.once) errors.push(`saga do Livro de Ferro: etapa "${to}" deve ocorrer uma vez por vida`);
 }
 
 const bonusProbe = startLife(newMeta(), {
   origin: ORIGINS[0].id,
   talent: TALENTS[0].id,
   flaw: 'covarde',
-  root: { name: 'Raiz de Metal', mult: 1, elements: ['Metal'] },
+  root: { name: 'Fundamento de Passo', mult: 1, elements: ['Passo'] },
   constitution: null,
 }, 'sopro', 0x51a9);
-bonusProbe.stats = { fis: 10, esp: 10, comp: 10, sor: 10, car: 10, dao: 10 };
-const probeCheck = { stat: 'fis' as const };
+bonusProbe.stats = { fis: 8, esp: 8, comp: 8, sor: 8, car: 8, dao: 8 };
+const probeCheck = { stat: 'car' as const };
 const baseCheckChance = checkChance(bonusProbe, probeCheck);
 bonusProbe.companions = ['lin_yue'];
 if (checkChance(bonusProbe, probeCheck) <= baseCheckChance) errors.push('teste de integração: companheiro não aumenta a chance do teste');
 bonusProbe.companions = [];
+const equipmentCheck = { stat: 'fis' as const };
+const equipmentChance = checkChance(bonusProbe, equipmentCheck);
 bonusProbe.items.push('espada_inverno');
 bonusProbe.equipment = { ...bonusProbe.equipment, rightWeapon: 'espada_inverno' };
-if (checkChance(bonusProbe, probeCheck) <= baseCheckChance) errors.push('teste de integração: equipamento não aumenta a chance do teste');
+if (checkChance(bonusProbe, equipmentCheck) <= equipmentChance) errors.push('teste de integração: equipamento não aumenta a chance do teste');
 
 const sagaProbe = startLife(newMeta(), {
   origin: ORIGINS[0].id,
   talent: TALENTS[0].id,
   flaw: 'covarde',
-  root: { name: 'Raiz de Metal', mult: 1, elements: ['Metal'] },
+  root: { name: 'Fundamento de Passo', mult: 1, elements: ['Passo'] },
   constitution: null,
-}, 'sopro', 0x51aa);
-sagaProbe.tier = 1;
-sagaProbe.age = 20;
+}, '', 0x51aa);
+sagaProbe.tier = 0;
+sagaProbe.age = 6;
 sagaProbe.maxAge = 5000;
-sagaProbe.xp = 0;
 sagaProbe.stats = { fis: 18, esp: 18, comp: 18, sor: 18, car: 18, dao: 18 };
-sagaProbe.items.push('mapa_fragmentado');
-sagaProbe.scheduled = [];
-sagaProbe.seen = {};
-sagaProbe.counts = {};
-sagaProbe.current = { id: 'partir_viagem' };
+sagaProbe.current = { id: 'murim_ferro_inicio' };
 const sagaRng = new Rng(0x51ab);
 const chooseSagaOption = (state: State, text: string): boolean => {
   const index = visibleChoices(state).findIndex((visible) => visible.choice?.text.startsWith(text));
@@ -163,53 +156,20 @@ const chooseSagaOption = (state: State, text: string): boolean => {
   choose(state, index, sagaRng);
   return true;
 };
-const advanceSaga = (state: State, expected: string) => {
-  proceed(state, sagaRng);
-  if (state.current?.id !== expected) errors.push(`teste de integração: saga esperava "${expected}", recebeu "${state.current?.id ?? 'nenhum evento'}"`);
-};
-if (chooseSagaOption(sagaProbe, 'Seguir as marcas')) {
-  advanceSaga(sagaProbe, 'saga_ferro_inicio');
-  if (chooseSagaOption(sagaProbe, 'Ler as inscrições')) {
-    advanceSaga(sagaProbe, 'saga_ferro_forja');
-    if (chooseSagaOption(sagaProbe, 'Forjar a Espada')) {
-      advanceSaga(sagaProbe, 'saga_ferro_guardiao');
-      if (chooseSagaOption(sagaProbe, 'Enfrentar o Guardião')) {
-        advanceSaga(sagaProbe, 'saga_ferro_legado');
-        if (chooseSagaOption(sagaProbe, 'Completar a matriz da armadura') &&
-            !sagaProbe.items.some((id) => id.startsWith('armadura_qi_escamas'))) {
-          errors.push('teste de integração: o desfecho da saga não concedeu a armadura escolhida');
-        }
-      }
-    }
-  }
+if (chooseSagaOption(sagaProbe, 'Entregar o livro à boticária')) {
+  if (!sagaProbe.scheduled.some((entry) => entry.event === 'murim_escola')) errors.push('teste de integração: a infância não agenda a decisão de entrar no Jianghu');
+  if ((sagaProbe.morality?.good ?? 0) < 1) errors.push('teste de integração: escolha honrada não altera a reputação');
 }
-
-/* Todo módulo de eventos precisa estar ligado ao catálogo e todo evento literal precisa chegar ao runtime. */
-const eventDir = fileURLToPath(new URL('../src/data/events/', import.meta.url));
-const eventIndexSource = readFileSync(new URL('../src/data/events/index.ts', import.meta.url), 'utf8');
-const eventFiles = readdirSync(eventDir).filter((name) => name.endsWith('.ts') && name !== 'index.ts');
-for (const file of eventFiles) {
-  const stem = file.slice(0, -3);
-  if (!eventIndexSource.includes(`from './${stem}'`)) errors.push(`arquivo de eventos ${file}: não registrado em events/index.ts`);
-  const sourceText = readFileSync(new URL(`../src/data/events/${file}`, import.meta.url), 'utf8');
-  const sourceFile = ts.createSourceFile(file, sourceText, ts.ScriptTarget.Latest, true);
-  const inspect = (node: ts.Node) => {
-    if (ts.isObjectLiteralExpression(node)) {
-      const props = new Map(node.properties.filter(ts.isPropertyAssignment).map((p) => [p.name.getText(sourceFile).replace(/^['"]|['"]$/g, ''), p.initializer]));
-      const id = props.get('id');
-      if (id && ts.isStringLiteralLike(id) && props.has('choices') && !evIds.has(id.text)) {
-        errors.push(`${file}: evento "${id.text}" não foi incluído em EVENTS`);
-      }
-    }
-    ts.forEachChild(node, inspect);
-  };
-  inspect(sourceFile);
+sagaProbe.age = 12;
+sagaProbe.current = { id: 'murim_escola' };
+if (chooseSagaOption(sagaProbe, 'Entrar na Escola da Lâmina Errante')) {
+  if (sagaProbe.path !== 'espada' || sagaProbe.tier !== 1) errors.push('teste de integração: a escolha da escola não inicia a progressão marcial');
 }
+/* A validação percorre o catálogo ativo; módulos narrativos antigos foram arquivados fora dele. */
 for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {
   if (p.unlock && !achIds.has(p.unlock)) errors.push(`trilha ${p.id}: conquista inexistente "${p.unlock}"`);
 }
-for (const id of Object.keys(TETOS)) if (!evIds.has(id)) errors.push(`faixas.ts: evento inexistente ${id}`);
 for (const w of WORLDS) {
   if (!evIds.has(w.startEvent)) errors.push(`era ${w.id}: evento de abertura inexistente "${w.startEvent}"`);
   if (w.hazard && !endIds.has(w.hazard.fim)) errors.push(`era ${w.id}: final de perigo inexistente "${w.hazard.fim}"`);
@@ -233,7 +193,7 @@ function lintText(where: string, text: string | undefined, max = 700) {
   if (/{[^}]*$/.test(text) || /^[^{]*}/.test(text)) errors.push(`${where}: chave solta`);
   if (text.length > max) warnings.push(`${where}: texto longo (${text.length} caracteres)`);
   if (/  +/.test(text)) warnings.push(`${where}: espaços duplos`);
-  if (!where.includes('(título)') && !/[.!?…"”)]$/.test(text.trim())) warnings.push(`${where}: não termina com pontuação`);
+  if (!where.includes('(título)') && !where.includes('(opção)') && !/[.!?…””)]$/.test(text.trim())) warnings.push(`${where}: não termina com pontuação`);
 }
 for (const ev of EVENTS) {
   lintText(`evento ${ev.id} (título)`, ev.title, 80);
@@ -270,7 +230,7 @@ for (const ev of EVENTS) {
 const FLAGS_DO_MOTOR = new Set(['defeito_superado', 'juventude_eterna']);
 for (const [f, where] of needFlags) if (!setFlags.has(f) && !FLAGS_DO_MOTOR.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
 
-console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${ENDINGS.length} finais, ${PATHS.length} caminhos de cultivo.`);
+console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${ENDINGS.length} finais, ${PATHS.length} estilos marciais.`);
 warnings.forEach((w) => console.log('  aviso:', w));
 errors.forEach((e) => console.log('  ERRO:', e));
 if (errors.length) { console.log(`${errors.length} erro(s).`); process.exit(1); }

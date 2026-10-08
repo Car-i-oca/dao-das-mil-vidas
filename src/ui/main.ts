@@ -26,7 +26,7 @@ import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
 /* ---------- Persistência ---------- */
-const KEY = 'dao-mil-vidas-save-v1';
+const KEY = 'murim-quest-save-v1';
 interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
 function normSettings(x?: Partial<Settings>): Settings {
   return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
@@ -129,10 +129,10 @@ const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 const SPEEDS = [0, 8, 18, 34]; // ms por caractere (0 = instantâneo)
 const SPEED_NAMES = ['Instantâneo', 'Rápido', 'Normal', 'Lento'];
-const PLACE_NAMES: Record<string, string> = { vilarejo: 'Vilarejo', cidade: 'Cidade', seita: 'Seita', selva: 'Selva espiritual', montanha: 'Montanhas sagradas', ruinas: 'Ruínas', deserto: 'Deserto do Vento Cego', gelo: 'Planície de Gelo Silencioso', mar: 'Mar das Mil Ilhas' };
+const PLACE_NAMES: Record<string, string> = { vilarejo: 'Aldeia', cidade: 'Cidade', seita: 'Escola marcial', selva: 'Matas do sul', montanha: 'Cordilheira', ruinas: 'Ruínas', deserto: 'Passo do Vento', gelo: 'Planície do norte', mar: 'Costa das Ilhas' };
 const THEME_NAMES: [Settings['theme'], string][] = [['auto', 'Automático'], ['claro', 'Claro'], ['escuro', 'Escuro']];
 const FONT_NAMES = ['Pequena', 'Média', 'Grande'];
-const DIFFICULTIES: [number, string, string][] = [[-1, 'Calma', 'Mais chance nos testes; menos Herança'], [0, 'Normal', 'Equilíbrio padrão'], [1, 'Desafio', 'Menos chance nos testes; mais Herança']];
+const DIFFICULTIES: [number, string, string][] = [[-1, 'Calma', 'Mais chance nos testes; menos Legado'], [0, 'Normal', 'Equilíbrio padrão'], [1, 'Desafio', 'Menos chance nos testes; mais Legado']];
 
 function applySettings() {
   const r = document.documentElement;
@@ -196,15 +196,8 @@ function skipTyper() {
 /* ---------- Telas ---------- */
 function render() {
   stopTyper();
-  const alignment = screen === 'game' && save.run
-    ? save.run.alignment ?? (save.run.path === 'demoniaca' ? 'demoniaco' : 'daoico')
-    : null;
-  app.classList.toggle('alignment-demonic', alignment === 'demoniaco');
-  app.classList.toggle('alignment-daoic', alignment === 'daoico');
-  if (alignment) document.documentElement.dataset.alignment = alignment;
-  else delete document.documentElement.dataset.alignment;
   if (!audioStarted) {
-    app.innerHTML = `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">道</div><h1>Dao das Mil Vidas</h1><p>Uma jornada entre vidas, escolhas e destinos.</p><div class="btn primary audio-start" data-act="start-audio" role="button" tabindex="0" aria-disabled="${audioStarting}">${audioStarting ? 'Preparando o Cultivo…' : 'Toque para Iniciar o Cultivo'}</div><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`;
+    app.innerHTML = `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">武</div><h1>Murim Quest</h1><p>Uma vida no Jianghu. Cada escolha deixa seu nome na história.</p><div class="btn primary audio-start" data-act="start-audio" role="button" tabindex="0" aria-disabled="${audioStarting}">${audioStarting ? 'Preparando a jornada…' : 'Toque para entrar no Jianghu'}</div><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`;
     return;
   }
   switch (screen) {
@@ -233,7 +226,7 @@ function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
       <div class="dice-face" aria-live="polite">${modal.settled ? roll.d20 : modal.face}</div>
       <h2>${modal.settled ? (modal.success ? 'Sucesso' : 'Falha') : 'O destino decide'}</h2>
       <div class="dice-equation">${result}<span class="dice-dc">vs Dificuldade ${roll.dc}</span></div>
-      <p class="dice-stat">${STAT_NAMES[roll.stat]} · status inclui atributos, cultivo e efeitos; equipamento aparece à parte.</p>
+      <p class="dice-stat">${STAT_NAMES[roll.stat]} · o teste inclui atributos, treino e efeitos; equipamento aparece à parte.</p>
       ${combat}
       ${modal.settled ? '<button class="btn primary" data-act="roll-close">Ver consequência</button>' : '<div class="dice-wait">Rolando…</div>'}
     </div>
@@ -269,18 +262,18 @@ function renderHome() {
   const gallery = galleryOpen ? galleryModalHtml(m) : '';
   app.innerHTML = `
     <div class="screen home">
-      <div class="home-emblem"><div class="seal">道</div><span>CRÔNICAS DO CULTIVO</span></div>
-      <div class="home-title"><h1>Dao das Mil Vidas</h1><div class="tag">Cada vida deixa uma marca no Dao.</div></div>
+      <div class="home-emblem"><div class="seal">武</div><span>CRÔNICAS DO JIANGHU</span></div>
+      <div class="home-title"><h1>Murim Quest</h1><div class="tag">Seu nome, sua escola, suas escolhas.</div></div>
       <div class="stack home-menu">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
         <button class="btn ${save.run && !save.run.summary ? '' : 'primary'}" data-act="new">Nova vida</button>
-        <button class="btn" data-act="meta">Herança do Dao · ${m.legacy} pts</button>
+        <button class="btn" data-act="meta">Legado · ${m.legacy} pts</button>
         <button class="btn" data-act="gallery-open">Galeria · finais, inimigos e artefatos</button>
         <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
       <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${m.endingsSeen.length}/${ENDINGS.length}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
-      <p class="muted small copy">Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</p>
+      <p class="muted small copy">Murim Quest · Uma crônica original do Jianghu</p>
     </div>${gallery}`;
 }
 
@@ -307,7 +300,7 @@ function galleryModalHtml(meta: Meta): string {
       return `<div class="gallery-entry ${found ? 'found' : 'locked'} rarity-${item.rarity}"><span class="gallery-silhouette">${found ? itemIcon(item, 40) : '◈'}</span><b>${found ? esc(item.name) : '???'}</b><small>${found ? RARITY_LABEL[item.rarity] : 'Artefato desconhecido'}</small></div>`;
     }).join('')}</div>`;
   }
-  return `<div class="gallery-overlay" role="dialog" aria-modal="true" aria-label="Galeria e Herança do Dao">
+  return `<div class="gallery-overlay" role="dialog" aria-modal="true" aria-label="Galeria e Legado">
     <button class="gallery-backdrop" data-act="gallery-close" aria-label="Fechar galeria"></button>
     <section class="gallery-modal"><header class="gallery-header"><div><span class="muted small">MEMÓRIA DAS VIDAS</span><h2>Galeria</h2></div><button class="btn ghost" data-act="gallery-close" aria-label="Fechar">×</button></header>
       <nav class="gallery-tabs">${tabs.map(([id, label]) => `<button class="${galleryTab === id ? 'active' : ''}" data-act="gallery-tab" data-id="${id}">${label}</button>`).join('')}</nav>
@@ -318,7 +311,7 @@ function galleryModalHtml(meta: Meta): string {
 
 function bestName(m: Meta): string {
   const b = m.best!;
-  return `reino ${b.tier}, ${b.age} anos`;
+  return `faixa ${b.tier}, ${b.age} anos`;
 }
 
 function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0)) {
@@ -337,14 +330,14 @@ function renderCreate() {
       <div class="row between"><h2>Seu destino</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
       <div class="card kv">
         <div class="k">Origem</div><div class="v"><b>${esc(o.name)}</b><br><span class="muted small">${esc(o.desc)}</span></div>
-        <div class="k">Raiz</div><div class="v"><b>${esc(c.root.name)}</b><br><span class="muted small">Ritmo de cultivo ×${c.root.mult.toFixed(2)}</span></div>
+        <div class="k">Aptidão</div><div class="v"><b>${esc(c.root.name)}</b><br><span class="muted small">Ritmo de aprendizado ×${c.root.mult.toFixed(2)}</span></div>
         ${cons ? `<div class="k">Corpo</div><div class="v"><b>${esc(cons.name)}</b><br><span class="muted small">${esc(cons.desc)}</span></div>` : ''}
         <div class="k">Talento</div><div class="v"><b>${esc(t.name)}</b><br><span class="muted small">${esc(t.desc)}</span></div>
         <div class="k">Defeito</div><div class="v"><b>${esc(f.name)}</b><br><span class="muted small">${esc(f.desc)}</span></div>
       </div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
       <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
-      <p class="muted small">Sua trilha de cultivo não é escolhida agora: um mestre, um manual ou um acaso a revelará depois que o Qi despertar. Você decide dentro da história.</p>
+      <p class="muted small">Sua escola e estilo de combate serão escolhidos dentro da história, quando surgir a oportunidade de entrar no Jianghu.</p>
       <button class="btn primary" data-act="start">Iniciar vida</button>
     </div>`;
 }
@@ -412,7 +405,7 @@ function renderGame() {
   else if (tab === 'faccoes') body = factionsHtml(s);
   else body = logHtml(s);
   const frameTab = tab === 'inventario' ? 'aventura' : tab;
-  app.innerHTML = `<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<button class="journal-link" data-act="tab" data-id="diario">Abrir diário da vida <span>↗</span></button><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
+  app.innerHTML = `<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<div class="journal-row"><button class="journal-link" data-act="tab" data-id="diario">Diário da vida <span>↗</span></button></div><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
   if (tab === 'aventura' || tab === 'inventario') startTyping(s);
 }
 
@@ -516,7 +509,7 @@ function powerHtml(s: State): string {
   const next = L.realms[s.tier + 1];
   return `<div class="card"><div class="kv"><div class="k">Título</div><div class="v">${esc(r.titulo ?? 'Mortal')}</div></div>
     ${powers ? `<ul class="small" style="margin:6px 0 0 18px">${powers}</ul>` : ''}
-    ${next?.poder ? `<div class="muted small" style="margin-top:4px">Próximo reino (${esc(next.name)}): ${esc(next.poder)}</div>` : ''}</div>`;
+    ${next?.poder ? `<div class="muted small" style="margin-top:4px">Próxima faixa (${esc(next.name)}): ${esc(next.poder)}</div>` : ''}</div>`;
 }
 
 function statusHtml(s: State): string {
@@ -528,15 +521,15 @@ function statusHtml(s: State): string {
     return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
   const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
-  const fac: Record<string, string> = { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
+  const fac: Record<string, string> = { seita: 'Escola reconhecida', demoniaca: 'Escola clandestina', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
     <div class="card">
-      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon(L.name.includes('Murim') ? 'murim' : 'xianxia', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
+      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon('murim', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
       <div class="kv">
-        <div class="k">Trilha</div><div class="v">${esc(path.name)}</div>
-        <div class="k">Reino</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
+        <div class="k">Escola e estilo</div><div class="v">${esc(path.name)}</div>
+        <div class="k">Faixa</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
         <div class="k">Origem</div><div class="v">${esc(ORIGIN[s.origin].name)}</div>
-        <div class="k">Raiz</div><div class="v">${esc(s.root.name)}</div>
+        <div class="k">Aptidão</div><div class="v">${esc(s.root.name)}</div>
         ${cons ? `<div class="k">Corpo</div><div class="v">${esc(cons.name)}</div>` : ''}
         <div class="k">Talento</div><div class="v">${esc(TALENT[s.talent].name)}</div>
         <div class="k">Defeito</div><div class="v">${esc(FLAW[s.flaw].name)}</div>
@@ -548,14 +541,14 @@ function statusHtml(s: State): string {
     ${powerHtml(s)}
     ${moralAlignmentHtml(s)}
     ${perfilHtml(s)}
-    <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>
+    <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força, vigor e combate. <b>Espírito:</b> percepção e leitura de intenção. <b>Compreensão:</b> estudo de técnicas, pistas e remédios. <b>Sorte:</b> oportunidades e imprevistos. <b>Carisma:</b> alianças, negociação e reputação. <b>Vontade:</b> disciplina, coragem e resistência sob pressão.</div></details></div>
     <div class="card kv">
-      <div class="k">Pedras</div><div class="v">${s.pedras}</div>
+      <div class="k">Moedas</div><div class="v">${s.pedras}</div>
       <div class="k">Fama</div><div class="v">${s.fama}</div>
       <div class="k">Karma</div><div class="v">${s.karma > 0 ? '+' : ''}${s.karma}</div>
-      <div class="k">Corrupção</div><div class="v">${s.corr}/100</div>
+      <div class="k">Foco</div><div class="v">${Math.max(0, 100 - s.corr)}/100</div>
       <div class="k">Ferimentos</div><div class="v">${Math.round(s.wounds)}/6</div>
-      <div class="k">Cultivo</div><div class="v">${s.tier > 0 ? `${cultivationRate(s).toFixed(1)}%/ano` : '—'}</div>
+      <div class="k">Treino</div><div class="v">${s.tier > 0 ? `${cultivationRate(s).toFixed(1)}%/ano` : '—'}</div>
     </div>
     ${relationsHtml(s)}`;
 }
@@ -567,11 +560,11 @@ function sectRankLabel(rank: NonNullable<ReturnType<typeof sectRankOf>>): string
 function moralAlignmentHtml(s: State): string {
   const morality = s.morality ?? { good: 0, evil: 0, order: 0, chaos: 0 };
   const axes: [keyof typeof morality, string, string][] = [
-    ['good', 'Bom', '✦'], ['evil', 'Mau', '☠'], ['order', 'Ordem', '▤'], ['chaos', 'Caos', '〰'],
+    ['good', 'Honra', '✦'], ['evil', 'Astúcia', '◈'], ['order', 'Lealdade', '▤'], ['chaos', 'Ambição', '〰'],
   ];
-  return `<div class="card moral-card"><div class="muted small">ALINHAMENTO MORAL</div><div class="moral-grid">${axes.map(([axis, label, icon]) =>
+  return `<div class="card moral-card"><div class="muted small">REPUTAÇÃO NO JIANGHU</div><div class="moral-grid">${axes.map(([axis, label, icon]) =>
     `<div class="moral-axis ${axis}"><span><i aria-hidden="true">${icon}</i>${label}</span><div class="bar"><i style="width:${morality[axis]}%"></i></div><b>${morality[axis]}</b></div>`,
-  ).join('')}</div><p class="muted small">Suas escolhas moldam a reputação e podem revelar caminhos secretos.</p></div>`;
+  ).join('')}</div><p class="muted small">Honra, astúcia, lealdade e ambição mudam a forma como as escolas respondem a você.</p></div>`;
 }
 
 function questsHtml(s: State): string {
@@ -595,7 +588,7 @@ function relationsHtml(s: State): string {
   if (f('mestre_protetor')) rows.push(['Mestre ' + n.mentor, 'protege você na seita']);
   if (f('mestre_do_anel') || f('velho_no_anel')) rows.push(['O Velho do Anel', f('velho_livre') ? 'recuperou o corpo e é seu aliado' : 'mora no anel negro e guarda seus segredos']);
   if (f('mestre_renascido')) rows.push(['Seu antigo mestre', 'renasceu criança e você o guia de novo']);
-  if (f('companheiro_dao')) rows.push(['Companheiro(a) do Dao', 'caminha ao seu lado']);
+  if (f('companheiro_dao')) rows.push(['Companheiro de jornada', 'caminha ao seu lado']);
   if (f('viuvo_do_dao')) rows.push(['Companheiro(a) perdido(a)', 'o luto virou parte do seu caminho']);
   if (f('tem_filho')) rows.push(['Seu filho' + (f('tem_neto') ? ' e seu neto' : ''), f('filho_com_raiz') ? 'a raiz espiritual despertou na família' : 'a família cresce']);
   if (f('cla_proprio')) rows.push([n.cla, 'o clã que você fundou']);
@@ -685,9 +678,9 @@ function equipmentHtml(s: State): string {
 }
 
 const GUILDS: { id: GuildFaction; name: string; desc: string }[] = [
-  { id: 'sword_sect', name: 'Seita da Espada', desc: 'Disciplina e tradição marcial; reputação alta melhora testes de combate.' },
-  { id: 'demon_cult', name: 'Culto Demoníaco', desc: 'Poder sem hesitação; influência abre caminhos sombrios.' },
-  { id: 'merchant_guild', name: 'Guilda dos Mercadores', desc: 'Rotas, contatos e vantagens nas trocas.' },
+  { id: 'sword_sect', name: 'Escola da Garça', desc: 'Disciplina de treino e apoio mútuo entre escolas.' },
+  { id: 'demon_cult', name: 'Casa da Lua Oca', desc: 'Contatos discretos, informação e rotas clandestinas.' },
+  { id: 'merchant_guild', name: 'Associação de Caravanas', desc: 'Rotas seguras, contatos e melhores trocas.' },
 ];
 
 function factionsHtml(s: State): string {
@@ -706,7 +699,7 @@ function logHtml(s: State): string {
 }
 
 function milestones(s: State): string {
-  const rows = s.log.filter((l, i) => i === 0 || /^(Alcançou o reino|Encontrou seu método)/.test(l.text));
+  const rows = s.log.filter((l, i) => i === 0 || /^(Faixa alcançada|Encontrou seu método)/.test(l.text));
   return rows.map((l) => `<div class="log-entry"><span class="a">${l.age}a</span><span>${esc(l.text)}</span></div>`).join('');
 }
 
@@ -728,28 +721,28 @@ function renderEnd() {
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
       <div class="card sum">
-        <span>Rank de Cultivo</span><b>${esc(sm.tierName)}</b>
+        <span>Faixa marcial</span><b>${esc(sm.tierName)}</b>
         <span>Idade alcançada</span><b>${Math.floor(s.age)} anos</b>
         <span>Causa do fim</span><b>${esc(e.name)}</b>
-        <span>Herança ganha nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
+        <span>Legado ganho nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
         <span>Fama</span><b>${s.fama}</b>
         <span>Karma</span><b>${s.karma > 0 ? '+' : ''}${s.karma}</b>
       </div>
       <div class="card sum final-equipment"><div class="muted small equipment-summary-title">EQUIPAMENTOS FINAIS</div>${finalGear}</div>
       <div class="card"><div class="muted small">MARCOS DA VIDA</div>${milestones(s)}</div>
-      ${sm.marcas?.length ? `<div class="card"><div class="muted small">O QUE VOCÊ DEIXOU PARA TRÁS</div>${sm.marcas.map((m) => `<div class="tech small">${esc(m)}</div>`).join('')}<div class="muted small" style="margin-top:6px">Cada quatro marcas rendem +1 de Herança (até +2).</div></div>` : ''}
+      ${sm.marcas?.length ? `<div class="card"><div class="muted small">O QUE VOCÊ DEIXOU PARA TRÁS</div>${sm.marcas.map((m) => `<div class="tech small">${esc(m)}</div>`).join('')}<div class="muted small" style="margin-top:6px">Cada quatro marcas rendem +1 ponto de Legado (até +2).</div></div>` : ''}
       ${ach.length ? `<div class="card"><div class="muted small">CONQUISTAS DESBLOQUEADAS</div>${ach.map((a) => `<div><b>${esc(a.name)}</b> <span class="muted small">— ${esc(a.reward)}</span></div>`).join('')}</div>` : ''}
       <details class="card"><summary>Diário da vida (${s.log.length})</summary>${logHtml(s).replace('class="card"', '')}</details>
       <button class="btn primary" data-act="new">Nova vida</button>
       <button class="btn" data-act="share">Copiar resumo da vida</button>
-      <button class="btn" data-act="meta">Herança do Dao</button>
+      <button class="btn" data-act="meta">Legado</button>
       <button class="btn ghost" data-act="home">Início</button>
     </div>`;
 }
 
 function renderMeta() {
   const m = save.meta;
-  const tabs: [typeof metaTab, string][] = [['heranca', 'Herança'], ['conquistas', 'Conquistas'], ['codice', 'Códice'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
+  const tabs: [typeof metaTab, string][] = [['heranca', 'Legado'], ['conquistas', 'Conquistas'], ['codice', 'Códice'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
   let body = '';
   if (metaTab === 'heranca') {
     body = `<div class="card row between"><span>Pontos disponíveis</span><b style="color:var(--gold);font-size:1.3rem">${m.legacy}</b></div>
@@ -759,7 +752,7 @@ function renderMeta() {
         return `<div class="card item"><div><b>${u.name}</b> <span class="muted small">nv ${lvl}/${u.max}</span><div class="muted small">${u.desc}</div></div>
           <button class="btn" data-act="buy" data-id="${u.id}" ${lvl >= u.max || m.legacy < price ? 'disabled' : ''}>${lvl >= u.max ? 'Máx' : price + ' pts'}</button></div>`;
       }).join('')}
-      <div class="card muted small">Morra bem para ganhar Herança: reinos altos, longevidade, fama e finais raros rendem mais pontos.</div>`;
+      <div class="card muted small">Suas vidas deixam um legado. Faixas marciais, longevidade, reputação e finais raros rendem pontos.</div>`;
   } else if (metaTab === 'conquistas') {
     body = `<div class="card list">${ACHIEVEMENTS.map((a) => {
       const got = m.achievements.includes(a.id);
@@ -786,15 +779,15 @@ function renderMeta() {
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${FONT_NAMES.map((n, i) => `<button class="btn ${save.settings.font === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="font" data-i="${i}">${n}</button>`).join('')}</div></div>
       <div class="card"><div class="muted small">VELOCIDADE DO TEXTO</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${SPEED_NAMES.map((n, i) => `<button class="btn ${save.settings.speed === i ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="speed" data-i="${i}">${n}</button>`).join('')}</div></div>
-      <div class="card"><div class="muted small">SISTEMA DE TESTES</div><p class="small">Toda escolha com teste é resolvida com um D20, atributos, equipamento, cultivo e companheiros. O resultado aparece antes da consequência narrativa.</p></div>
+      <div class="card"><div class="muted small">SISTEMA DE TESTES</div><p class="small">Toda escolha com teste é resolvida com um D20, atributos, equipamento, treino e companheiros. O resultado aparece antes da consequência narrativa.</p></div>
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Dao das Mil Vidas · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${ENDINGS.length} finais · ${PATHS.length} caminhos de cultivo<br>Convenções de gênero pesquisadas em novels xianxia/wuxia/xuanhuan, manhwas murim e mitologia chinesa; personagens, seitas e textos são originais. Fontes em docs/pesquisa.md e docs/lotes.md.<br><b>Dao das Mil Vidas © 2026 Andre Barbosa Vieira. Todos os direitos reservados.</b></div>`;
+      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${ENDINGS.length} finais · ${PATHS.length} estilos marciais<br>Uma história original de escolas, escolhas e consequências no Jianghu.</div>`;
   }
   app.innerHTML = `
     <div class="screen">
-      <div class="row between"><h2>Herança do Dao</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
+      <div class="row between"><h2>Legado</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
       <div class="row" style="flex-wrap:wrap">${tabs.map(([id, n]) => `<button class="path ${metaTab === id ? 'sel' : ''}" style="padding:8px 12px" data-act="mtab" data-id="${id}">${n}</button>`).join('')}</div>
       ${body}
     </div>`;
@@ -823,7 +816,7 @@ app.addEventListener('click', (ev) => {
     audioStarting = true;
     audioGateError = '';
     target.setAttribute('aria-disabled', 'true');
-    target.textContent = 'Preparando o Cultivo…';
+    target.textContent = 'Preparando a jornada…';
     void startAudioExperience().catch(() => undefined).then(() => {
       audioStarted = true;
       audioStarting = false;
@@ -834,7 +827,7 @@ app.addEventListener('click', (ev) => {
       const message = app.querySelector<HTMLElement>('.audio-error');
       if (message) message.textContent = audioGateError;
       target.setAttribute('aria-disabled', 'false');
-      target.textContent = 'Toque para Iniciar o Cultivo';
+      target.textContent = 'Toque para entrar no Jianghu';
     });
     return;
   }
@@ -983,7 +976,7 @@ app.addEventListener('click', (ev) => {
     case 'intro': save.settings.intro = true; persist(); render(); break;
     case 'share': {
       if (!s?.ending) break;
-      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Dao das Mil Vidas'].join('\n');
+      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Murim Quest'].join('\n');
       navigator.clipboard?.writeText(txt).then(() => toast('Resumo copiado'), () => toast('Não foi possível copiar'));
       break;
     }
@@ -1002,7 +995,7 @@ app.addEventListener('click', (ev) => {
       break;
     }
     case 'wipe':
-      if (window.confirm('Apagar TODO o progresso, inclusive a Herança do Dao?')) {
+      if (window.confirm('Apagar TODO o progresso e o legado destas vidas?')) {
         save = { meta: newMeta(), run: null, settings: save.settings };
         persist(); screen = 'home'; render();
       }

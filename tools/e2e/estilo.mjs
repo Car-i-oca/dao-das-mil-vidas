@@ -20,7 +20,7 @@ const gateState = await page.evaluate(() => ({
   zIndex: getComputedStyle(document.querySelector('.audio-gate')).zIndex,
   gameRendered: !!document.querySelector('.game-frame, .story-text'),
 }));
-if (!gateState.text.includes('Toque para Iniciar o Cultivo') || gateState.zIndex !== '9999' || gateState.gameRendered) errors.push(`tela inicial de áudio inválida: ${JSON.stringify(gateState)}`);
+if (!gateState.text.includes('Toque para entrar no Jianghu') || gateState.zIndex !== '9999' || gateState.gameRendered) errors.push(`tela inicial de áudio inválida: ${JSON.stringify(gateState)}`);
 await page.click('[data-act="start-audio"]');
 await page.waitForFunction(() => {
   return !!document.querySelector('[data-act="new"]') && document.documentElement.dataset.audioReady === 'true';
@@ -58,14 +58,17 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
     return {
       sections: [ratio(art), ratio(story), ratio(choices)],
       storyOverflow: getComputedStyle(story).overflowY,
+      choiceOverflow: getComputedStyle(choices).overflowY,
       pageScrollable: document.documentElement.scrollHeight > innerHeight + 1,
+      panelsInside: [art, story, choices].every((el) => el.getBoundingClientRect().top >= root.getBoundingClientRect().top - 1 && el.getBoundingClientRect().bottom <= root.getBoundingClientRect().bottom + 1),
+      panelsSeparated: [art, story, choices].every((el, i, all) => i === 0 || el.getBoundingClientRect().top >= all[i - 1].getBoundingClientRect().bottom - 1),
       choice: root.querySelector('.choice') ? {
         tag: root.querySelector('.choice').tagName,
         role: root.querySelector('.choice').getAttribute('role'),
       } : null,
     };
   });
-  if (!layout || layout.sections.some((part, index) => Math.abs(part - [0.35, 0.35, 0.3][index]) > 0.02) || layout.storyOverflow !== 'auto' || layout.pageScrollable || (layout.choice && (layout.choice.tag !== 'DIV' || layout.choice.role !== 'button'))) {
+  if (!layout || !layout.panelsInside || !layout.panelsSeparated || layout.storyOverflow !== 'auto' || layout.choiceOverflow !== 'auto' || layout.pageScrollable || (layout.choice && (layout.choice.tag !== 'DIV' || layout.choice.role !== 'button'))) {
     errors.push(`layout de aventura inválido: ${JSON.stringify(layout)}`);
   }
   await page.screenshot({ path: `${OUT}/estilo-${est}-jogo.png` });
@@ -106,7 +109,7 @@ for (const est of ['manhwa', 'tinta', 'pixel']) {
     }
   }
   // volta ao menu e apaga a vida para a próxima rodada
-  await page.evaluate(() => { localStorage.removeItem('dao-mil-vidas-save-v1'); });
+  await page.evaluate(() => { localStorage.removeItem('murim-quest-save-v1'); });
   await page.evaluate((e) => { const s = { meta: undefined, run: null, settings: { estilo: e } }; void s; }, est);
   await openHome();
   await page.click('[data-act="meta"]');

@@ -6,7 +6,7 @@ import { LADDERS } from '../data/realms';
 import { PATHS } from '../data/paths';
 import { ORIGINS, TALENTS, FLAWS } from '../data/character';
 import { ITEMS } from '../data/items';
-import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, upgradePrice } from '../data/endings';
+import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, ACH_POINTS, upgradePrice } from '../data/endings';
 import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
 import { EVENTS } from '../data/events';
 import { FOE, foeFor } from '../data/combates';
@@ -23,8 +23,8 @@ import { COMPANIONS } from '../data/companions';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
-/** Enquanto o personagem não encontra um método, usa-se uma trilha neutra (escada xianxia, sem bônus). */
-const NO_PATH: Path = { id: '', name: 'Sem trilha ainda', ladder: 'neutro', desc: 'O método ainda será encontrado.', stats: {} };
+/** Antes de entrar numa escola, a progressão segue as mesmas faixas marciais sem bônus de estilo. */
+const NO_PATH: Path = { id: '', name: 'Sem escola ainda', ladder: 'murim', desc: 'O estilo marcial ainda será escolhido durante a história.', stats: {} };
 export const PATH: Record<string, Path> = { ...byId(PATHS), '': NO_PATH };
 export const ORIGIN = byId(ORIGINS);
 export const TALENT = byId(TALENTS);
@@ -36,7 +36,7 @@ export const CONSTITUTION = byId(CONSTITUTIONS);
 const QUEST = byId(QUESTS);
 
 export const STAT_NAMES: Record<StatKey, string> = {
-  fis: 'Físico', esp: 'Espírito', comp: 'Compreensão', sor: 'Sorte', car: 'Carisma', dao: 'Coração do Dao',
+  fis: 'Físico', esp: 'Percepção', comp: 'Técnica', sor: 'Instinto', car: 'Carisma', dao: 'Vontade',
 };
 export const STAT_KEYS: StatKey[] = ['fis', 'esp', 'comp', 'sor', 'car', 'dao'];
 
@@ -144,9 +144,9 @@ export function joinGuild(s: State, guild: GuildFaction): boolean {
 }
 
 const GUILD_NAMES: Record<GuildFaction, string> = {
-  sword_sect: 'Seita da Espada',
-  demon_cult: 'Culto Demoníaco',
-  merchant_guild: 'Guilda dos Mercadores',
+  sword_sect: 'Escola da Garça',
+  demon_cult: 'Casa da Lua Oca',
+  merchant_guild: 'Associação de Caravanas',
 };
 
 export function factionReputation(s: State, guild: GuildFaction): number {
@@ -456,22 +456,9 @@ function noteFound(s: State, id: string) {
 
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function oldAgeEnding(s: State): string {
-  const f = (x: string) => s.flags.includes(x);
-  if (s.tier === 0) return 'velhice';
-  if (f('tem_neto') || f('cla_proprio')) return 'velhice_avo';
-  const v = virtudeDominante(s);
-  if (v === 'compaixao' && s.karma >= 5) return 'velhice_avo';
-  if ((v === 'disciplina' || v === 'devocao') && eff(s, 'dao') >= 40 && s.karma >= 9) return 'velhice_sabio';
-  if (v === 'cautela' && s.fama < 60) return 'velhice_esquecido';
-  if (v === 'violencia' && s.fama >= 30) return 'velhice_veterano';
-  if (v === 'ganancia' && s.pedras >= 300) return 'velhice_rico';
-  if (v === 'ganancia' || (v === 'violencia' && s.karma <= -5)) return 'velhice_rancoroso';
-  if (s.fama >= 90 && s.tier >= 4 && v !== 'cautela') return 'velhice_mestre';
-  if (eff(s, 'dao') >= 45 && s.karma >= 12) return 'velhice_sabio';
-  if (s.karma <= -15) return 'velhice_rancoroso';
-  if (s.pedras >= 700) return 'velhice_rico';
-  if (f('veterano') || f('heroi_do_cerco') || f('campeao_torneio') || f('torneio_campeao') || f('heroi_da_guerra')) return 'velhice_veterano';
-  if (s.fama < 20) return 'velhice_esquecido';
+  if (s.flags.includes('fundou_escola')) return 'murim_escola';
+  if (s.flags.includes('guardiao_estradas')) return 'murim_guardiao';
+  if (s.fama >= 50) return 'murim_mestre';
   return 'velhice';
 }
 
@@ -499,21 +486,16 @@ function tierUp(s: State, delta: number) {
   s.xp = 0;
   const lifeMult = (TALENT[s.talent].lifeMult ?? 1) * (flawFx(s).lifeMult ?? 1);
   s.maxAge = Math.max(s.maxAge, Math.round(realmOf(s).lifespan * lifeMult));
-  addLog(s, `Alcançou o reino: ${realmName(s)}.`);
+  addLog(s, `Faixa alcançada: ${realmName(s)}.`);
 }
 
-/** Adota um caminho de cultivo e aplica seus atributos iniciais e alinhamento. */
+/** Adota uma escola marcial e aplica seus atributos iniciais. */
 function setPath(s: State, id: string) {
   const p = PATH[id];
   if (!p || !id || s.path) return;
   s.path = id;
   for (const k of Object.keys(p.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (p.stats[k] ?? 0)));
   if (p.startCorr) s.corr = Math.min(100, s.corr + p.startCorr);
-  if (id === 'demoniaca') {
-    s.alignment = 'demoniaco';
-    s.faction = 'demoniaca';
-    if (!s.flags.includes('membro_demoniaca')) s.flags.push('membro_demoniaca');
-  }
   if (!s.flags.includes('trilha_definida')) s.flags.push('trilha_definida');
   const lifeMult = (TALENT[s.talent].lifeMult ?? 1) * (flawFx(s).lifeMult ?? 1);
   s.maxAge = Math.max(s.maxAge, Math.round(realmOf(s).lifespan * lifeMult));
@@ -529,7 +511,7 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
   if (fx.master) s.master = fx.master;
   const currentAlignment = alignmentOf(s);
   if (currentAlignment !== previousAlignment) {
-    notify(s, { kind: 'alignment', message: `Alinhamento alterado: ${currentAlignment === 'demoniaco' ? 'Caminho Demoníaco' : 'Caminho Daoico'}.` });
+    notify(s, { kind: 'alignment', message: `Sua escola segue uma tradição ${currentAlignment === 'demoniaco' ? 'clandestina' : 'reconhecida'}.` });
   }
   if (s.master && s.master !== previousMaster) {
     const masterName = s.master === 'lua_oca' ? 'Mestre da Lua Oca' : s.master === 'mestra_cinzas' ? 'Mestra das Cinzas' : s.master;
@@ -726,32 +708,32 @@ function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
         if (s.items.includes('talisma_escudo')) {
           s.items.splice(s.items.indexOf('talisma_escudo'), 1);
           s.wounds += 3;
-          if (top) { s.xp = 60; return 'O raio final desabou. O Talismã de Escudo explodiu em mil faíscas, salvando sua vida, mas o rompimento foi interrompido. Você terá de tentar de novo.'; }
+          if (top) { s.xp = 60; return 'A prova final saiu do controle. O broquel absorveu o golpe que seria fatal; você terá de se preparar para tentar outra vez.'; }
           tierUp(s, 1);
           return `O raio da tribulação desabou. O Talismã de Escudo explodiu salvando sua vida. Você rompeu para ${target}, mas feriu-se gravemente.`;
         }
         if (rng.chance(0.7)) {
           s.wounds += 3;
           s.xp = 50;
-          return `O céu rugiu e o raio caiu. Você sobreviveu por pouco, queimado até os ossos. A tribulação em ${target} terá de ser enfrentada outra vez.`;
+          return `A disputa pela faixa de ${target} foi interrompida antes do fim. Você sobreviveu, mas precisa se recuperar e voltar mais preparado.`;
         }
         endLife(s, 'tribulacao');
-        return `As nuvens se fecharam. O primeiro raio foi suportável. O segundo, quase. O terceiro apagou a ideia de que você poderia vencer o céu em ${target}.`;
+        return `A prova pela faixa de ${target} terminou em derrota. O conselho marcou seu nome; os ferimentos, porém, foram fatais.`;
       }
       if (top) {
         endLife(s, 'ascensao');
-        return `O céu abriu degraus de luz. O mundo mortal ficou pequeno. Você alcançou: ${target}.`;
+        return `Diante das escolas reunidas, seu domínio da arte marcial não deixou dúvidas. Seu nome passa a representar a faixa de ${target}.`;
       }
       tierUp(s, 1);
       s.wounds += 1;
-      return `Raios atravessaram seu corpo. Quando o céu enfim se calou, você estava de pé: ${target}.`;
+      return `A prova cobrou caro. Você saiu ferido, mas reconhecido como ${target}.`;
     }
     tierUp(s, 1);
     return rng.pick([
-      `O Qi fluiu como rio sem margens. Seu corpo cedeu, a mente iluminou: ${target}.`,
+      `Anos de treino se alinharam num único movimento. Você alcançou a faixa de ${target}.`,
       `Uma porta que parecia parede abriu-se em silêncio. Do outro lado, ${target}.`,
-      `Durante dias, nada. Então, num suspiro, tudo se encaixou: ${target}.`,
-      `O Qi subiu como maré de lua cheia e, quando recuou, você já era ${target}.`,
+      `Durante dias, nada. Então, num suspiro, sua técnica finalmente se encaixou: ${target}.`,
+      `O fôlego encontrou seu ritmo. Quando o treino terminou, você era ${target}.`,
     ]);
   }
   // Falhar custa tempo de recuperação.
@@ -760,27 +742,27 @@ function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
   if (r < 0.6) {
     s.xp = 45;
     return rng.pick([
-      'O rompimento falhou. O Qi recuou como maré, deixando cansaço e uma lição amarga.',
+      'A graduação falhou. O corpo pediu descanso e deixou uma lição amarga.',
       'A porta não cedeu. Você ficou diante dela até as pernas tremerem e voltou para trás, em silêncio.',
-      'O Qi chegou à beira e não passou. Faltou pouco, ou faltou tudo; é difícil saber.',
+      'Sua técnica chegou perto da faixa seguinte, mas ainda falta prática para sustentá-la.',
     ]);
   }
   if (r < 0.85) {
     s.xp = 40;
     s.wounds += 2;
     return rng.pick([
-      'O rompimento falhou e o Qi rebateu contra os meridianos. Sangue na boca, ferimentos no corpo.',
-      'O Qi estourou contra a barreira e voltou como chicote. Você acordou no chão, sem lembrar de ter caído.',
+      'A tentativa falhou e o impacto da técnica feriu seu corpo. Você precisará se recuperar.',
+      'O movimento perdeu o eixo e o golpe voltou contra você. Quando acordou, estava no chão.',
     ]);
   }
   const pDev = Math.min(0.9, Math.max(0.15, 0.5 + (eff(s, 'dao') - 12) * 0.03));
   if (rng.chance(pDev)) {
     s.xp = 30;
     s.wounds += 3;
-    return 'O Qi desviou do curso! Seu Coração do Dao segurou o abismo por um fio. Você sobreviveu, em ruínas.';
+    return 'Sua técnica saiu do controle! Você sobreviveu por pouco, mas ficou gravemente ferido.';
   }
   endLife(s, 'desvio');
-  return 'O Qi desviou do curso e o Coração do Dao não aguentou segurar o abismo.';
+  return 'Sua técnica saiu do controle e os ferimentos foram fatais.';
 }
 
 /* ---------- Visão (para a interface) ---------- */
@@ -874,7 +856,7 @@ export function view(s: State): View {
     });
     return {
       kind: 'event', title: 'Gargalo', rarity: 'raro', choices,
-      text: `Seu cultivo transborda. Diante de você está a porta para ${target}.${trib ? ' Raios de tribulação já se agrupam no horizonte.' : ''}`,
+      text: `Seu treinamento chegou ao limite da faixa atual. Para avançar até ${target}, você precisa demonstrar domínio sob pressão.${trib ? ' Uma prova pública já se aproxima.' : ''}`,
     };
   }
   if (cur.retiro) {
@@ -922,16 +904,16 @@ function diffSnap(b: Snap, s: State): Change[] {
   num('karma', s.karma - b.karma);
   num('fama', s.fama - b.fama);
   num('corrupção', s.corr - b.corr, false);
-  const moralLabels = { good: 'Bom', evil: 'Mau', order: 'Ordem', chaos: 'Caos' } as const;
+  const moralLabels = { good: 'Honra', evil: 'Astúcia', order: 'Lealdade', chaos: 'Ambição' } as const;
   for (const axis of Object.keys(moralLabels) as (keyof typeof moralLabels)[]) {
     const delta = (s.morality?.[axis] ?? 0) - b.morality[axis];
-    if (delta) num(`alinhamento ${moralLabels[axis]}`, delta, axis === 'good' || axis === 'order');
+    if (delta) num(`reputação: ${moralLabels[axis]}`, delta, axis === 'good' || axis === 'order');
   }
   const dw = Math.round((s.wounds - b.wounds) * 10) / 10;
   if (dw) out.push({ t: dw > 0 ? `+${dw} ferimento${dw > 1 ? 's' : ''}` : `Ferimentos ${sign(dw)}`, k: dw > 0 ? 'down' : 'up' });
   if (s.tier === b.tier && s.tier > 0) {
     const dx = Math.round(s.xp - b.xp);
-    if (dx) out.push({ t: `${sign(dx)}% de cultivo`, k: dx > 0 ? 'up' : 'down' });
+    if (dx) out.push({ t: `${sign(dx)}% de treino`, k: dx > 0 ? 'up' : 'down' });
   }
   if (s.maxAge !== b.maxAge && s.tier === b.tier) num('anos de vida', s.maxAge - b.maxAge);
   const gained = s.items.slice();
@@ -1012,12 +994,12 @@ function chooseCore(s: State, idx: number, rng: Rng) {
     if (v.action === 'wait') {
       s.seen['__break'] = s.age;
       s.result = { text: rng.pick([
-        'Você recolhe o Qi e espera. Os dias passam; o gargalo amadurece.',
+        'Você observa sua postura e espera. Os dias passam; o próximo movimento se torna mais claro.',
         'Respirar, esperar, respirar. A barreira não some, mas já não parece tão alta.',
-        'Você troca a pressa por rotina: cultiva de manhã, caminha à tarde, medita à noite. O gargalo respeita quem não o encara.',
+        'Você troca a pressa pela rotina: treina de manhã, caminha à tarde, descansa à noite. A técnica amadurece sem atalhos.',
       ]) };
       applyFx(s, { stats: { comp: 1 }, anos: 1 }, rng);
-      s.log.push({ age: Math.floor(s.age), text: 'Adiou o rompimento para se preparar melhor.' });
+      s.log.push({ age: Math.floor(s.age), text: 'Adiou a graduação para se preparar melhor.' });
       return;
     }
     const text = doBreakthrough(s, rng, v.pill);
@@ -1184,11 +1166,11 @@ export function eligibleEvents(s: State): GameEvent[] {
 }
 
 const CATS_EV = new Map<string, Cat[]>();
-const TODAS_CATS: Cat[] = ['combate', 'social', 'perigo', 'tesouro', 'cultivo', 'viagem'];
+const TODAS_CATS: Cat[] = ['combate', 'social', 'perigo', 'tesouro', 'treino', 'viagem'];
 /** Multiplicador de afinidade por categoria para este personagem (calculado uma vez por turno; ver src/data/afinidades.ts). */
 function afinidadePorCat(s: State): Record<Cat, number> {
   const keys = [s.talent, s.flaw, s.origin, s.path, s.constitution ?? '', ...rootTags(s.root)];
-  const m = { combate: 1, social: 1, perigo: 1, tesouro: 1, cultivo: 1, viagem: 1 } as Record<Cat, number>;
+  const m = { combate: 1, social: 1, perigo: 1, tesouro: 1, treino: 1, viagem: 1 } as Record<Cat, number>;
   for (const k of keys) {
     const a = AFINIDADES[k];
     if (!a) continue;
@@ -1229,8 +1211,8 @@ export function pickNext(s: State, rng: Rng) {
     return;
   }
   // 3) vida comum caso nunca desperte
-  if (s.tier === 0 && s.age >= 30 && s.seen['vida_comum'] === undefined) {
-    s.current = { id: 'vida_comum' };
+  if (s.tier === 0 && s.age >= 30 && s.seen['murim_vida_comum'] === undefined) {
+    s.current = { id: 'murim_vida_comum' };
     return;
   }
   let pool = eligibleEvents(s);
@@ -1272,12 +1254,10 @@ export function pickNext(s: State, rng: Rng) {
     }
     return w;
   });
-  setCurrent(s, ev ? ev.id : 'dia_comum', rng);
+  setCurrent(s, ev ? ev.id : 'murim_dia_comum', rng);
 }
 
 /* ---------- Final da vida ---------- */
-export const ACH_POINTS: Record<string, number> = { ach_despertar: 3, ach_vinganca: 5, ach_fundador: 8, ach_amor: 5, ach_milionario: 4, ach_patriarca: 6, ach_guardiao: 6, ach_pilula: 6, ach_ancestral: 6, ach_conselheiro: 5, ach_senhor_sangue: 5, ach_penitente: 6, ach_iluminacao: 8, ach_celeste: 5, ach_mestre_veneno: 4, ach_pacto_besta: 3, ach_diaspora: 3 };
-
 export function finalizeLife(meta: Meta, s: State): void {
   if (s.summary || !s.ending) return;
   const end = ENDING[s.ending];

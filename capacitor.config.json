@@ -1,7 +1,7 @@
 {
   "appId": "app.cultivo.jogo",
-  "appName": "Dao das Mil Vidas",
+  "appName": "Murim Quest",
   "webDir": "dist",
   "server": { "androidScheme": "https" },
-  "android": { "backgroundColor": "#14110f" }
+  "android": { "backgroundColor": "#0a0a0a" }
 }
