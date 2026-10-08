@@ -21,7 +21,7 @@ import { hash } from './art';
 import { FOES, foeFor } from '../data/combates';
 import { QUESTS } from '../data/quests';
 import { COMPANIONS } from '../data/companions';
-import { playSfx, startAudioExperience } from './audio';
+import { playSfx, startAudioExperience, setAudioForeground } from './audio';
 import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
@@ -75,49 +75,31 @@ function shopModalHtml(s: State): string {
   </div>`;
 }
 
-function bgmDataUri(): string {
-  const sampleRate = 8000;
-  const sampleCount = sampleRate * 2;
-  const buffer = new ArrayBuffer(44 + sampleCount * 2);
-  const view = new DataView(buffer);
-  const write = (offset: number, value: string) => [...value].forEach((char, i) => view.setUint8(offset + i, char.charCodeAt(0)));
-  write(0, 'RIFF');
-  view.setUint32(4, 36 + sampleCount * 2, true);
-  write(8, 'WAVEfmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  write(36, 'data');
-  view.setUint32(40, sampleCount * 2, true);
-  for (let i = 0; i < sampleCount; i++) {
-    const t = i / sampleRate;
-    const envelope = 0.58 + 0.12 * Math.sin(2 * Math.PI * t / 2);
-    const chord = Math.sin(2 * Math.PI * 110 * t) * 0.48
-      + Math.sin(2 * Math.PI * 165 * t) * 0.24
-      + Math.sin(2 * Math.PI * 220 * t) * 0.18;
-    view.setInt16(44 + i * 2, Math.round(chord * envelope * 32767), true);
-  }
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return `data:audio/wav;base64,${btoa(binary)}`;
-}
-
 const bgm = document.createElement('audio');
 bgm.id = 'bgm';
 bgm.loop = true;
-bgm.autoplay = true;
-bgm.preload = 'auto';
-bgm.volume = 0.14;
-bgm.src = bgmDataUri();
+bgm.preload = 'none';
+bgm.volume = 0.18;
+bgm.src = 'https://actions.google.com/sounds/v1/ambiences/wind_whistling.ogg';
 document.body.appendChild(bgm);
 
 window.addEventListener('pagehide', persist);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persist(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    persist();
+    bgm.pause();
+    void setAudioForeground(false).catch((error: unknown) => {
+      audioGateError = error instanceof Error ? error.message : 'Não foi possível pausar os efeitos sonoros.';
+    });
+  } else if (audioStarted) {
+    void setAudioForeground(true).catch((error: unknown) => {
+      audioGateError = error instanceof Error ? error.message : 'Não foi possível retomar os efeitos sonoros.';
+    });
+    void bgm.play().catch((error: unknown) => {
+      audioGateError = error instanceof Error ? error.message : 'Não foi possível retomar a música.';
+    });
+  }
+});
 
 function withRng<T>(s: State, fn: (r: Rng) => T): T {
   const r = new Rng(s.seed);
@@ -280,11 +262,11 @@ function showDiceModal(s: State) {
   const timerStarted = performance.now();
   diceTimer = window.setInterval(() => {
     if (!diceModal) { window.clearInterval(diceTimer); return; }
-    if (performance.now() - timerStarted >= 2400) {
+    if (performance.now() - timerStarted >= 2000) {
       window.clearInterval(diceTimer);
       diceModal.face = roll.d20;
       diceModal.settled = true;
-      if (diceModal.combat) playSfx(diceModal.success ? 'victory' : 'defeat');
+      playSfx(diceModal.success ? 'victory' : 'impact');
       render();
       return;
     }
@@ -481,9 +463,12 @@ function lifeHtml(s: State): string {
     ? `${chipsHtml(s.result?.changes)}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
     : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
       const preview = c.check ? combatCheckPreview(s, c.check, EVENT[eventId]) : null;
-      const rollPrompt = preview ? `[Teste de ${STAT_NAMES[preview.stat]} · D20 ${preview.modifier >= 0 ? '+' : '−'}${Math.abs(preview.modifier)} vs CD ${preview.dc}] ` : '';
-      return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(rollPrompt + c.text)}">
-        <span>${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(rollPrompt + c.text)}</span>
+      const checkedStats = c.check ? (Array.isArray(c.check.stat) ? c.check.stat : [c.check.stat]) : [];
+      const testBadge = preview
+        ? `<span class="choice-test-stat"><i aria-hidden="true">${preview.stat === 'fis' ? '⚔' : preview.stat === 'esp' ? '◈' : preview.stat === 'comp' ? '⌘' : preview.stat === 'sor' ? '✦' : preview.stat === 'car' ? '❖' : '☯'}</i><b>${checkedStats.map((key) => key.toUpperCase()).join(' · ')}</b><small>${checkedStats.map((key) => STAT_NAMES[key]).join(' / ')}</small></span>`
+        : '<span class="choice-test-stat neutral"><i aria-hidden="true">◇</i><small>Escolha</small></span>';
+      return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(`${preview ? `Teste de ${checkedStats.map((key) => STAT_NAMES[key]).join(' e ')} contra CD ${preview.dc}: ` : ''}${c.text}`)}">
+        ${testBadge}<span class="choice-copy">${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
         <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${preview ? '<span class="dice-icon">D20</span>' : c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
       </div>`;
     }).join('')}${combatItems}`;
@@ -573,6 +558,7 @@ function statusHtml(s: State): string {
       </div>
     </div>
     ${powerHtml(s)}
+    ${moralAlignmentHtml(s)}
     ${perfilHtml(s)}
     <div class="card">${stats}<details style="margin-top:8px"><summary class="muted small">O que cada atributo faz</summary><div class="small" style="margin-top:6px"><b>Físico:</b> força e vigor, para combate e corpo. <b>Espírito:</b> Qi e consciência. <b>Compreensão:</b> aprendizado, alquimia, formações e velocidade de cultivo. <b>Sorte:</b> eventos raros e pequenos ajustes em todos os testes. <b>Carisma:</b> aliados, negociação e fama. <b>Coração do Dao:</b> vontade, resistência a demônios interiores e rompimentos.</div></details></div>
     <div class="card kv">
@@ -588,6 +574,16 @@ function statusHtml(s: State): string {
 
 function sectRankLabel(rank: NonNullable<ReturnType<typeof sectRankOf>>): string {
   return rank === 'anciao' ? 'Ancião' : rank === 'interno' ? 'Discípulo Interno' : 'Discípulo Externo';
+}
+
+function moralAlignmentHtml(s: State): string {
+  const morality = s.morality ?? { good: 0, evil: 0, order: 0, chaos: 0 };
+  const axes: [keyof typeof morality, string, string][] = [
+    ['good', 'Bom', '✦'], ['evil', 'Mau', '☠'], ['order', 'Ordem', '▤'], ['chaos', 'Caos', '〰'],
+  ];
+  return `<div class="card moral-card"><div class="muted small">ALINHAMENTO MORAL</div><div class="moral-grid">${axes.map(([axis, label, icon]) =>
+    `<div class="moral-axis ${axis}"><span><i aria-hidden="true">${icon}</i>${label}</span><div class="bar"><i style="width:${morality[axis]}%"></i></div><b>${morality[axis]}</b></div>`,
+  ).join('')}</div><p class="muted small">Suas escolhas moldam a reputação e podem revelar caminhos secretos.</p></div>`;
 }
 
 function questsHtml(s: State): string {
@@ -697,7 +693,7 @@ function equipmentHtml(s: State): string {
   }).join('');
   const offers = COMPANIONS.filter((companion) => !(s.companions ?? []).includes(companion.id)).map((companion) => `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span></div><button class="btn" data-act="companion-recruit" data-id="${companion.id}" ${s.pedras < companion.price || (s.companions?.length ?? 0) >= 2 ? 'disabled' : ''}>Recrutar · ${companion.price}</button></div>`).join('');
   const stats = STAT_KEYS.map((key) => `<div class="stat"><span>${STAT_NAMES[key]}</span><div class="bar"><i style="width:${Math.min(100, eff(s, key))}%"></i></div><span class="n">${eff(s, key)}</span></div>`).join('');
-  return `<div class="card"><div class="muted small">EQUIPAMENTO ATIVO</div>${slots}</div><div class="card"><div class="muted small">EQUIPAR ITEM DA MOCHILA</div>${gearOptions || '<span class="muted small">Nenhum equipamento disponível.</span>'}</div><div class="card"><div class="muted small">COMPANHEIROS · ${(s.companions ?? []).length}/2</div>${party || '<span class="muted small">Nenhum companheiro ativo.</span>'}${offers}</div><div class="card">${stats}</div>`;
+  return `<div class="card"><div class="muted small">EQUIPAMENTO ATIVO</div>${slots}</div><div class="card"><div class="muted small">EQUIPAR ITEM DA MOCHILA</div>${gearOptions || '<span class="muted small">Nenhum equipamento disponível.</span>'}</div><div class="card"><div class="muted small">COMPANHEIROS · ${(s.companions ?? []).length}/2</div>${party || '<span class="muted small">Nenhum companheiro ativo.</span>'}${offers}</div>${moralAlignmentHtml(s)}<div class="card">${stats}</div>`;
 }
 
 const GUILDS: { id: GuildFaction; name: string; desc: string }[] = [

@@ -1,8 +1,6 @@
 type Sound = 'tap' | 'toast' | 'rare' | 'roll' | 'impact' | 'victory' | 'defeat';
 
 let context: AudioContext | undefined;
-let musicGain: GainNode | undefined;
-let musicStarted = false;
 
 function tone(ctx: AudioContext, frequency: number, delay: number, duration: number, volume: number, wave: OscillatorType = 'sine') {
   const start = ctx.currentTime + delay;
@@ -17,25 +15,6 @@ function tone(ctx: AudioContext, frequency: number, delay: number, duration: num
   gain.connect(ctx.destination);
   oscillator.start(start);
   oscillator.stop(start + duration + 0.02);
-}
-
-function startMusic(ctx: AudioContext) {
-  if (musicStarted) return;
-  musicStarted = true;
-  musicGain = ctx.createGain();
-  musicGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 2.5);
-  musicGain.connect(ctx.destination);
-  for (const [frequency, wave, volume] of [[110, 'sine', 0.55], [164.81, 'triangle', 0.18], [220, 'sine', 0.1]] as const) {
-    const oscillator = ctx.createOscillator();
-    const level = ctx.createGain();
-    oscillator.type = wave;
-    oscillator.frequency.value = frequency;
-    level.gain.value = volume;
-    oscillator.connect(level);
-    level.connect(musicGain);
-    oscillator.start();
-  }
 }
 
 export function playSfx(sound: Sound) {
@@ -69,8 +48,12 @@ export function startAudioExperience(): Promise<void> {
   if (!('AudioContext' in window)) return Promise.reject(new Error('Este navegador não oferece suporte a Web Audio.'));
   context ??= new AudioContext();
   return (context.state === 'suspended' ? context.resume() : Promise.resolve()).then(() => {
-    if (!context) throw new Error('Não foi possível inicializar o áudio.');
-    startMusic(context);
     document.documentElement.dataset.audioReady = 'true';
   });
+}
+
+export function setAudioForeground(foreground: boolean): Promise<void> {
+  if (!context) return Promise.resolve();
+  if (foreground) return context.state === 'suspended' ? context.resume() : Promise.resolve();
+  return context.state === 'running' ? context.suspend() : Promise.resolve();
 }

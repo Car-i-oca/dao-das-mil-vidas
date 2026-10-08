@@ -105,8 +105,10 @@ export const aventura: GameEvent[] = [
     cond: { tierMin: 1, tierMax: 5, local: ['cidade', 'selva'] },
     text: 'Um ladrão ferido tropeça em você e deixa cair um manto de seda e uma pílula brilhante. Atrás dele, guardas de uma família poderosa gritam.',
     choices: [
-      { text: 'Devolver o que caiu aos guardas.', res: { text: 'Os guardas agradecem e oferecem uma pequena recompensa.', fx: { pedras: 8, karma: 4, fama: 1 } } },
-      { text: 'Pegar a pílula e fugir.', check: { stat: ['sor', 'fis'], dif: 1, tag: 'fuga' }, ok: { text: 'Você some pelos becos. A pílula é de ótima qualidade.', fx: { item: ['pilula_qi_media'], karma: -4 } }, fail: { text: 'Os guardas o alcançam e dão uma lição.', fx: { ferida: 1, karma: -4, fama: -2 } } },
+      { text: 'Devolver o que caiu aos guardas.', res: { text: 'Os guardas agradecem e oferecem uma pequena recompensa.', fx: { pedras: 8, karma: 4, fama: 1, morality: { good: 2, order: 1 } } } },
+      { text: 'Pegar a pílula e fugir.', check: { stat: ['sor', 'fis'], dif: 1, tag: 'fuga' }, ok: { text: 'Você some pelos becos. A pílula é de ótima qualidade.', fx: { item: ['pilula_qi_media'], karma: -4, morality: { evil: 2, chaos: 2 } } }, fail: { text: 'Os guardas o alcançam e dão uma lição.', fx: { ferida: 1, karma: -4, fama: -2, morality: { evil: 1, chaos: 1 } } } },
+      { text: 'Entregar o ladrão junto com os pertences.', cond: { morality: { good: 3, order: 1 } }, res: { text: 'Os guardas libertam o ladrão depois de ouvirem sua história e agradecem por você ter impedido uma perseguição injusta.', fx: { karma: 4, fama: 2, morality: { good: 1, order: 1 } } } },
+      { text: 'Ficar com tudo e desaparecer.', cond: { morality: { evil: 2, chaos: 2 } }, check: { stat: ['sor', 'fis'], dif: 2, tag: 'fuga' }, ok: { text: 'Você desaparece com o manto e a pílula antes que os guardas entendam o que houve.', fx: { item: ['pilula_qi_media'], pedras: 8, karma: -6, morality: { evil: 2, chaos: 2 } } }, fail: { text: 'O plano dá errado; os guardas recuperam os pertences e anotam seu rosto.', fx: { ferida: 1, fama: -3, karma: -3, morality: { evil: 1, chaos: 1 } } } },
     ],
   },
   {

@@ -2,6 +2,7 @@ export type StatKey = 'fis' | 'esp' | 'comp' | 'sor' | 'car' | 'dao';
 export type Stats = Record<StatKey, number>;
 export type Rarity = 'comum' | 'incomum' | 'raro' | 'epico' | 'lendario';
 export type Alignment = 'daoico' | 'demoniaco';
+export interface MoralAlignment { good: number; evil: number; order: number; chaos: number }
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 export type SectRank = 'externo' | 'interno' | 'anciao';
@@ -78,6 +79,8 @@ export interface Effects {
   trilha?: string;
   /** Define o alinhamento do personagem. */
   alignment?: Alignment;
+  /** Pontos morais ganhos ou perdidos nesta escolha. */
+  morality?: Partial<MoralAlignment>;
   /** Define ou substitui o mestre atual. */
   master?: string;
   /** Avança um nível na hierarquia da seita, sem rebaixar personagens veteranos. */
@@ -119,6 +122,8 @@ export interface Cond {
   path?: string[];
   /** Alinhamento moral/espiritual do cultivador. */
   alignment?: Alignment[];
+  /** Pontuação mínima exigida em cada eixo moral indicado. */
+  morality?: Partial<MoralAlignment>;
   /** Id do mestre atual (permite mestres alternativos). */
   master?: string[];
   origin?: string[];
@@ -334,6 +339,8 @@ export interface State {
   path: string;
   /** Ausente apenas em saves antigos; nesses casos a Engine infere o alinhamento da trilha. */
   alignment?: Alignment;
+  /** Ausente em saves antigos; os quatro eixos morais começam em zero. */
+  morality?: MoralAlignment;
   /** Mestre alternativo atual; ausente em saves antigos ou antes de conhecer um mestre. */
   master?: string | null;
   /** Contagem de encontros concluídos e sobrevividos em cada região. */

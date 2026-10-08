@@ -44,9 +44,9 @@ export const juventude: GameEvent[] = [
     cond: { tierMax: 0, ageMin: 9, ageMax: 20 },
     text: 'Alguém tem roubado galinhas de {vila}. Uma noite, você o flagra: um menino menor que você, com fome nos olhos e uma galinha embaixo do braço.',
     choices: [
-      { text: 'Denunciar o menino aos mais velhos.', res: { text: 'O menino é punido. A galinha volta ao galinheiro. Mas aquele olhar acompanha você.', fx: { karma: -2, stats: { dao: 1 } } } },
-      { text: 'Deixá-lo ir e levar uma galinha embora.', res: { text: 'Ele some entre as casas. Você mente que a galinha fugiu, e ninguém acredita, mas ninguém liga.', fx: { karma: 5, stats: { car: 1 } } } },
-      { text: 'Dividir seu jantar com ele.', res: { text: 'Vocês comem calados sob a lua. Anos depois, alguém dirá seu nome com carinho em outra aldeia.', fx: { karma: 8, stats: { dao: 1, car: 1 }, setFlags: ['gentil_na_infancia'] } } },
+      { text: 'Denunciar o menino aos mais velhos.', res: { text: 'O menino é punido. A galinha volta ao galinheiro. Mas aquele olhar acompanha você.', fx: { karma: -2, stats: { dao: 1 }, morality: { order: 2, evil: 1 } } } },
+      { text: 'Deixá-lo ir e levar uma galinha embora.', res: { text: 'Ele some entre as casas. Você mente que a galinha fugiu, e ninguém acredita, mas ninguém liga.', fx: { karma: 5, stats: { car: 1 }, morality: { evil: 1, chaos: 2 } } } },
+      { text: 'Dividir seu jantar com ele.', res: { text: 'Vocês comem calados sob a lua. Anos depois, alguém dirá seu nome com carinho em outra aldeia.', fx: { karma: 8, stats: { dao: 1, car: 1 }, setFlags: ['gentil_na_infancia'], morality: { good: 3, order: 1 } } } },
     ],
   },
   {

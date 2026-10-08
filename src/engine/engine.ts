@@ -317,6 +317,9 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.sectRank && !(sectRankOf(s) && c.sectRank.includes(sectRankOf(s)!))) return false;
   if (c.path && !c.path.includes(s.path)) return false;
   if (c.alignment && !c.alignment.includes(alignmentOf(s))) return false;
+  if (c.morality) for (const [axis, value] of Object.entries(c.morality) as [keyof NonNullable<State['morality']>, number][]) {
+    if ((s.morality?.[axis] ?? 0) < value) return false;
+  }
   if (c.sagaStageMin !== undefined && Math.floor(s.turn / 6) < c.sagaStageMin) return false;
   if (c.master && !(s.master && c.master.includes(s.master))) return false;
   if (c.origin && !c.origin.includes(s.origin)) return false;
@@ -422,7 +425,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   const s: State = {
     pen,
     v: 1, seed: rng.seed, name: personName(rng), path: pathId,
-    alignment: pathId === 'demoniaca' ? 'demoniaco' : 'daoico', master: null,
+    alignment: pathId === 'demoniaca' ? 'demoniaco' : 'daoico', morality: { good: 0, evil: 0, order: 0, chaos: 0 }, master: null,
     origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
     age: 6, tier: 0, xp: 0, stats, pedras: origin.pedras + 10 * (up.bolso ?? 0), karma: 0, fama: 0, corr: path.startCorr ?? 0, wounds: 0,
@@ -539,6 +542,12 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
     addLog(s, `Superou o defeito: ${FLAW[s.flaw]?.name}.`);
   }
   if (fx.perfil) { s.perfil ??= {}; for (const [k, v] of Object.entries(fx.perfil)) s.perfil[k] = (s.perfil[k] ?? 0) + v; }
+  if (fx.morality) {
+    s.morality ??= { good: 0, evil: 0, order: 0, chaos: 0 };
+    for (const [axis, value] of Object.entries(fx.morality) as [keyof NonNullable<State['morality']>, number][]) {
+      s.morality[axis] = Math.max(0, Math.min(100, s.morality[axis] + value));
+    }
+  }
   if (fx.stats) for (const k of Object.keys(fx.stats) as StatKey[]) s.stats[k] = Math.min(99, Math.max(1, s.stats[k] + (fx.stats[k] ?? 0)));
   if (fx.pedras) s.pedras = Math.max(0, s.pedras + fx.pedras);
   if (fx.karma) s.karma += fx.karma;
@@ -893,8 +902,8 @@ export function view(s: State): View {
 }
 
 /* ---------- Escolhas ---------- */
-interface Snap { realm: string; stats: Stats; pedras: number; karma: number; fama: number; corr: number; wounds: number; tier: number; xp: number; maxAge: number; items: string[]; path: string }
-const snap = (s: State): Snap => ({ realm: realmName(s), stats: { ...s.stats }, pedras: s.pedras, karma: s.karma, fama: s.fama, corr: s.corr, wounds: s.wounds, tier: s.tier, xp: s.xp, maxAge: s.maxAge, items: [...s.items], path: s.path });
+interface Snap { realm: string; stats: Stats; pedras: number; karma: number; fama: number; corr: number; wounds: number; tier: number; xp: number; maxAge: number; items: string[]; path: string; morality: NonNullable<State['morality']> }
+const snap = (s: State): Snap => ({ realm: realmName(s), stats: { ...s.stats }, pedras: s.pedras, karma: s.karma, fama: s.fama, corr: s.corr, wounds: s.wounds, tier: s.tier, xp: s.xp, maxAge: s.maxAge, items: [...s.items], path: s.path, morality: { good: 0, evil: 0, order: 0, chaos: 0, ...s.morality } });
 
 /** Compara o estado antes e depois de uma escolha e lista o que mudou, para o jogador enxergar a consequência. */
 function diffSnap(b: Snap, s: State): Change[] {
@@ -913,6 +922,11 @@ function diffSnap(b: Snap, s: State): Change[] {
   num('karma', s.karma - b.karma);
   num('fama', s.fama - b.fama);
   num('corrupção', s.corr - b.corr, false);
+  const moralLabels = { good: 'Bom', evil: 'Mau', order: 'Ordem', chaos: 'Caos' } as const;
+  for (const axis of Object.keys(moralLabels) as (keyof typeof moralLabels)[]) {
+    const delta = (s.morality?.[axis] ?? 0) - b.morality[axis];
+    if (delta) num(`alinhamento ${moralLabels[axis]}`, delta, axis === 'good' || axis === 'order');
+  }
   const dw = Math.round((s.wounds - b.wounds) * 10) / 10;
   if (dw) out.push({ t: dw > 0 ? `+${dw} ferimento${dw > 1 ? 's' : ''}` : `Ferimentos ${sign(dw)}`, k: dw > 0 ? 'down' : 'up' });
   if (s.tier === b.tier && s.tier > 0) {
