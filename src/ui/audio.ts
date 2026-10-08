@@ -44,12 +44,11 @@ export function playSfx(sound: Sound) {
   }
 }
 
-export function startAudioExperience(): Promise<void> {
-  if (!('AudioContext' in window)) return Promise.reject(new Error('Este navegador não oferece suporte a Web Audio.'));
+export async function startAudioExperience(): Promise<void> {
+  if (!('AudioContext' in window)) throw new Error('Este navegador não oferece suporte a Web Audio.');
   context ??= new AudioContext();
-  return (context.state === 'suspended' ? context.resume() : Promise.resolve()).then(() => {
-    document.documentElement.dataset.audioReady = 'true';
-  });
+  if (context.state === 'suspended') await context.resume();
+  document.documentElement.dataset.audioReady = 'true';
 }
 
 export function setAudioForeground(foreground: boolean): Promise<void> {

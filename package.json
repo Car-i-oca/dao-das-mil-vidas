@@ -18,7 +18,8 @@
     "impacto": "tsx sim/impacto.ts",
     "registro": "node tools/registro.mjs",
     "e2e:arte": "node tools/e2e/arte.mjs",
-    "e2e:estilo": "node tools/e2e/estilo.mjs"
+    "e2e:estilo": "node tools/e2e/estilo.mjs",
+    "e2e:audio-start": "node tools/e2e/audio-start.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.2",

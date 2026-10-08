@@ -75,28 +75,16 @@ function shopModalHtml(s: State): string {
   </div>`;
 }
 
-const bgm = document.createElement('audio');
-bgm.id = 'bgm';
-bgm.loop = true;
-bgm.preload = 'none';
-bgm.volume = 0.18;
-bgm.src = 'https://actions.google.com/sounds/v1/ambiences/wind_whistling.ogg';
-document.body.appendChild(bgm);
-
 window.addEventListener('pagehide', persist);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
     persist();
-    bgm.pause();
     void setAudioForeground(false).catch((error: unknown) => {
       audioGateError = error instanceof Error ? error.message : 'Não foi possível pausar os efeitos sonoros.';
     });
   } else if (audioStarted) {
     void setAudioForeground(true).catch((error: unknown) => {
       audioGateError = error instanceof Error ? error.message : 'Não foi possível retomar os efeitos sonoros.';
-    });
-    void bgm.play().catch((error: unknown) => {
-      audioGateError = error instanceof Error ? error.message : 'Não foi possível retomar a música.';
     });
   }
 });
@@ -836,8 +824,7 @@ app.addEventListener('click', (ev) => {
     audioGateError = '';
     target.setAttribute('aria-disabled', 'true');
     target.textContent = 'Preparando o Cultivo…';
-    const bgmPlayback = bgm.play();
-    void Promise.all([startAudioExperience(), bgmPlayback]).then(() => {
+    void startAudioExperience().catch(() => undefined).then(() => {
       audioStarted = true;
       audioStarting = false;
       render();
