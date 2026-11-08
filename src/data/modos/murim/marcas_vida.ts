@@ -133,6 +133,24 @@ fir_ponte_parada|Esperou vinte minutos no meio da ponte até o espadachim tirar 
 fir_noite_de_guarda|Guardou o celeiro a noite toda, e aceitou uma sopa pela manhã.
 fir_manual_visto|Recusou depor contra o rapaz até ver o manual com os próprios olhos.
 
+pos_menino_corrigido|Explicou a um menino como o calcanhar o traía, sem zombar.
+pos_menino_humilhado|Usou o calcanhar de um menino contra ele e ganhou algo que não soube nomear.
+pos_olhar_atento|Passou uma tarde lendo o pátio e aprendeu um idioma de pés.
+pos_mestre_cuidado|Viu o joelho do mestre ceder e lhe ofereceu uma pomada em particular.
+pos_mestre_exposto|Explorou o joelho fraco do mestre num duelo de treino.
+pos_mestre_calado|Viu o joelho do mestre piorar e se calou.
+pos_desafiante_poupado|Recusou o duelo com um espadachim exausto e lhe deu abrigo.
+pos_duelo_limpo|Venceu um espadachim famoso no primeiro movimento, sem humilhar.
+pos_olhar_escondido|Escondeu da vila quanto conseguia ler.
+pos_postura_lida|Leu pela primeira vez a própria postura numa poça d'água.
+pos_olhar_herdado|Ensinou um jovem a ler a própria postura antes da dos outros.
+pos_torneio_lido|Escolheu cada luta do torneio pelo que o corpo dos rivais dizia.
+pos_mascarado_lido|Disse ao mascarado da ponte de onde ele vinha e desfez o duelo.
+pos_bandido_lido|Derrubou o bandido mais frágil para que os outros entendessem.
+pos_mestra_lida|Apontou à mestra da Garça onde ela cederia o peso.
+pos_arbitro|Aprendeu com o ex-árbitro a explicar o que enxergava.
+pos_choi_rin_lida|Percebeu que a lâmina de Choi Rin era herdada.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

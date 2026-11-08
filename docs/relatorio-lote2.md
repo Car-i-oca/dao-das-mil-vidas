@@ -67,3 +67,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 7 de 14: Vontade firme (`coracao_inabalavel`)
 - **Entrou** (`tracos/coracao_inabalavel.ts`): 4 cenas (`fir_promessa_na_chuva`, `fir_ordem_errada`, `fir_porta_fechada`, `fir_voto_velho`), 6 opções exclusivas (torneio, audiência, noite dos nomes, duelo na ponte, vila sob a neve, julgamento do aprendiz) e o final `murim_firme` (flag `fir_inabalavel`). Cicatriz: aprender a diferença entre firmeza e teimosia.
 - **Dourado:** agora `267a7874e8c7cb17`.
+
+## B2 — talento 8 de 14: Leitura de postura (`olhar_dao`)
+- **Entrou** (`tracos/olhar_dao.ts`): 4 cenas (`pos_pisada`, `pos_mestre_cansado`, `pos_duelo_sem_golpe`, `pos_postura_propria`), 6 opções exclusivas (torneio, duelo na ponte, bandidos, ponte da Garça, estilos errantes, oferta da Lua Oca) e o final `murim_olho_no_espelho` (flag `pos_postura_lida`). Cicatriz: ver a fraqueza de todos e decidir o que fazer com ela. Dourado inalterado em relação ao commit anterior (nenhuma das 330 vidas fixas usa este talento).
+- **Dourado:** agora `267a7874e8c7cb17`.
