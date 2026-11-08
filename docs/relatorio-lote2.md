@@ -117,3 +117,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 5 de 9: Saúde delicada (`doente`)
 - **Entrou** (`tracos/doente.ts`): 4 cenas (`del_febre_de_infancia`, `del_a_escola_que_poupou`, `del_o_inverno_da_estrada`, `del_quem_cuida`), 6 opções exclusivas de quem tem o defeito (vila sob a neve, dia na estrada, peregrinos, caldo, assembleia, último inverno), arco de redenção (`del_o_inverno_da_estrada`, `fx.superar` ao aceitar cuidado) e o final `murim_oficio_da_fraqueza` (flag `del_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `153364f26af29731`.
+
+## B2 — defeito 6 de 9: Rancor persistente (`orgulhoso`)
+- **Entrou** (`tracos/orgulhoso.ts`): 4 cenas (`ran_a_pedra_no_sapato`, `ran_o_rival_que_pediu_perdao`, `ran_a_ofensa_devolvida`, `ran_o_que_sobrou`), 6 opções exclusivas de quem tem o defeito (torneio, audiência, noite dos nomes, duelo na ponte, julgamento do aprendiz, festival), arco de redenção (`ran_a_ofensa_devolvida`, `fx.superar` ao abrir a porta ao velho cobrador) e o final `murim_pedra_no_rio` (flag `ran_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos. A alcunha ligada a este traço (`mur_pedra`) já existia; não foi mexida.
+- **Dourado:** agora `ba12ba47a347558b`.

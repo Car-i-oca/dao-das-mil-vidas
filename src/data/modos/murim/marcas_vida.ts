@@ -358,6 +358,27 @@ del_receita_do_caldo|Deu a Dae-hyun a receita de caldo para a irmã doente.
 del_assembleia_sentada|Fez a assembleia falar sentada e em turnos curtos.
 del_janela|Passou o último inverno junto à janela, ouvindo histórias.
 
+ran_empurrou|Empurrou o menino da praça na lama diante de todos.
+ran_guardou_o_nome|Guardou o nome e a data da ofensa, esperando o dia certo.
+ran_perguntou_a_mae|Perguntou à mãe de onde vinha o nome da família e entendeu a ofensa como ignorância.
+ran_perdoou_cedo|Aceitou o pedido de perdão do rival da praça diante dos colegas.
+ran_perdao_frio|Perdoou de modo frio e o rival percebeu.
+ran_recusou_perdao|Recusou o perdão do rival e carregou a recusa como punição.
+ran_adiou_perdao|Adiou a resposta ao pedido de perdão para sempre.
+ran_ofensa_largada|Abriu a porta ao cobrador cego e largou a ofensa antiga.
+ran_abriu_a_porta|Deu abrigo, sem se identificar, ao velho cobrador que humilhou sua família.
+ran_porta_fria|Abriu a porta ao cobrador com a voz áspera e o olhar duro.
+ran_fechou_a_porta|Fechou a porta ao cobrador cego, e ele foi encontrado no riacho.
+ran_indicou_o_templo|Indicou ao cobrador cego o templo e não se envolveu.
+ran_fim_ok|Resolveu o que fazer com a pedra da ofensa, no fim da vida.
+ran_pedra_ao_rio|Levou a pedra da ofensa ao rio e a deixou ir, em voz alta.
+ran_venceu_rival|Venceu o rival da infância no torneio, sem poupar.
+ran_lista_de_ofensas|Apresentou ao conselho a lista de ofensas do Clã Gwon à sua família.
+ran_juramento_de_vinte_anos|Jurou que o Clã Gwon pagaria, mesmo que levasse vinte anos.
+ran_duelo_antigo|Lutou no duelo da ponte com uma raiva que não era do mascarado.
+ran_testemunha_falsa|Inventou uma testemunha para punir o filho do cobrador.
+ran_recusou_taxa|Recusou a taxa ao oficial que humilhou sua família e foi retirado da praça.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
