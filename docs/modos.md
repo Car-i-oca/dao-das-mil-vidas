@@ -321,3 +321,39 @@ Estas eu não vou decidir sozinho, porque mudam o que o jogo é:
 1. **Tom do Xianxia.** O conteúdo de `899108c` mistura humor leve (o cozinheiro que era mestre) e tragédia. Mantenho a mistura como está?
 2. **Nomes.** O Xianxia antigo usa nomes e seitas gerados (`names.ts`) e o Murim usa personagens fixos (Seo Yun, Baek Mu-jin, Im Seol). No Xianxia, quero manter os nomes gerados; faz sentido para você?
 3. **Primeira vida.** O Murim abre com a saga do Livro de Ferro. O Xianxia não tem um evento inicial equivalente: ele começa pelos eventos de `infancia`, sorteados. Quer uma abertura escrita para o Xianxia no Lote 2?
+
+---
+
+## 10. Decisão da base do Xianxia (noite de 07/11/2026)
+
+Resposta do autor ao Lote 0: D1 a D8 aprovadas; tom misto (humor leve e tragédia), nomes e seitas gerados, **abertura escrita para o Xianxia**; personagens recorrentes mantêm nome e aparência na vida toda. A v2 (branch `reestruturacao`, commit `4be4441`, só existia numa cópia local) foi preservada em `arquivo/v2-reestruturacao` no GitHub (push confirmado: `4be4441edc215cd8605668bcfcaa03469c25b302`). Não houve merge em `main`.
+
+### 10.1 As três fontes, com números medidos
+
+Medidos agora, rodando as ferramentas de cada versão sobre uma cópia extraída em pasta temporária (a cópia do OneDrive não foi tocada; só fiz `git fetch` dela).
+
+| | **A** · `899108c` | **B** · v2 | **C** · v2 + eventos de A convertidos |
+|---|---|---|---|
+| Unidade de conteúdo | 877 eventos independentes | 171 moldes com papéis (124 únicos), 541 opções | os 171 moldes + os eventos limpos de A reescritos como moldes |
+| Pessoas com memória | **nenhuma** (flags soltas) | sim: opinião, fatos, situação, gênero, aparência | sim |
+| Coesão medida | 92,8 turnos/vida, 86,0 distintos, 7,2% repetidos, 24,1% genéricos, semelhança entre vidas 0,131 (100 vidas, `variedade`). Não há medida de fios nem de reaparição porque não existe o conceito | 86 cenas/vida; 5,5 fios abertos/vida; **50% dos fios resolvidos com desfecho**, 12% abandonados; 4,61 reaparições por pessoa importante, **28%** nunca reaparecem; 54% das vidas forjam uma ambição (30% cumprida); divergência 29% (120 vidas, `coesao`) | B + conteúdo de A |
+| Opções com impacto | 29 opções exclusivas escritas; 538 eventos com escolha sem marca | 541 opções, todas escritas para a cena; 94 com `requer` (jogador 45, papel 27, contador 10...) | B + cobertura de A |
+| Talentos e defeitos | muito material (lote26/27: 101 eventos, 72 limpos) | **fraco**: só 19 moldes ligados a talento | B + os 72 limpos convertidos |
+| Cobertura por reino 0..8 | limpos 60·144·228·261·245·240·217·168·100 (281 de 313 são `once`) | moldes disponíveis 59·123·140·159·164·166·166·167·167 | soma |
+| Moldes que nunca foram escolhidos em 120 vidas | — | 14 de 171 | a revisar |
+| Mudança no motor atual | grande: voltar `lifespan`, eras, contratos/guilda, tipos | **média e isolada**: 4 arquivos em `src/engine/v2/` (~86 KB), ~20 ganchos protegidos por `if (s.v2)` em `engine.ts`, 6 campos opcionais em `types.ts`, `ui/art/pintura/aparencia.ts` | igual a B |
+| Risco para o Murim | médio (mexe em tipos e fluxo compartilhados) | **baixo**: nenhuma vida Murim cria `s.v2`; o dourado de 300 sementes prova | igual a B |
+| O que se perde | a coesão (o problema que a v2 resolveu) | os 313 eventos limpos de A e os sistemas de eras/contratos | só o que for descartado de A |
+
+### 10.2 Decisão: **C, com o motor v2 isolado no pacote Xianxia**
+
+- **Critério do autor:** coesão e impacto real das escolhas primeiro, volume depois. Os números confirmam que a v2 é mais coesa que A: A não tem sequer pessoa persistente; a v2 resolve metade dos fios, e metade das pessoas importantes volta 4,6 vezes. A é o único lado com volume em talentos e defeitos, que é o ponto fraco da v2 (19 moldes).
+- **Isolamento:** o motor v2 entra como `regras.motor = 'v2'` do pacote Xianxia. O Murim não passa por ele. Os ganchos em `engine.ts` ficam todos atrás de `s.v2`.
+- **Ordem:** (C1) portar a v2 para o motor atual e fazê-la rodar no pacote Xianxia: é o Lote 1. (C2) converter os eventos limpos de A em moldes **em ondas**, começando por talentos, defeitos e origens (lote26/27/28), no Lote 2. Eventos de A "sem marca" só entram convertidos e já com consequência.
+- **Revisões ao plano do Lote 0:** (a) a seção 4 ("restaurar 313 eventos direto") vira "converter para moldes"; (b) **D8 muda**: eras do mundo (`lote13_mundo`, 39 eventos) e contratos/guildas **não** voltam, porque a v2 já tem facções, guerra entre seitas e perigos de mundo, e o autor pediu coesão antes de volume; (c) D1 e D2 continuam (a v2 também proíbe opção por categoria, regra 1 de `docs/eventos-v2.md`).
+- **Fica de fora do que veio da v2:** os commits `b4467f3` e `4be4441` (feitos por ferramenta externa): só criam `src/main.ts` (6 linhas) e um `src/ui/audio.ts` de 51 linhas, e o HEAD já tem seu áudio. Também fica de fora `tarefa.txt`. Os arquivos soltos na raiz da cópia do OneDrive não estão em nenhum commit da branch.
+- **UI da v2:** a interface atual (estilo Life in Adventure) é diferente da que a v2 alterou. Portar o **mínimo** no Lote 1: a cena v2 usa o mesmo `view()`/`choose()` e aparece nas telas atuais. Cartão de capítulo, notícias e aba Mundo são extras: entram quando o resto estiver estável; se não couberem, ficam registrados como abertos.
+
+### 10.3 O gerador de aparência chegou a ser feito?
+
+**Sim, na v2**: `src/ui/art/pintura/aparencia.ts` gera um rosto determinístico por pessoa (formato do rosto, tez, olhos, sobrancelha, nariz, boca, cabelo, barba, marcas, acessórios e traje) com a opção de **evitar semelhança** com outras aparências (`evitar`). Fica gravado em `Pessoa.visual` e `State.look` (jogador), e a idade só acrescenta rugas e grisalho, então a pessoa é reconhecível a vida toda. Ele é renderizado pelo estilo "pintura" (`retrato.ts`, `rosto.ts`). O que **não** está feito: usar essas aparências nos três estilos atuais (Pixel, Manhwa, Tinta) e nos oponentes do Murim. Isso entra no sub-lote 1B.
