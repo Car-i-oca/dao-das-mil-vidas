@@ -11,18 +11,9 @@ import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
 import { EVENTOS_XIANXIA } from './eventos';
 import { MOLDES } from './v2';
 
-/** Reserva do motor clássico: a velhice depende da vida. O diretor da v2 tem seus próprios finais (finalDeVelhiceV2) e tem prioridade. */
+/** Reserva do motor clássico: o diretor da v2 escolhe o final de velhice (finalDeVelhiceV2) e tem prioridade; aqui só sobram os dois finais simples. */
 function finalDeVelhice(s: State): string {
-  const f = (x: string) => s.flags.includes(x);
-  if (s.tier === 0) return 'velhice';
-  if (f('tem_neto') || f('cla_proprio')) return 'velhice_avo';
-  if (s.stats.dao >= 45 && s.karma >= 12) return 'velhice_sabio';
-  if (s.karma <= -15) return 'velhice_rancoroso';
-  if (s.pedras >= 700) return 'velhice_rico';
-  if (f('veterano') || f('heroi_do_cerco') || f('campeao_torneio') || f('torneio_campeao') || f('heroi_da_guerra')) return 'velhice_veterano';
-  if (s.fama >= 90 && s.tier >= 4) return 'velhice_mestre';
-  if (s.fama < 20) return 'velhice_esquecido';
-  return 'velhice';
+  return s.tier > 0 && s.fama < 20 ? 'velhice_esquecido' : 'velhice';
 }
 
 /** Cultivação (Xianxia): reinos, séculos de vida, seitas, alquimia e tribulações, conduzida pelo mundo com memória da v2. */

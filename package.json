@@ -13,6 +13,7 @@
     "endings": "tsx sim/todos.ts endings",
     "variedade": "tsx sim/todos.ts variedade",
     "dourado": "tsx sim/dourado.ts",
+    "alcance": "tsx sim/todos.ts alcance",
     "icons": "node scripts/gen-icons.mjs",
     "poder": "tsx sim/todos.ts poder",
     "galeria": "tsx sim/galeria.ts",

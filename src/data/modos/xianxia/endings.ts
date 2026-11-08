@@ -3,7 +3,7 @@ import type { Ending, Achievement, State } from '../../../types';
 import { ENDINGS_TRACOS } from './endings_tracos';
 import { FINAIS_V2 } from './v2/finais';
 
-export const ENDINGS: Ending[] = [
+const TODOS_OS_FINAIS: Ending[] = [
   ...ENDINGS_TRACOS,
   ...FINAIS_V2,
   { id: 'velhice', name: 'Fim em Paz', legacy: 1, alt: [
@@ -84,6 +84,16 @@ export const ENDINGS: Ending[] = [
   { id: 'duelo', name: 'Morto em Duelo de Honra', legacy: 1.1, text: 'Dois cultivadores, uma ponte e uma palavra empenhada. {nome} perdeu o duelo, mas ganhou o respeito do vencedor, que enterrou o adversário com as próprias mãos.', alt: ['O duelo durou três lances. Houve quem dissesse que {nome} podia ter vencido, e quem dissesse que não quis.'] },
   { id: 'reencarnacao', name: 'A Roda do Samsara', legacy: 2.2, text: 'Ao morrer, {nome} soltou a mão da vida e sentiu outra mão segurá-la. Em algum lugar, uma criança abriu os olhos pela primeira vez, lembrando de tudo.' },
 ];
+
+/**
+ * Finais de reserva: pertencem a talentos, defeitos, origens e eras do mundo do Xianxia antigo (899108c), cujos eventos não
+ * voltaram (e finais de velhice por traço que o diretor v2 nunca escolhe). Nada no jogo os produz hoje, então ficam fora do catálogo ativo (meta: nenhum final em 0%).
+ * O Lote 2 os religa, um a um, quando existir o molde que abre cada caminho.
+ */
+const RESERVA = new Set(['lenda_memoria', 'lenda_sorte', 'lenda_alma', 'lenda_corpo', 'lenda_carisma', 'lenda_genio', 'lenda_coracao', 'lenda_olhar', 'lenda_longevidade', 'lenda_destino', 'lenda_passo', 'lenda_dragao', 'lenda_aprendiz', 'lenda_faro', 'seita_renasce_cinzas', 'seita_renasce_sino', 'seita_renasce_nevoas', 'seita_renasce_anciao', 'lenda_lamina_unica', 'lenda_mil_ciclos', 'lenda_trono_vazio', 'lenda_rio_sem_margem', 'lenda_campones', 'lenda_orfao', 'lenda_cla', 'lenda_mercador', 'lenda_cacador', 'lenda_alquimista', 'lenda_reencarnado', 'lenda_demonio', 'lenda_mendigo', 'lenda_principe', 'lenda_eremita', 'lenda_pescador', 'lenda_guarda', 'lenda_regressor', 'redencao_meridianos', 'redencao_azar', 'redencao_qi', 'redencao_covarde', 'redencao_doente', 'redencao_orgulhoso', 'redencao_distraido', 'redencao_impulsivo', 'redencao_avarento', 'doenca', 'feras', 'exilio', 'cacado', 'velhice_mestre', 'velhice_avo', 'velhice_sabio', 'velhice_rancoroso', 'velhice_rico', 'velhice_veterano', 'fundador', 'karma', 'amor', 'sacrificio', 'eremita', 'vazio', 'patriarca', 'guardiao', 'pilula', 'ancestral', 'conselheiro', 'senhor_sangue', 'penitente', 'iluminacao', 'celeste', 'guerra', 'traicao', 'duelo', 'reencarnacao']);
+export const ENDINGS_RESERVA: Ending[] = TODOS_OS_FINAIS.filter((e) => RESERVA.has(e.id));
+export const ENDINGS: Ending[] = TODOS_OS_FINAIS.filter((e) => !RESERVA.has(e.id));
+
 
 export const ACHIEVEMENTS: Achievement[] = [
   { id: 'xx_ach_despertar', name: 'Primeiro Passo', desc: 'Desperte o Qi pela primeira vez.', reward: '+3 Herança do Dao' },

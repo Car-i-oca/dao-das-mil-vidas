@@ -87,6 +87,7 @@ for (const ev of EVENTS) {
   });
 }
 
+if (MODO === 'murim') {
 const eventById = new Map(EVENTS.map((event) => [event.id, event]));
 const sagaTransitions = [
   { from: 'murim_ferro_inicio', to: 'murim_ferro_recado', flag: null },
@@ -160,6 +161,7 @@ sagaProbe.current = { id: 'murim_escola' };
 if (chooseSagaOption(sagaProbe, 'Entrar na Escola da Lâmina Errante')) {
   if (sagaProbe.path !== 'espada' || sagaProbe.tier !== 1) errors.push('teste de integração: a escolha da escola não inicia a progressão marcial');
 }
+}
 /* A validação percorre o catálogo ativo; módulos narrativos antigos foram arquivados fora dele. */
 for (const i of ITEMS) fx(`item ${i.id}`, i.use);
 for (const p of PATHS) {
@@ -224,3 +226,4 @@ warnings.forEach((w) => console.log('  aviso:', w));
 errors.forEach((e) => console.log('  ERRO:', e));
 if (errors.length) { console.log(`${errors.length} erro(s).`); process.exit(1); }
 console.log('Conteúdo válido.');
+if (MODO === 'xianxia') await import('./validate-v2');

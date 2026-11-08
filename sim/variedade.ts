@@ -9,6 +9,7 @@ import { newMeta, ladderOf, finalizeLife } from '../src/engine/engine';
 import { playLife } from './bot';
 import type { GameEvent } from '../src/types';
 import { PK, MODO } from './modo';
+import { MOLDES as MOLDES_V2 } from '../src/data/modos/xianxia/v2';
 const EVENTS = PK.eventos;
 const ENDINGS = PK.finais;
 
@@ -23,7 +24,10 @@ const ID_GENERIC = (e: GameEvent) => {
   if (!c) return true;
   return !(c.path || c.origin || c.flags?.length || c.local || c.faction || c.item || c.stat || c.pedrasMin || c.karmaMin || c.karmaMax || c.fameMin || c.corrMin || c.sagaStageMin);
 };
-const GENERIC = new Set(EVENTS.filter(ID_GENERIC).map((e) => e.id));
+/** No motor v2, "genérica" é a cena de respiro (sem pessoa nem consequência própria); no clássico, o evento repetível sem condição. */
+const GENERIC = new Set<string>(
+  PK.regras.motor === 'v2' ? MOLDES_V2.filter((m) => m.tipo === 'respiro').map((m) => `m:${m.id}`) : EVENTS.filter(ID_GENERIC).map((e) => e.id),
+);
 
 interface Life { ids: string[]; ending: string; age: number; tierMax: number; ladder: string; ticks: { id: string; age: number; tier: number }[] }
 const lives: Life[] = [];
@@ -119,7 +123,7 @@ const metrics = {
   entropiaFinais: entropy,
   finaisAcima1pct: endingsOver1,
   idadeMedia: mean(lives.map((l) => l.age)),
-  totalEventos: EVENTS.length,
+  totalEventos: PK.cenas,
 };
 
 /* ---------- documento ---------- */
@@ -136,7 +140,7 @@ L.push('# Diagnóstico de variedade', '');
 L.push(`Gerado por \`npm run variedade -- ${N}\` em ${new Date().toISOString().slice(0, 10)} (vidas independentes, meta vazia, bot de \`sim/bot.ts\`).`);
 L.push(saveBaseline ? 'Este relatório foi gravado como nova referência de comparação.' : base ? 'Comparação **antes → depois** em relação ao baseline atual.' : 'Relatório atual da campanha; ainda não há baseline comparativo.', '');
 L.push('## Resumo', '', '| Métrica | Valor |', '|---|---|');
-L.push(`| Eventos no jogo | ${delta('totalEventos', (x) => String(x))} |`);
+L.push(`| ${PK.regras.motor === 'v2' ? 'Moldes de cena' : 'Eventos'} no jogo | ${delta('totalEventos', (x) => String(x))} |`);
 L.push(`| Eventos (turnos) por vida | ${delta('eventosPorVida', (x) => x.toFixed(1))} |`);
 L.push(`| Eventos distintos por vida | ${delta('distintosPorVida', (x) => x.toFixed(1))} |`);
 L.push(`| Parcela de ocorrências repetidas na mesma vida | ${delta('repeticao', pct)} |`);
@@ -179,4 +183,4 @@ L.push('- Ascensão entre 0,5% e 2% (balanceamento atual preservado).');
 writeFileSync(`docs/variedade-${MODO}.md`, L.join('\n') + '\n');
 if (saveBaseline) writeFileSync(BASELINE, JSON.stringify(metrics, null, 2) + '\n');
 console.log(L.slice(0, 22).join('\n'));
-console.log(saveBaseline ? '\n→ baseline gravado em docs/variedade.baseline.json e docs/variedade.md' : '\n→ gravado em docs/variedade.md');
+console.log(saveBaseline ? '\n→ baseline gravado em docs/variedade.baseline.json e docs/variedade.md' : `\n→ gravado em docs/variedade-${MODO}.md`);
