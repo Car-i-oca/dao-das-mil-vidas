@@ -1,4 +1,5 @@
 import type { Molde } from '../../../../engine/v2/tipos';
+import { ABERTURA } from './moldes/abertura';
 import { INFANCIA } from './moldes/infancia';
 import { DESPERTAR } from './moldes/despertar';
 import { RIVAL } from './moldes/rival';
@@ -32,7 +33,7 @@ function ciclar(m: Molde): Molde {
   const cena = typeof m.cena === 'string' ? pre + m.cena : m.cena.map((v) => ({ ...v, texto: pre + v.texto }));
   return { ...m, cena, capitulos: [...new Set([...m.capitulos, 'ascensao', 'crise', 'legado'])] as Molde['capitulos'] };
 }
-const TODOS: Molde[] = [...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO, ...DEMONIO, ...GUERRA, ...ORIGEM, ...TRILHAS, ...TRACOS, ...REGIOES, ...RESPIROS2, ...PERIGOS2];
+const TODOS: Molde[] = [...ABERTURA, ...INFANCIA, ...DESPERTAR, ...RIVAL, ...CLA, ...SEITA_ARCO, ...MUNDO, ...EXTRAS, ...SUCESSAO, ...PERIGOS, ...HERANCA, ...COMPANHEIRO, ...DISCIPULO, ...DEMONIO, ...GUERRA, ...ORIGEM, ...TRILHAS, ...TRACOS, ...REGIOES, ...RESPIROS2, ...PERIGOS2];
 /** Prefixo de "segunda vez" para moldes soltos que podem voltar. */
 const REPETE: Record<string, string> = {
   desp_mestre_caminho: 'Anos depois, o mesmo convite aparece de novo, num outro ponto da estrada. ', troca_ambicao: 'De novo a sensação de que o centro da vida mudou de lugar. ',

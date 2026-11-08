@@ -4,6 +4,15 @@
  * mesmo quando nenhum evento posterior pergunta por isso. Formato: `flag|frase`.
  */
 const TABELA = `
+sino_devolvido|Devolveu ao rio o sino sem badalo que achou aos seis anos, e o rio nunca mais cobrou nada.
+sino_segredo|Guardou o sino sem badalo até a noite em que alguém bateu à porta, e descobriu que guardar também é um posto.
+monge_amigo|Entregou o sino ao monge da beira do rio e ganhou, com isso, um aliado e uma tarefa sem prazo.
+ouviu_chamado|Seguiu o tom grave que só ouvia desde menino, e ele tinha, afinal, um endereço.
+sino_ignorado|Tapou os ouvidos ao chamado do sino e preencheu a vida com trabalho para não ouvir a pergunta.
+sino_recuperado|Recomprou o sino que vendera, pagando o dobro, e foi a primeira conta que fechou por inteiro.
+sino_perdido|Vendeu o sino sem badalo e, quando quis voltar atrás, já era a história de outra pessoa.
+sino_esquecido|Deixou o sino para trás sem olhar, e carregou essa ausência como uma pedrinha no sapato.
+sino_encerrado|No fim, o sino sem badalo tocou uma última vez, e o que estava aberto desde os seis anos se fechou.
 brincadeira_rio_dummy|-
 gentil_na_infancia|Foi gentil na infância, e isso voltou em forma de amigos.
 conhece_lendas|Cresceu ouvindo lendas ao pé do fogo, e as repetiu a vida inteira.
