@@ -59,6 +59,25 @@ ola_gwon_sorriso|Apontou ao conselho o sorriso tardio de Gwon Tae-seok.
 ola_choi_rin_poupada|Ajudou Choi Rin a avisar o cobrador que ela devia matar.
 ola_caldo_dividido|Dividiu uma tigela de caldo com um viajante que devia mais do que dizia.
 
+cor_carregador|Carregou o saco que quatro adultos não moveram e passou a ser chamado toda manhã.
+cor_amigo_cais|Dividiu a moeda com os carregadores do cais e ganhou amigos pesados.
+cor_forca_escondida|Tentou esconder a própria força, e todos perceberam que escondia.
+cor_semana_febre|Atravessou a semana da febre de pé, cuidando da escola inteira.
+cor_cansaco_grande|Descobriu na cozinha, aos joelhos, que a resistência tem fundo.
+cor_descanso_aprendido|Aprendeu que um corpo que cai não carrega ninguém.
+cor_viga_segura|Segurou uma viga com o próprio corpo até vinte pessoas atravessarem.
+cor_viga_cedeu|Soube, na ponte, que mesmo o corpo mais forte não segura tudo.
+cor_ponte_dividida|Dividiu o peso da ponte com a vila, em vez de ser o único a sustentá-la.
+cor_resistente|Viveu o dia em que o corpo disse não, e o que fez com isso.
+cor_pediu_ajuda|Aceitou a bengala e pediu ajuda pela primeira vez na vida.
+cor_herdeiro_forca|Ensinou a um jovem onde dói carregar, e quando dizer não.
+cor_carroca|Descarregou uma carroça sozinho e ganhou um odre de vinho de arroz.
+cor_estandarte|Ergueu uma carroça pelo eixo e recebeu de uma menina o estandarte queimado.
+cor_torneio_longo|Venceu o torneio pelo cansaço dos outros.
+cor_neve_criancas|Atravessou a nevasca com uma criança em cada braço.
+cor_ponte_assentada|Assentou sozinho a pedra caída da ponte de Pedra Baixa.
+cor_ataque_calmo|Imobilizou um bandido pelo ombro sem feri-lo.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

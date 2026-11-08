@@ -51,3 +51,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 3 de 14: Olho experiente (`alma_antiga`)
 - **Entrou** (`tracos/alma_antiga.ts`): 4 cenas (`ola_mao_do_vendedor`, `ola_discipulo_novo`, `ola_amigo_calado`, `ola_rosto_fechado`), 6 opções exclusivas (banca de Noh, lâmina com duas versões, bandidos do sal, audiência, oferta da Lua Oca, caldo) e o final `murim_olho_em_repouso` (flag `ola_confiou`). Cicatriz: ler gestos com clareza tira o direito de ser surpreendido; todo aviso custa algo.
 - **Dourado:** `da6f9ffc141af76c` -> `c2608081c5813833` (4 cenas, 6 opções e 1 final novos no Murim).
+
+## B2 — talento 4 de 14: Constituição vigorosa (`corpo_resistente`)
+- **Entrou** (`tracos/corpo_resistente.ts`): 4 cenas (`cor_carga`, `cor_febre_da_escola`, `cor_ponte_inundada`, `cor_joelhos`), 6 opções exclusivas (dia na estrada, refugiados, torneio, inverno, reparo da ponte, bandidos) e o final `murim_pilar` (flag `cor_resistente`). Cicatriz: quem nunca cede é o último a poder descansar.
+- **Dourado:** agora `8b0c9075ec0b3ae5`.

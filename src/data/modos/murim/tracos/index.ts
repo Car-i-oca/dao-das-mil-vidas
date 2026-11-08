@@ -3,8 +3,9 @@ import { leitura } from '../perfil';
 import type { ConjuntoTraco, OpT } from './tipos';
 import { SORTE_DESTINO } from './sorte_destino';
 import { ALMA_ANTIGA } from './alma_antiga';
+import { CORPO_RESISTENTE } from './corpo_resistente';
 
-const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA];
+const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA, CORPO_RESISTENTE];
 
 function aplica(op: OpT): Choice {
   const { p, ...c } = op;
