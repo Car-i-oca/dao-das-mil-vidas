@@ -43,6 +43,7 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['ver_aprendiz_fim'], final: 'murim_aprendiz_devagar', talento: 'aprendiz_veloz' },
   { flags: ['olf_nao_vendeu_fim'], final: 'murim_piao_sem_preco', talento: 'olfato_tesouro' },
   { flags: ['fol_fim_ok'], final: 'murim_folego_proprio', defeito: 'meridianos_estreitos' },
+  { flags: ['azr_fim_ok'], final: 'murim_chegou_na_hora', defeito: 'azar' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {

@@ -101,3 +101,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 - **Infraestrutura:** `FINAIS_POR_FLAG` ganhou o campo opcional `defeito` (como `talento`), lido por `finalDeVelhice`.
 - **Medido:** Fôlego curto com 4 eventos, 6 opções e 3 caminhos (mínimo atingido).
 - **Dourado:** agora `5eb4d4c19bc09bb4`.
+
+## B2 — defeito 2 de 9: Mau timing (`azar`)
+- **Entrou** (`tracos/azar.ts`): 4 cenas (`azr_dia_do_festival`, `azr_promessa_fora_de_hora`, `azr_a_chuva_certa`, `azr_ultimo_atraso`), 6 opções exclusivas de quem tem o defeito (dia na estrada, torneio, banca de Noh, bandidos, festival, vila sob a neve), arco de redenção (`azr_a_chuva_certa`, `fx.superar` ao confiar no momento) e o final `murim_chegou_na_hora` (flag `azr_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `d23644663f43c5e4`.

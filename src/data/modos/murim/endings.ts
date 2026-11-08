@@ -33,6 +33,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_aprendiz_devagar', name: 'O que aprendeu a esperar', legacy: 1.5, text: '{nome} aprendia tudo antes de acabar a explicação, e passou a vida descobrindo o que esse talento deixava de fora. No fim, sentou-se ao lado de uma velha cega para ouvir um poema devagar, e disse que foi a aula mais longa e a única que valeu.' },
   { id: 'murim_piao_sem_preco', name: 'O que não tinha preço', legacy: 1.5, text: '{nome} sabia o valor de tudo e foi lembrado por uma coisa que deu sem cobrar: um pião de madeira, a uma menina que tinha duas moedas. Os mercadores da região ainda contam a história para ensinar o que o ofício não ensina.' },
   { id: 'murim_folego_proprio', name: 'O que chegava inteiro', legacy: 1.4, text: '{nome} nunca foi o mais rápido, e passou a vida aprendendo que chegar inteiro era outra maneira de vencer. No fim, uma jovem de fôlego curto como o seu aprendeu com ele a medir o passo, e levou o método para a próxima escola.' },
+  { id: 'murim_chegou_na_hora', name: 'O que chegou na hora', legacy: 1.4, text: '{nome} chegou atrasado a quase tudo na vida, e a vila inteira ria disso com carinho. No dia do casamento da filha de um velho amigo, chegou na hora, e dizem que foi o único atraso que o mundo lhe deveu, pago de uma vez só.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

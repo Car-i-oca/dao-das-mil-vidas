@@ -279,6 +279,25 @@ fol_cuidou_do_fogo|Ficou no celeiro cuidando do fogo enquanto os outros abriam a
 fol_tres_respiracoes|Aprendeu com o monge três respirações para as horas difíceis.
 fol_duelo_curto|Propôs um duelo de três golpes para não esgotar nenhum dos dois.
 
+azr_esperou_nuvem|Esperou a nuvem passar no dia do festival e chegou tarde, ensopado.
+azr_riu_de_si|Riu de si mesmo diante da praça no dia da chuva só sua.
+azr_virou_figurino|Dançou sob a chuva com um guarda-chuva emprestado e virou a estrela do festival.
+azr_amigo_reparado|Reparou o dano de uma carta que chegou com uma hora de atraso.
+azr_fugiu|Fugiu da cidade depois de uma carta atrasada.
+azr_enfrentou_atraso|Expôs o próprio atraso ao magistrado sem rodeios.
+azr_chuva_ajudou|Atravessou o desfiladeiro sob a chuva que lavou a emboscada.
+azr_confiou|Confiou no momento sem esperar o pior, e superou o azar.
+azr_esperou_demais|Esperou o tempo melhorar e perdeu a carga.
+azr_dividiu_o_risco|Dividiu a carga em três caminhos para que o azar atingisse só um.
+azr_ultimo_atraso_ok|Chegou na hora ao casamento da filha do amigo e contou a todos.
+azr_fim_ok|Chegou na hora, pela primeira vez, e soube aproveitar.
+azr_estrada_preparada|Levou guarda-chuva e cantil extra e socorreu estranhos na estrada.
+azr_torneio_pior_caso|Preparou-se para o pior adversário do sorteio e perdeu com dignidade.
+azr_troco_contado|Conferiu o troco três vezes até Noh passar a contar em voz alta.
+azr_pagou_passagem|Pagou aos bandidos para passar, porque a flecha só acertava ele.
+azr_festival_preparado|Pagou a taxa do festival sem discutir e atravessou antes de a lanterna cair.
+azr_telhado_cedeu|Dormiu junto à porta do celeiro e escapou do telhado que cedeu.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
