@@ -242,6 +242,24 @@ ver_rolo_copiado|Copiou de memória o rolo de lança, com dois erros que viraram
 ver_ponto_de_noh|Aprendeu o ponto de bainha olhando Noh uma vez.
 ver_mapa_dos_erros|Recebeu do médico da espada o mapa dos erros de quem tinha pressa.
 
+olf_arbitragem|Ganhou duas frutas a cada ida e volta entre duas barracas da feira.
+olf_contou_vendedor|Contou ao vendedor de caquis que a vizinhança vendia mais barato.
+olf_corretor|Virou, aos dez anos, o corretor entre duas barracas da feira.
+olf_recusou_caixa|Recusou uma caixa que cheirava a perfume e a contrabando.
+olf_abriu_caixa|Exigiu abrir a caixa do mercador de seda diante de testemunhas.
+olf_caixa_trocada|Transportou uma caixa trocada e sentiu o cheiro por semanas.
+olf_pak_salvo|Descobriu os desvios do sócio Pak e o ajudou com a dívida do filho doente.
+olf_sociedade_desfeita|Desfez a sociedade com Pak em silêncio, dividindo o estoque.
+olf_cobrou_pak|Cobrou de Pak o prejuízo com juros, diante de testemunhas.
+olf_nao_vendeu|Entregou o pião da juventude a uma menina que tinha duas moedas.
+olf_nao_vendeu_fim|Descobriu, no fim, algo que o faro não conseguia avaliar.
+olf_noh_achados|Virou sócio informal de Noh nos melhores achados do dia.
+olf_aposta_torneio|Apostou contra o favorito pelo jeito de mancar no aquecimento.
+olf_cais_velho|Descobriu quem lucrava com o armazém fechado e entregou o nome a Mu-jin.
+olf_lanternas|Vendeu lanternas de papel às famílias que chegaram tarde.
+olf_farinha|Comprou a farinha dos mercadores recusados e a distribuiu a preço de custo.
+olf_ponte_taxa|Financiou a ponte em troca de uma taxa que retirou sem avisar.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

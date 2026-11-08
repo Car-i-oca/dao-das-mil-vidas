@@ -91,3 +91,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 13 de 14: Aprendiz rápido (`aprendiz_veloz`)
 - **Entrou** (`tracos/aprendiz_veloz.ts`): 4 cenas (`ver_aula_curta`, `ver_buraco_na_base`, `ver_aluno_lento`, `ver_licao_devagar`), 6 opções exclusivas (escola, estilos errantes, ponte da Garça, arquivo, banca de Noh, peregrinos) e o final `murim_aprendiz_devagar` (flag `ver_aprendiz_fim`). Cicatriz: o que se aprende cedo demais tem buracos que só aparecem na prova.
 - **Dourado:** agora `6e9c4591b5def240`.
+
+## B2 — talento 14 de 14: Faro para negócios (`olfato_tesouro`) — talentos do Murim concluídos
+- **Entrou** (`tracos/olfato_tesouro.ts`): 4 cenas (`olf_barraca_de_frutas`, `olf_contrato_bom_demais`, `olf_sociedade_desfeita`, `olf_o_que_nao_se_vende`), 6 opções exclusivas (banca de Noh, torneio, armazém, festival, vila sob a neve, reparo da ponte) e o final `murim_piao_sem_preco` (flag `olf_nao_vendeu_fim`). Cicatriz: o dia em que algo valioso não tem cotação. **Com este, os 14 talentos do Murim estão feitos; faltam os 9 defeitos.**
+- **Dourado:** agora `c353ae0ded9cc436`.

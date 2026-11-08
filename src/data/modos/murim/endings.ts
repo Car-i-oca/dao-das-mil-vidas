@@ -31,6 +31,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_passo_sem_nome', name: 'O passo sem nome', legacy: 1.5, text: 'Pouca gente soube o que {nome} fez, porque {nome} passou a vida sem fazer barulho. Mas quem foi salvo de uma cheia, de um cobrador ou de um poço sabe que alguém passou por ali, e que o passo era leve.' },
   { id: 'murim_mao_aberta', name: 'A mão que aprendeu a abrir', legacy: 1.5, text: '{nome} tinha uma força que a vila contava com espanto e que ele passou a vida aprendendo a medir. Quem o viu no fim jura que a mão mais forte do vale repousava, aberta, sobre o joelho, enquanto uma criança lhe segurava o dedo.' },
   { id: 'murim_aprendiz_devagar', name: 'O que aprendeu a esperar', legacy: 1.5, text: '{nome} aprendia tudo antes de acabar a explicação, e passou a vida descobrindo o que esse talento deixava de fora. No fim, sentou-se ao lado de uma velha cega para ouvir um poema devagar, e disse que foi a aula mais longa e a única que valeu.' },
+  { id: 'murim_piao_sem_preco', name: 'O que não tinha preço', legacy: 1.5, text: '{nome} sabia o valor de tudo e foi lembrado por uma coisa que deu sem cobrar: um pião de madeira, a uma menina que tinha duas moedas. Os mercadores da região ainda contam a história para ensinar o que o ofício não ensina.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

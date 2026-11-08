@@ -6,15 +6,15 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 
 | Métrica | Valor | Meta |
 |---|---|---|
-| Escolhas no jogo | 350 | — |
+| Escolhas no jogo | 368 | — |
 | Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (10%) | 0 |
 | Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | 0 (0%) | cair ao longo dos lotes |
 | Escolhas com a mesma consequência de outra do mesmo evento | 0 | 0 |
 | Eventos "tanto faz" | 0 | 0 |
 | Flags gravadas e nunca lidas | 49 | 0 |
-| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 89 / 0 / 0 | muito mais |
-| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.742 | referência |
-| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.585 | bem menor que a de cima |
+| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 96 / 0 / 0 | muito mais |
+| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.741 | referência |
+| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.563 | bem menor que a de cima |
 
 ### Talentos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 
@@ -33,7 +33,7 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 | Passo silencioso | 4 | 6 | 3 | sim |
 | Força incomum | 4 | 6 | 3 | sim |
 | Aprendiz rápido | 4 | 6 | 3 | sim |
-| Faro para negócios | 0 | 0 | 0 | **não** |
+| Faro para negócios | 4 | 6 | 3 | sim |
 
 ### Defeitos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 

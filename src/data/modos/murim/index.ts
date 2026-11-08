@@ -41,6 +41,7 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['vaz_passo_vazio_fim'], final: 'murim_passo_sem_nome', talento: 'passo_vazio' },
   { flags: ['dra_mao_aberta_fim'], final: 'murim_mao_aberta', talento: 'sangue_dragao' },
   { flags: ['ver_aprendiz_fim'], final: 'murim_aprendiz_devagar', talento: 'aprendiz_veloz' },
+  { flags: ['olf_nao_vendeu_fim'], final: 'murim_piao_sem_preco', talento: 'olfato_tesouro' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {
