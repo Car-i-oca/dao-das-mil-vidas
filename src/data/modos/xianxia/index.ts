@@ -88,7 +88,7 @@ export const XIANXIA: PacoteModo = {
     },
   },
   regras: {
-    dificuldade: 6,
+    dificuldade: 2.5,
     longevidade: true,
     demoniacaMudaAlinhamento: true,
     motor: 'v2',

@@ -23,8 +23,10 @@ Cada item diz o que eu decidi, por quê, e como desfazer. Escolhi sempre a opç�
 ## 5. Conquistas e Legado
 - **Decisão:** as conquistas do Xianxia têm prefixo `xx_ach_`; as melhorias do Legado têm os mesmos ids e custos nos dois modos, com nome e descrição próprios por modo (`PacoteModo.melhorias`).
 
-## 6. Dificuldade do Xianxia
-- **Decisão:** `regras.dificuldade = 6` (o valor de `899108c`), porque o Lote 3 é que refaz a curva. O Murim fica em 2,5.
+## 6. Dificuldade do Xianxia: 2,5 (como o Murim), não 6
+- **Decisão:** o plano dizia restaurar o fator 6 de `899108c`. Medi e **não serve**: com o D20 atual, `8 + reino × 6` deixa a chance média em 41% no reino 1, 14% no 2 e 5% do 3 em diante (`docs/poder-xianxia.md` na versão de 07/11, 60 vidas por trilha). Com 2,5 o Xianxia fica em 58%, 53%, 45%, 40%, 31% nos reinos 1 a 5, o mesmo perfil do Murim.
+- **O que isso NÃO resolve:** nos dois modos a chance contra o próprio nível ainda cai com o reino (é o problema do `sensacaodepoder.md`). Isso é o Lote 3.
+- **Como desfazer:** `regras.dificuldade` em `src/data/modos/xianxia/index.ts`.
 
 ## 7. Itens a conferir de manhã
 - Os commits `b4467f3` e `4be4441` da v2 (feitos por ferramenta externa) **não** foram trazidos: só criam `src/main.ts` e um `audio.ts` que o HEAD já supre.
