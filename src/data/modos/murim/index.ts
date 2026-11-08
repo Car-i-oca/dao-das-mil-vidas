@@ -32,6 +32,7 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['sor_andarilho'], final: 'murim_andarilho', talento: 'sorte_destino' },
   { flags: ['ola_confiou'], final: 'murim_olho_em_repouso', talento: 'alma_antiga' },
   { flags: ['cor_resistente'], final: 'murim_pilar', talento: 'corpo_resistente' },
+  { flags: ['aco_confidente'], final: 'murim_casa_aberta', talento: 'carisma_nato' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {

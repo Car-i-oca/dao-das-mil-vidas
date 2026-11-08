@@ -22,6 +22,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_andarilho', name: 'O que chegava na hora', legacy: 1.5, text: 'Dizem que {nome} nunca se atrasou para nada que importasse. Só uma moça, que andou a seu lado por uma estação, sabia que não era sorte: era atenção, ensinada passo a passo, e ela a repassou a quem chegou depois.' },
   { id: 'murim_olho_em_repouso', name: 'O que aprendeu a não ler', legacy: 1.5, text: '{nome} leu mil rostos e acertou quase todos. O que ficou, nas histórias de quem o conheceu, foi a manhã em que abriu a porta sem ler ninguém: dizem que foi o único gesto que não precisou de explicação.' },
   { id: 'murim_pilar', name: 'O que aprendeu a pedir', legacy: 1.5, text: '{nome} carregou mais do que qualquer um da vila, e todos achavam que isso era o que o definia. Mas quem esteve em seus últimos anos lembra de outra coisa: a primeira vez em que alguém o viu aceitar uma bengala, e como a casa inteira respirou aliviada.' },
+  { id: 'murim_casa_aberta', name: 'A casa onde as coisas ficavam', legacy: 1.5, text: '{nome} nunca foi o mais forte nem o mais temido, mas a sua porta era a única em três vilas que ninguém trancava ao passar. Depois que partiu, os bilhetes continuaram a chegar, e a casa passou a ser cuidada por quem tinha algo a deixar.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

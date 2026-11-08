@@ -55,3 +55,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 4 de 14: Constituição vigorosa (`corpo_resistente`)
 - **Entrou** (`tracos/corpo_resistente.ts`): 4 cenas (`cor_carga`, `cor_febre_da_escola`, `cor_ponte_inundada`, `cor_joelhos`), 6 opções exclusivas (dia na estrada, refugiados, torneio, inverno, reparo da ponte, bandidos) e o final `murim_pilar` (flag `cor_resistente`). Cicatriz: quem nunca cede é o último a poder descansar.
 - **Dourado:** agora `8b0c9075ec0b3ae5`.
+
+## B2 — talento 5 de 14: Presença acolhedora (`carisma_nato`)
+- **Entrou** (`tracos/carisma_nato.ts`): 4 cenas (`aco_confissao_do_cais`, `aco_segredo_do_mestre`, `aco_mesa_dos_rivais`, `aco_cartas_guardadas`), 6 opções exclusivas (festival, caldo, lâmina com duas versões, banca de Noh, vila sob a neve, assembleia) e o final `murim_casa_aberta` (flag `aco_confidente`). Cicatriz: confidências são dívidas; guardar custa tanto quanto revelar.
+- **Dourado:** agora `7523605a7a3be0c9`.

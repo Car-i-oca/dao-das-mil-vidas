@@ -78,6 +78,25 @@ cor_neve_criancas|Atravessou a nevasca com uma criança em cada braço.
 cor_ponte_assentada|Assentou sozinho a pedra caída da ponte de Pedra Baixa.
 cor_ataque_calmo|Imobilizou um bandido pelo ombro sem feri-lo.
 
+aco_remador_ajudado|Ouviu a confissão de um remador e o ajudou a escrever à filha.
+aco_segredo_guardado|Guardou, ainda menino, um segredo que não era seu, e aprendeu o peso do silêncio.
+aco_nomes_colhidos|Transformou, sem querer, uma confissão em informação.
+aco_mestre_apoiado|Ajudou o mestre meio cego a preparar a escola para depois dele.
+aco_braco_direito|Tornou-se o braço direito do mestre quando ele mais precisava de alguém.
+aco_confianca_quebrada|Perdeu a confiança de quem lhe confiou um segredo.
+aco_paz_oleiros|Fez as duas famílias de oleiros dividirem uma nascente depois de três gerações.
+aco_juiz_de_fora|Recusou-se a decidir uma briga e chamou um juiz de fora.
+aco_confidente|Soube o que fazer com as confidências de uma vida inteira.
+aco_bau_aberto|Devolveu a cada herdeiro o segredo que lhe pertencia.
+aco_bau_queimado|Queimou os segredos de uma vida e foi cofre até o fim.
+aco_casa_aberta|Deixou um baú aberto na sala, e a casa virou lugar de deixar segredos.
+aco_artista|Ouviu a artista falar do irmão antes de procurá-lo.
+aco_caldo_duas_filhas|Descobriu que o viajante e o rapaz tinham, cada um, uma filha doente.
+aco_dilema_ouvido|Deixou o espadachim e a curandeira falarem até esquecerem a acusação.
+aco_noh_confidencias|Ouviu as confidências de Noh até o conserto sair de graça.
+aco_inverno_dividido|Ouviu os mercadores até que dividir já não fosse ordem.
+aco_assembleia_amaciada|Ouviu cada delegado a sós e deixou que todos acreditassem ter decidido sozinhos.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
