@@ -379,6 +379,26 @@ ran_duelo_antigo|Lutou no duelo da ponte com uma raiva que não era do mascarado
 ran_testemunha_falsa|Inventou uma testemunha para punir o filho do cobrador.
 ran_recusou_taxa|Recusou a taxa ao oficial que humilhou sua família e foi retirado da praça.
 
+dsp_limpou_o_mel|Derrubou o pote de mel por causa de uma borboleta e limpou tudo sem desculpas.
+dsp_culpou_a_borboleta|Culpou a borboleta pelo pote derrubado e aprendeu a lição.
+dsp_contou_os_passos|Aprendeu a contar os passos em voz baixa para carregar o pote.
+dsp_pediu_troca|Contou ao mestre que cochilou de olhos abertos e pediu para sair da vigia.
+dsp_ritual_de_vigia|Criou um ritual de três voltas por hora para vigiar o portão.
+dsp_ritual_falhou|Viu o ritual de vigia falhar na quarta noite.
+dsp_escondeu_o_lapso|Escondeu o lapso da vigia e deixou um ladrão escapar.
+dsp_marca_vista|Viu a marca de roda no chão da passagem de montanha.
+dsp_atencia_propria|Descobriu uma atenção própria que vê melhor soltando o olhar, e superou a dispersão.
+dsp_perguntou_ao_guia|Perguntou ao guia o que fazer com a marca de roda.
+dsp_ignorou_a_marca|Ignorou a marca de roda e a emboscada se fechou.
+dsp_fim_ok|Olhou uma nuvem inteira, na varanda, e a atenção ficou.
+dsp_olhar_herdado|Ensinou a um neto que olhar sem pensar também é ofício.
+dsp_escola_variada|Escolheu uma escola de treinos curtos e variados.
+dsp_duas_pedras|Treinou trocando duas pedras de mão enquanto a mestra ensinava.
+dsp_dupla_no_armazem|Entrou no armazém em dupla: um vigiava, o outro lia.
+dsp_arquivo_a_dois|Salvou o arquivo da Garça com um colega que anotava o que escapava.
+dsp_tabuleta_de_noh|Anotou numa tabuleta o que precisava comprar e saiu da feira só com isso.
+dsp_segunda_versao|Pediu que cada um repetisse a versão e achou o detalhe que desfez a acusação.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

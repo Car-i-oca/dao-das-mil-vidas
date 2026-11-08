@@ -121,3 +121,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 6 de 9: Rancor persistente (`orgulhoso`)
 - **Entrou** (`tracos/orgulhoso.ts`): 4 cenas (`ran_a_pedra_no_sapato`, `ran_o_rival_que_pediu_perdao`, `ran_a_ofensa_devolvida`, `ran_o_que_sobrou`), 6 opções exclusivas de quem tem o defeito (torneio, audiência, noite dos nomes, duelo na ponte, julgamento do aprendiz, festival), arco de redenção (`ran_a_ofensa_devolvida`, `fx.superar` ao abrir a porta ao velho cobrador) e o final `murim_pedra_no_rio` (flag `ran_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos. A alcunha ligada a este traço (`mur_pedra`) já existia; não foi mexida.
 - **Dourado:** agora `ba12ba47a347558b`.
+
+## B2 — defeito 7 de 9: Atenção dispersa (`distraido`)
+- **Entrou** (`tracos/distraido.ts`): 4 cenas (`dsp_o_pote_derramado`, `dsp_a_vigia_perdida`, `dsp_o_detalhe_que_salvou`, `dsp_a_nuvem_que_ficou`), 6 opções exclusivas de quem tem o defeito (escola, ponte da Garça, armazém, arquivo, banca de Noh, lâmina com duas versões), arco de redenção (`dsp_o_detalhe_que_salvou`, `fx.superar` ao achar uma atenção própria) e o final `murim_olhar_da_varanda` (flag `dsp_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `03eac32d3b694098`.
