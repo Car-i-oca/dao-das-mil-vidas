@@ -1,4 +1,5 @@
-import { EVENTS } from '../src/data/events/index';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
 const rows: string[] = [];
 for (const e of EVENTS) {
   const lo = e.cond?.tierMin ?? 0, hi = e.cond?.tierMax ?? 8;

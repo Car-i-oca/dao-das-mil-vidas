@@ -2,16 +2,12 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, EVENT, PATH, ORIGIN, TALENT, FLAW, ITEM, ENDING, CONSTITUTION, STAT_KEYS, STAT_NAMES, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
+  realmOf, ladderOf, eff, cultivationRate, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
   type Creation,
 } from '../engine/engine';
-import { ACHIEVEMENTS, UPGRADES, upgradePrice } from '../data/endings';
-import { ORIGINS, TALENTS } from '../data/character';
-import type { Change, DiceRoll, EquipmentSlot, Meta, State, UiNotification } from '../types';
-import { ITEMS } from '../data/items';
-import { EVENTS } from '../data/events';
-import { PATHS } from '../data/paths';
-import { ENDINGS } from '../data/endings';
+import { upgradePrice } from '../data/legado';
+import { pacoteDe, MODOS, type Modo } from '../data/modos';
+import type { Change, DiceRoll, EquipmentSlot, Item, Meta, State, StatKey, UiNotification } from '../types';
 import { itemIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
@@ -21,11 +17,17 @@ import { playSfx, startAudioExperience, setAudioForeground } from './audio';
 import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
 
+/** Pacote do modo em foco: o da tela de criação, senão o da vida em andamento (ou da última). */
+function K() {
+  const modo: Modo | undefined = screen === 'meta' && metaModo ? metaModo : screen === 'create' && creation ? creation.c.modo : save.run?.modo ?? creation?.c.modo;
+  return pacoteDe(modo);
+}
+
 /* ---------- Persistência ---------- */
 const KEY = 'murim-quest-save-v1';
-interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
+interface Settings { modo?: Modo; estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
+  return { modo: x?.modo === 'xianxia' ? 'xianxia' : 'murim', estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -34,7 +36,11 @@ function load(): Save {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const p = JSON.parse(raw) as Save;
-      if (p?.meta) return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
+      if (p?.meta) {
+        // Vida em andamento salva antes dos modos: era Murim.
+        if (p.run && !p.run.modo) p.run.modo = 'murim';
+        return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
+      }
     }
   } catch { /* save corrompido ou indisponível */ }
   return { meta: newMeta(), run: null, settings: normSettings() };
@@ -45,10 +51,10 @@ function persist() {
 }
 
 function shopModalHtml(s: State): string {
-  const byRarity = new Map<string, (typeof ITEMS)[number]>();
+  const byRarity = new Map<string, Item>();
   const rarityOrder = ['comum', 'incomum', 'raro', 'epico', 'lendario'];
   for (const rarity of rarityOrder) {
-    const item = ITEMS.filter((entry) => entry.rarity === rarity && entry.kind !== 'misc')
+    const item = K().itens.filter((entry) => entry.rarity === rarity && entry.kind !== 'misc')
       .sort((a, b) => a.value - b.value)[0];
     if (item) byRarity.set(rarity, item);
   }
@@ -58,7 +64,7 @@ function shopModalHtml(s: State): string {
   const saleCounts = new Map<string, number>();
   for (const id of s.items) saleCounts.set(id, (saleCounts.get(id) ?? 0) + 1);
   const sales = [...saleCounts.entries()].map(([id, count]) => {
-    const item = ITEM[id];
+    const item = K().ix.ITEM[id];
     if (!item || Object.values(s.equipment ?? {}).includes(id)) return '';
     const price = Math.max(1, Math.floor(item.value / 2));
     return `<div class="shop-row"><span class="shop-item"><b>${esc(item.name)}${count > 1 ? ` ×${count}` : ''}</b><small>${RARITY_LABEL[item.rarity]} · revenda ${price} moedas</small></span><button class="btn ghost" data-act="shop-sell" data-id="${id}">Vender</button></div>`;
@@ -93,11 +99,13 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 }
 
 /* ---------- Estado de interface ---------- */
-type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
+type Screen = 'home' | 'modo' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
 let tab: 'aventura' | 'equipamentos' | 'inventario' | 'diario' = 'aventura';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
+/** Modo em foco na tela do Legado (o das listas de conquistas, códice e melhorias). */
+let metaModo: Modo | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 let audioStarted = false;
 let audioGateError = '';
@@ -198,6 +206,7 @@ function render() {
   }
   switch (screen) {
     case 'home': renderHome(); break;
+    case 'modo': renderModo(); break;
     case 'create': renderCreate(); break;
     case 'game': renderGame(); break;
     case 'end': renderEnd(); break;
@@ -222,7 +231,7 @@ function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
       <div class="dice-face" aria-live="polite">${modal.settled ? roll.d20 : modal.face}</div>
       <h2>${modal.settled ? (modal.success ? 'Sucesso' : 'Falha') : 'O destino decide'}</h2>
       <div class="dice-equation">${result}<span class="dice-dc">vs Dificuldade ${roll.dc}</span></div>
-      <p class="dice-stat">${STAT_NAMES[roll.stat]} · o teste inclui atributos, treino e efeitos; equipamento aparece à parte.</p>
+      <p class="dice-stat">${K().vocab.atributos[roll.stat]} · o teste inclui atributos, treino e efeitos; equipamento aparece à parte.</p>
       ${combat}
       ${modal.settled ? '<button class="btn primary" data-act="roll-close">Ver consequência</button>' : '<div class="dice-wait">Rolando…</div>'}
     </div>
@@ -258,7 +267,7 @@ function renderHome() {
   const gallery = galleryOpen ? galleryModalHtml(m) : '';
   app.innerHTML = `
     <div class="screen home">
-      <div class="home-emblem"><div class="seal">武</div><span>CRÔNICAS DO JIANGHU</span></div>
+      <div class="home-emblem"><div class="seal">武</div><span>MURIM · XIANXIA</span></div>
       <div class="home-title"><h1>Murim Quest</h1><div class="tag">Seu nome, sua escola, suas escolhas.</div></div>
       <div class="stack home-menu">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
@@ -268,16 +277,36 @@ function renderHome() {
         <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
-      <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${m.endingsSeen.length}/${ENDINGS.length}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
-      <p class="muted small copy">Murim Quest · Uma crônica original do Jianghu</p>
+      <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${MODOS.map((id) => `${pacoteDe(id).nome} ${m.endingsSeen.filter((e) => pacoteDe(id).ix.ENDING[e]).length}/${pacoteDe(id).finais.length}`).join(' · ')}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
+      <p class="muted small copy">Murim Quest · Duas crônicas originais: Jianghu e Cultivo</p>
     </div>${gallery}`;
+}
+
+function renderModo() {
+  const m = save.meta;
+  const preferido = save.settings.modo ?? 'murim';
+  const cartao = (id: Modo) => {
+    const pk = pacoteDe(id);
+    const vidas = m.history.filter((h) => (h.modo ?? 'murim') === id).length;
+    return `<button class="modo-card ${id === preferido ? 'preferido' : ''}" data-act="modo" data-id="${id}" aria-label="${esc(`${pk.nome}, ${pk.subtitulo}. ${pk.resumo}`)}">
+      <span class="modo-glifo" aria-hidden="true">${id === 'murim' ? '武' : '仙'}</span>
+      <span class="modo-texto"><b>${esc(pk.nome)} · ${esc(pk.subtitulo)}</b><span>${esc(pk.resumo)}</span><small>${vidas ? `Suas vidas: ${vidas}` : 'Ainda sem vidas neste modo'}</small></span>
+    </button>`;
+  };
+  app.innerHTML = `
+    <div class="screen modo-screen">
+      <div class="row between"><h2>Que vida você quer viver?</h2></div>
+      <div class="stack modo-lista">${MODOS.map(cartao).join('')}</div>
+      <p class="muted small">O modo vale para esta vida. Seu Legado vale para os dois.</p>
+      <button class="btn ghost" data-act="home">‹ Início</button>
+    </div>`;
 }
 
 function galleryModalHtml(meta: Meta): string {
   const tabs: [typeof galleryTab, string][] = [['endings', 'Finais'], ['enemies', 'Inimigos'], ['artifacts', 'Artefatos']];
   let content = '';
   if (galleryTab === 'endings') {
-    content = `<div class="gallery-grid">${ENDINGS.map((ending) => {
+    content = `<div class="gallery-grid">${K().finais.map((ending) => {
       const found = meta.endingsSeen.includes(ending.id);
       return `<div class="gallery-entry ${found ? 'found' : 'locked'}"><span class="gallery-silhouette">${found ? '✦' : '◈'}</span><b>${found ? esc(ending.name) : '???'}</b><small>${found ? 'Final descoberto' : 'Final não descoberto'}</small></div>`;
     }).join('')}</div>`;
@@ -290,7 +319,7 @@ function galleryModalHtml(meta: Meta): string {
     }).join('')}</div>`;
   } else {
     const discovered = new Set(meta.codex?.items ?? []);
-    const artifacts = ITEMS.filter((item) => ['artefato', 'arma', 'armadura', 'anel', 'talisma'].includes(item.kind));
+    const artifacts = K().itens.filter((item) => ['artefato', 'arma', 'armadura', 'anel', 'talisma'].includes(item.kind));
     content = `<div class="gallery-grid">${artifacts.map((item) => {
       const found = discovered.has(item.id);
       return `<div class="gallery-entry ${found ? 'found' : 'locked'} rarity-${item.rarity}"><span class="gallery-silhouette">${found ? itemIcon(item, 40) : '◈'}</span><b>${found ? esc(item.name) : '???'}</b><small>${found ? RARITY_LABEL[item.rarity] : 'Artefato desconhecido'}</small></div>`;
@@ -310,20 +339,20 @@ function bestName(m: Meta): string {
   return `faixa ${b.tier}, ${b.age} anos`;
 }
 
-function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0)) {
+function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0), modo: Modo = save.settings.modo ?? 'murim') {
   const seed = (Math.random() * 4294967295) >>> 0;
   const rng = new Rng(seed);
-  creation = { c: rollCreation(save.meta, rng), seed: rng.seed, rerolls: prevRerolls };
+  creation = { c: rollCreation(save.meta, rng, modo), seed: rng.seed, rerolls: prevRerolls };
 }
 
 function renderCreate() {
   if (!creation) newCreation();
   const { c, rerolls } = creation!;
-  const o = ORIGIN[c.origin], t = TALENT[c.talent], f = FLAW[c.flaw];
-  const cons = c.constitution ? CONSTITUTION[c.constitution] : null;
+  const o = K().ix.ORIGIN[c.origin], t = K().ix.TALENT[c.talent], f = K().ix.FLAW[c.flaw];
+  const cons = c.constitution ? K().ix.CONSTITUTION[c.constitution] : null;
   app.innerHTML = `
     <div class="screen">
-      <div class="row between"><h2>Seu destino</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
+      <div class="row between"><h2>Seu destino <span class="modo-selo">${esc(K().nome)} · ${esc(K().subtitulo)}</span></h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="new">‹ Modo</button></div>
       <div class="card kv">
         <div class="k">Origem</div><div class="v"><b>${esc(o.name)}</b><br><span class="muted small">${esc(o.desc)}</span></div>
         <div class="k">Aptidão</div><div class="v"><b>${esc(c.root.name)}</b><br><span class="muted small">Ritmo de aprendizado ×${c.root.mult.toFixed(2)}</span></div>
@@ -333,7 +362,7 @@ function renderCreate() {
       </div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
       <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
-      <p class="muted small">Sua escola e estilo de combate serão escolhidos dentro da história, quando surgir a oportunidade de entrar no Jianghu.</p>
+      <p class="muted small">${esc(K().vocab.rotulos.criacao)}</p>
       <button class="btn primary" data-act="start">Iniciar vida</button>
     </div>`;
 }
@@ -368,7 +397,7 @@ function sceneFor(s: State, eventId: string): string {
 
 /** Retrato do personagem recorrente citado no texto do evento ({mentor}, {rival}...). */
 function npcFor(s: State, eventId: string): string {
-  const raw = EVENT[eventId]?.text ?? '';
+  const raw = K().ix.EVENT[eventId]?.text ?? '';
   const roles: Role[] = ['mentor', 'rival', 'amigo', 'noivo', 'discipulo', 'inimigo'];
   const role = roles.find((r) => raw.includes('{' + r + '}'));
   if (!role) return '';
@@ -383,7 +412,7 @@ function tabsHtml(): string {
 
 function renderGame() {
   const s = save.run!;
-  const currentType = s.current ? EVENT[s.current.id]?.type ?? (EVENT[s.current.id] ? view(s).eventType : undefined) : undefined;
+  const currentType = s.current ? K().ix.EVENT[s.current.id]?.type ?? (K().ix.EVENT[s.current.id] ? view(s).eventType : undefined) : undefined;
   const currentEventId = s.current?.id;
   if (currentType === 'shop' && currentEventId && currentEventId !== shopEventId) {
     shopEventId = currentEventId;
@@ -411,7 +440,7 @@ function weatherLabel(weather?: State['weather']): string {
 }
 
 function adventureArt(s: State, eventId: string, title: string, eventType?: string): string {
-  const event = EVENT[eventId];
+  const event = K().ix.EVENT[eventId];
   const foeId = s.current?.foe ?? event?.combate?.oponente
     ?? (eventType === 'combat' && event ? foeFor(event.id, event.title, event.text) : undefined);
   const encounter = eventType === 'combat' && foeId && pixelArt.player && pixelArt.foe
@@ -424,24 +453,24 @@ function lifeHtml(s: State): string {
   const v = view(s);
   const intro = !save.settings.intro && s.turn < 2 ? INTRO_HTML : '';
   const eventId = s.current?.id ?? '';
-  const title = v.kind === 'event' ? v.title : (s.ending ? ENDING[s.ending]?.name ?? 'O destino se revela' : 'Consequências');
-  const eventType = v.eventType ?? EVENT[eventId]?.type;
+  const title = v.kind === 'event' ? v.title : (s.ending ? K().ix.ENDING[s.ending]?.name ?? 'O destino se revela' : 'Consequências');
+  const eventType = v.eventType ?? K().ix.EVENT[eventId]?.type;
   const chk = s.result?.check;
   const combatItems = eventType === 'combat'
-    ? [...new Set(s.items)].filter((id) => ITEM[id]?.use).map((id) => {
-      const item = ITEM[id];
+    ? [...new Set(s.items)].filter((id) => K().ix.ITEM[id]?.use).map((id) => {
+      const item = K().ix.ITEM[id];
       return `<div class="choice combat-item-choice" data-act="use-combat-item" data-id="${id}" role="button" tabindex="0" aria-label="Usar ${esc(item.name)}"><span>${itemIcon(item, 24)} Usar ${esc(item.name)}</span><span class="note">Preparação</span></div>`;
     }).join('')
     : '';
   const choicesHtml = v.kind === 'result' || v.kind === 'ending'
     ? `${chipsHtml(s.result?.changes)}<button class="btn primary" data-act="${s.ending ? 'toEnd' : 'next'}">${s.ending ? 'Ver o final desta vida' : 'Continuar'}</button>`
     : `${v.nota ? `<div class="nota-defeito">${esc(v.nota)}</div>` : ''}${v.choices.map((c, i) => ({ c, i })).filter(({ c }) => !c.disabled).map(({ c, i }) => {
-      const preview = c.check ? combatCheckPreview(s, c.check, EVENT[eventId]) : null;
+      const preview = c.check ? combatCheckPreview(s, c.check, K().ix.EVENT[eventId]) : null;
       const checkedStats = c.check ? (Array.isArray(c.check.stat) ? c.check.stat : [c.check.stat]) : [];
       const testBadge = preview
-        ? `<span class="choice-test-stat"><i aria-hidden="true">${preview.stat === 'fis' ? '⚔' : preview.stat === 'esp' ? '◈' : preview.stat === 'comp' ? '⌘' : preview.stat === 'sor' ? '✦' : preview.stat === 'car' ? '❖' : '☯'}</i><b>${checkedStats.map((key) => key.toUpperCase()).join(' · ')}</b><small>${checkedStats.map((key) => STAT_NAMES[key]).join(' / ')}</small></span>`
+        ? `<span class="choice-test-stat"><i aria-hidden="true">${preview.stat === 'fis' ? '⚔' : preview.stat === 'esp' ? '◈' : preview.stat === 'comp' ? '⌘' : preview.stat === 'sor' ? '✦' : preview.stat === 'car' ? '❖' : '☯'}</i><b>${checkedStats.map((key) => key.toUpperCase()).join(' · ')}</b><small>${checkedStats.map((key) => K().vocab.atributos[key]).join(' / ')}</small></span>`
         : '<span class="choice-test-stat neutral"><i aria-hidden="true">◇</i><small>Escolha</small></span>';
-      return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(`${preview ? `Teste de ${checkedStats.map((key) => STAT_NAMES[key]).join(' e ')} contra CD ${preview.dc}: ` : ''}${c.text}`)}">
+      return `<div class="choice" data-act="choose" data-i="${i}" role="button" tabindex="0" aria-label="${esc(`${preview ? `Teste de ${checkedStats.map((key) => K().vocab.atributos[key]).join(' e ')} contra CD ${preview.dc}: ` : ''}${c.text}`)}">
         ${testBadge}<span class="choice-copy">${c.selo ? `<span class="selo">${esc(c.selo)}</span> ` : ''}${esc(c.text)}</span>
         <span class="row">${c.note ? `<span class="note">${esc(c.note)}</span>` : ''}${preview ? '<span class="dice-icon">D20</span>' : c.chance !== undefined ? `<span class="chance ${c.chance >= 0.7 ? 'hi' : c.chance >= 0.45 ? 'mid' : 'lo'}">${pct(c.chance)}</span>` : ''}</span>
       </div>`;
@@ -452,8 +481,10 @@ function lifeHtml(s: State): string {
       <section class="story-panel" id="story-panel" data-act="${v.kind === 'event' ? 'skip' : ''}">
         ${chk ? `<span class="badge ${chk.success ? 'ok' : 'bad'}">${chk.success ? '✔ Sucesso' : '✘ Falha'} · ${pct(chk.chance)}</span>` : ''}
         ${intro}
+        ${v.cartao ? `<div class="chapter-card">${esc(v.cartao)}</div>` : ''}
         ${npcFor(s, eventId)}
       <p class="story-text" id="typed"></p>
+        ${v.noticias?.length ? `<ul class="noticias">${v.noticias.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
         ${v.kind === 'event' ? '<div class="hint" id="hint">toque para pular</div>' : ''}
         ${eventType === 'shop' && !shopOpen ? '<button class="btn ghost" data-act="shop-open">Abrir loja do mercador</button>' : ''}
       </section>
@@ -475,7 +506,7 @@ function startTyping(s: State) {
 
 /** Título no mundo, poderes de reino e recurso próprio da trilha. */
 function powerHtml(s: State): string {
-  const path = PATH[s.path];
+  const path = K().ix.PATH[s.path];
   const L = ladderOf(s);
   const r = realmOf(s);
   const powers = L.realms
@@ -490,26 +521,28 @@ function powerHtml(s: State): string {
 }
 
 function statusHtml(s: State): string {
-  const path = PATH[s.path];
+  const path = K().ix.PATH[s.path];
   const L = ladderOf(s);
   const stats = STAT_KEYS.map((k) => {
     const v = eff(s, k);
     const base = s.stats[k];
-    return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
+    return `<div class="stat"><span>${K().vocab.atributos[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
-  const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
-  const fac: Record<string, string> = { seita: 'Escola reconhecida', demoniaca: 'Escola clandestina', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
+  const cons = s.constitution ? K().ix.CONSTITUTION[s.constitution] : null;
+  const R = K().vocab.rotulos;
+  const fac = R.facoes;
   return `
     <div class="card">
-      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon('murim', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
+      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon(s.modo === 'xianxia' ? 'xianxia' : 'murim', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
       <div class="kv">
-        <div class="k">Escola e estilo</div><div class="v">${esc(path.name)}</div>
-        <div class="k">Faixa</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
-        <div class="k">Origem</div><div class="v">${esc(ORIGIN[s.origin].name)}</div>
+        <div class="k">Modo</div><div class="v">${esc(K().nome)} · ${esc(K().subtitulo)}</div>
+        <div class="k">${esc(R.trilha)}</div><div class="v">${esc(path.name)}</div>
+        <div class="k">${esc(R.reino)}</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
+        <div class="k">Origem</div><div class="v">${esc(K().ix.ORIGIN[s.origin].name)}</div>
         <div class="k">Aptidão</div><div class="v">${esc(s.root.name)}</div>
         ${cons ? `<div class="k">Corpo</div><div class="v">${esc(cons.name)}</div>` : ''}
-        <div class="k">Talento</div><div class="v">${esc(TALENT[s.talent].name)}</div>
-        <div class="k">Defeito</div><div class="v">${esc(FLAW[s.flaw].name)}</div>
+        <div class="k">Talento</div><div class="v">${esc(K().ix.TALENT[s.talent].name)}</div>
+        <div class="k">Defeito</div><div class="v">${esc(K().ix.FLAW[s.flaw].name)}</div>
         <div class="k">Facção</div><div class="v">${fac[s.faction]}</div>
         <div class="k">Dificuldade</div><div class="v">${(DIFFICULTIES.find(([v]) => v === (s.dif ?? 0)) ?? DIFFICULTIES[1])[1]}</div>
         <div class="k">Local</div><div class="v">${PLACE_NAMES[s.place] ?? s.place}</div>
@@ -580,14 +613,14 @@ function inventoryModalHtml(s: State): string {
   for (const id of s.items) counts.set(id, (counts.get(id) ?? 0) + 1);
   const slots = EQUIPMENT_SLOTS.map(({ id: slot, label }) => {
     const itemId = s.equipment?.[slot];
-    const item = itemId ? ITEM[itemId] : undefined;
+    const item = itemId ? K().ix.ITEM[itemId] : undefined;
     return `<button class="inventory-slot ${item ? `rarity-${item.rarity}` : ''}" data-act="${item ? 'item-detail' : 'noop'}" data-id="${item?.id ?? ''}" ${item ? '' : 'disabled'}>
       <span class="slot-label">${esc(label)}</span><b>${item ? esc(item.name) : 'Vazio'}</b>
-      ${item ? `<span class="item-stats">${Object.entries(item.bonuses ?? {}).map(([k, v]) => `+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}`).join(' · ') || 'Sem bônus numéricos'}</span>` : ''}
+      ${item ? `<span class="item-stats">${Object.entries(item.bonuses ?? {}).map(([k, v]) => `+${v} ${K().vocab.atributos[k as StatKey]}`).join(' · ') || 'Sem bônus numéricos'}</span>` : ''}
     </button>`;
   }).join('');
   const rows = [...counts.entries()].map(([id, count]) => {
-    const item = ITEM[id];
+    const item = K().ix.ITEM[id];
     if (!item) return '';
     const usable = !!item.use;
     const equipped = Object.values(s.equipment ?? {}).includes(id);
@@ -597,12 +630,12 @@ function inventoryModalHtml(s: State): string {
       </button>${usable ? `<button class="btn inventory-use" data-act="use" data-id="${item.id}">Usar</button>` : ''}
     </div>`;
   }).join('') || '<div class="muted small inventory-empty">Sua mochila está vazia.</div>';
-  const selected = selectedInventoryItem ? ITEM[selectedInventoryItem] : undefined;
+  const selected = selectedInventoryItem ? K().ix.ITEM[selectedInventoryItem] : undefined;
   const details = selected ? `<section class="item-detail rarity-${selected.rarity}">
     <div class="row between"><span class="rarity-label">${RARITY_LABEL[selected.rarity]}</span><button class="btn ghost item-detail-close" data-act="item-detail-close" aria-label="Fechar detalhes">×</button></div>
     <h3>${esc(selected.name)}</h3><p>${esc(selected.desc)}</p>
-    ${selected.bonuses ? `<div class="item-detail-stats"><b>Bônus de equipamento</b>${Object.entries(selected.bonuses).map(([k, v]) => `<span>+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}</span>`).join('')}</div>` : ''}
-    ${selected.passive ? `<div class="item-detail-stats"><b>Bônus passivos</b>${Object.entries(selected.passive).map(([k, v]) => `<span>+${v} ${STAT_NAMES[k as keyof typeof STAT_NAMES]}</span>`).join('')}</div>` : ''}
+    ${selected.bonuses ? `<div class="item-detail-stats"><b>Bônus de equipamento</b>${Object.entries(selected.bonuses).map(([k, v]) => `<span>+${v} ${K().vocab.atributos[k as StatKey]}</span>`).join('')}</div>` : ''}
+    ${selected.passive ? `<div class="item-detail-stats"><b>Bônus passivos</b>${Object.entries(selected.passive).map(([k, v]) => `<span>+${v} ${K().vocab.atributos[k as StatKey]}</span>`).join('')}</div>` : ''}
     ${selected.equipmentSlot ? `<div class="muted small">Slot: ${esc(EQUIPMENT_SLOTS.find((slot) => slot.id === selected.equipmentSlot)?.label ?? selected.equipmentSlot)}</div>` : ''}
     ${selected.equipmentSlot && !Object.values(s.equipment ?? {}).includes(selected.id) ? `<button class="btn" data-act="gear-equip" data-id="${selected.id}">Equipar</button>` : ''}
   </section>` : '';
@@ -626,17 +659,17 @@ const EQUIPMENT_SLOTS: { id: EquipmentSlot; label: string }[] = [
 function equipmentHtml(s: State): string {
   const slots = EQUIPMENT_SLOTS.map(({ id, label }) => {
     const itemId = s.equipment?.[id];
-    const item = itemId ? ITEM[itemId] : undefined;
-    return `<div class="equipment-slot"><div><small>${label}</small><b>${item ? esc(item.name) : 'Vazio'}</b>${item?.bonuses ? `<span class="muted small">${Object.entries(item.bonuses).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span>` : ''}</div>${item ? `<button class="btn ghost" data-act="gear-remove" data-id="${id}">Remover</button>` : ''}</div>`;
+    const item = itemId ? K().ix.ITEM[itemId] : undefined;
+    return `<div class="equipment-slot"><div><small>${label}</small><b>${item ? esc(item.name) : 'Vazio'}</b>${item?.bonuses ? `<span class="muted small">${Object.entries(item.bonuses).map(([key, value]) => `+${value} ${K().vocab.atributos[key as StatKey]}`).join(' · ')}</span>` : ''}</div>${item ? `<button class="btn ghost" data-act="gear-remove" data-id="${id}">Remover</button>` : ''}</div>`;
   }).join('');
-  const ownedGear = [...new Set(s.items)].map((id) => ITEM[id]).filter((item) => !!item?.equipmentSlot);
-  const gearOptions = ownedGear.map((item) => `<div class="equipment-slot"><div><b>${esc(item.name)}</b><span class="muted small">${item.bonuses ? Object.entries(item.bonuses).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ') : ''}</span></div><button class="btn" data-act="gear-equip" data-id="${item.id}" ${s.equipment?.[item.equipmentSlot!] === item.id ? 'disabled' : ''}>Equipar</button></div>`).join('');
+  const ownedGear = [...new Set(s.items)].map((id) => K().ix.ITEM[id]).filter((item) => !!item?.equipmentSlot);
+  const gearOptions = ownedGear.map((item) => `<div class="equipment-slot"><div><b>${esc(item.name)}</b><span class="muted small">${item.bonuses ? Object.entries(item.bonuses).map(([key, value]) => `+${value} ${K().vocab.atributos[key as StatKey]}`).join(' · ') : ''}</span></div><button class="btn" data-act="gear-equip" data-id="${item.id}" ${s.equipment?.[item.equipmentSlot!] === item.id ? 'disabled' : ''}>Equipar</button></div>`).join('');
   const party = (s.companions ?? []).map((id) => {
     const companion = COMPANIONS.find((entry) => entry.id === id);
-    return companion ? `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span></div><button class="btn ghost" data-act="companion-dismiss" data-id="${id}">Dispensar</button></div>` : '';
+    return companion ? `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${K().vocab.atributos[key as StatKey]}`).join(' · ')}</span></div><button class="btn ghost" data-act="companion-dismiss" data-id="${id}">Dispensar</button></div>` : '';
   }).join('');
-  const offers = COMPANIONS.filter((companion) => !(s.companions ?? []).includes(companion.id)).map((companion) => `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${STAT_NAMES[key as keyof typeof STAT_NAMES]}`).join(' · ')}</span></div><button class="btn" data-act="companion-recruit" data-id="${companion.id}" ${s.pedras < companion.price || (s.companions?.length ?? 0) >= 2 ? 'disabled' : ''}>Recrutar · ${companion.price}</button></div>`).join('');
-  const stats = STAT_KEYS.map((key) => `<div class="stat"><span>${STAT_NAMES[key]}</span><div class="bar"><i style="width:${Math.min(100, eff(s, key))}%"></i></div><span class="n">${eff(s, key)}</span></div>`).join('');
+  const offers = COMPANIONS.filter((companion) => !(s.companions ?? []).includes(companion.id)).map((companion) => `<div class="equipment-slot"><div><b>${esc(companion.name)}</b><span class="muted small">${esc(companion.description)} · ${Object.entries(companion.bonus).map(([key, value]) => `+${value} ${K().vocab.atributos[key as StatKey]}`).join(' · ')}</span></div><button class="btn" data-act="companion-recruit" data-id="${companion.id}" ${s.pedras < companion.price || (s.companions?.length ?? 0) >= 2 ? 'disabled' : ''}>Recrutar · ${companion.price}</button></div>`).join('');
+  const stats = STAT_KEYS.map((key) => `<div class="stat"><span>${K().vocab.atributos[key]}</span><div class="bar"><i style="width:${Math.min(100, eff(s, key))}%"></i></div><span class="n">${eff(s, key)}</span></div>`).join('');
   return `<div class="card"><div class="muted small">EQUIPAMENTO ATIVO</div>${slots}</div><div class="card"><div class="muted small">EQUIPAR ITEM DA MOCHILA</div>${gearOptions || '<span class="muted small">Nenhum equipamento disponível.</span>'}</div><div class="card"><div class="muted small">COMPANHEIROS · ${(s.companions ?? []).length}/2</div>${party || '<span class="muted small">Nenhum companheiro ativo.</span>'}${offers}</div>${moralAlignmentHtml(s)}<div class="card">${stats}</div>`;
 }
 
@@ -654,21 +687,22 @@ function renderEnd() {
   const s = save.run!;
   const meta = save.meta;
   if (!s.summary) { finalizeLife(meta, s); persist(); }
-  const e = ENDING[s.ending!];
+  const e = K().ix.ENDING[s.ending!];
   const sm = s.summary!;
-  const ach = sm.ach.map((id) => ACHIEVEMENTS.find((a) => a.id === id)!).filter(Boolean);
+  const ach = sm.ach.map((id) => K().conquistas.find((a) => a.id === id)!).filter(Boolean);
   const finalGear = EQUIPMENT_SLOTS.map(({ id, label }) => {
-    const item = ITEM[sm.equipment?.[id] ?? s.equipment?.[id] ?? ''];
+    const item = K().ix.ITEM[sm.equipment?.[id] ?? s.equipment?.[id] ?? ''];
     return `<span>${esc(label)}</span><b class="${item ? `rarity-text-${item.rarity}` : 'muted'}">${item ? esc(item.name) : 'Nenhum'}</b>`;
   }).join('');
   app.innerHTML = `
     <div class="screen end">
       <div class="end-card">${endingCard(e.id, e.name)}<div class="end-pt">${portraitSvg(lookFromState(s), 64)}</div></div>
-      <div class="muted small" style="text-align:center">${esc(s.name)} · ${esc(PATH[s.path].name)}</div>
+      <div class="muted small" style="text-align:center">${esc(s.name)} · ${esc(K().ix.PATH[s.path].name)}</div>
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
       <div class="card sum">
-        <span>Faixa marcial</span><b>${esc(sm.tierName)}</b>
+        <span>Modo</span><b>${esc(K().nome)} · ${esc(K().subtitulo)}</b>
+        <span>${esc(K().vocab.rotulos.reinoResumo)}</span><b>${esc(sm.tierName)}</b>
         <span>Idade alcançada</span><b>${Math.floor(s.age)} anos</b>
         <span>Causa do fim</span><b>${esc(e.name)}</b>
         <span>Legado ganho nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
@@ -689,11 +723,12 @@ function renderEnd() {
 
 function renderMeta() {
   const m = save.meta;
+  metaModo ??= save.run?.modo ?? save.settings.modo ?? 'murim';
   const tabs: [typeof metaTab, string][] = [['heranca', 'Legado'], ['conquistas', 'Conquistas'], ['codice', 'Códice'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
   let body = '';
   if (metaTab === 'heranca') {
     body = `<div class="card row between"><span>Pontos disponíveis</span><b style="color:var(--gold);font-size:1.3rem">${m.legacy}</b></div>
-      ${UPGRADES.map((u) => {
+      ${K().melhorias.map((u) => {
         const lvl = m.upgrades[u.id] ?? 0;
         const price = upgradePrice(u.cost, lvl);
         return `<div class="card item"><div><b>${u.name}</b> <span class="muted small">nv ${lvl}/${u.max}</span><div class="muted small">${u.desc}</div></div>
@@ -701,16 +736,16 @@ function renderMeta() {
       }).join('')}
       <div class="card muted small">Suas vidas deixam um legado. Faixas marciais, longevidade, reputação e finais raros rendem pontos.</div>`;
   } else if (metaTab === 'conquistas') {
-    body = `<div class="card list">${ACHIEVEMENTS.map((a) => {
+    body = `<div class="card list">${K().conquistas.map((a) => {
       const got = m.achievements.includes(a.id);
       return `<div style="opacity:${got ? 1 : 0.55}"><b>${got ? '✔ ' : '○ '}${esc(a.name)}</b><div class="muted small">${esc(a.desc)}</div><div class="small" style="color:var(--gold)">${esc(a.reward)}</div></div>`;
     }).join('')}</div>
-    <div class="card muted small">Origens liberadas: ${ORIGINS.filter((o) => !o.unlock || m.achievements.includes(o.unlock)).length}/${ORIGINS.length} · Talentos liberados: ${TALENTS.filter((t) => !t.unlock || m.achievements.includes(t.unlock)).length}/${TALENTS.length}</div>`;
+    <div class="card muted small">Origens liberadas: ${K().origens.filter((o) => !o.unlock || m.achievements.includes(o.unlock)).length}/${K().origens.length} · Talentos liberados: ${K().talentos.filter((t) => !t.unlock || m.achievements.includes(t.unlock)).length}/${K().talentos.length}</div>`;
   } else if (metaTab === 'codice') {
     const cx = m.codex ?? { items: [] };
     const pill = (name: string, ok: boolean, grade?: number, icon = '') => `<span class="pill cx ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${icon ? `<span class="cxi">${icon}</span>` : ''}${ok ? esc(name) : '???'}</span>`;
-    body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${ENDINGS.length}</div>${ENDINGS.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
-      <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${ITEMS.length}</div>${ITEMS.map((i) => pill(i.name, cx.items.includes(i.id), i.grade, cx.items.includes(i.id) ? itemIcon(i, 26) : '')).join('')}</div>
+    body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${K().finais.length}</div>${K().finais.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
+      <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${K().itens.length}</div>${K().itens.map((i) => pill(i.name, cx.items.includes(i.id), i.grade, cx.items.includes(i.id) ? itemIcon(i, 26) : '')).join('')}</div>
       <div class="card muted small">O Códice guarda tudo o que você já encontrou em qualquer vida. Os nomes escondidos (???) esperam ser descobertos.</div>`;
   } else if (metaTab === 'historico') {
     body = m.history.length
@@ -718,7 +753,7 @@ function renderMeta() {
       : '<div class="card muted">Nenhuma vida encerrada ainda.</div>';
   } else {
     body = `<div class="card"><div class="muted small">ESTILO DE ARTE</div>
-      <div class="row estilos">${ESTILOS.map((e) => { const a = amostraDe(e.id, { seed: 'Lin Feng', stage: 2, path: 'espada', tier: 3, corr: 0, role: 'jogador', items: [] }, ITEMS.find((i) => i.kind === 'artefato' && i.name.toLowerCase().includes('espada')) ?? ITEMS[0]); return `<button class="estilo ${save.settings.estilo === e.id ? 'sel' : ''}" data-act="estilo" data-id="${e.id}"><span class="amostra">${a.retrato}${a.item}</span><span class="cenario">${a.cenario}</span><b>${e.nome}</b></button>`; }).join('')}</div>
+      <div class="row estilos">${ESTILOS.map((e) => { const a = amostraDe(e.id, { seed: 'Lin Feng', stage: 2, path: 'espada', tier: 3, corr: 0, role: 'jogador', items: [] }, K().itens.find((i) => i.kind === 'artefato' && i.name.toLowerCase().includes('espada')) ?? K().itens[0]); return `<button class="estilo ${save.settings.estilo === e.id ? 'sel' : ''}" data-act="estilo" data-id="${e.id}"><span class="amostra">${a.retrato}${a.item}</span><span class="cenario">${a.cenario}</span><b>${e.nome}</b></button>`; }).join('')}</div>
       <div class="muted small" style="margin-top:6px">${ESTILOS.find((e) => e.id === save.settings.estilo)?.desc ?? ''}</div></div>
       <div class="card"><div class="muted small">TEMA</div>
       <div class="row" style="flex-wrap:wrap;margin-top:8px">${THEME_NAMES.map(([id, n]) => `<button class="btn ${save.settings.theme === id ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="theme" data-id="${id}">${n}</button>`).join('')}</div>
@@ -730,12 +765,13 @@ function renderMeta() {
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${EVENTS.length} eventos · ${ITEMS.length} itens · ${ENDINGS.length} finais · ${PATHS.length} estilos marciais<br>Uma história original de escolas, escolhas e consequências no Jianghu.</div>`;
+      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})${MODOS.map((id) => { const p = pacoteDe(id); return `<br>${p.nome}: ${p.cenas} cenas · ${p.itens.length} itens · ${p.finais.length} finais · ${p.trilhas.length} trilhas`; }).join('')}</div>`;
   }
   app.innerHTML = `
     <div class="screen">
       <div class="row between"><h2>Legado</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
       <div class="row" style="flex-wrap:wrap">${tabs.map(([id, n]) => `<button class="path ${metaTab === id ? 'sel' : ''}" style="padding:8px 12px" data-act="mtab" data-id="${id}">${n}</button>`).join('')}</div>
+      ${['heranca', 'conquistas', 'codice'].includes(metaTab) ? `<div class="row modo-troca" role="group" aria-label="Modo exibido">${MODOS.map((id) => `<button class="path ${metaModo === id ? 'sel' : ''}" data-act="metamodo" data-id="${id}">${esc(pacoteDe(id).nome)}</button>`).join('')}</div>` : ''}
       ${body}
     </div>`;
 }
@@ -791,22 +827,32 @@ app.addEventListener('click', (ev) => {
     case 'gallery-open': galleryOpen = true; galleryTab = 'endings'; render(); break;
     case 'gallery-close': galleryOpen = false; render(); break;
     case 'gallery-tab': galleryTab = target.dataset.id as typeof galleryTab; render(); break;
-    case 'new': newCreation(); screen = 'create'; render(); break;
+    case 'new': screen = 'modo'; render(); break;
+    case 'modo': {
+      const escolhido: Modo = target.dataset.id === 'xianxia' ? 'xianxia' : 'murim';
+      save.settings.modo = escolhido;
+      persist();
+      newCreation(undefined, escolhido);
+      screen = 'create';
+      render();
+      break;
+    }
     case 'continue':
       if (save.run) tab = 'aventura';
       screen = save.run?.ending ? 'end' : 'game';
       persist();
       render();
       break;
-    case 'meta': screen = 'meta'; render(); break;
-    case 'estilomenu': screen = 'meta'; metaTab = 'opcoes'; render(); break;
+    case 'meta': screen = 'meta'; metaModo = null; render(); break;
+    case 'metamodo': metaModo = target.dataset.id === 'xianxia' ? 'xianxia' : 'murim'; render(); break;
+    case 'estilomenu': screen = 'meta'; metaModo = null; metaTab = 'opcoes'; render(); break;
     case 'install':
       if (installEvt) { void installEvt.prompt(); installEvt = null; }
       else toast(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'No Safari: Compartilhar → Adicionar à Tela de Início' : 'No menu do navegador: Instalar app / Adicionar à tela inicial');
       break;
     case 'mtab': metaTab = target.dataset.id as typeof metaTab; render(); break;
     case 'reroll':
-      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1);
+      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1, creation.c.modo ?? 'murim');
       render();
       break;
     case 'start': startRun(); break;
@@ -821,7 +867,7 @@ app.addEventListener('click', (ev) => {
     case 'shop-sell': {
       if (!s) break;
       const message = tradeItem(s, act === 'shop-buy' ? 'buy' : 'sell', target.dataset.id!);
-      if (message) toast(message, act === 'shop-buy' && ITEM[target.dataset.id!]?.rarity !== 'comum' ? 'rare-item' : 'info');
+      if (message) toast(message, act === 'shop-buy' && K().ix.ITEM[target.dataset.id!]?.rarity !== 'comum' ? 'rare-item' : 'info');
       persist();
       render();
       break;
@@ -895,7 +941,7 @@ app.addEventListener('click', (ev) => {
       }
       break;
     case 'buy': {
-      const u = UPGRADES.find((x) => x.id === target.dataset.id)!;
+      const u = K().melhorias.find((x) => x.id === target.dataset.id)!;
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }
@@ -907,7 +953,7 @@ app.addEventListener('click', (ev) => {
     case 'intro': save.settings.intro = true; persist(); render(); break;
     case 'share': {
       if (!s?.ending) break;
-      const txt = [`${s.name} — ${PATH[s.path].name}`, `${ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Murim Quest'].join('\n');
+      const txt = [`${s.name} — ${K().ix.PATH[s.path].name}`, `${K().ix.ENDING[s.ending].name}: ${s.summary?.tierName ?? realmOf(s).name}, ${Math.floor(s.age)} anos`, s.endingText ?? '', '', 'Murim Quest'].join('\n');
       navigator.clipboard?.writeText(txt).then(() => toast('Resumo copiado'), () => toast('Não foi possível copiar'));
       break;
     }

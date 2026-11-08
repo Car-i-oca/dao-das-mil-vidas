@@ -6,12 +6,16 @@
  */
 import { writeFileSync } from 'node:fs';
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed, visibleChoices, threatTier, checkChance, EVENT, STAT_KEYS, ladderOf } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, visibleChoices, threatTier, checkChance, STAT_KEYS, ladderOf } from '../src/engine/engine';
 import { botPick } from './bot';
-import { EVENTS } from '../src/data/events';
-import { PATHS } from '../src/data/paths';
-import { ENDINGS } from '../src/data/endings';
 import type { State } from '../src/types';
+import { PK, MODO } from './modo';
+import { eventoV2 } from '../src/engine/v2/moldes';
+import { MOLDES as MOLDES_V2 } from '../src/data/modos/xianxia/v2';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
+const { EVENT } = PK.ix;
 
 const N = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 400);
 const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
@@ -31,16 +35,16 @@ for (const p of PATHS) {
     const seed = 5000 + i * 104729;
     const rng = new Rng(seed);
     const meta = newMeta();
-    const s: State = startLife(meta, rollCreation(meta, rng), p.id, rng.seed);
+    const s: State = startLife(meta, rollCreation(meta, rng, MODO), p.id, rng.seed);
     const bot = new Rng(seed ^ 0x9e3779b9);
     let guard = 0;
     const byTier: Record<number, string[]> = {};
     while (!s.ending && guard++ < 5000) {
       if (view(s).kind === 'event') {
-        if (s.current && !s.current.retiro && !s.current.id.startsWith('__')) (byTier[s.tier] ??= []).push(EVENT[s.current.id]?.title ?? s.current.id);
+        if (s.current && !s.current.retiro && !s.current.id.startsWith('__')) (byTier[s.tier] ??= []).push(s.current.v2 ? eventoV2(s).title : EVENT[s.current.id]?.title ?? s.current.id);
         const idx = botPick(s, bot, false);
         const vc = visibleChoices(s)[idx]?.choice;
-        const ev = EVENT[s.current!.id];
+        const ev = s.current!.v2 ? eventoV2(s) : EVENT[s.current!.id];
         if (vc?.check && ev) {
           const chance = checkChance(s, vc.check, ev);
           rows.push({ tier: s.tier, gap: s.tier - threatTier(s, vc.check, ev), chance });
@@ -72,14 +76,18 @@ for (let t = 1; t <= 8; t++) {
 }
 
 out.push('', '## Eventos específicos de cada reino', '', 'Específico = vale para no máximo 3 reinos seguidos, a partir do 2º reino (sem contar os de idade jovem). Exclusivo = vale para um único reino.', '', '| Reino | Eventos disponíveis | Específicos | Exclusivos | Específicos + exclusivos em % |', '|---|---|---|---|---|');
-const lo = (e: (typeof EVENTS)[number]) => e.cond?.tierMin ?? 0, hi = (e: (typeof EVENTS)[number]) => e.cond?.tierMax ?? 8;
+type Faixa = { lo: number; hi: number; w: number };
+const FAIXAS: Faixa[] = PK.regras.motor === 'v2'
+  ? MOLDES_V2.map((m) => ({ lo: m.quando?.jogador?.reinoMin ?? 0, hi: m.quando?.jogador?.reinoMax ?? 8, w: 1 }))
+  : EVENTS.map((e) => ({ lo: e.cond?.tierMin ?? 0, hi: e.cond?.tierMax ?? 8, w: e.weight ?? 1 }));
+const lo = (e: Faixa) => e.lo, hi = (e: Faixa) => e.hi;
 for (let t = 1; t <= 8; t++) {
-  const av = EVENTS.filter((e) => lo(e) <= t && hi(e) >= t && (e.weight ?? 1) > 0);
+  const av = FAIXAS.filter((e) => lo(e) <= t && hi(e) >= t && e.w > 0);
   const sp = av.filter((e) => lo(e) >= 2 && hi(e) - lo(e) <= 2);
   const ex = av.filter((e) => lo(e) === t && hi(e) === t);
   out.push(`| ${t} | ${av.length} | ${sp.length} | ${ex.length} | ${pct(sp.length / av.length)} |`);
 }
-out.push('', `Eventos que valem para 6 reinos ou mais: ${EVENTS.filter((e) => hi(e) - lo(e) >= 5).length} de ${EVENTS.length}.`);
+out.push('', `${PK.regras.motor === 'v2' ? 'Moldes' : 'Eventos'} que valem para 6 reinos ou mais: ${FAIXAS.filter((e) => hi(e) - lo(e) >= 5).length} de ${FAIXAS.length}.`);
 out.push('', '## Comparação entre trilhas', '', '| Trilha | Reino máx. médio | Idade média | Ascensão | Final mais comum | FIS | ESP | COMP | SOR | CAR | DAO |', '|---|---|---|---|---|---|---|---|---|---|---|');
 for (const p of PATHS) {
   const a = perPath[p.id];
@@ -94,6 +102,6 @@ if (smp) {
   out.push('', `## Uma vida no 6º reino (${smp.path}): eventos de cada reino`, '');
   for (const k of Object.keys(smp.byTier).map(Number).sort((a, b) => a - b)) out.push(`- **Reino ${k}** (${smp.byTier[k].length} eventos): ${smp.byTier[k].slice(0, 14).join('; ')}${smp.byTier[k].length > 14 ? '…' : ''}`);
 }
-writeFileSync('docs/poder.md', out.join('\n') + '\n');
+writeFileSync(`docs/poder-${MODO}.md`, out.join('\n') + '\n');
 console.log(out.join('\n'));
 void ladderOf;

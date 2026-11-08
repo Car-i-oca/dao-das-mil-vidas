@@ -5,10 +5,11 @@
  */
 import { Rng } from '../src/engine/rng';
 import { newMeta, rollCreation, startLife, choose, visibleChoices, view } from '../src/engine/engine';
-import { EVENTS } from '../src/data/events';
-import { ENDINGS } from '../src/data/endings';
-import { PATHS } from '../src/data/paths';
 import type { Cond, GameEvent, Outcome, State, StatKey } from '../src/types';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
 
 class FixedRng extends Rng {
   constructor(private v: number) { super(1); }
@@ -47,7 +48,7 @@ for (const ev of EVENTS as GameEvent[]) {
       if (!fim) continue;
       const meta = newMeta();
       const r0 = new Rng(5);
-      const s = startLife(meta, rollCreation(meta, r0), '', r0.seed);
+      const s = startLife(meta, rollCreation(meta, r0, MODO), '', r0.seed);
       s.ending = null; s.current = { id: ev.id }; s.result = null;
       s.stats = { fis: 100, esp: 100, comp: 100, sor: 100, car: 100, dao: 100 };
       satisfy(s, ev.cond); satisfy(s, ch.cond);

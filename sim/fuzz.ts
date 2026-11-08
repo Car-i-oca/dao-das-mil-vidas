@@ -1,7 +1,9 @@
 /** Fuzzer: joga vidas com escolhas aleatórias e confere invariantes. Uso: npm run fuzz -- 4000 */
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, ITEM, ENDING, EVENT, STAT_KEYS } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, STAT_KEYS } from '../src/engine/engine';
 import type { State } from '../src/types';
+import { PK, MODO } from './modo';
+const { ENDING, ITEM, EVENT } = PK.ix;
 
 const N = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? 3000);
 const problems = new Map<string, number>();
@@ -17,7 +19,7 @@ function check(s: State, where: string) {
   if (s.age > s.maxAge + 200 && !s.ending) note(`${where}: idade muito acima do máximo sem final`);
   for (const id of s.items) if (!ITEM[id]) note(`${where}: item desconhecido ${id}`);
   if (s.ending && !ENDING[s.ending]) note(`${where}: final desconhecido ${s.ending}`);
-  if (s.current && !s.current.breakthrough && !s.current.retiro && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
+  if (s.current && !s.current.breakthrough && !s.current.retiro && !s.current.v2 && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
 }
 
 let lives = 0, turns = 0;
@@ -27,7 +29,7 @@ for (let i = 0; i < N; i++) {
   const rng = new Rng(31337 + i * 101);
   let s: State;
   try {
-    s = startLife(meta, rollCreation(meta, rng), '', rng.seed);
+    s = startLife(meta, rollCreation(meta, rng, MODO), '', rng.seed);
   } catch (e) { note('startLife lançou: ' + (e as Error).message); continue; }
   const bot = new Rng(i * 7 + 3);
   let guard = 0;

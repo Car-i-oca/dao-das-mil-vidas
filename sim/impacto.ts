@@ -8,19 +8,22 @@
  * flags gravadas e nunca lidas, mínimos por talento/defeito/origem/raiz/constituição e semelhança entre vidas.
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { EVENTS } from '../src/data/events';
-import { TALENTS, FLAWS, ORIGINS } from '../src/data/character';
-import { CONSTITUTIONS } from '../src/data/names';
-import { ENDINGS } from '../src/data/endings';
-import { MARCAS_VIDA } from '../src/data/marcas_vida';
 import { newMeta, rollCreation, startLife, view, choose, proceed } from '../src/engine/engine';
 import { botPick } from './bot';
 import { Rng } from '../src/engine/rng';
 import type { Choice, Cond, Effects, GameEvent, Outcome } from '../src/types';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
+const CONSTITUTIONS = PK.nomes.constituicoes;
+const ORIGINS = PK.origens;
+const TALENTS = PK.talentos;
+const FLAWS = PK.defeitos;
+const MARCAS_VIDA = PK.marcasVida;
 
+if (MODO === 'xianxia') { await import('./impacto-v2'); process.exit(0); }
 const args = process.argv.slice(2);
 const saveBaseline = args.includes('--baseline');
-const BASE = 'docs/impacto.baseline.json';
+const BASE = `docs/impacto-${MODO}.baseline.json`;
 
 /* ---------- Marca: o que uma escolha deixa para o futuro ---------- */
 function outcomes(c: Choice): Outcome[] {
@@ -156,7 +159,7 @@ for (const e of EVENTS) for (const c of e.choices) {
 function eventSet(seed: number, talent: string, flaw: string, path: string): Set<string> {
   const rng = new Rng(seed);
   const meta = newMeta();
-  const c = rollCreation(meta, rng);
+  const c = rollCreation(meta, rng, MODO);
   c.talent = talent; c.flaw = flaw;
   const s = startLife(meta, c, path, rng.seed);
   const bot = new Rng(seed ^ 0x51ed);
@@ -220,7 +223,7 @@ md += `\n## Escolhas com a mesma consequência (${dup})\n\n${dupList.map((x) => 
 md += `\n## Eventos em que TODAS as opções só deixam o perfil de conduta (${soPerfilEv.length}): candidatos a enriquecer, fundir ou virar passagem de tempo\n\n${soPerfilEv.map((x) => `\`${x}\``).join(', ') || 'nenhum'}\n`;
 md += `\n## Eventos "tanto faz" (${taNEvents.length})\n\n${taNEvents.slice(0, 150).map((f) => `\`${f}\``).join(', ') || 'nenhum'}\n`;
 md += `\n## Escolhas sem marca (${noMark}; primeiras 150)\n\n${noMarkList.slice(0, 150).map((x) => `- ${x}`).join('\n') || 'nenhuma'}\n`;
-writeFileSync('docs/impacto.md', md);
+writeFileSync(`docs/impacto-${MODO}.md`, md);
 if (saveBaseline) writeFileSync(BASE, JSON.stringify(snap, null, 1));
 const bad = fails(talentRows, MIN_T).length + fails(flawRows, MIN_T).length + fails(originRows, MIN_ORIGEM).length + fails(consRows, MIN_ROOT).length + fails(rootRows, MIN_ROOT).length;
 console.log(md.split('\n## Flags gravadas')[0]);
