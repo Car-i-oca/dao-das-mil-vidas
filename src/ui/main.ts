@@ -2,7 +2,7 @@ import './style.css';
 import { Rng } from '../engine/rng';
 import {
   newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
-  realmOf, ladderOf, eff, cultivationRate, CONSTITUTION, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
+  realmOf, ladderOf, eff, cultivationRate, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
   type Creation,
 } from '../engine/engine';
 import { UPGRADES, upgradePrice } from '../data/legado';
@@ -322,7 +322,7 @@ function renderCreate() {
   if (!creation) newCreation();
   const { c, rerolls } = creation!;
   const o = K().ix.ORIGIN[c.origin], t = K().ix.TALENT[c.talent], f = K().ix.FLAW[c.flaw];
-  const cons = c.constitution ? CONSTITUTION[c.constitution] : null;
+  const cons = c.constitution ? K().ix.CONSTITUTION[c.constitution] : null;
   app.innerHTML = `
     <div class="screen">
       <div class="row between"><h2>Seu destino</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
@@ -499,7 +499,7 @@ function statusHtml(s: State): string {
     const base = s.stats[k];
     return `<div class="stat"><span>${K().vocab.atributos[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
-  const cons = s.constitution ? CONSTITUTION[s.constitution] : null;
+  const cons = s.constitution ? K().ix.CONSTITUTION[s.constitution] : null;
   const fac: Record<string, string> = { seita: 'Escola reconhecida', demoniaca: 'Escola clandestina', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
   return `
     <div class="card">

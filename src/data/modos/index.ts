@@ -1,13 +1,15 @@
+import type { Constitution } from './murim/nomes';
 import type { Ending, Flaw, GameEvent, Item, Origin, Path, Talent } from '../../types';
 import type { Modo, PacoteModo } from './tipos';
 import { MURIM } from './murim';
+import { XIANXIA } from './xianxia';
 
 export type { Modo, PacoteModo } from './tipos';
 
-export const MODOS: Modo[] = ['murim'];
+export const MODOS: Modo[] = ['murim', 'xianxia'];
 export const MODO_PADRAO: Modo = 'murim';
 
-const PACOTES: Partial<Record<Modo, PacoteModo>> = { murim: MURIM };
+const PACOTES: Partial<Record<Modo, PacoteModo>> = { murim: MURIM, xianxia: XIANXIA };
 
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
 
@@ -28,6 +30,7 @@ export interface Indices {
   ITEM: Record<string, Item>;
   ENDING: Record<string, Ending>;
   EVENT: Record<string, GameEvent>;
+  CONSTITUTION: Record<string, Constitution>;
   GENERIC_IDS: Set<string>;
 }
 export type Pacote = PacoteModo & { ix: Indices };
@@ -46,7 +49,7 @@ export function pacoteDe(modo?: Modo): Pacote {
       ix: {
         PATH: { ...byId(base.trilhas), '': noPath },
         ORIGIN: byId(base.origens), TALENT: byId(base.talentos), FLAW: byId(base.defeitos),
-        ITEM: byId(base.itens), ENDING: byId(base.finais), EVENT: byId(base.eventos),
+        ITEM: byId(base.itens), ENDING: byId(base.finais), EVENT: byId(base.eventos), CONSTITUTION: byId(base.nomes.constituicoes),
         GENERIC_IDS: new Set(base.eventos.filter(isGeneric).map((e) => e.id)),
       },
     };

@@ -1,5 +1,5 @@
-import type { Rng } from '../engine/rng';
-import type { Root, Stats } from '../types';
+import type { Rng } from '../../../engine/rng';
+import type { Root, Stats } from '../../../types';
 
 const SURNAMES = ['Jang', 'Baek', 'Seo', 'Choi', 'Kang', 'Yoon', 'Han', 'Im', 'Gwon', 'Noh', 'Ryu', 'Jeong', 'Hwang', 'Kwon', 'Moon', 'Shin', 'Nam', 'Bae', 'Oh', 'Heo'];
 const GIVEN_A = ['Ha', 'Mu', 'Hwa', 'Seol', 'Tae', 'Rin', 'Dae', 'Min', 'Eun', 'Jin', 'Soo', 'Yeon', 'Gye', 'Do', 'Yu'];

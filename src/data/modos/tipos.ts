@@ -1,4 +1,6 @@
-import type { Achievement, Ending, Flaw, GameEvent, Item, Origin, Path, Place, Realm, State, StatKey, Talent } from '../../types';
+import type { Rng } from '../../engine/rng';
+import type { Constitution } from './murim/nomes';
+import type { Achievement, Ending, Flaw, GameEvent, Item, Origin, Path, Place, Realm, Root, State, StatKey, Talent } from '../../types';
 
 /** Modo de jogo: cada vida pertence a um modo e usa o pacote de conteúdo dele. */
 export type Modo = 'murim' | 'xianxia';
@@ -26,6 +28,8 @@ export interface Rompimento {
 export interface Vocabulario {
   atributos: Record<StatKey, string>;
   moral: { good: string; evil: string; order: string; chaos: string };
+  /** Prefixo do aviso de mudança moral: "reputação:" ou "alinhamento". */
+  moralRotulo: string;
   /** "moedas" ou "pedras espirituais". */
   moeda: string;
   /** Sufixo do progresso na barra: "de treino" ou "de cultivo". */
@@ -52,6 +56,16 @@ export interface Regras {
   eventoVidaComum: string;
 }
 
+/** Geradores de nomes e aptidões: cada modo tem a sua cultura (coreana no Murim, chinesa no Xianxia). */
+export interface Nomes {
+  personName: (rng: Rng) => string;
+  sectName: (rng: Rng) => string;
+  clanName: (rng: Rng) => string;
+  villageName: (rng: Rng) => string;
+  rollRoot: (rng: Rng) => Root;
+  constituicoes: Constitution[];
+}
+
 export interface Afinidade { [cat: string]: number | undefined }
 
 export interface PacoteModo {
@@ -68,6 +82,8 @@ export interface PacoteModo {
   itens: Item[];
   finais: Ending[];
   conquistas: Achievement[];
+  /** Melhorias de Legado (mesmos ids e custos nos dois modos; muda o nome e a descrição). */
+  melhorias: readonly { id: string; name: string; desc: string; max: number; cost: number }[];
   checks: Record<string, (s: State, ending?: string) => boolean>;
   pontos: Record<string, number>;
   escadas: Record<string, Escada>;
@@ -77,6 +93,7 @@ export interface PacoteModo {
   regioes: Partial<Record<Place, { eventId: string; weight: number }[]>>;
   afinidades: Record<string, Afinidade>;
   retiro: { textos: Record<'A' | 'B' | 'C', string[]>; trilha: Record<string, string>; saida: string[] };
+  nomes: Nomes;
   vocab: Vocabulario;
   regras: Regras;
   /** Final escolhido quando a vida acaba de velhice. */

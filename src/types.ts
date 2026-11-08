@@ -74,6 +74,12 @@ export interface Effects {
   clearStatus?: StatusEffect['id'][];
   /** Supera o defeito de nascença (arco de redenção): ele deixa de valer e a penalidade de atributos some. */
   superar?: boolean;
+  /** Soma ao perfil de conduta (compaixao, violencia, astucia, cautela, ambicao, disciplina, devocao, ganancia). Só os moldes do Xianxia usam. */
+  perfil?: Record<string, number>;
+  /** Avança (ou recua) o recurso da trilha. */
+  rec?: number;
+  /** v2: efeitos no mundo (opinião, fatos, reputação, fios, ambição...). */
+  mundo?: import('./engine/v2/tipos').EfeitoMundo[];
   setFlags?: string[];
   clearFlags?: string[];
   item?: string[];
@@ -117,6 +123,11 @@ export interface Cond {
   /** Exige ao menos uma destas flags (alternativa a `flags`, que exige todas). */
   flagsAny?: string[];
   noFlags?: string[];
+  /** Perfil de conduta mínimo/máximo (ex.: { compaixao: 8 }). */
+  perfil?: Record<string, number>;
+  perfilMax?: Record<string, number>;
+  /** Estágio mínimo do recurso da trilha. */
+  recMin?: number;
   stat?: Partial<Stats>;
   pedrasMin?: number;
   karmaMin?: number;
@@ -160,6 +171,10 @@ export interface Choice {
   cond?: Cond;
   /** Custo em pedras espirituais (a escolha só aparece se houver). */
   custo?: number;
+  /** v2: selo do motivo da opção (trilha, traço, origem...). */
+  selo?: string;
+  /** v2: motivo pelo qual a opção está bloqueada (aparece desabilitada). */
+  bloq?: string;
   check?: Check;
   ok?: Outcome;
   fail?: Outcome;
@@ -219,6 +234,15 @@ export interface Path {
   unlock?: string;
   /** Corrupção inicial (trilha demoníaca). */
   startCorr?: number;
+  /** Multiplicador do ritmo de treino da trilha (Xianxia). */
+  xpMult?: number;
+  /** Etiquetas dos testes em que a trilha é forte e em que é fraca (Xianxia). */
+  tags?: string[];
+  fraco?: string[];
+  /** Ganho de atributos por reino, próprio da trilha (Xianxia). */
+  growth?: Partial<Stats>;
+  /** Recurso da trilha que se aprofunda em estágios (Intenção de Espada, Têmpera do Corpo...). */
+  rec?: { name: string; stages: string[]; desc: string };
 }
 
 export interface Item {
@@ -307,6 +331,14 @@ export interface State {
   v: 1;
   /** Modo de jogo da vida (ausente em saves antigos = Murim). */
   modo?: Modo;
+  /** Perfil de conduta acumulado (só Xianxia). */
+  perfil?: Record<string, number>;
+  /** Recurso da trilha (só Xianxia). */
+  rec?: number;
+  /** Aparência do jogador (sorteada na criação do Xianxia). */
+  look?: import('./ui/art/pintura/aparencia').Aparencia;
+  /** v2: mundo com memória, diretor de história e ambição (só existe nas vidas do Xianxia). */
+  v2?: import('./engine/v2/tipos').V2State;
   seed: number;
   name: string;
   path: string;
@@ -354,7 +386,7 @@ export interface State {
   log: LogEntry[];
   turn: number;
   /** Evento atual (null quando em resultado/final). */
-  current: { id: string; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
+  current: { id: string; v2?: { molde: string; bind: Record<string, string> }; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
   /** Efeitos temporários e sua duração restante em turnos. */
   statuses?: StatusEffect[];
   /** Resultado exibido após uma escolha. */

@@ -8,13 +8,13 @@
  * flags gravadas e nunca lidas, mínimos por talento/defeito/origem/raiz/constituição e semelhança entre vidas.
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { CONSTITUTIONS } from '../src/data/names';
 import { newMeta, rollCreation, startLife, view, choose, proceed } from '../src/engine/engine';
 import { botPick } from './bot';
 import { Rng } from '../src/engine/rng';
 import type { Choice, Cond, Effects, GameEvent, Outcome } from '../src/types';
 import { PK, MODO } from './modo';
 const EVENTS = PK.eventos;
+const CONSTITUTIONS = PK.nomes.constituicoes;
 const ORIGINS = PK.origens;
 const TALENTS = PK.talentos;
 const FLAWS = PK.defeitos;

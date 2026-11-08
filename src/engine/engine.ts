@@ -4,7 +4,10 @@ import type {
 } from '../types';
 import { upgradePrice } from '../data/legado';
 import { pacoteDe, type Modo } from '../data/modos';
-import { CONSTITUTIONS, personName, sectName, clanName, villageName, rollRoot } from '../data/names';
+import { generoDoNome } from '../data/modos/xianxia/nomes';
+import { gerarAparencia } from '../ui/art/pintura/aparencia';
+import { eventoV2, MOLDE, aplicarEfeitosMundo } from './v2/moldes';
+import { iniciarV2, pickNextV2, depoisDaCena, sincronizarMundo, finalDeVelhiceV2 } from './v2/diretor';
 import { FOE, foeFor } from '../data/combates';
 import { eventTypeOf } from '../data/event-type';
 import { categorias, type Cat } from '../data/opcoes';
@@ -12,8 +15,6 @@ import { COMPANIONS } from '../data/companions';
 
 /* ---------- Índices ---------- */
 const byId = <T extends { id: string }>(a: T[]) => Object.fromEntries(a.map((x) => [x.id, x])) as Record<string, T>;
-export const CONSTITUTION = byId(CONSTITUTIONS);
-
 /** Pacote de conteúdo da vida (modo Murim para saves antigos, que não gravam o modo). */
 export const P = (s: { modo?: Modo }) => pacoteDe(s.modo);
 /** Nomes dos atributos no vocabulário do modo. */
@@ -169,7 +170,7 @@ export function combatCheckPreview(s: State, check: Check, ev?: GameEvent): Omit
 
 function xpMult(s: State): number {
   let m = s.root.mult * (P(s).ix.TALENT[s.talent].xpMult ?? 1) * (flawFx(s).xpMult ?? 1);
-  if (s.constitution) m *= CONSTITUTION[s.constitution].xpMult ?? 1;
+  if (s.constitution) m *= P(s).ix.CONSTITUTION[s.constitution].xpMult ?? 1;
   return m * (1 + 0.02 * s.legacyBonus.xp);
 }
 
@@ -237,7 +238,7 @@ export function rootTags(r: Root): string[] {
 /** Idade aparente (0 criança, 1 jovem, 2 adulto, 3 maduro, 4 ancião) pela fração da vida vivida. */
 export function apparentStage(s: State): number {
   if (s.age < 13) return 0;
-  const forever = s.flags.includes('juventude_eterna') || (!!s.constitution && !!CONSTITUTION[s.constitution]?.juventude);
+  const forever = s.flags.includes('juventude_eterna') || (!!s.constitution && !!P(s).ix.CONSTITUTION[s.constitution]?.juventude);
   const f = s.age / Math.max(1, s.maxAge);
   const st = f < 0.4 ? 1 : f < 0.7 ? 2 : f < 0.85 ? 3 : 4;
   return forever ? Math.min(st, 1) : st;
@@ -245,12 +246,13 @@ export function apparentStage(s: State): number {
 
 /** Selo mostrado na opção exclusiva: o que a torna possível. */
 export function choiceBadge(c: Choice, s: { modo?: Modo } = {}): string | undefined {
+  if (c.selo) return c.selo;
   const k = c.cond;
   if (!k) return undefined;
   if (k.path?.length) return P(s).ix.PATH[k.path[0]]?.name.replace('Caminho d', 'D').replace(/^D[oa]s? /, '') ?? k.path[0];
   if (k.talent?.length) return P(s).ix.TALENT[k.talent[0]]?.name;
   if (k.flaw?.length) return P(s).ix.FLAW[k.flaw[0]]?.name;
-  if (k.constitution?.length) return CONSTITUTION[k.constitution[0]]?.name;
+  if (k.constitution?.length) return P(s).ix.CONSTITUTION[k.constitution[0]]?.name;
   if (k.root?.length) return 'Raiz: ' + k.root[0];
   if (k.origin?.length) return P(s).ix.ORIGIN[k.origin[0]]?.name;
   if (k.item) return P(s).ix.ITEM[k.item]?.name;
@@ -287,6 +289,9 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.itemsAll && !c.itemsAll.every((id) => s.items.includes(id))) return false;
   if (c.itemsAny && !c.itemsAny.some((id) => s.items.includes(id))) return false;
   if (c.corrMin !== undefined && s.corr < c.corrMin) return false;
+  if (c.perfil) for (const [k, v] of Object.entries(c.perfil)) if ((s.perfil?.[k] ?? 0) < v) return false;
+  if (c.perfilMax) for (const [k, v] of Object.entries(c.perfilMax)) if ((s.perfil?.[k] ?? 0) > v) return false;
+  if (c.recMin !== undefined && (s.rec ?? 0) < c.recMin) return false;
   if (c.talent && !c.talent.includes(s.talent)) return false;
   if (c.flaw && !c.flaw.includes(s.flaw)) return false;
   if (c.constitution && !(s.constitution && c.constitution.includes(s.constitution))) return false;
@@ -333,8 +338,8 @@ export function rollCreation(meta: Meta, rng: Rng, modo?: Modo): Creation {
   const origin = rng.pick(pk.origens.filter((o) => ok(o.unlock)));
   const talent = rng.pick(pk.talentos.filter((t) => ok(t.unlock)));
   const flaw = rng.pick(pk.defeitos);
-  const root = rollRoot(rng);
-  const constitution = rng.chance(0.06) ? rng.pick(CONSTITUTIONS).id : null;
+  const root = pk.nomes.rollRoot(rng);
+  const constitution = rng.chance(0.06) ? rng.pick(pk.nomes.constituicoes).id : null;
   return { modo: pk.id, origin: origin.id, talent: talent.id, flaw: flaw.id, root, constitution };
 }
 
@@ -345,7 +350,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   const origin = pk.ix.ORIGIN[c.origin];
   const talent = pk.ix.TALENT[c.talent];
   const flaw = pk.ix.FLAW[c.flaw];
-  const cons = c.constitution ? CONSTITUTION[c.constitution] : null;
+  const cons = c.constitution ? pk.ix.CONSTITUTION[c.constitution] : null;
   const up = meta.upgrades;
   const stats: Stats = { fis: 0, esp: 0, comp: 0, sor: 0, car: 0, dao: 0 };
   for (const k of STAT_KEYS) {
@@ -358,8 +363,8 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   for (const k of STAT_KEYS) stats[k] = Math.max(1, stats[k]);
   const lifeMult = (talent.lifeMult ?? 1) * (flaw.lifeMult ?? 1);
   const names: Record<string, string> = {
-    rival: personName(rng), mentor: personName(rng), amigo: personName(rng), noivo: personName(rng), discipulo: personName(rng), inimigo: personName(rng),
-    seita: sectName(rng), cla: clanName(rng), vila: villageName(rng),
+    rival: pk.nomes.personName(rng), mentor: pk.nomes.personName(rng), amigo: pk.nomes.personName(rng), noivo: pk.nomes.personName(rng), discipulo: pk.nomes.personName(rng), inimigo: pk.nomes.personName(rng),
+    seita: pk.nomes.sectName(rng), cla: pk.nomes.clanName(rng), vila: pk.nomes.villageName(rng),
   };
   // Eco da vida anterior: quem você foi vira lenda neste mundo.
   const last = meta.history[0];
@@ -377,7 +382,7 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
   const s: State = {
     pen,
     modo: pk.id,
-    v: 1, seed: rng.seed, name: personName(rng), path: pathId,
+    v: 1, seed: rng.seed, name: pk.nomes.personName(rng), path: pathId,
     alignment: pathId === 'demoniaca' ? 'demoniaco' : 'daoico', morality: { good: 0, evil: 0, order: 0, chaos: 0 }, master: null,
     origin: c.origin, root: c.root,
     talent: c.talent, flaw: c.flaw, constitution: c.constitution,
@@ -392,6 +397,10 @@ export function startLife(meta: Meta, c: Creation, pathId: string, seed: number)
     legacyBonus: { stats: 0, xp: up.ritmo ?? 0, luck: up.memoria ?? 0, pedras: up.bolso ?? 0 },
   };
   s.log.push({ age: 6, text: `${s.name} nasce em ${origin.place === 'seita' ? names.seita : names.vila}. ${origin.name}. ${c.root.name}.` });
+  if (pk.regras.motor === 'v2') {
+    s.look = gerarAparencia(`${s.name}|${s.seed}`, generoDoNome(s.name));
+    s.v2 = iniciarV2(s, rng);
+  }
   if (pk.regras.eventoInicial) setCurrent(s, pk.regras.eventoInicial, rng);
   else pickNext(s, rng);
   return s;
@@ -410,7 +419,7 @@ function noteFound(s: State, id: string) {
 
 export function endLife(s: State, id: string) {
   if (s.ending) return;
-  if (id === 'velhice') id = P(s).finalDeVelhice(s);
+  if (id === 'velhice') id = (s.v2 && finalDeVelhiceV2(s)) || P(s).finalDeVelhice(s);
   s.ending = id;
   const end = P(s).ix.ENDING[id];
   const variants = [end.text, ...(end.alt ?? [])];
@@ -536,6 +545,9 @@ export function applyFx(s: State, fx: Effects | undefined, rng: Rng) {
     }
   }
   if (fx.agenda) for (const a of fx.agenda) s.scheduled.push({ event: a.event, at: s.age + rng.int(a.em[0], a.em[1]) });
+  if (fx.mundo && s.v2) aplicarEfeitosMundo(s, fx.mundo, s.current?.v2?.bind ?? {}, rng);
+  if (fx.perfil) { s.perfil ??= {}; for (const [k, v] of Object.entries(fx.perfil)) s.perfil[k] = (s.perfil[k] ?? 0) + v; }
+  if (fx.rec && P(s).ix.PATH[s.path]?.rec) s.rec = Math.max(0, (s.rec ?? 0) + fx.rec);
   if (fx.local) s.place = fx.local;
   if (fx.faccao) s.faction = fx.faccao;
   if (fx.tier) tierUp(s, fx.tier);
@@ -562,7 +574,7 @@ export function breakChance(s: State, pill?: Item): number {
   const next = s.tier + 1;
   const top = next >= L.realms.length;
   const base = top ? L.finalChance : L.realms[next].breakChance;
-  const cons = s.constitution ? CONSTITUTION[s.constitution].breakMod ?? 0 : 0;
+  const cons = s.constitution ? P(s).ix.CONSTITUTION[s.constitution].breakMod ?? 0 : 0;
   // Atributos multiplicam a chance base (reinos altos continuam raros); o resto soma.
   const statFactor = Math.min(1.7, Math.max(0.6, 1 + (eff(s, 'comp') - 15) * 0.01 + (eff(s, 'dao') - 12) * 0.014));
   const p =
@@ -606,7 +618,7 @@ function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
   if (rng.chance(p)) {
     const trib = top || L.realms[next].tribulation;
     if (trib) {
-      const tribOk = rng.chance(tribulationChance(s));
+      const tribOk = rng.chance(tribulationChance(s) * (top && s.v2 ? 0.5 : 1)); // v2: a última tribulação é mais rara (ascensão entre 0,5% e 2%)
       s.flags = s.flags.filter((fl) => !TRIB_FLAGS.includes(fl));
       if (!tribOk) {
         if (s.items.includes('talisma_escudo')) {
@@ -677,6 +689,9 @@ export interface View {
   choices: ViewChoice[];
   /** Aviso quando o defeito de nascença fechou alguma opção. */
   nota?: string;
+  /** v2: cartão de capítulo (aparece uma vez, no começo do capítulo) e notícias do mundo. */
+  cartao?: string;
+  noticias?: string[];
 }
 
 export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
@@ -689,6 +704,7 @@ export function visibleChoices(s: State): Visible[] {
     v.push({ action: 'wait' });
     return v;
   }
+  if (s.current?.v2) return eventoV2(s).choices.map((choice) => ({ choice }));
   const ev = P(s).ix.EVENT[s.current!.id];
   const eventType = eventTypeOf(ev);
   let list = ev.choices.filter((c) =>
@@ -758,11 +774,12 @@ export function view(s: State): View {
     const line = P(s).retiro.trilha[s.path];
     return { kind: 'event', title: 'Reclusão', rarity: 'comum', text: line ? `${base} ${line}` : base, choices: [{ text: 'Voltar ao mundo.' }] };
   }
-  const ev = P(s).ix.EVENT[cur.id];
+  const ev = cur.v2 ? eventoV2(s) : P(s).ix.EVENT[cur.id];
   const choices: ViewChoice[] = visibleChoices(s).map((v) => {
     const c = v.choice!;
     const actionLabel = c.check?.tag === 'combate' ? '[Lutar] ' : c.check?.tag === 'fuga' ? '[Fugir] ' : '';
     const vc: ViewChoice = { text: `${actionLabel}${fill(s, c.text)}`, selo: choiceBadge(c, s), check: c.check };
+    if (c.bloq) { vc.disabled = true; vc.note = c.bloq; }
     if (c.check) vc.chance = checkChance(s, c.check, ev);
     if (c.custo) {
       vc.note = `${c.custo} pedras`;
@@ -771,6 +788,7 @@ export function view(s: State): View {
     return vc;
   });
   const body = cur.v && ev.alt?.[cur.v - 1] ? ev.alt[cur.v - 1] : ev.text;
+  if (cur.v2) return { kind: 'event', title: ev.title, text: body, rarity: ev.rarity, choices, cartao: s.v2!.diretor.cartao, noticias: s.v2!.diretor.noticias.slice() };
   const fechadas = ev.choices.filter((c) => condMet(s, c.cond)).map((c) => bloqueadaPorDefeito(s, c)).filter(Boolean) as string[];
   return { kind: 'event', eventType: eventTypeOf(ev), title: fill(s, ev.title), text: fill(s, body), rarity: ev.rarity, choices, nota: fechadas.length ? `Uma opção sumiu: ${fechadas[0]}.` : undefined };
 }
@@ -799,7 +817,7 @@ function diffSnap(b: Snap, s: State): Change[] {
   const moralLabels = P(s).vocab.moral;
   for (const axis of Object.keys(moralLabels) as (keyof typeof moralLabels)[]) {
     const delta = (s.morality?.[axis] ?? 0) - b.morality[axis];
-    if (delta) num(`reputação: ${moralLabels[axis]}`, delta, axis === 'good' || axis === 'order');
+    if (delta) num(`${P(s).vocab.moralRotulo} ${moralLabels[axis]}`, delta, axis === 'good' || axis === 'order');
   }
   const dw = Math.round((s.wounds - b.wounds) * 10) / 10;
   if (dw) out.push({ t: dw > 0 ? `+${dw} ferimento${dw > 1 ? 's' : ''}` : `Ferimentos ${sign(dw)}`, k: dw > 0 ? 'down' : 'up' });
@@ -866,9 +884,12 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   const vis = visibleChoices(s);
   const v = vis[idx];
   if (!v) return;
-  if (v.choice?.requiresEventType && v.choice.requiresEventType !== eventTypeOf(P(s).ix.EVENT[s.current!.id])) return;
-  if (v.choice && eventTypeOf(P(s).ix.EVENT[s.current!.id]) !== 'combat' && v.choice.check?.tag === 'combate') return;
+  if (!s.current!.v2) {
+    if (v.choice?.requiresEventType && v.choice.requiresEventType !== eventTypeOf(P(s).ix.EVENT[s.current!.id])) return;
+    if (v.choice && eventTypeOf(P(s).ix.EVENT[s.current!.id]) !== 'combat' && v.choice.check?.tag === 'combate') return;
+  }
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
+  if (v.choice?.bloq) return;
   s.turn++;
   if (v.action) {
     if (v.action === 'retiro') {
@@ -897,7 +918,8 @@ function chooseCore(s: State, idx: number, rng: Rng) {
     return;
   }
   const c = v.choice!;
-  const ev = P(s).ix.EVENT[s.current!.id];
+  const ev = s.current!.v2 ? eventoV2(s) : P(s).ix.EVENT[s.current!.id];
+  if (s.v2) { s.v2.diretor.noticias = []; s.v2.diretor.cartao = undefined; }
   const encounterPlace = s.place;
   if (c.custo) s.pedras = Math.max(0, s.pedras - c.custo);
   let out: Outcome;
@@ -931,6 +953,7 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   s.result = { text: txt, check, ...(roll ? { roll } : {}) };
   addLog(s, `${fill(s, ev.title)}: ${txt}`);
   applyFx(s, scaleFx(s, out.fx, REWARD_SCALE[Math.min(s.tier, 8)], rng), rng);
+  if (s.v2 && s.current?.v2) depoisDaCena(s, MOLDE[s.current.v2.molde], rng);
   if (!s.ending && s.place === encounterPlace && P(s).regioes[encounterPlace]) {
     s.regionalEncounters ??= {};
     s.regionalEncounters[encounterPlace] = (s.regionalEncounters[encounterPlace] ?? 0) + 1;
@@ -974,6 +997,7 @@ export function proceed(s: State, rng: Rng) {
   s.current = null;
   advance(s, rng);
   if (s.ending) return;
+  if (s.v2) sincronizarMundo(s, rng);
   pickNext(s, rng);
 }
 
@@ -1022,19 +1046,19 @@ function afinidade(e: GameEvent, porCat: Record<Cat, number>): number {
 export function pickNext(s: State, rng: Rng) {
   if (s.ending) return;
   // 1) rompimento
-  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= 3) {
+  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 4 + s.tier * 2 : 3)) {
     s.current = { id: '__break', breakthrough: true };
     return;
   }
   // 2) eventos agendados
-  const dueIdx = s.scheduled.findIndex((x) => x.at <= s.age && P(s).ix.EVENT[x.event] && s.seen[x.event] === undefined && condMet(s, P(s).ix.EVENT[x.event].cond));
+  const dueIdx = s.v2 ? -1 : s.scheduled.findIndex((x) => x.at <= s.age && P(s).ix.EVENT[x.event] && s.seen[x.event] === undefined && condMet(s, P(s).ix.EVENT[x.event].cond));
   if (dueIdx >= 0) {
     const due = s.scheduled.splice(dueIdx, 1)[0];
     setCurrent(s, due.event, rng);
     return;
   }
   // 2c) reclusão (reinos altos): em vez de mais um evento genérico, passam-se anos
-  if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)]) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
+  if (s.tier >= 3 && s.tier === Math.min(s.tier, 8) && rng.chance(P_RETIRO[Math.min(s.tier, 8)] * (s.v2 ? 0.55 : 1)) && s.turn - (s.seen['__retiro'] ?? -9) >= 2) {
     const years = realmOf(s).years;
     s.seen['__retiro'] = s.turn;
     s.current = { id: '__retiro', retiro: true, d: rng.int(Math.max(3, Math.round(years * 0.05)), Math.max(5, Math.round(years * 0.14))), v: rng.int(0, 4) };
@@ -1045,6 +1069,7 @@ export function pickNext(s: State, rng: Rng) {
     s.current = { id: P(s).regras.eventoVidaComum };
     return;
   }
+  if (s.v2) { pickNextV2(s, rng); return; }
   let pool = eligibleEvents(s);
   // Despertou mas ainda sem método: só as cenas que apresentam um caminho (ver trilha_inicial.ts).
   if (!s.path && s.tier >= 1) {

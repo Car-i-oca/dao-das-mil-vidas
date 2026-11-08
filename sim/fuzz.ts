@@ -19,7 +19,7 @@ function check(s: State, where: string) {
   if (s.age > s.maxAge + 200 && !s.ending) note(`${where}: idade muito acima do máximo sem final`);
   for (const id of s.items) if (!ITEM[id]) note(`${where}: item desconhecido ${id}`);
   if (s.ending && !ENDING[s.ending]) note(`${where}: final desconhecido ${s.ending}`);
-  if (s.current && !s.current.breakthrough && !s.current.retiro && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
+  if (s.current && !s.current.breakthrough && !s.current.retiro && !s.current.v2 && !EVENT[s.current.id]) note(`${where}: evento atual inexistente ${s.current.id}`);
 }
 
 let lives = 0, turns = 0;

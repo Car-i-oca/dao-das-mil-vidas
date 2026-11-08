@@ -2,6 +2,7 @@ import type { State } from '../../../types';
 import type { PacoteModo } from '../tipos';
 import { ORIGINS, TALENTS, FLAWS } from './character';
 import { PATHS } from './paths';
+import { personName, sectName, clanName, villageName, rollRoot, CONSTITUTIONS } from './nomes';
 import { ITEMS } from './items';
 import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS, ACH_POINTS } from './endings';
 import { LADDERS } from './realms';
@@ -10,6 +11,7 @@ import { REGION_POOLS } from './regions';
 import { AFINIDADES } from './afinidades';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
 import { EVENTS } from './eventos';
+import { UPGRADES } from '../../legado';
 
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {
@@ -38,6 +40,7 @@ export const MURIM: PacoteModo = {
   itens: ITEMS,
   finais: ENDINGS,
   conquistas: ACHIEVEMENTS,
+  melhorias: UPGRADES,
   checks: ACH_CHECKS,
   pontos: ACH_POINTS,
   escadas: LADDERS,
@@ -46,9 +49,11 @@ export const MURIM: PacoteModo = {
   regioes: REGION_POOLS,
   afinidades: AFINIDADES,
   retiro: { textos: RETIRO_TEXTS, trilha: RETIRO_PATH_LINES, saida: RETIRO_EXIT },
+  nomes: { personName, sectName, clanName, villageName, rollRoot, constituicoes: CONSTITUTIONS },
   vocab: {
     atributos: { fis: 'Físico', esp: 'Percepção', comp: 'Técnica', sor: 'Instinto', car: 'Carisma', dao: 'Vontade' },
     moral: { good: 'Honra', evil: 'Astúcia', order: 'Lealdade', chaos: 'Ambição' },
+    moralRotulo: 'reputação:',
     moeda: 'moedas',
     progresso: 'de treino',
     subiu: (nome) => `Faixa alcançada: ${nome}.`,
