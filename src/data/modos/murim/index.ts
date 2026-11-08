@@ -45,6 +45,7 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['fol_fim_ok'], final: 'murim_folego_proprio', defeito: 'meridianos_estreitos' },
   { flags: ['azr_fim_ok'], final: 'murim_chegou_na_hora', defeito: 'azar' },
   { flags: ['irr_fim_ok'], final: 'murim_forma_de_cada_um', defeito: 'qi_instavel' },
+  { flags: ['hes_fim_ok'], final: 'murim_medo_dito', defeito: 'covarde' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {

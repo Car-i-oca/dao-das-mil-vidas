@@ -6,7 +6,7 @@
 - Branch: `feat/dois-modos` (nada novo em `main`; `main` = `eb13bc5`, Lote 1 aprovado e publicado como APK, assinatura fixa).
 - Último commit de conteúdo: B1 (alcunhas: feitos raros, conquistas, quadros, impacto). Antes: `6bc1c82` (talento Memória de escriba). Parte A em `b81cde1`.
 - Lote atual: **Lote 2** (impacto real de trilhas, talentos, defeitos e origens) + pendências das alcunhas.
-- Dourado do Murim (`docs/dourado-murim.json`): `d9841be6bf3b0bda` (regenerar após cada mudança intencional do Murim).
+- Dourado do Murim (`docs/dourado-murim.json`): `c771996e5e100b3f` (regenerar após cada mudança intencional do Murim).
 
 ## Feito recentemente
 - **B1 concluído:** Testemunha de Hwayang e Vulto Vermelho alcançáveis (`peso`; corrupção ≥ 15); Xianxia 71,2% com alcunha; quadro de nascimento por eixo; 8 conquistas das alcunhas raras; `impacto` conta finais por flag. Detalhes em `docs/alcunhas.md`.
@@ -16,7 +16,7 @@
 - Ascensão do Xianxia: 0,8% (1000 vidas).
 
 ## Próximos passos (em ordem)
-1. **B2 (em andamento)** Murim: Defeitos feitos: 3 de 9 (meridianos_estreitos, azar, qi_instavel). Faltam covarde, doente, orgulhoso, distraido, impulsivo, avarento, um por vez, commit e push a cada um (skill talento-defeito-origem); depois nenhuma escola > 35%.
+1. **B2 (em andamento)** Murim: Defeitos feitos: 4 de 9 (meridianos_estreitos, azar, qi_instavel, covarde). Faltam doente, orgulhoso, distraido, impulsivo, avarento, um por vez, commit e push a cada um (skill talento-defeito-origem); depois nenhuma escola > 35%.
 2. Pendência a): Caminho do Sangue no Xianxia nunca é alcançado nas simulações; investigar (robô ou condição do jogo) e registrar em `docs/duvidas-lote2.md`; se for bloqueio do jogo, corrigir no B4.
 3. **B3** reações restantes das alcunhas (3 por alcunha, nos dois modos), revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
@@ -27,7 +27,7 @@
 |---|---|---|
 | Alcunha na vida / maior parcela / nunca alcançadas | 95,7% / 22,2% / 0 | 71,2% / 12,3% / 0 |
 | Ascensão (0,5–2%) | — | 0,8% |
-| Talentos/defeitos com mínimos | 17 de 23 | 0 de 23 (1–3 cenas cada) |
+| Talentos/defeitos com mínimos | 18 de 23 | 0 de 23 (1–3 cenas cada) |
 | Escolhas sem marca / flags órfãs | 26% / 48 | 142 de 541 / 3 |
 | Escola mais comum (≤ 35%) | Lâmina Errante 73% | — |
 | Genéricos < 35% / semelhança < 0,5 | 61% / 0,75 | 24,8% / 0,42 |

@@ -109,3 +109,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 3 de 9: Técnica irregular (`qi_instavel`)
 - **Entrou** (`tracos/qi_instavel.ts`): 4 cenas (`irr_golpe_torto`, `irr_exibicao_publica`, `irr_caderno_dos_dias`, `irr_forma_imperfeita`), 6 opções exclusivas de quem tem o defeito (escola, torneio, ponte da Garça, duelo na ponte, peregrinos, estilos errantes), arco de redenção (`irr_caderno_dos_dias`, `fx.superar` após um ano de caderno) e o final `murim_forma_de_cada_um` (flag `irr_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `d9841be6bf3b0bda`.
+
+## B2 — defeito 4 de 9: Hesitação sob pressão (`covarde`)
+- **Entrou** (`tracos/covarde.ts`): 4 cenas (`hes_o_cao_do_moinho`, `hes_o_chamado_no_patio`, `hes_a_porta_da_casa`, `hes_o_medo_que_ficou`), 6 opções exclusivas de quem tem o defeito (bandidos, oferta da Lua Oca, duelo na ponte, torneio, audiência, vila sob a neve), arco de redenção (`hes_a_porta_da_casa`, `fx.superar` ao entrar na casa em chamas) e o final `murim_medo_dito` (flag `hes_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `c771996e5e100b3f`.

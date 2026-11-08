@@ -318,6 +318,25 @@ irr_aquecimento|Aqueceu meia hora antes do duelo e chegou ao tom do corpo.
 irr_ritmos|Descobriu, com a lanceira, que o golpe falha quando a respiração antecipa o pé.
 irr_mestre_do_erro|Treinou três meses com o ex-árbitro e aprendeu a ver o erro como informação.
 
+hes_chamou_irmao|Chamou o irmão pelo nome diante do cão do moinho, com a voz trêmula mas inteira.
+hes_foi_buscar_ajuda|Foi buscar ajuda em vez de enfrentar o perigo, e chegou a tempo.
+hes_ficou_parado|Ficou parado quando alguém precisava dele.
+hes_falou_no_patio|Forçou uma frase curta diante dos três alunos mais velhos, e a voz saiu.
+hes_voz_falhou|Teve a voz falhando diante dos alunos que cercavam um novato.
+hes_novato_perdido|Fingiu não ver, e o novato foi embora da cidade.
+hes_entrou_no_fogo|Entrou pelo vão de uma casa em chamas e tirou um menino.
+hes_atravessou_o_medo|Atravessou o medo, uma vez, sem garantia, e superou a hesitação.
+hes_tentou_e_falhou|Tentou entrar no fogo e voltou sem o menino, mas tentou.
+hes_organizou_baldes|Organizou a fila de baldes enquanto outro entrava na casa.
+hes_fim_ok|Disse a um jovem aprendiz a verdade sobre o medo.
+hes_medo_dito|Disse que o medo não passa, mas se aprende a andar com ele nos ombros.
+hes_pedra_no_cavalo|Jogou uma pedra no cavalo do líder dos bandidos e criou a confusão que salvou a carroça.
+hes_denunciou_em_segredo|Levou em segredo a oferta da Lua Oca ao magistrado.
+hes_recusou_duelo|Recusou o duelo e abriu outra passagem rio acima.
+hes_categoria_formas|Venceu o torneio na categoria de formas, onde ninguém o atacava de frente.
+hes_voz_emprestada|Entregou os documentos a Jang Hwa-ryeon e deixou que ela falasse por ele.
+hes_cuidou_das_criancas|Cuidou das crianças no templo enquanto os outros enfrentavam a neve.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

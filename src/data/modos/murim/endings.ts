@@ -35,6 +35,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_folego_proprio', name: 'O que chegava inteiro', legacy: 1.4, text: '{nome} nunca foi o mais rápido, e passou a vida aprendendo que chegar inteiro era outra maneira de vencer. No fim, uma jovem de fôlego curto como o seu aprendeu com ele a medir o passo, e levou o método para a próxima escola.' },
   { id: 'murim_chegou_na_hora', name: 'O que chegou na hora', legacy: 1.4, text: '{nome} chegou atrasado a quase tudo na vida, e a vila inteira ria disso com carinho. No dia do casamento da filha de um velho amigo, chegou na hora, e dizem que foi o único atraso que o mundo lhe deveu, pago de uma vez só.' },
   { id: 'murim_forma_de_cada_um', name: 'O que ensinou a errar do próprio jeito', legacy: 1.4, text: '{nome} passou a vida envergonhado de uma técnica que oscilava, e no fim descobriu que a oscilação era o que tornava a forma sua. Os três discípulos que deixou fazem a mesma forma de três jeitos, e nenhum erra.' },
+  { id: 'murim_medo_dito', name: 'O que disse o medo em voz alta', legacy: 1.4, text: '{nome} tremeu diante de cães, de pátios e de portas em chamas, e entrou em todas as portas mesmo assim. No fim, a lição que deixou a um jovem aprendiz foi a que mais custou: o medo não passa, mas pode ser dito, e dito deixa de ser vergonha.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [
