@@ -19,7 +19,7 @@ const EVENTS = comTracos(comPerfil(EVENTOS_BASE));
 import { UPGRADES } from '../../legado';
 
 /** Flags que, ao chegar à velhice, definem o final da vida (em ordem de prioridade). O  conta estes finais como «caminho/final». */
-export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string }[] = [
+export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string; defeito?: string }[] = [
   { flags: ['final_justica', 'legado_verificacao'], final: 'murim_justica' },
   { flags: ['final_duelo'], final: 'murim_duelo' },
   { flags: ['final_acordo'], final: 'murim_acordo' },
@@ -42,10 +42,11 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['dra_mao_aberta_fim'], final: 'murim_mao_aberta', talento: 'sangue_dragao' },
   { flags: ['ver_aprendiz_fim'], final: 'murim_aprendiz_devagar', talento: 'aprendiz_veloz' },
   { flags: ['olf_nao_vendeu_fim'], final: 'murim_piao_sem_preco', talento: 'olfato_tesouro' },
+  { flags: ['fol_fim_ok'], final: 'murim_folego_proprio', defeito: 'meridianos_estreitos' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {
-  const r = FINAIS_POR_FLAG.find((x) => x.flags.some((f) => s.flags.includes(f)) && (!x.talento || s.talent === x.talento));
+  const r = FINAIS_POR_FLAG.find((x) => x.flags.some((f) => s.flags.includes(f)) && (!x.talento || s.talent === x.talento) && (!x.defeito || s.flaw === x.defeito));
   return r?.final ?? 'velhice';
 }
 

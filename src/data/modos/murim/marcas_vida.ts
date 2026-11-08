@@ -260,6 +260,25 @@ olf_lanternas|Vendeu lanternas de papel às famílias que chegaram tarde.
 olf_farinha|Comprou a farinha dos mercadores recusados e a distribuiu a preço de custo.
 olf_ponte_taxa|Financiou a ponte em troca de uma taxa que retirou sem avisar.
 
+fol_correu_ate_cair|Correu até cair, por teimosia, e um monge lhe deu água fria.
+fol_mudou_a_prova|Mudou a prova da ladeira para uma de equilíbrio e passou a ser dono dos jogos.
+fol_ficou_de_lado|Ficou de lado na corrida e aprendeu que esconder o limite machuca mais.
+fol_parou_a_tempo|Parou o treino a tempo, e o mestre mostrou que o fôlego curto é um tipo de corpo.
+fol_terminou_a_marca|Terminou a sequência de duas horas caindo, e o corpo anotou a conta.
+fol_blocos_curtos|Dividiu o treino em blocos curtos e provou o mesmo resultado ao mestre.
+fol_respirou|Cumpriu quarenta dias do método do monge e superou o fôlego curto.
+fol_metodo_do_monge|Aprendeu o método de respiração lenta do monge.
+fol_abandonou_metodo|Abandonou o método do monge no vigésimo dia.
+fol_recusou_monge|Recusou o método do monge e viveu dentro do limite.
+fol_fim_ok|Ensinou a quem ficava no fim da fila.
+fol_herdeira_do_folego|Ensinou a uma jovem de fôlego curto o método de poupar.
+fol_trabalho_em_etapas|Descarregou a carroça em etapas curtas, sem derrubar nada.
+fol_torneio_curto|Escolheu o momento de acabar no torneio.
+fol_refugiados_turnos|Revezou com os refugiados no ritmo da carroça.
+fol_cuidou_do_fogo|Ficou no celeiro cuidando do fogo enquanto os outros abriam a trilha.
+fol_tres_respiracoes|Aprendeu com o monge três respirações para as horas difíceis.
+fol_duelo_curto|Propôs um duelo de três golpes para não esgotar nenhum dos dois.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

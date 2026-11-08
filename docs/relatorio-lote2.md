@@ -95,3 +95,9 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 14 de 14: Faro para negócios (`olfato_tesouro`) — talentos do Murim concluídos
 - **Entrou** (`tracos/olfato_tesouro.ts`): 4 cenas (`olf_barraca_de_frutas`, `olf_contrato_bom_demais`, `olf_sociedade_desfeita`, `olf_o_que_nao_se_vende`), 6 opções exclusivas (banca de Noh, torneio, armazém, festival, vila sob a neve, reparo da ponte) e o final `murim_piao_sem_preco` (flag `olf_nao_vendeu_fim`). Cicatriz: o dia em que algo valioso não tem cotação. **Com este, os 14 talentos do Murim estão feitos; faltam os 9 defeitos.**
 - **Dourado:** agora `c353ae0ded9cc436`.
+
+## B2 — defeito 1 de 9: Fôlego curto (`meridianos_estreitos`)
+- **Entrou** (`tracos/meridianos_estreitos.ts`): 4 cenas (`fol_corrida_perdida`, `fol_treino_cortado`, `fol_respiracao_do_monge`, `fol_fim_de_fila`), 6 opções exclusivas de quem tem o defeito (dia na estrada, torneio, refugiados, vila sob a neve, peregrinos, duelo na ponte), arco de redenção (`fol_respiracao_do_monge`, `fx.superar` após quarenta dias de respiração lenta) e o final `murim_folego_proprio` (flag `fol_fim_ok`, só para quem tem o defeito).
+- **Infraestrutura:** `FINAIS_POR_FLAG` ganhou o campo opcional `defeito` (como `talento`), lido por `finalDeVelhice`.
+- **Medido:** Fôlego curto com 4 eventos, 6 opções e 3 caminhos (mínimo atingido).
+- **Dourado:** agora `5eb4d4c19bc09bb4`.
