@@ -6,15 +6,15 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 
 | Métrica | Valor | Meta |
 |---|---|---|
-| Escolhas no jogo | 512 | — |
+| Escolhas no jogo | 530 | — |
 | Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (7%) | 0 |
 | Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | 0 (0%) | cair ao longo dos lotes |
 | Escolhas com a mesma consequência de outra do mesmo evento | 0 | 0 |
 | Eventos "tanto faz" | 0 | 0 |
 | Flags gravadas e nunca lidas | 49 | 0 |
-| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 96 / 55 / 0 | muito mais |
-| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.716 | referência |
-| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.443 | bem menor que a de cima |
+| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 96 / 62 / 0 | muito mais |
+| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.715 | referência |
+| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.431 | bem menor que a de cima |
 
 ### Talentos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 
@@ -47,7 +47,7 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 | Rancor persistente | 4 | 6 | 3 | sim |
 | Atenção dispersa | 4 | 6 | 3 | sim |
 | Impulsividade | 4 | 6 | 3 | sim |
-| Apego ao dinheiro | 0 | 0 | 0 | **não** |
+| Apego ao dinheiro | 4 | 6 | 3 | sim |
 
 ### Origens (mínimo: 5 eventos próprios, 4 opções exclusivas, 1 caminho/final)
 

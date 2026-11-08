@@ -418,6 +418,26 @@ imp_acusou_cedo|Acusou Gwon Tae-seok antes do momento combinado.
 imp_confrontou_oficial|Confrontou o oficial da taxa no meio da praça.
 imp_avisou_o_cobrador|Correu com a lâmina da Lua Oca para avisar o cobrador.
 
+ava_dividiu_a_moeda|Dividiu a moeda do bolinho com um menino descalço na calçada.
+ava_comeu_escondido|Comeu o bolinho escondido atrás de um barril, e o gosto virou cinza.
+ava_guardou_a_moeda|Guardou a moeda do bolinho e começou a fortuna que um dia pesaria.
+ava_pagou_o_mestre|Pagou trinta moedas ao mestre errante e aprendeu a técnica rara.
+ava_barganhou|Barganhou o preço do mestre errante até ele aceitar vinte moedas.
+ava_perdeu_o_mestre|Perdeu a técnica do mestre errante por não abrir a bolsa.
+ava_bolsa_aberta|Abriu a bolsa sem contar para salvar o filho de uma viúva, e superou o apego.
+ava_nao_anotou|Não anotou a dívida da viúva e aceitou apenas um bolo.
+ava_deu_contando|Deu à viúva contando cada moeda, com um suspiro.
+ava_emprestou_com_juros|Emprestou à viúva com juros baixos e prazo longo.
+ava_negociou_o_remedio|Negociou o remédio da criança e pagou só a diferença.
+ava_fim_ok|Resolveu o que fazer com o cofre e a mesa de um prato só.
+ava_ceia_aberta|Reuniu a família e os vizinhos numa ceia aberta, pagando tudo sem contar.
+ava_pechinchou_noh|Pechinchou o reparo com Noh e guardou metade da vergonha.
+ava_vendeu_informacao|Vendeu informações sobre os juízes do torneio por um bom preço.
+ava_cobrou_refugiados|Cobrou das famílias refugiadas um lugar na carroça.
+ava_cobrou_no_inverno|Cobrou o dobro pelo depósito na nevasca e distribuiu parte do lucro.
+ava_recibo_da_taxa|Pagou a taxa do festival com moedas contadas e pediu recibo.
+ava_cota_da_ponte|Financiou a ponte em troca de uma cota perpétua das taxas.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

@@ -129,3 +129,8 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 8 de 9: Impulsividade (`impulsivo`)
 - **Entrou** (`tracos/impulsivo.ts`): 4 cenas (`imp_o_salto_do_muro`, `imp_a_palavra_dita`, `imp_a_corda_cortada`, `imp_tres_respiracoes`), 6 opções exclusivas de quem tem o defeito (torneio, bandidos, duelo na ponte, audiência, festival, oferta da Lua Oca), arco de redenção (`imp_a_corda_cortada`, `fx.superar` ao esperar três respirações) e o final `murim_ensinou_a_esperar` (flag `imp_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `6a4a2cfd691ea58b`.
+
+## B2 — defeito 9 de 9: Apego ao dinheiro (`avarento`) — todos os traços do Murim concluídos
+- **Entrou** (`tracos/avarento.ts`): 4 cenas (`ava_a_moeda_do_cesto`, `ava_o_preco_do_mestre`, `ava_a_bolsa_aberta`, `ava_o_cofre_cheio`), 6 opções exclusivas de quem tem o defeito (banca de Noh, torneio, refugiados, vila sob a neve, festival, reparo da ponte), arco de redenção (`ava_a_bolsa_aberta`, `fx.superar` ao abrir a bolsa sem contar) e o final `murim_mesa_cheia` (flag `ava_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **B2 fechado nos traços:** 14 de 14 talentos e 9 de 9 defeitos do Murim com os mínimos (4 eventos, 6 opções, 1 caminho/final). Falta o item final do B2: nenhuma escola acima de 35% (Lâmina Errante).
+- **Dourado:** agora `4165908014599dee`.
