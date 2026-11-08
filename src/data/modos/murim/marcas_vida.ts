@@ -298,6 +298,26 @@ azr_pagou_passagem|Pagou aos bandidos para passar, porque a flecha só acertava 
 azr_festival_preparado|Pagou a taxa do festival sem discutir e atravessou antes de a lanterna cair.
 azr_telhado_cedeu|Dormiu junto à porta do celeiro e escapou do telhado que cedeu.
 
+irr_golpe_nomeado|Recuperou o golpe torto nomeando cada parte em voz alta.
+irr_adiou|Adiou a prova do golpe torto e passou a conviver com a dúvida.
+irr_forcou|Forçou o golpe até estalar o ombro.
+irr_erro_virou_forma|Transformou um passo fora da marca em parte da forma, diante de Hwayang.
+irr_caiu_em_publico|Caiu de joelhos diante da praça de Hwayang, no meio da exibição.
+irr_recomecou|Recomeçou a forma do início, pedindo desculpas à plateia.
+irr_dividiu_praca|Dividiu a exibição com um colega e a salvou com humor.
+irr_caderno_ok|Anotou cada treino durante um ano e superou a irregularidade.
+irr_padrao_visto|Viu no caderno o padrão que escondia a causa das falhas.
+irr_caderno_abandonado|Abandonou o caderno do método da velha mestra.
+irr_recusou_caderno|Recusou o caderno e aprendeu a rir do que não controla.
+irr_fim_ok|Aprendeu, tarde, a conviver com a forma que cada um faz a seu jeito.
+irr_forma_de_cada_um|Disse aos três jovens que a forma é de cada um e o mestre só indica o caminho.
+irr_prova_em_tres_dias|Pediu para ser avaliado em três dias, e não em uma prova única.
+irr_torneio_horario|Pediu as últimas chaves do torneio para achar o ritmo do dia.
+irr_mestra_corrige|Pediu à mestra que o corrigisse a cada erro e perdeu metade dos tropeços.
+irr_aquecimento|Aqueceu meia hora antes do duelo e chegou ao tom do corpo.
+irr_ritmos|Descobriu, com a lanceira, que o golpe falha quando a respiração antecipa o pé.
+irr_mestre_do_erro|Treinou três meses com o ex-árbitro e aprendeu a ver o erro como informação.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

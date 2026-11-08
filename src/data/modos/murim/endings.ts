@@ -34,6 +34,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_piao_sem_preco', name: 'O que não tinha preço', legacy: 1.5, text: '{nome} sabia o valor de tudo e foi lembrado por uma coisa que deu sem cobrar: um pião de madeira, a uma menina que tinha duas moedas. Os mercadores da região ainda contam a história para ensinar o que o ofício não ensina.' },
   { id: 'murim_folego_proprio', name: 'O que chegava inteiro', legacy: 1.4, text: '{nome} nunca foi o mais rápido, e passou a vida aprendendo que chegar inteiro era outra maneira de vencer. No fim, uma jovem de fôlego curto como o seu aprendeu com ele a medir o passo, e levou o método para a próxima escola.' },
   { id: 'murim_chegou_na_hora', name: 'O que chegou na hora', legacy: 1.4, text: '{nome} chegou atrasado a quase tudo na vida, e a vila inteira ria disso com carinho. No dia do casamento da filha de um velho amigo, chegou na hora, e dizem que foi o único atraso que o mundo lhe deveu, pago de uma vez só.' },
+  { id: 'murim_forma_de_cada_um', name: 'O que ensinou a errar do próprio jeito', legacy: 1.4, text: '{nome} passou a vida envergonhado de uma técnica que oscilava, e no fim descobriu que a oscilação era o que tornava a forma sua. Os três discípulos que deixou fazem a mesma forma de três jeitos, e nenhum erra.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

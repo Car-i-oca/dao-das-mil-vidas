@@ -105,3 +105,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 2 de 9: Mau timing (`azar`)
 - **Entrou** (`tracos/azar.ts`): 4 cenas (`azr_dia_do_festival`, `azr_promessa_fora_de_hora`, `azr_a_chuva_certa`, `azr_ultimo_atraso`), 6 opções exclusivas de quem tem o defeito (dia na estrada, torneio, banca de Noh, bandidos, festival, vila sob a neve), arco de redenção (`azr_a_chuva_certa`, `fx.superar` ao confiar no momento) e o final `murim_chegou_na_hora` (flag `azr_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `d23644663f43c5e4`.
+
+## B2 — defeito 3 de 9: Técnica irregular (`qi_instavel`)
+- **Entrou** (`tracos/qi_instavel.ts`): 4 cenas (`irr_golpe_torto`, `irr_exibicao_publica`, `irr_caderno_dos_dias`, `irr_forma_imperfeita`), 6 opções exclusivas de quem tem o defeito (escola, torneio, ponte da Garça, duelo na ponte, peregrinos, estilos errantes), arco de redenção (`irr_caderno_dos_dias`, `fx.superar` após um ano de caderno) e o final `murim_forma_de_cada_um` (flag `irr_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `d9841be6bf3b0bda`.
