@@ -115,6 +115,24 @@ dis_lanceira|Contou em voz alta os golpes da lanceira sem escola.
 dis_estilo_unico|Fundiu as cinco lições dos mestres errantes numa só, sem nome.
 dis_copia_fiel|Copiou à mão o rolo de passos tão fielmente que a mestra confundiu as duas versões.
 
+fir_cesto_entregue|Entregou o cesto de ervas sob a chuva, porque tinha prometido.
+fir_cesto_atrasado|Cumpriu a promessa do cesto com um dia de atraso, e aprendeu que atraso não a desfaz.
+fir_obedeceu_errado|Obedeceu a uma ordem que sabia errada, e quatro colegas pagaram por isso.
+fir_avisou_uma_vez|Avisou o mestre uma vez e deixou um recado discreto aos colegas.
+fir_desobedeceu_certo|Desobedeceu à ordem do mestre e salvou a escola.
+fir_teimosia_cobrada|Desobedeceu por teimosia e a escola pagou.
+fir_porta_aberta|Atravessou a porta que jurou nunca mais atravessar.
+fir_juramento_mantido|Manteve o juramento contra o irmão até o enterro.
+fir_inabalavel|Soube, no fim, o que valia manter.
+fir_voto_renovado|Renovou em voz alta o voto de juventude de proteger as estradas.
+fir_voto_solto|Queimou o voto de juventude, sabendo o que fazia.
+fir_mao_quebrada|Continuou lutando com a mão quebrada, até o juiz parar.
+fir_conselho_repetido|Repetiu a acusação ao conselho até que a registrassem.
+fir_pagina_mantida|Recusou a oferta de Gwon e manteve a página original.
+fir_ponte_parada|Esperou vinte minutos no meio da ponte até o espadachim tirar a máscara.
+fir_noite_de_guarda|Guardou o celeiro a noite toda, e aceitou uma sopa pela manhã.
+fir_manual_visto|Recusou depor contra o rapaz até ver o manual com os próprios olhos.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

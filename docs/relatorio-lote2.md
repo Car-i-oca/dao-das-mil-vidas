@@ -63,3 +63,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 6 de 14: Aprendiz disciplinado (`mestre_nato`)
 - **Entrou** (`tracos/mestre_nato.ts`): 4 cenas (`dis_mil_vezes`, `dis_forma_quebrada`, `dis_aluno_que_improvisa`, `dis_ultima_forma`), 6 opções exclusivas (escola, ponte da Garça, dia na estrada, peregrinos, estilos errantes, arquivo) e o final `murim_forma_viva` (flag `dis_mestre_repete`). Cicatriz: a forma perfeita pode virar jaula.
 - **Dourado:** agora `9803d0c0d40e6150`.
+
+## B2 — talento 7 de 14: Vontade firme (`coracao_inabalavel`)
+- **Entrou** (`tracos/coracao_inabalavel.ts`): 4 cenas (`fir_promessa_na_chuva`, `fir_ordem_errada`, `fir_porta_fechada`, `fir_voto_velho`), 6 opções exclusivas (torneio, audiência, noite dos nomes, duelo na ponte, vila sob a neve, julgamento do aprendiz) e o final `murim_firme` (flag `fir_inabalavel`). Cicatriz: aprender a diferença entre firmeza e teimosia.
+- **Dourado:** agora `267a7874e8c7cb17`.
