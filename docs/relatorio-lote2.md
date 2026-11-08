@@ -75,3 +75,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 9 de 14: Saúde duradoura (`vida_longa`)
 - **Entrou** (`tracos/vida_longa.ts`): 4 cenas (`lon_epidemia`, `lon_enterro_do_amigo`, `lon_filhos_dos_outros`, `lon_ultima_da_mesa`), 6 opções exclusivas (refugiados, vila sob a neve, dia na estrada, último inverno, peregrinos, retorno à ponte) e o final `murim_ultimo_da_mesa` (flag `lon_ultimo_da_mesa`). Cicatriz: quem vive muito enterra os que amou.
 - **Dourado:** agora `4979b38fa0f7fa6d`.
+
+## B2 — talento 10 de 14: Voz que reúne (`predestinado`)
+- **Entrou** (`tracos/predestinado.ts`): 4 cenas (`voz_primeiro_pedido`, `voz_ponte_dos_desistentes`, `voz_quem_nao_voltou`, `voz_sem_discurso`), 6 opções exclusivas (refugiados, audiência, assembleia, vila sob a neve, festival, lanternas na rota) e o final `murim_voz_passada` (flag `voz_sem_discurso_ok`). Cicatriz: quem reúne responde por quem reuniu. Dourado inalterado (nenhuma das 330 vidas fixas usa este talento).
+- **Dourado:** agora `4979b38fa0f7fa6d`.

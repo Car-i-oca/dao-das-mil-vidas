@@ -169,6 +169,25 @@ lon_cartas_ao_fim|Escreveu uma carta a cada pessoa que sobreviveu a ele.
 lon_velhice_lugar|Ouviu de um monge que a velhice é um lugar, não um castigo.
 lon_neto_do_amigo|Reconheceu num menino da ponte o neto de um velho amigo.
 
+voz_menino_figueira|Guiou um menino paralisado na figueira, galho por galho.
+voz_menino_humilhado|Gritou com um menino paralisado e foi aplaudido, para sua vergonha.
+voz_caravana_reunida|Convenceu uma caravana de doze a atravessar a passagem.
+voz_caravana_perdeu|Demorou em convencer uma caravana e perdeu quatro dos doze.
+voz_caravana_dividida|Deixou a caravana se dividir, sem culpa para ninguém.
+voz_pressao|Chegou à passagem de montanha carregando quem não queria ser mandado.
+voz_nome_dito|Disse o nome do morto no desfiladeiro à viúva dele, e pediu perdão.
+voz_dinheiro_pago|Pagou à viúva sem saber o nome do marido, e depois o procurou nos arquivos.
+voz_viuva_aliada|Chamou a viúva do desfiladeiro a dividir a responsabilidade da defesa.
+voz_sem_discurso_ok|Perdeu o discurso diante da praça e descobriu o que fazer sem ele.
+voz_reuniu_calando|Reuniu a praça com uma pergunta, em vez de um discurso.
+voz_herdeiro|Passou a palavra a um jovem que o ouviu a vida inteira.
+voz_refugiados|Falou às três famílias antes de partirem e as viu seguir de cabeça erguida.
+voz_coro_familias|Fez as famílias exigirem em coro o direito de depor.
+voz_assembleia|Acalmou as duas bancadas da assembleia com a voz.
+voz_inverno|Convenceu os mercadores a dividir na nevasca.
+voz_festival|Fez o oficial e o garoto conversarem diante da praça.
+voz_rota|Propôs que as duas caravanas atravessassem juntas, em fila.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
