@@ -51,7 +51,7 @@ const TABELA: Record<string, string[]> = {
   mem_peso: ['D2', 'O D', 'T'],
 };
 
-function leitura(codigo: string): Record<string, number> {
+export function leitura(codigo: string): Record<string, number> {
   const out: Record<string, number> = {};
   for (const parte of codigo.split(' ')) {
     const eixo = EIXO[parte[0]];

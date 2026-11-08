@@ -142,6 +142,8 @@ export interface Cond {
   /** Talento, defeito, raiz (tipo ou elemento) e constituição exigidos (qualquer um da lista). */
   talent?: string[];
   flaw?: string[];
+  /** Esconde a opção de quem tem qualquer um destes defeitos (e ainda não o superou). */
+  noFlaw?: string[];
   root?: string[];
   constitution?: string[];
 }

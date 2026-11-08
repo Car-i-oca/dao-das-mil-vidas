@@ -21,6 +21,23 @@ caravana_avisada|Avisou, sem se identificar, uma caravana de remédios da embosc
 alcunha_aceita|Aceitou o nome que o mundo lhe deu e passou a viver à altura dele.
 alcunha_recusada|Recusou em voz alta o nome que o mundo lhe deu, e aprendeu o preço de dizer não em público.
 
+sor_primo_salvo|Parou a tempo na laje do rio e salvou o primo de uma queda.
+sor_palpite_calado|Aprendeu cedo a guardar os palpites para si.
+sor_barqueiro|Um barqueiro velho o ensinou a ler a água.
+sor_ouviu_fiscal|Ouviu, numa mesa de canto, o que não devia, e soube usar o silêncio.
+sor_estalagem_amiga|Avisou uma estalagem do que se tramava contra os viajantes.
+sor_inimigo_capitao|Tem um capitão de escolta que guardou seu rosto.
+sor_arroz_salvo|Seguiu o instinto e salvou o arroz dos pobres, enquanto as provas da casa de contas queimavam.
+sor_pagou_o_preco|Soube, em Pedra Baixa, que a sorte salva um lado e deixa o outro queimar.
+sor_decidiu_sozinho|Escolheu contra o próprio instinto, uma vez, e descobriu que podia.
+sor_estrada_ensinada|Ensinou uma jovem mensageira a escutar o corpo antes de confiar no acaso.
+sor_bifurcacao|Tomou a bifurcação errada e escapou de uma carroça despencando.
+sor_mapa_noh|Comprou de Noh um mapa inútil e achou uma cova de moedas.
+sor_lanterna|Seguiu uma lanterna rio abaixo até um remendeiro que sabia demais.
+sor_quietude|Aprendeu com um monge a ficar parado até o vento mudar.
+sor_celeiro_oculto|Achou grão escondido sob um poço seco e salvou uma vila do inverno.
+sor_nuca|Escolheu em quem acreditar pelo frio na nuca, e acertou.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

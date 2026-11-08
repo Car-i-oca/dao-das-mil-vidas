@@ -41,3 +41,9 @@ Crônicas (3 por modo, geradas) em `docs/cronicas-alcunhas.md`; li o Murim e cor
 
 ## B1 — dourado do Murim
 O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas diverge, a vida i4): a Testemunha de Hwayang agora pode substituir uma alcunha de perfil (`peso: 8`), o que muda a alcunha final e as cenas de reação dessa vida. Regenerado com `npm run dourado -- --gravar`. O Xianxia não tem dourado.
+
+## B2 — talento 2 de 14: Instinto oportuno (`sorte_destino`)
+- **Entrou** (`src/data/modos/murim/tracos/sorte_destino.ts`, carregado por `tracos/index.ts`): 4 cenas (`sor_pressentimento`, `sor_mesa`, `sor_dois_incendios`, `sor_ultima_estrada`), 6 opções exclusivas no fim de cenas comuns (dia na estrada, banca de Noh, festival, peregrinos, vila sob a neve, lâmina com duas versões) e o final `murim_andarilho` (flag `sor_andarilho`). Cicatriz: o instinto salva quem o segue, não quem está do outro lado (os dois incêndios).
+- **Infraestrutura nova:** pasta `tracos/` (um arquivo por traço, perfil escrito à mão em `p:`), e `Cond.noFlaw` (esconde uma opção de quem tem o defeito, a menos que o tenha superado), para os defeitos poderem bloquear opções.
+- **Dourado:** de `75265d8d67eeee36` para `da6f9ffc141af76c`, porque o Murim ganhou 4 cenas, 6 opções e 1 final.
+- **Medido (1000 vidas, simulador):** Instinto oportuno com 4 eventos, 6 opções e 2 caminhos; Murim com 95,7% de vidas com alcunha; maior alcunha 22,2% (Cobrador de Prata; o número oscila a cada mudança de conteúdo e segue para o B3).

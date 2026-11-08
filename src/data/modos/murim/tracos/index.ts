@@ -1,0 +1,26 @@
+import type { Choice, GameEvent } from '../../../../types';
+import { leitura } from '../perfil';
+import type { ConjuntoTraco, OpT } from './tipos';
+import { SORTE_DESTINO } from './sorte_destino';
+
+const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO];
+
+function aplica(op: OpT): Choice {
+  const { p, ...c } = op;
+  const perfil = leitura(p);
+  const add = (o?: Choice['res']) => (o ? { ...o, fx: { ...(o.fx ?? {}), perfil: { ...(o.fx?.perfil ?? {}), ...perfil } } } : undefined);
+  return { ...c, res: add(c.res), ok: add(c.ok), fail: add(c.fail) };
+}
+
+/** Junta as cenas e as opções exclusivas dos talentos, defeitos e origens do Murim (cada traço em seu arquivo). */
+export function comTracos(base: GameEvent[]): GameEvent[] {
+  const extras: Record<string, Choice[]> = {};
+  const novos: GameEvent[] = [];
+  for (const c of CONJUNTOS) {
+    for (const e of c.eventos) novos.push({ ...e, type: 'narrative', choices: e.choices.map(aplica) });
+    for (const [id, ops] of Object.entries(c.opcoes)) (extras[id] ??= []).push(...ops.map(aplica));
+  }
+  const ids = new Set(base.map((e) => e.id));
+  for (const id of Object.keys(extras)) if (!ids.has(id)) throw new Error(`traço Murim: cena comum inexistente "${id}"`);
+  return [...base.map((e) => (extras[e.id] ? { ...e, choices: [...e.choices, ...extras[e.id]] } : e)), ...novos];
+}

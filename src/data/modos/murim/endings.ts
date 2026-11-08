@@ -19,6 +19,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_guardiao', name: 'Guardião das estradas', legacy: 1.6, text: 'As lanternas das aldeias acendiam quando {nome} passava. Não havia título para aquele trabalho, mas ninguém precisou perguntar seu nome.' },
   { id: 'murim_mestre', name: 'Mestre de muitas escolas', legacy: 2, text: 'As técnicas de {nome} foram copiadas, discutidas e modificadas. O legado sobreviveu porque ninguém precisou guardá-lo sozinho.' },
   { id: 'murim_arquivista', name: 'O arquivo que andava', legacy: 1.6, text: 'Quando {nome} morreu, quarenta cadernos foram abertos numa mesa comprida, e três escolas rivais se sentaram do mesmo lado para lê-los. Nenhum dos cadernos pedia desculpas. Todos diziam, com a mesma letra, o que realmente tinha acontecido.' },
+  { id: 'murim_andarilho', name: 'O que chegava na hora', legacy: 1.5, text: 'Dizem que {nome} nunca se atrasou para nada que importasse. Só uma moça, que andou a seu lado por uma estação, sabia que não era sorte: era atenção, ensinada passo a passo, e ela a repassou a quem chegou depois.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

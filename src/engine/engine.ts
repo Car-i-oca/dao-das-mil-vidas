@@ -295,6 +295,7 @@ export function condMet(s: State, c?: Cond): boolean {
   if (c.recMin !== undefined && (s.rec ?? 0) < c.recMin) return false;
   if (c.talent && !c.talent.includes(s.talent)) return false;
   if (c.flaw && !c.flaw.includes(s.flaw)) return false;
+  if (c.noFlaw && c.noFlaw.includes(s.flaw) && !s.flags.includes('defeito_superado')) return false;
   if (c.constitution && !(s.constitution && c.constitution.includes(s.constitution))) return false;
   if (c.root && !rootTags(s.root).some((k) => c.root!.includes(k))) return false;
   return true;

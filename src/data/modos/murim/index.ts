@@ -12,9 +12,10 @@ import { AFINIDADES } from './afinidades';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
 import { EVENTS as EVENTOS_BASE } from './eventos';
 import { comPerfil } from './perfil';
+import { comTracos } from './tracos';
 import { ALCUNHAS_MURIM } from './alcunhas';
 
-const EVENTS = comPerfil(EVENTOS_BASE);
+const EVENTS = comTracos(comPerfil(EVENTOS_BASE));
 import { UPGRADES } from '../../legado';
 
 /** Flags que, ao chegar à velhice, definem o final da vida (em ordem de prioridade). O  conta estes finais como «caminho/final». */
@@ -28,6 +29,7 @@ export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string
   { flags: ['tecnica_aberta', 'metodo_verificado'], final: 'murim_mestre' },
   { flags: ['legado_silenciado'], final: 'murim_heranca' },
   { flags: ['arquivo_vivo'], final: 'murim_arquivista', talento: 'memoria_perfeita' },
+  { flags: ['sor_andarilho'], final: 'murim_andarilho', talento: 'sorte_destino' },
 ];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {

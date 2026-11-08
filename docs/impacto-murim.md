@@ -6,22 +6,22 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 
 | Métrica | Valor | Meta |
 |---|---|---|
-| Escolhas no jogo | 134 | — |
-| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 35 (26%) | 0 |
+| Escolhas no jogo | 152 | — |
+| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (24%) | 0 |
 | Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | 0 (0%) | cair ao longo dos lotes |
 | Escolhas com a mesma consequência de outra do mesmo evento | 0 | 0 |
-| Eventos "tanto faz" | 4 | 0 |
-| Flags gravadas e nunca lidas | 48 | 0 |
-| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 6 / 0 / 0 | muito mais |
-| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.760 | referência |
-| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.729 | bem menor que a de cima |
+| Eventos "tanto faz" | 1 | 0 |
+| Flags gravadas e nunca lidas | 49 | 0 |
+| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 12 / 0 / 0 | muito mais |
+| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.759 | referência |
+| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.698 | bem menor que a de cima |
 
 ### Talentos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 
 | Nome | Eventos próprios | Opções exclusivas | Caminhos/finais | OK |
 |---|---|---|---|---|
 | Memória de escriba | 4 | 6 | 1 | sim |
-| Instinto oportuno | 0 | 0 | 0 | **não** |
+| Instinto oportuno | 4 | 6 | 2 | sim |
 | Olho experiente | 0 | 0 | 0 | **não** |
 | Constituição vigorosa | 0 | 0 | 0 | **não** |
 | Presença acolhedora | 0 | 0 | 0 | **não** |
@@ -98,9 +98,9 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 | Gelo | 0 | 0 | 0 | **não** |
 | Vento | 0 | 0 | 0 | **não** |
 
-## Flags gravadas e nunca lidas (48)
+## Flags gravadas e nunca lidas (49)
 
-`medica_aprendiz` (murim_escola), `templo_aprendiz` (murim_escola), `lua_oca_aprendiz` (murim_escola), `sem_escola` (murim_escola), `nome_gwon` (murim_armazem), `jang_cidade` (murim_refugiados), `torneio_honra` (murim_torneio), `gwon_alerta` (murim_torneio), `torneio_dívida` (murim_torneio), `gwon_contexto` (murim_mercado), `distintivo_roubado` (murim_ataque), `registro_alunos` (murim_arquivo), `passo_garca` (murim_arquivo), `lanca_garca` (murim_arquivo), `carta_queimada` (murim_carta), `adiou_ultimo_inverno` (murim_final_vida), `lanca_peregrina` (murim_peregrinos), `oficial_taxa` (murim_festival), `dae_hyun_livre` (murim_punicao), `rival_revelado` (murim_duelo_ponte), `nova_geracao` (murim_retorno), `lua_oca_recusada` (murim_assassino), `lua_oca_divida` (murim_assassino), `legado_verificacao` (murim_heranca_final), `legado_silenciado` (murim_heranca_final), `legado_contestado` (murim_heranca_final), `metodo_barqueira` (murim_estilos_errantes), `metodo_arbitro` (murim_estilos_errantes), `metodo_formacao` (murim_estilos_errantes), `metodo_agulhas` (murim_estilos_errantes), `metodo_rastreio` (murim_estilos_errantes), `hwayang_distancia` (murim_pos_conselho), `assembleia_popular` (murim_assembleia), `rede_apoio` (murim_assembleia), `assembleia_aberta` (murim_assembleia), `guarda_comum` (murim_assembleia), `limite_patrulha` (murim_assembleia), `ata_publica` (murim_assembleia), `escola_comunitaria` (murim_escola_aberta), `escola_autonoma` (murim_escola_aberta), `escola_itinerante` (murim_escola_aberta), `rota_compartilhada` (murim_rota_guardiao), `desertor_ouvido` (murim_rota_guardiao), `sinais_rota` (murim_rota_guardiao), `metodo_verificado` (murim_metodo_aberto), `metodo_seguro` (murim_metodo_aberto), `metodo_compartilhado` (murim_metodo_aberto), `arquivo_vivo` (mem_peso)
+`medica_aprendiz` (murim_escola), `templo_aprendiz` (murim_escola), `lua_oca_aprendiz` (murim_escola), `sem_escola` (murim_escola), `nome_gwon` (murim_armazem), `jang_cidade` (murim_refugiados), `torneio_honra` (murim_torneio), `gwon_alerta` (murim_torneio), `torneio_dívida` (murim_torneio), `gwon_contexto` (murim_mercado), `distintivo_roubado` (murim_ataque), `registro_alunos` (murim_arquivo), `passo_garca` (murim_arquivo), `lanca_garca` (murim_arquivo), `carta_queimada` (murim_carta), `adiou_ultimo_inverno` (murim_final_vida), `lanca_peregrina` (murim_peregrinos), `oficial_taxa` (murim_festival), `dae_hyun_livre` (murim_punicao), `rival_revelado` (murim_duelo_ponte), `nova_geracao` (murim_retorno), `lua_oca_recusada` (murim_assassino), `lua_oca_divida` (murim_assassino), `legado_verificacao` (murim_heranca_final), `legado_silenciado` (murim_heranca_final), `legado_contestado` (murim_heranca_final), `metodo_barqueira` (murim_estilos_errantes), `metodo_arbitro` (murim_estilos_errantes), `metodo_formacao` (murim_estilos_errantes), `metodo_agulhas` (murim_estilos_errantes), `metodo_rastreio` (murim_estilos_errantes), `hwayang_distancia` (murim_pos_conselho), `assembleia_popular` (murim_assembleia), `rede_apoio` (murim_assembleia), `assembleia_aberta` (murim_assembleia), `guarda_comum` (murim_assembleia), `limite_patrulha` (murim_assembleia), `ata_publica` (murim_assembleia), `escola_comunitaria` (murim_escola_aberta), `escola_autonoma` (murim_escola_aberta), `escola_itinerante` (murim_escola_aberta), `rota_compartilhada` (murim_rota_guardiao), `desertor_ouvido` (murim_rota_guardiao), `sinais_rota` (murim_rota_guardiao), `metodo_verificado` (murim_metodo_aberto), `metodo_seguro` (murim_metodo_aberto), `metodo_compartilhado` (murim_metodo_aberto), `arquivo_vivo` (mem_peso), `sor_andarilho` (sor_ultima_estrada)
 
 ## Escolhas com a mesma consequência (0)
 
@@ -110,11 +110,11 @@ nenhuma
 
 nenhum
 
-## Eventos "tanto faz" (4)
+## Eventos "tanto faz" (1)
 
-`murim_dia_comum`, `murim_dilema`, `murim_inverno`, `murim_ponte_reparo`
+`murim_ponte_reparo`
 
-## Escolhas sem marca (35; primeiras 150)
+## Escolhas sem marca (36; primeiras 150)
 
 - murim_dia_comum: Ajudar a descarregar uma carroça
 - murim_dia_comum: Praticar a forma básica ao amanhecer
@@ -151,3 +151,4 @@ nenhum
 - murim_ponte_reparo: Usar a passagem da montanha
 - mem_escriba: Recusar: o trabalho cheira a problema
 - mem_testemunho: Dizer que não se lembra bem, para proteg
+- sor_ultima_estrada: Recusar, e mostrar a ela o caminho de vo
