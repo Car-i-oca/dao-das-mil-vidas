@@ -337,6 +337,27 @@ hes_categoria_formas|Venceu o torneio na categoria de formas, onde ninguém o at
 hes_voz_emprestada|Entregou os documentos a Jang Hwa-ryeon e deixou que ela falasse por ele.
 hes_cuidou_das_criancas|Cuidou das crianças no templo enquanto os outros enfrentavam a neve.
 
+del_aprendeu_ervas|Aprendeu com Seo Yun a ler a febre antes de ela chegar.
+del_cuidou_da_mae|Prometeu à mãe cuidar de si e descobriu que também cuidava dela.
+del_jurou_forca|Jurou ficar mais forte que os meninos da neve e carregou a promessa como lenha.
+del_virou_professor|Aceitou ser poupado do treino e virou professor dos iniciantes.
+del_treinou_com_febre|Treinou com febre contra o conselho do mestre e pagou depois.
+del_desmaiou_no_patio|Desmaiou no pátio ao exigir treinar como os outros.
+del_treino_contado|Recebeu a cada noite o treino contado pelos colegas.
+del_aceitou_carona|Aceitou a carona de um casal de camponeses na geada.
+del_pediu_cuidado|Aceitou cuidado sem se sentir menos, e superou o orgulho do corpo frágil.
+del_recusou_ajuda|Recusou ajuda na geada e chegou à estalagem com os lábios roxos.
+del_manta_emprestada|Pediu emprestada a manta do casal e a devolveu na colheita.
+del_fim_ok|Respondeu à menina que perguntou se dói ser frágil.
+del_fraqueza_oficio|Fez ofício da fraqueza: ensinou o que o corpo frágil vê.
+del_ervas_passadas|Passou a uma menina as ervas e os sinais do corpo.
+del_inverno_templo|Passou um inverno no templo cuidando dos febris.
+del_carona_cocheiro|Aceitou um lugar na carroça e chegou inteiro, com três histórias.
+del_pulso_lido|Pediu ao médico que lesse seu pulso e seguiu os três hábitos a vida toda.
+del_receita_do_caldo|Deu a Dae-hyun a receita de caldo para a irmã doente.
+del_assembleia_sentada|Fez a assembleia falar sentada e em turnos curtos.
+del_janela|Passou o último inverno junto à janela, ouvindo histórias.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

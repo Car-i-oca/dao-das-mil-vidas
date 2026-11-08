@@ -36,6 +36,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_chegou_na_hora', name: 'O que chegou na hora', legacy: 1.4, text: '{nome} chegou atrasado a quase tudo na vida, e a vila inteira ria disso com carinho. No dia do casamento da filha de um velho amigo, chegou na hora, e dizem que foi o único atraso que o mundo lhe deveu, pago de uma vez só.' },
   { id: 'murim_forma_de_cada_um', name: 'O que ensinou a errar do próprio jeito', legacy: 1.4, text: '{nome} passou a vida envergonhado de uma técnica que oscilava, e no fim descobriu que a oscilação era o que tornava a forma sua. Os três discípulos que deixou fazem a mesma forma de três jeitos, e nenhum erra.' },
   { id: 'murim_medo_dito', name: 'O que disse o medo em voz alta', legacy: 1.4, text: '{nome} tremeu diante de cães, de pátios e de portas em chamas, e entrou em todas as portas mesmo assim. No fim, a lição que deixou a um jovem aprendiz foi a que mais custou: o medo não passa, mas pode ser dito, e dito deixa de ser vergonha.' },
+  { id: 'murim_oficio_da_fraqueza', name: 'O que fez ofício da fraqueza', legacy: 1.4, text: '{nome} passou a vida com o corpo que mais cobrava e menos dava, e fez disso um modo de ver. Os que o conheceram lembram da janela, das ervas e de uma menina que anotou tudo com letra torta e hoje cura metade do vale.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

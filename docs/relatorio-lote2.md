@@ -113,3 +113,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 4 de 9: Hesitação sob pressão (`covarde`)
 - **Entrou** (`tracos/covarde.ts`): 4 cenas (`hes_o_cao_do_moinho`, `hes_o_chamado_no_patio`, `hes_a_porta_da_casa`, `hes_o_medo_que_ficou`), 6 opções exclusivas de quem tem o defeito (bandidos, oferta da Lua Oca, duelo na ponte, torneio, audiência, vila sob a neve), arco de redenção (`hes_a_porta_da_casa`, `fx.superar` ao entrar na casa em chamas) e o final `murim_medo_dito` (flag `hes_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `c771996e5e100b3f`.
+
+## B2 — defeito 5 de 9: Saúde delicada (`doente`)
+- **Entrou** (`tracos/doente.ts`): 4 cenas (`del_febre_de_infancia`, `del_a_escola_que_poupou`, `del_o_inverno_da_estrada`, `del_quem_cuida`), 6 opções exclusivas de quem tem o defeito (vila sob a neve, dia na estrada, peregrinos, caldo, assembleia, último inverno), arco de redenção (`del_o_inverno_da_estrada`, `fx.superar` ao aceitar cuidado) e o final `murim_oficio_da_fraqueza` (flag `del_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `153364f26af29731`.
