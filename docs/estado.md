@@ -17,7 +17,7 @@
 
 ## Próximos passos (em ordem)
 1. **B2 (em andamento)** Murim: Talentos (14) e defeitos (9) do Murim concluídos. Resta: nenhuma escola > 35% (Lâmina Errante).
-2. Pendência a): Caminho do Sangue no Xianxia nunca é alcançado nas simulações; investigar (robô ou condição do jogo) e registrar em `docs/duvidas-lote2.md`; se for bloqueio do jogo, corrigir no B4.
+2. Pendência a) investigada: é bloqueio do jogo (a trilha `demoniaca` não está na lista de `desp_mestre_caminho` e nenhum molde a concede); detalhes em `docs/duvidas-lote2.md`; correção no B4.
 3. **B3** reações restantes das alcunhas (3 por alcunha, nos dois modos), revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
 5. **B5** origens e trilhas nos dois modos.
