@@ -9,6 +9,7 @@ import { LADDERS } from './realms';
 import { MARCAS_VIDA } from './marcas_vida';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
 import { EVENTOS_XIANXIA } from './eventos';
+import { MOLDES } from './v2';
 
 /** Reserva do motor clássico: a velhice depende da vida. O diretor da v2 tem seus próprios finais (finalDeVelhiceV2) e tem prioridade. */
 function finalDeVelhice(s: State): string {
@@ -31,6 +32,7 @@ export const XIANXIA: PacoteModo = {
   subtitulo: 'Cultivo',
   resumo: 'Cultivação rumo à imortalidade: reinos, séculos de vida, seitas, alquimia e tribulações.',
   eventos: EVENTOS_XIANXIA,
+  cenas: MOLDES.length,
   trilhas: PATHS,
   origens: ORIGINS,
   talentos: TALENTS,
@@ -56,6 +58,11 @@ export const XIANXIA: PacoteModo = {
     progresso: 'de cultivo',
     subiu: (nome) => `Alcançou o reino: ${nome}.`,
     alinhamento: (demoniaco) => `Alinhamento alterado: ${demoniaco ? 'Caminho Demoníaco' : 'Caminho Daoico'}.`,
+    rotulos: {
+      trilha: 'Trilha de cultivo', reino: 'Reino', reinoResumo: 'Reino de cultivo',
+      facoes: { seita: 'Seita justa', demoniaca: 'Seita demoníaca', cla: 'Clã', errante: 'Cultivador errante', nenhuma: 'Sem facção' },
+      criacao: 'Seu caminho de cultivo será escolhido dentro da história, quando você despertar o Qi e encontrar um método.',
+    },
     rompimento: {
       gargalo: (alvo, trib) => `Seu cultivo transborda. Diante de você está a porta para ${alvo}.${trib ? ' Raios de tribulação já se agrupam no horizonte.' : ''}`,
       esperar: [

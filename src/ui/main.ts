@@ -5,8 +5,8 @@ import {
   realmOf, ladderOf, eff, cultivationRate, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
   type Creation,
 } from '../engine/engine';
-import { UPGRADES, upgradePrice } from '../data/legado';
-import { pacoteDe, type Modo } from '../data/modos';
+import { upgradePrice } from '../data/legado';
+import { pacoteDe, MODOS, type Modo } from '../data/modos';
 import type { Change, DiceRoll, EquipmentSlot, Item, Meta, State, StatKey, UiNotification } from '../types';
 import { itemIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
@@ -19,15 +19,15 @@ const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.
 
 /** Pacote do modo em foco: o da tela de criação, senão o da vida em andamento (ou da última). */
 function K() {
-  const modo: Modo | undefined = screen === 'create' && creation ? creation.c.modo : save.run?.modo ?? creation?.c.modo;
+  const modo: Modo | undefined = screen === 'meta' && metaModo ? metaModo : screen === 'create' && creation ? creation.c.modo : save.run?.modo ?? creation?.c.modo;
   return pacoteDe(modo);
 }
 
 /* ---------- Persistência ---------- */
 const KEY = 'murim-quest-save-v1';
-interface Settings { estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
+interface Settings { modo?: Modo; estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
 function normSettings(x?: Partial<Settings>): Settings {
-  return { estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
+  return { modo: x?.modo === 'xianxia' ? 'xianxia' : 'murim', estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
 }
 interface Save { meta: Meta; run: State | null; settings: Settings }
 
@@ -36,7 +36,11 @@ function load(): Save {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const p = JSON.parse(raw) as Save;
-      if (p?.meta) return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
+      if (p?.meta) {
+        // Vida em andamento salva antes dos modos: era Murim.
+        if (p.run && !p.run.modo) p.run.modo = 'murim';
+        return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
+      }
     }
   } catch { /* save corrompido ou indisponível */ }
   return { meta: newMeta(), run: null, settings: normSettings() };
@@ -95,11 +99,13 @@ function withRng<T>(s: State, fn: (r: Rng) => T): T {
 }
 
 /* ---------- Estado de interface ---------- */
-type Screen = 'home' | 'create' | 'game' | 'end' | 'meta';
+type Screen = 'home' | 'modo' | 'create' | 'game' | 'end' | 'meta';
 let screen: Screen = 'home';
 let tab: 'aventura' | 'equipamentos' | 'inventario' | 'diario' = 'aventura';
 let metaTab: 'heranca' | 'conquistas' | 'codice' | 'historico' | 'opcoes' = 'heranca';
 let creation: { c: Creation; seed: number; rerolls: number } | null = null;
+/** Modo em foco na tela do Legado (o das listas de conquistas, códice e melhorias). */
+let metaModo: Modo | null = null;
 let typer: { timer: number; el: HTMLElement; full: string; done: () => void } | null = null;
 let audioStarted = false;
 let audioGateError = '';
@@ -200,6 +206,7 @@ function render() {
   }
   switch (screen) {
     case 'home': renderHome(); break;
+    case 'modo': renderModo(); break;
     case 'create': renderCreate(); break;
     case 'game': renderGame(); break;
     case 'end': renderEnd(); break;
@@ -260,7 +267,7 @@ function renderHome() {
   const gallery = galleryOpen ? galleryModalHtml(m) : '';
   app.innerHTML = `
     <div class="screen home">
-      <div class="home-emblem"><div class="seal">武</div><span>CRÔNICAS DO JIANGHU</span></div>
+      <div class="home-emblem"><div class="seal">武</div><span>MURIM · XIANXIA</span></div>
       <div class="home-title"><h1>Murim Quest</h1><div class="tag">Seu nome, sua escola, suas escolhas.</div></div>
       <div class="stack home-menu">
         ${save.run && !save.run.summary ? `<button class="btn primary" data-act="continue">Continuar a vida de ${esc(save.run.name)}</button>` : ''}
@@ -270,9 +277,29 @@ function renderHome() {
         <button class="btn ghost" data-act="estilomenu">Estilo de arte: ${ESTILOS.find((e) => e.id === save.settings.estilo)?.nome ?? ''}</button>
         ${isStandalone() ? '' : '<button class="btn ghost" data-act="install">Instalar como app</button>'}
       </div>
-      <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${m.endingsSeen.length}/${K().finais.length}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
-      <p class="muted small copy">Murim Quest · Uma crônica original do Jianghu</p>
+      <p class="home-stats">Vidas vividas <b>${m.lives}</b><span>·</span> Finais descobertos <b>${MODOS.map((id) => `${pacoteDe(id).nome} ${m.endingsSeen.filter((e) => pacoteDe(id).ix.ENDING[e]).length}/${pacoteDe(id).finais.length}`).join(' · ')}</b>${m.best ? `<span>·</span> Melhor: ${esc(bestName(m))}` : ''}</p>
+      <p class="muted small copy">Murim Quest · Duas crônicas originais: Jianghu e Cultivo</p>
     </div>${gallery}`;
+}
+
+function renderModo() {
+  const m = save.meta;
+  const preferido = save.settings.modo ?? 'murim';
+  const cartao = (id: Modo) => {
+    const pk = pacoteDe(id);
+    const vidas = m.history.filter((h) => (h.modo ?? 'murim') === id).length;
+    return `<button class="modo-card ${id === preferido ? 'preferido' : ''}" data-act="modo" data-id="${id}" aria-label="${esc(`${pk.nome}, ${pk.subtitulo}. ${pk.resumo}`)}">
+      <span class="modo-glifo" aria-hidden="true">${id === 'murim' ? '武' : '仙'}</span>
+      <span class="modo-texto"><b>${esc(pk.nome)} · ${esc(pk.subtitulo)}</b><span>${esc(pk.resumo)}</span><small>${vidas ? `Suas vidas: ${vidas}` : 'Ainda sem vidas neste modo'}</small></span>
+    </button>`;
+  };
+  app.innerHTML = `
+    <div class="screen modo-screen">
+      <div class="row between"><h2>Que vida você quer viver?</h2></div>
+      <div class="stack modo-lista">${MODOS.map(cartao).join('')}</div>
+      <p class="muted small">O modo vale para esta vida. Seu Legado vale para os dois.</p>
+      <button class="btn ghost" data-act="home">‹ Início</button>
+    </div>`;
 }
 
 function galleryModalHtml(meta: Meta): string {
@@ -312,10 +339,10 @@ function bestName(m: Meta): string {
   return `faixa ${b.tier}, ${b.age} anos`;
 }
 
-function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0)) {
+function newCreation(prevRerolls = 3 + (save.meta.upgrades.sorteio ?? 0), modo: Modo = save.settings.modo ?? 'murim') {
   const seed = (Math.random() * 4294967295) >>> 0;
   const rng = new Rng(seed);
-  creation = { c: rollCreation(save.meta, rng), seed: rng.seed, rerolls: prevRerolls };
+  creation = { c: rollCreation(save.meta, rng, modo), seed: rng.seed, rerolls: prevRerolls };
 }
 
 function renderCreate() {
@@ -325,7 +352,7 @@ function renderCreate() {
   const cons = c.constitution ? K().ix.CONSTITUTION[c.constitution] : null;
   app.innerHTML = `
     <div class="screen">
-      <div class="row between"><h2>Seu destino</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
+      <div class="row between"><h2>Seu destino <span class="modo-selo">${esc(K().nome)} · ${esc(K().subtitulo)}</span></h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="new">‹ Modo</button></div>
       <div class="card kv">
         <div class="k">Origem</div><div class="v"><b>${esc(o.name)}</b><br><span class="muted small">${esc(o.desc)}</span></div>
         <div class="k">Aptidão</div><div class="v"><b>${esc(c.root.name)}</b><br><span class="muted small">Ritmo de aprendizado ×${c.root.mult.toFixed(2)}</span></div>
@@ -335,7 +362,7 @@ function renderCreate() {
       </div>
       <button class="btn" data-act="reroll" ${rerolls <= 0 ? 'disabled' : ''}>Sortear de novo (${rerolls} restantes)</button>
       <div class="card"><div class="muted small">DIFICULDADE</div><div class="row" style="flex-wrap:wrap;margin-top:8px">${DIFFICULTIES.map(([v, n]) => `<button class="btn ${save.settings.difficulty === v ? 'primary' : ''}" style="width:auto;flex:1;padding:10px 6px" data-act="dif" data-i="${v}">${n}</button>`).join('')}</div><div class="muted small" style="margin-top:6px">${DIFFICULTIES.find(([v]) => v === save.settings.difficulty)?.[2] ?? ''}</div></div>
-      <p class="muted small">Sua escola e estilo de combate serão escolhidos dentro da história, quando surgir a oportunidade de entrar no Jianghu.</p>
+      <p class="muted small">${esc(K().vocab.rotulos.criacao)}</p>
       <button class="btn primary" data-act="start">Iniciar vida</button>
     </div>`;
 }
@@ -454,8 +481,10 @@ function lifeHtml(s: State): string {
       <section class="story-panel" id="story-panel" data-act="${v.kind === 'event' ? 'skip' : ''}">
         ${chk ? `<span class="badge ${chk.success ? 'ok' : 'bad'}">${chk.success ? '✔ Sucesso' : '✘ Falha'} · ${pct(chk.chance)}</span>` : ''}
         ${intro}
+        ${v.cartao ? `<div class="chapter-card">${esc(v.cartao)}</div>` : ''}
         ${npcFor(s, eventId)}
       <p class="story-text" id="typed"></p>
+        ${v.noticias?.length ? `<ul class="noticias">${v.noticias.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
         ${v.kind === 'event' ? '<div class="hint" id="hint">toque para pular</div>' : ''}
         ${eventType === 'shop' && !shopOpen ? '<button class="btn ghost" data-act="shop-open">Abrir loja do mercador</button>' : ''}
       </section>
@@ -500,13 +529,15 @@ function statusHtml(s: State): string {
     return `<div class="stat"><span>${K().vocab.atributos[k]}</span><div class="bar"><i style="width:${Math.min(100, v)}%"></i></div><span class="n">${v}${v !== base ? `<span class="muted small"> (${base})</span>` : ''}</span></div>`;
   }).join('');
   const cons = s.constitution ? K().ix.CONSTITUTION[s.constitution] : null;
-  const fac: Record<string, string> = { seita: 'Escola reconhecida', demoniaca: 'Escola clandestina', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' };
+  const R = K().vocab.rotulos;
+  const fac = R.facoes;
   return `
     <div class="card">
-      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon('murim', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
+      <div class="emblems">${pathIcon(s.path || 'sopro', 56)}${realmIcon(s.modo === 'xianxia' ? 'xianxia' : 'murim', s.tier, 56)}<div class="grow"><b>${esc(path.name)}</b><div class="muted small">${esc(realmOf(s).name)}</div></div></div>
       <div class="kv">
-        <div class="k">Escola e estilo</div><div class="v">${esc(path.name)}</div>
-        <div class="k">Faixa</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
+        <div class="k">Modo</div><div class="v">${esc(K().nome)} · ${esc(K().subtitulo)}</div>
+        <div class="k">${esc(R.trilha)}</div><div class="v">${esc(path.name)}</div>
+        <div class="k">${esc(R.reino)}</div><div class="v">${esc(realmOf(s).name)} <span class="muted small">(${s.tier}/${L.realms.length - 1})</span></div>
         <div class="k">Origem</div><div class="v">${esc(K().ix.ORIGIN[s.origin].name)}</div>
         <div class="k">Aptidão</div><div class="v">${esc(s.root.name)}</div>
         ${cons ? `<div class="k">Corpo</div><div class="v">${esc(cons.name)}</div>` : ''}
@@ -670,7 +701,8 @@ function renderEnd() {
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
       <div class="card sum">
-        <span>Faixa marcial</span><b>${esc(sm.tierName)}</b>
+        <span>Modo</span><b>${esc(K().nome)} · ${esc(K().subtitulo)}</b>
+        <span>${esc(K().vocab.rotulos.reinoResumo)}</span><b>${esc(sm.tierName)}</b>
         <span>Idade alcançada</span><b>${Math.floor(s.age)} anos</b>
         <span>Causa do fim</span><b>${esc(e.name)}</b>
         <span>Legado ganho nesta vida</span><b class="legacy-earned">+${sm.legacy}</b>
@@ -691,11 +723,12 @@ function renderEnd() {
 
 function renderMeta() {
   const m = save.meta;
+  metaModo ??= save.run?.modo ?? save.settings.modo ?? 'murim';
   const tabs: [typeof metaTab, string][] = [['heranca', 'Legado'], ['conquistas', 'Conquistas'], ['codice', 'Códice'], ['historico', 'Histórico'], ['opcoes', 'Opções']];
   let body = '';
   if (metaTab === 'heranca') {
     body = `<div class="card row between"><span>Pontos disponíveis</span><b style="color:var(--gold);font-size:1.3rem">${m.legacy}</b></div>
-      ${UPGRADES.map((u) => {
+      ${K().melhorias.map((u) => {
         const lvl = m.upgrades[u.id] ?? 0;
         const price = upgradePrice(u.cost, lvl);
         return `<div class="card item"><div><b>${u.name}</b> <span class="muted small">nv ${lvl}/${u.max}</span><div class="muted small">${u.desc}</div></div>
@@ -732,12 +765,13 @@ function renderMeta() {
       <button class="btn" data-act="export">Copiar save (backup)</button>
       <button class="btn" data-act="import">Importar save</button>
       <button class="btn ghost" data-act="wipe" style="color:var(--red)">Apagar todo o progresso</button>
-      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})<br>${K().eventos.length} eventos · ${K().itens.length} itens · ${K().finais.length} finais · ${K().trilhas.length} estilos marciais<br>Uma história original de escolas, escolhas e consequências no Jianghu.</div>`;
+      <div class="card muted small"><b>Sobre</b><br>Murim Quest · versão ${__APP_VERSION__} (${__BUILD_DATE__})${MODOS.map((id) => { const p = pacoteDe(id); return `<br>${p.nome}: ${p.cenas} cenas · ${p.itens.length} itens · ${p.finais.length} finais · ${p.trilhas.length} trilhas`; }).join('')}</div>`;
   }
   app.innerHTML = `
     <div class="screen">
       <div class="row between"><h2>Legado</h2><button class="btn ghost" style="width:auto;padding:8px 14px;min-height:0" data-act="home">‹ Início</button></div>
       <div class="row" style="flex-wrap:wrap">${tabs.map(([id, n]) => `<button class="path ${metaTab === id ? 'sel' : ''}" style="padding:8px 12px" data-act="mtab" data-id="${id}">${n}</button>`).join('')}</div>
+      ${['heranca', 'conquistas', 'codice'].includes(metaTab) ? `<div class="row modo-troca" role="group" aria-label="Modo exibido">${MODOS.map((id) => `<button class="path ${metaModo === id ? 'sel' : ''}" data-act="metamodo" data-id="${id}">${esc(pacoteDe(id).nome)}</button>`).join('')}</div>` : ''}
       ${body}
     </div>`;
 }
@@ -793,22 +827,32 @@ app.addEventListener('click', (ev) => {
     case 'gallery-open': galleryOpen = true; galleryTab = 'endings'; render(); break;
     case 'gallery-close': galleryOpen = false; render(); break;
     case 'gallery-tab': galleryTab = target.dataset.id as typeof galleryTab; render(); break;
-    case 'new': newCreation(); screen = 'create'; render(); break;
+    case 'new': screen = 'modo'; render(); break;
+    case 'modo': {
+      const escolhido: Modo = target.dataset.id === 'xianxia' ? 'xianxia' : 'murim';
+      save.settings.modo = escolhido;
+      persist();
+      newCreation(undefined, escolhido);
+      screen = 'create';
+      render();
+      break;
+    }
     case 'continue':
       if (save.run) tab = 'aventura';
       screen = save.run?.ending ? 'end' : 'game';
       persist();
       render();
       break;
-    case 'meta': screen = 'meta'; render(); break;
-    case 'estilomenu': screen = 'meta'; metaTab = 'opcoes'; render(); break;
+    case 'meta': screen = 'meta'; metaModo = null; render(); break;
+    case 'metamodo': metaModo = target.dataset.id === 'xianxia' ? 'xianxia' : 'murim'; render(); break;
+    case 'estilomenu': screen = 'meta'; metaModo = null; metaTab = 'opcoes'; render(); break;
     case 'install':
       if (installEvt) { void installEvt.prompt(); installEvt = null; }
       else toast(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'No Safari: Compartilhar → Adicionar à Tela de Início' : 'No menu do navegador: Instalar app / Adicionar à tela inicial');
       break;
     case 'mtab': metaTab = target.dataset.id as typeof metaTab; render(); break;
     case 'reroll':
-      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1);
+      if (creation && creation.rerolls > 0) newCreation(creation.rerolls - 1, creation.c.modo ?? 'murim');
       render();
       break;
     case 'start': startRun(); break;
@@ -897,7 +941,7 @@ app.addEventListener('click', (ev) => {
       }
       break;
     case 'buy': {
-      const u = UPGRADES.find((x) => x.id === target.dataset.id)!;
+      const u = K().melhorias.find((x) => x.id === target.dataset.id)!;
       if (buyUpgrade(save.meta, u.id, u.cost, u.max)) { persist(); render(); }
       break;
     }

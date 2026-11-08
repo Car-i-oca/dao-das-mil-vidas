@@ -33,6 +33,7 @@ export const MURIM: PacoteModo = {
   subtitulo: 'Jianghu',
   resumo: 'Carreira marcial humana: escolas, clãs e a fama que sobe de Aprendiz a Lenda.',
   eventos: EVENTS,
+  cenas: EVENTS.length,
   trilhas: PATHS,
   origens: ORIGINS,
   talentos: TALENTS,
@@ -58,6 +59,11 @@ export const MURIM: PacoteModo = {
     progresso: 'de treino',
     subiu: (nome) => `Faixa alcançada: ${nome}.`,
     alinhamento: (demoniaco) => `Sua escola segue uma tradição ${demoniaco ? 'clandestina' : 'reconhecida'}.`,
+    rotulos: {
+      trilha: 'Escola e estilo', reino: 'Faixa', reinoResumo: 'Faixa marcial',
+      facoes: { seita: 'Escola reconhecida', demoniaca: 'Escola clandestina', cla: 'Clã', errante: 'Errante', nenhuma: 'Sem facção' },
+      criacao: 'Sua escola e estilo de combate serão escolhidos dentro da história, quando surgir a oportunidade de entrar no Jianghu.',
+    },
     rompimento: {
       gargalo: (alvo, trib) => `Seu treinamento chegou ao limite da faixa atual. Para avançar até ${alvo}, você precisa demonstrar domínio sob pressão.${trib ? ' Uma prova pública já se aproxima.' : ''}`,
       esperar: [

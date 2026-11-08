@@ -39,6 +39,8 @@ export interface Vocabulario {
   /** Aviso ao mudar de tradição/caminho. */
   alinhamento: (demoniaco: boolean) => string;
   rompimento: Rompimento;
+  /** Rótulos de interface que mudam de nome entre os modos. */
+  rotulos: { trilha: string; reino: string; reinoResumo: string; facoes: Record<string, string>; criacao: string };
 }
 
 export interface Regras {
@@ -75,6 +77,8 @@ export interface PacoteModo {
   /** Uma linha, mostrada na tela de escolha de modo. */
   resumo: string;
   eventos: GameEvent[];
+  /** Quantidade de cenas distintas do modo (eventos no clássico, moldes no v2). */
+  cenas: number;
   trilhas: Path[];
   origens: Origin[];
   talentos: Talent[];
