@@ -188,6 +188,24 @@ voz_inverno|Convenceu os mercadores a dividir na nevasca.
 voz_festival|Fez o oficial e o garoto conversarem diante da praça.
 voz_rota|Propôs que as duas caravanas atravessassem juntas, em fila.
 
+vaz_celeiro_avisado|Ouviu dois homens no celeiro e acordou o pai para contar.
+vaz_terceiro_homem|Guardou o rosto de um terceiro homem que veio ao celeiro.
+vaz_seguiu_os_dois|Seguiu os dois homens do celeiro até a casa deles, sem ranger uma tábua.
+vaz_apresentou_se|Apresentou-se em voz alta à turma que o esquecera.
+vaz_invisivel_escola|Foi esquecido pela escola inteira e não protestou.
+vaz_escutou_escola|Escutou a escola inteira quando ninguém sabia que ele estava ali.
+vaz_discipula|Acolheu a jovem que o seguiu por dois anos sem ser percebida.
+vaz_discipula_afastada|Perdeu a jovem que o seguia por medo de ser seguido.
+vaz_passo_vazio_fim|Descobriu o que fazer com tantos atos que ninguém viu.
+vaz_deixou_se_ver|Contou à praça o que fez quando ninguém olhava.
+vaz_passo_herdado|Ensinou à jovem quando desaparecer e quando voltar.
+vaz_armazem_telhado|Copiou os registros do armazém pelo telhado, sem ranger uma telha.
+vaz_casa_cha_janela|Escapou da casa de chá pela janela e viu os perseguidores saírem de mãos vazias.
+vaz_choi_rin_seguida|Seguiu Choi Rin à distância e a protegeu sem se mostrar.
+vaz_torneio_observado|Anotou do fundo da arquibancada quem subornava quem.
+vaz_ataque_silencio|Surgiu às costas do falso guarda e desfez o assalto sem um golpe.
+vaz_vida_discreta|Viveu anos no mercado como o homem do canto.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

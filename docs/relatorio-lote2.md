@@ -79,3 +79,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 10 de 14: Voz que reúne (`predestinado`)
 - **Entrou** (`tracos/predestinado.ts`): 4 cenas (`voz_primeiro_pedido`, `voz_ponte_dos_desistentes`, `voz_quem_nao_voltou`, `voz_sem_discurso`), 6 opções exclusivas (refugiados, audiência, assembleia, vila sob a neve, festival, lanternas na rota) e o final `murim_voz_passada` (flag `voz_sem_discurso_ok`). Cicatriz: quem reúne responde por quem reuniu. Dourado inalterado (nenhuma das 330 vidas fixas usa este talento).
 - **Dourado:** agora `4979b38fa0f7fa6d`.
+
+## B2 — talento 11 de 14: Passo silencioso (`passo_vazio`)
+- **Entrou** (`tracos/passo_vazio.ts`): 4 cenas (`vaz_porta_do_celeiro`, `vaz_sombra_da_escola`, `vaz_quem_te_seguia`, `vaz_ninguem_viu`), 6 opções exclusivas (armazém, casa de chá, oferta da Lua Oca, torneio, bandidos, vida comum) e o final `murim_passo_sem_nome` (flag `vaz_passo_vazio_fim`). Cicatriz: quem passa despercebido por todos também passa despercebido por quem o amaria.
+- **Dourado:** agora `d9d4a7318cc51dc0`.
