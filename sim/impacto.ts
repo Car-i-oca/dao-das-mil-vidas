@@ -20,6 +20,7 @@ const TALENTS = PK.talentos;
 const FLAWS = PK.defeitos;
 const MARCAS_VIDA = PK.marcasVida;
 
+if (MODO === 'xianxia') { await import('./impacto-v2'); process.exit(0); }
 const args = process.argv.slice(2);
 const saveBaseline = args.includes('--baseline');
 const BASE = `docs/impacto-${MODO}.baseline.json`;
