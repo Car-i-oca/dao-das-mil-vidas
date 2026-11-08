@@ -11,8 +11,9 @@ import { OLHAR_DAO } from './olhar_dao';
 import { VIDA_LONGA } from './vida_longa';
 import { PREDESTINADO } from './predestinado';
 import { PASSO_VAZIO } from './passo_vazio';
+import { SANGUE_DRAGAO } from './sangue_dragao';
 
-const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA, CORPO_RESISTENTE, CARISMA_NATO, MESTRE_NATO, CORACAO_INABALAVEL, OLHAR_DAO, VIDA_LONGA, PREDESTINADO, PASSO_VAZIO];
+const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA, CORPO_RESISTENTE, CARISMA_NATO, MESTRE_NATO, CORACAO_INABALAVEL, OLHAR_DAO, VIDA_LONGA, PREDESTINADO, PASSO_VAZIO, SANGUE_DRAGAO];
 
 function aplica(op: OpT): Choice {
   const { p, ...c } = op;

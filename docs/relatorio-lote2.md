@@ -83,3 +83,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 11 de 14: Passo silencioso (`passo_vazio`)
 - **Entrou** (`tracos/passo_vazio.ts`): 4 cenas (`vaz_porta_do_celeiro`, `vaz_sombra_da_escola`, `vaz_quem_te_seguia`, `vaz_ninguem_viu`), 6 opções exclusivas (armazém, casa de chá, oferta da Lua Oca, torneio, bandidos, vida comum) e o final `murim_passo_sem_nome` (flag `vaz_passo_vazio_fim`). Cicatriz: quem passa despercebido por todos também passa despercebido por quem o amaria.
 - **Dourado:** agora `d9d4a7318cc51dc0`.
+
+## B2 — talento 12 de 14: Força incomum (`sangue_dragao`)
+- **Entrou** (`tracos/sangue_dragao.ts`): 4 cenas (`dra_mao_que_quebrou`, `dra_treino_contido`, `dra_o_pedido_do_clan`, `dra_mao_aberta`), 6 opções exclusivas (torneio, reparo da ponte, bandidos, refugiados, duelo na ponte, dia na estrada) e o final `murim_mao_aberta` (flag `dra_mao_aberta_fim`). Cicatriz: o dia em que a força machuca quem não devia.
+- **Dourado:** agora `f83dd848f4384ef1`.

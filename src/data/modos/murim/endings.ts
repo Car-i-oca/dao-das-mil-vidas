@@ -29,6 +29,7 @@ export const ENDINGS: Ending[] = [
   { id: 'murim_ultimo_da_mesa', name: 'A última cadeira ocupada', legacy: 1.5, text: '{nome} viveu mais do que quase todos os que conheceu, e passou os últimos anos dizendo os seus nomes em voz alta, para que não ficassem sozinhos. Quando morreu, a mesa foi posta como sempre, com todas as cadeiras, e ninguém ousou ocupar a dele.' },
   { id: 'murim_voz_passada', name: 'A voz que foi passada', legacy: 1.5, text: '{nome} reuniu vilas inteiras com uma frase, e os mais velhos juram que nunca ouviram igual. O que quase ninguém sabe é que, no último ano, perdeu o discurso e descobriu que a melhor forma de reunir era perguntar. A praça decidiu sozinha, e a decisão foi boa.' },
   { id: 'murim_passo_sem_nome', name: 'O passo sem nome', legacy: 1.5, text: 'Pouca gente soube o que {nome} fez, porque {nome} passou a vida sem fazer barulho. Mas quem foi salvo de uma cheia, de um cobrador ou de um poço sabe que alguém passou por ali, e que o passo era leve.' },
+  { id: 'murim_mao_aberta', name: 'A mão que aprendeu a abrir', legacy: 1.5, text: '{nome} tinha uma força que a vila contava com espanto e que ele passou a vida aprendendo a medir. Quem o viu no fim jura que a mão mais forte do vale repousava, aberta, sobre o joelho, enquanto uma criança lhe segurava o dedo.' },
   { id: 'murim_heranca', name: 'A casa cheia', legacy: 1.4, text: 'A mesa de {nome} ficou cheia até a última noite. Cada pessoa presente lembrava uma vida diferente e todas eram verdadeiras.' },
 ];
 export const ACHIEVEMENTS: Achievement[] = [

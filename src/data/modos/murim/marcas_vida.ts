@@ -206,6 +206,24 @@ vaz_torneio_observado|Anotou do fundo da arquibancada quem subornava quem.
 vaz_ataque_silencio|Surgiu às costas do falso guarda e desfez o assalto sem um golpe.
 vaz_vida_discreta|Viveu anos no mercado como o homem do canto.
 
+dra_amigo_cuidado|Quebrou o braço de um amigo por brincadeira e ficou ao lado dele até curar.
+dra_fugiu|Fugiu depois de quebrar o braço de um amigo e guardou o medo de si mesmo.
+dra_aprendeu_medir|Aprendeu com o pai a medir a própria força, quebrando noz sem despedaçar a mesa.
+dra_forca_contida|Treinou por semanas com uma bola de argila até aprender a conter cada golpe.
+dra_temido|Aceitou a fama de forte e ficou sozinho no meio da escola.
+dra_amigo_leve|Trocou lições de peso por lições de leveza com um colega.
+dra_braco_do_cla|Foi por cinco anos o braço do Clã Gwon, e se arrependeu.
+dra_recusou_cla|Recusou ser o braço do Clã Gwon e escolheu para quem usar a força.
+dra_infiltrou_cla|Fingiu aceitar o Clã Gwon para denunciá-lo por dentro.
+dra_mao_aberta_fim|Segurou a mão de uma criança sem medo de quebrá-la.
+dra_forca_aberta|Descobriu que a força, no fim, é uma mão aberta.
+dra_torneio_parou|Venceu o torneio e parou diante de quem já estava no chão.
+dra_ponte_cunha|Assentou a pedra da ponte e ensinou o truque da cunha.
+dra_lanca_partida|Quebrou a lança do líder dos bandidos com as mãos.
+dra_carroca_puxada|Puxou sozinho a carroça de três famílias até a cidade.
+dra_duelo_abraco|Venceu o duelo na ponte prendendo o adversário num abraço.
+dra_cavalo_calmo|Descarregou a carroça devagar para não assustar o cavalo.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
