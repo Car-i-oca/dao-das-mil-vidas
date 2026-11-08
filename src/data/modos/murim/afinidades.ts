@@ -1,4 +1,4 @@
-import type { Cat } from './opcoes';
+import type { Cat } from '../../opcoes';
 
 /**
  * Afinidades: cada talento, defeito, origem, trilha, raiz e constituição puxa para o personagem os acontecimentos

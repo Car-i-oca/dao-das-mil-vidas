@@ -5,16 +5,17 @@
  *   npm run variedade -- 3000 --baseline     grava o resultado atual como baseline (docs/variedade.baseline.json)
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { newMeta, ladderOf, PATH, finalizeLife } from '../src/engine/engine';
+import { newMeta, ladderOf, finalizeLife } from '../src/engine/engine';
 import { playLife } from './bot';
-import { EVENTS } from '../src/data/events';
-import { ENDINGS } from '../src/data/endings';
 import type { GameEvent } from '../src/types';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
 
 const args = process.argv.slice(2);
 const N = Number(args.find((a) => /^\d+$/.test(a)) ?? 3000);
 const saveBaseline = args.includes('--baseline');
-const BASELINE = 'docs/variedade.baseline.json';
+const BASELINE = `docs/variedade-${MODO}.baseline.json`;
 
 const ID_GENERIC = (e: GameEvent) => {
   const c = e.cond;
@@ -175,7 +176,7 @@ L.push('- **Nenhum final acima de 35%** das vidas.');
 L.push('- Mais eventos distintos em 10 vidas seguidas e menor semelhança entre vidas seguidas.');
 L.push('- Ascensão entre 0,5% e 2% (balanceamento atual preservado).');
 
-writeFileSync('docs/variedade.md', L.join('\n') + '\n');
+writeFileSync(`docs/variedade-${MODO}.md`, L.join('\n') + '\n');
 if (saveBaseline) writeFileSync(BASELINE, JSON.stringify(metrics, null, 2) + '\n');
 console.log(L.slice(0, 22).join('\n'));
 console.log(saveBaseline ? '\n→ baseline gravado em docs/variedade.baseline.json e docs/variedade.md' : '\n→ gravado em docs/variedade.md');

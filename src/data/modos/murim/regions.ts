@@ -1,4 +1,4 @@
-import type { Place } from '../types';
+import type { Place } from '../../../types';
 
 /** Eventos exclusivos de cada bioma; pesos relativos às outras ocorrências regionais. */
 export const REGION_POOLS: Partial<Record<Place, { eventId: string; weight: number }[]>> = {

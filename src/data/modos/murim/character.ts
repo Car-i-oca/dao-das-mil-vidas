@@ -1,4 +1,4 @@
-import type { Origin, Talent, Flaw } from '../types';
+import type { Origin, Talent, Flaw } from '../../../types';
 
 /** Passados de personagens para a nova crônica das escolas do Jianghu. */
 export const ORIGINS: Origin[] = [

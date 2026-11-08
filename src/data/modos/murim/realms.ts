@@ -1,4 +1,4 @@
-import type { Realm } from '../types';
+import type { Realm } from '../../../types';
 
 /** Patamares marciais humanos: a reputação e a habilidade avançam, não a imortalidade. */
 const ESCADA_MURIM: Realm[] = [

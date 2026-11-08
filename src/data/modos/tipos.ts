@@ -1,0 +1,84 @@
+import type { Achievement, Ending, Flaw, GameEvent, Item, Origin, Path, Place, Realm, State, StatKey, Talent } from '../../types';
+
+/** Modo de jogo: cada vida pertence a um modo e usa o pacote de conteúdo dele. */
+export type Modo = 'murim' | 'xianxia';
+
+export interface Escada { name: string; realms: Realm[]; finalName: string; finalChance: number }
+
+/** Textos do rompimento de faixa/reino, do gargalo e do treino: o motor é o mesmo, a voz muda por modo. */
+export interface Rompimento {
+  gargalo: (alvo: string, tribulacao: boolean) => string;
+  esperar: string[];
+  adiou: string;
+  escudoFinal: string;
+  escudoRompe: (alvo: string) => string;
+  sobreviveu: (alvo: string) => string;
+  morreu: (alvo: string) => string;
+  ascende: (alvo: string) => string;
+  provaCobrou: (alvo: string) => string;
+  sucesso: (alvo: string) => string[];
+  falha: string[];
+  falhaFerida: string[];
+  desvioVivo: string;
+  desvioMorto: string;
+}
+
+export interface Vocabulario {
+  atributos: Record<StatKey, string>;
+  moral: { good: string; evil: string; order: string; chaos: string };
+  /** "moedas" ou "pedras espirituais". */
+  moeda: string;
+  /** Sufixo do progresso na barra: "de treino" ou "de cultivo". */
+  progresso: string;
+  /** Linha do diário ao subir de faixa/reino. */
+  subiu: (nome: string) => string;
+  /** Aviso ao mudar de tradição/caminho. */
+  alinhamento: (demoniaco: boolean) => string;
+  rompimento: Rompimento;
+}
+
+export interface Regras {
+  /** Quanto cada reino de ameaça soma à dificuldade dos testes. */
+  dificuldade: number;
+  /** A idade máxima cresce com o reino (`Realm.lifespan`). */
+  longevidade: boolean;
+  /** Escolher a trilha demoníaca muda o alinhamento e a facção. */
+  demoniacaMudaAlinhamento: boolean;
+  /** 'classico' sorteia eventos do catálogo; 'v2' usa o mundo com memória e o diretor de história. */
+  motor: 'classico' | 'v2';
+  /** Evento fixo no começo da vida (o motor v2 não usa). */
+  eventoInicial?: string;
+  eventoDiaComum: string;
+  eventoVidaComum: string;
+}
+
+export interface Afinidade { [cat: string]: number | undefined }
+
+export interface PacoteModo {
+  id: Modo;
+  nome: string;
+  subtitulo: string;
+  /** Uma linha, mostrada na tela de escolha de modo. */
+  resumo: string;
+  eventos: GameEvent[];
+  trilhas: Path[];
+  origens: Origin[];
+  talentos: Talent[];
+  defeitos: Flaw[];
+  itens: Item[];
+  finais: Ending[];
+  conquistas: Achievement[];
+  checks: Record<string, (s: State, ending?: string) => boolean>;
+  pontos: Record<string, number>;
+  escadas: Record<string, Escada>;
+  /** Escada usada antes de a vida entrar numa trilha. */
+  escadaSemTrilha: string;
+  marcasVida: Record<string, string>;
+  regioes: Partial<Record<Place, { eventId: string; weight: number }[]>>;
+  afinidades: Record<string, Afinidade>;
+  retiro: { textos: Record<'A' | 'B' | 'C', string[]>; trilha: Record<string, string>; saida: string[] };
+  vocab: Vocabulario;
+  regras: Regras;
+  /** Final escolhido quando a vida acaba de velhice. */
+  finalDeVelhice: (s: State) => string;
+}

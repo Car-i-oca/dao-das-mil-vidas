@@ -1,4 +1,4 @@
-import type { Path } from '../types';
+import type { Path } from '../../../types';
 
 /** Escolas e estilos marciais do novo cenário. IDs legados preservam saves existentes. */
 export const PATHS: Path[] = [

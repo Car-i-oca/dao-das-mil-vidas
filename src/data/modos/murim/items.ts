@@ -1,4 +1,4 @@
-import type { Item } from '../types';
+import type { Item } from '../../../types';
 
 /** Equipamento, ferramentas e remédios da nova campanha de Murim. */
 const ITEM_DEFS: Omit<Item, 'rarity'>[] = [

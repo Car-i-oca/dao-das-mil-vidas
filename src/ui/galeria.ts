@@ -1,6 +1,5 @@
-import { ITEMS } from '../data/items';
-import { PATHS } from '../data/paths';
-import { ENDINGS } from '../data/endings';
+import { pacoteDe } from '../data/modos';
+const { itens: ITEMS, trilhas: PATHS, finais: ENDINGS } = pacoteDe('murim');
 import { MOTIF } from './art/scenes';
 import {
   itemIcon, pathIcon, realmIcon, sceneSvg, endingCard, portraitSvg, playerFighter, foeFighter,

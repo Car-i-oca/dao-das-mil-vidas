@@ -4,13 +4,15 @@
  *   npx tsx sim/cronica.ts <semente> [máx]  imprime a crônica (por padrão os primeiros 40 passos e o final)
  */
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed, PATH, TALENT, FLAW, ORIGIN, ENDING, realmOf } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, realmOf } from '../src/engine/engine';
 import { botPick } from './bot';
+import { PK, MODO } from './modo';
+const { PATH, TALENT, FLAW, ORIGIN, ENDING } = PK.ix;
 
 function jogar(seed: number, max = 40, imprimir = true) {
   const meta = newMeta();
   const rng = new Rng(seed);
-  const s = startLife(meta, rollCreation(meta, rng), '', rng.seed);
+  const s = startLife(meta, rollCreation(meta, rng, MODO), '', rng.seed);
   const bot = new Rng(seed ^ 0x9e3779b9);
   const passos: { age: number; reino: string; titulo: string; texto: string; escolha: string; resultado: string }[] = [];
   let guard = 0;

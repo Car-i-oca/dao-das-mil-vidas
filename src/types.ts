@@ -3,6 +3,8 @@ export type Stats = Record<StatKey, number>;
 export type Rarity = 'comum' | 'incomum' | 'raro' | 'epico' | 'lendario';
 export type Alignment = 'daoico' | 'demoniaco';
 export interface MoralAlignment { good: number; evil: number; order: number; chaos: number }
+import type { Modo } from './data/modos/tipos';
+export type { Modo } from './data/modos/tipos';
 export type Faction = 'seita' | 'demoniaca' | 'cla' | 'errante' | 'nenhuma';
 export type Place = 'vilarejo' | 'cidade' | 'seita' | 'selva' | 'montanha' | 'ruinas' | 'deserto' | 'gelo' | 'mar';
 export type SectRank = 'externo' | 'interno' | 'anciao';
@@ -195,6 +197,8 @@ export interface GameEvent {
 
 export interface Realm {
   name: string;
+  /** Idade máxima absoluta ao atingir este reino (só nos modos com longevidade). */
+  lifespan?: number;
   /** Anos típicos para encher a barra. */
   years: number;
   /** Chance base de rompimento para entrar NESTE reino. */
@@ -301,6 +305,8 @@ export interface Root {
 
 export interface State {
   v: 1;
+  /** Modo de jogo da vida (ausente em saves antigos = Murim). */
+  modo?: Modo;
   seed: number;
   name: string;
   path: string;
@@ -388,7 +394,7 @@ export interface Meta {
   endingsSeen: string[];
   /** Eventos vistos nas últimas vidas (mais recente primeiro): quem já apareceu perde peso na vida seguinte. */
   recent?: string[][];
-  history: { name: string; path: string; tierName: string; age: number; ending: string }[];
+  history: { modo?: Modo; name: string; path: string; tierName: string; age: number; ending: string }[];
   /** Bestiário persistente: IDs dos inimigos vencidos em qualquer vida. */
   defeatedFoes?: string[];
 }

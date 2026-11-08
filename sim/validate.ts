@@ -1,15 +1,19 @@
 /** Valida referências cruzadas do conteúdo. Uso: npm run validate */
-import { EVENTS } from '../src/data/events';
 import { hasCombatMechanics } from '../src/data/event-type';
-import { ITEMS } from '../src/data/items';
-import { ENDINGS, ACHIEVEMENTS, ACH_CHECKS } from '../src/data/endings';
-import { PATHS } from '../src/data/paths';
-import { ORIGINS, TALENTS } from '../src/data/character';
 import { FOES } from '../src/data/combates';
 import { COMPANIONS } from '../src/data/companions';
 import { checkChance, choose, newMeta, proceed, startLife, visibleChoices } from '../src/engine/engine';
 import { Rng } from '../src/engine/rng';
 import type { Cond, Effects, EquipmentSlot, State } from '../src/types';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
+const ITEMS = PK.itens;
+const ORIGINS = PK.origens;
+const TALENTS = PK.talentos;
+const ACHIEVEMENTS = PK.conquistas;
+const ACH_CHECKS = PK.checks;
 
 const errors: string[] = [];
 const warnings: string[] = [];

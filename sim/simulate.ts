@@ -6,16 +6,19 @@
  *   npm run sim -- 4000 --report        roda os dois modos e grava docs/balanceamento.md
  */
 import { writeFileSync } from 'node:fs';
-import {
-  newMeta, finalizeLife, buyUpgrade, ladderOf, PATH,
-} from '../src/engine/engine';
+import { newMeta, finalizeLife, buyUpgrade, ladderOf } from '../src/engine/engine';
 import { playLife } from './bot';
-import { PATHS } from '../src/data/paths';
-import { EVENTS } from '../src/data/events';
-import { ITEMS } from '../src/data/items';
-import { ENDINGS, ACHIEVEMENTS, UPGRADES } from '../src/data/endings';
-import { ORIGINS, TALENTS } from '../src/data/character';
 import type { Meta, State } from '../src/types';
+import { PK, MODO } from './modo';
+import { UPGRADES } from '../src/data/legado';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
+const ITEMS = PK.itens;
+const ORIGINS = PK.origens;
+const TALENTS = PK.talentos;
+const ACHIEVEMENTS = PK.conquistas;
+const { PATH } = PK.ix;
 
 const args = process.argv.slice(2);
 const N = Number(args.find((a) => /^\d+$/.test(a)) ?? 1000);
@@ -199,7 +202,7 @@ if (report) {
     '- O relatório usa um bot heurístico; distribuições descrevem esse comportamento e não substituem testes de jogo manual.',
     '',
   ].join('\n');
-  writeFileSync('docs/balanceamento.md', doc);
+  writeFileSync(`docs/balanceamento-${MODO}.md`, doc);
   console.log(doc);
   console.log('\n→ gravado em docs/balanceamento.md');
 } else {

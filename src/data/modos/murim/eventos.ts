@@ -1,4 +1,4 @@
-import type { GameEvent } from '../../types';
+import type { GameEvent } from '../../../types';
 
 /** Campanha original de Murim: as antigas listas foram retiradas do catálogo ativo. */
 export const EVENTS: GameEvent[] = ([

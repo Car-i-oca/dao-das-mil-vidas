@@ -1,4 +1,5 @@
 import { Rng } from '../src/engine/rng';
+import { MODO } from './modo';
 import { rollCreation, startLife, view, choose, proceed, visibleChoices, type Visible } from '../src/engine/engine';
 import type { Meta, Outcome, State } from '../src/types';
 
@@ -41,7 +42,7 @@ export function botPick(s: State, rng: Rng, seekDemon: boolean): number {
 
 export function playLife(meta: Meta, seed: number, pathId: string, seekDemon: boolean, counts: Record<string, number>, tierAges: Record<string, number[]>, trace?: { id: string; age: number; tier: number }[]): State {
   const rng = new Rng(seed);
-  const creation = rollCreation(meta, rng);
+  const creation = rollCreation(meta, rng, MODO);
   const s = startLife(meta, creation, pathId, rng.seed);
   const bot = new Rng(seed ^ 0x9e3779b9);
   let guard = 0;

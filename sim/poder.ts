@@ -6,12 +6,14 @@
  */
 import { writeFileSync } from 'node:fs';
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed, visibleChoices, threatTier, checkChance, EVENT, STAT_KEYS, ladderOf } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, visibleChoices, threatTier, checkChance, STAT_KEYS, ladderOf } from '../src/engine/engine';
 import { botPick } from './bot';
-import { EVENTS } from '../src/data/events';
-import { PATHS } from '../src/data/paths';
-import { ENDINGS } from '../src/data/endings';
 import type { State } from '../src/types';
+import { PK, MODO } from './modo';
+const EVENTS = PK.eventos;
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
+const { EVENT } = PK.ix;
 
 const N = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 400);
 const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
@@ -31,7 +33,7 @@ for (const p of PATHS) {
     const seed = 5000 + i * 104729;
     const rng = new Rng(seed);
     const meta = newMeta();
-    const s: State = startLife(meta, rollCreation(meta, rng), p.id, rng.seed);
+    const s: State = startLife(meta, rollCreation(meta, rng, MODO), p.id, rng.seed);
     const bot = new Rng(seed ^ 0x9e3779b9);
     let guard = 0;
     const byTier: Record<number, string[]> = {};
@@ -94,6 +96,6 @@ if (smp) {
   out.push('', `## Uma vida no 6º reino (${smp.path}): eventos de cada reino`, '');
   for (const k of Object.keys(smp.byTier).map(Number).sort((a, b) => a - b)) out.push(`- **Reino ${k}** (${smp.byTier[k].length} eventos): ${smp.byTier[k].slice(0, 14).join('; ')}${smp.byTier[k].length > 14 ? '…' : ''}`);
 }
-writeFileSync('docs/poder.md', out.join('\n') + '\n');
+writeFileSync(`docs/poder-${MODO}.md`, out.join('\n') + '\n');
 console.log(out.join('\n'));
 void ladderOf;

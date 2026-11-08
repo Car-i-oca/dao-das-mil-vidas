@@ -1,11 +1,12 @@
 /** Gera docs/galeria.html com todos os ícones, retratos e cenários (para revisar a arte): npm run galeria */
 import { writeFileSync } from 'node:fs';
-import { ITEMS } from '../src/data/items';
-import { PATHS } from '../src/data/paths';
-import { ENDINGS } from '../src/data/endings';
 import { itemIcon, pathIcon, realmIcon } from '../src/ui/art/icons';
 import { sceneSvg, endingCard } from '../src/ui/art/scenes';
 import { portraitSvg, type Look } from '../src/ui/art/portrait';
+import { PK, MODO } from './modo';
+const ENDINGS = PK.finais;
+const PATHS = PK.trilhas;
+const ITEMS = PK.itens;
 
 const css = `:root{--bg:#14110f;--bg2:#1d1915;--card:#231e19;--line:#3a3128;--ink:#e8dec8;--muted:#a69981;--red:#c4513d;--jade:#6fa389;--gold:#d2a95c;--blue:#7d9fc4}
 body{background:var(--bg);color:var(--ink);font-family:Georgia,serif;margin:16px}h2{margin:22px 0 8px;color:var(--gold)}.g{display:flex;flex-wrap:wrap;gap:8px}.c{width:92px;text-align:center;font-size:10px}.w{width:300px;font-size:10px;text-align:center}.w svg{width:300px;height:auto}`;
