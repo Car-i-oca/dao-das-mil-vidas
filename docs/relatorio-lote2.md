@@ -47,3 +47,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 - **Infraestrutura nova:** pasta `tracos/` (um arquivo por traço, perfil escrito à mão em `p:`), e `Cond.noFlaw` (esconde uma opção de quem tem o defeito, a menos que o tenha superado), para os defeitos poderem bloquear opções.
 - **Dourado:** de `75265d8d67eeee36` para `da6f9ffc141af76c`, porque o Murim ganhou 4 cenas, 6 opções e 1 final.
 - **Medido (1000 vidas, simulador):** Instinto oportuno com 4 eventos, 6 opções e 2 caminhos; Murim com 95,7% de vidas com alcunha; maior alcunha 22,2% (Cobrador de Prata; o número oscila a cada mudança de conteúdo e segue para o B3).
+
+## B2 — talento 3 de 14: Olho experiente (`alma_antiga`)
+- **Entrou** (`tracos/alma_antiga.ts`): 4 cenas (`ola_mao_do_vendedor`, `ola_discipulo_novo`, `ola_amigo_calado`, `ola_rosto_fechado`), 6 opções exclusivas (banca de Noh, lâmina com duas versões, bandidos do sal, audiência, oferta da Lua Oca, caldo) e o final `murim_olho_em_repouso` (flag `ola_confiou`). Cicatriz: ler gestos com clareza tira o direito de ser surpreendido; todo aviso custa algo.
+- **Dourado:** `da6f9ffc141af76c` -> `c2608081c5813833` (4 cenas, 6 opções e 1 final novos no Murim).

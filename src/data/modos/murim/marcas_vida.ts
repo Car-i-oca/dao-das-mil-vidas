@@ -38,6 +38,27 @@ sor_quietude|Aprendeu com um monge a ficar parado até o vento mudar.
 sor_celeiro_oculto|Achou grão escondido sob um poço seco e salvou uma vila do inverno.
 sor_nuca|Escolheu em quem acreditar pelo frio na nuca, e acertou.
 
+ola_rua_avisada|Disse à rua inteira, aos dez anos, o que o polegar de um vendedor escondia.
+ola_aviso_calado|Aprendeu cedo a avisar em voz baixa, sem constranger ninguém.
+ola_nome_mok|Seguiu um vendedor de unguentos falsos até descobrir o nome por trás dele.
+ola_impostor_visto|Viu na reverência atrasada o impostor que a escola inteira tomou por amigo.
+ola_acusou_inocente|Acusou um rapaz tímido de ser ladrão, e carregou isso por anos.
+ola_mao_paciente|Passou um mês ao lado de um suspeito sem saber se o enganou ou se se enganou.
+ola_amigo_salvo|Leu a mão fechada de um amigo a tempo de salvá-lo da própria vergonha.
+ola_precavido|Sorriu para um amigo e guardou as chaves em outro lugar.
+ola_amigo_traiu|Confiou num amigo que o olho já tinha condenado, e pagou o preço.
+ola_confiou_sem_provas|Confiou num amigo contra o que o próprio olho dizia.
+ola_confiou|Abriu a porta a uma estranha sem tentar lê-la, e dormiu em paz.
+ola_olho_em_repouso|Deixou o olho em repouso por três dias e descobriu o que era descanso.
+ola_nunca_leu|Trancou a porta à única pessoa que nunca soube ler.
+ola_olhar_herdado|Ensinou a uma jovem o seu jeito de olhar, sem a sua desconfiança.
+ola_noh_pista|Descobriu, pelo olhar de Noh, o nome de um freguês que sumiu devendo.
+ola_dilema_mao|Leu a corda no pulso de um espadachim e reconheceu a dor por trás da acusação.
+ola_bandido_distintivo|Desarmou um falso guarda dizendo onde o dono do distintivo foi enterrado.
+ola_gwon_sorriso|Apontou ao conselho o sorriso tardio de Gwon Tae-seok.
+ola_choi_rin_poupada|Ajudou Choi Rin a avisar o cobrador que ela devia matar.
+ola_caldo_dividido|Dividiu uma tigela de caldo com um viajante que devia mais do que dizia.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

@@ -2,8 +2,9 @@ import type { Choice, GameEvent } from '../../../../types';
 import { leitura } from '../perfil';
 import type { ConjuntoTraco, OpT } from './tipos';
 import { SORTE_DESTINO } from './sorte_destino';
+import { ALMA_ANTIGA } from './alma_antiga';
 
-const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO];
+const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA];
 
 function aplica(op: OpT): Choice {
   const { p, ...c } = op;

@@ -6,15 +6,15 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 
 | Métrica | Valor | Meta |
 |---|---|---|
-| Escolhas no jogo | 152 | — |
-| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (24%) | 0 |
+| Escolhas no jogo | 170 | — |
+| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (21%) | 0 |
 | Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | 0 (0%) | cair ao longo dos lotes |
 | Escolhas com a mesma consequência de outra do mesmo evento | 0 | 0 |
 | Eventos "tanto faz" | 1 | 0 |
 | Flags gravadas e nunca lidas | 49 | 0 |
-| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 12 / 0 / 0 | muito mais |
-| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.759 | referência |
-| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.698 | bem menor que a de cima |
+| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 19 / 0 / 0 | muito mais |
+| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.757 | referência |
+| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.672 | bem menor que a de cima |
 
 ### Talentos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 
@@ -22,7 +22,7 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 |---|---|---|---|---|
 | Memória de escriba | 4 | 6 | 1 | sim |
 | Instinto oportuno | 4 | 6 | 2 | sim |
-| Olho experiente | 0 | 0 | 0 | **não** |
+| Olho experiente | 4 | 6 | 2 | sim |
 | Constituição vigorosa | 0 | 0 | 0 | **não** |
 | Presença acolhedora | 0 | 0 | 0 | **não** |
 | Aprendiz disciplinado | 0 | 0 | 0 | **não** |
