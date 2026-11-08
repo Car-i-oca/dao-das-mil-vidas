@@ -59,3 +59,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 5 de 14: Presença acolhedora (`carisma_nato`)
 - **Entrou** (`tracos/carisma_nato.ts`): 4 cenas (`aco_confissao_do_cais`, `aco_segredo_do_mestre`, `aco_mesa_dos_rivais`, `aco_cartas_guardadas`), 6 opções exclusivas (festival, caldo, lâmina com duas versões, banca de Noh, vila sob a neve, assembleia) e o final `murim_casa_aberta` (flag `aco_confidente`). Cicatriz: confidências são dívidas; guardar custa tanto quanto revelar.
 - **Dourado:** agora `7523605a7a3be0c9`.
+
+## B2 — talento 6 de 14: Aprendiz disciplinado (`mestre_nato`)
+- **Entrou** (`tracos/mestre_nato.ts`): 4 cenas (`dis_mil_vezes`, `dis_forma_quebrada`, `dis_aluno_que_improvisa`, `dis_ultima_forma`), 6 opções exclusivas (escola, ponte da Garça, dia na estrada, peregrinos, estilos errantes, arquivo) e o final `murim_forma_viva` (flag `dis_mestre_repete`). Cicatriz: a forma perfeita pode virar jaula.
+- **Dourado:** agora `9803d0c0d40e6150`.

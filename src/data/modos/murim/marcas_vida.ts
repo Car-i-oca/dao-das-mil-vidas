@@ -97,6 +97,24 @@ aco_noh_confidencias|Ouviu as confidências de Noh até o conserto sair de graç
 aco_inverno_dividido|Ouviu os mercadores até que dividir já não fosse ordem.
 aco_assembleia_amaciada|Ouviu cada delegado a sós e deixou que todos acreditassem ter decidido sozinhos.
 
+dis_irmao_treinado|Treinou o irmão mais velho até ele não precisar mais de ajuda.
+dis_irmao_afastado|Guardou o método para si e afastou o irmão.
+dis_passo_proprio|Repetiu um passo até ele virar outro, que ninguém havia ensinado.
+dis_passo_torcido|Torceu o tornozelo na duas milésima repetição e aprendeu o limite da teimosia.
+dis_forma_ampliada|Reconstruiu a forma para incluir o que a derrotou.
+dis_forma_intacta|Insistiu numa forma perfeita que só serve para quem a conhece.
+dis_rival_amigo|Trocou lições com o rival que o derrubou.
+dis_aluno_livre|Ensinou a repetição a um aluno que a quebrava, e aprendeu a sair dela.
+dis_aluno_perdido|Perdeu um aluno talentoso por exigir que ele repetisse demais.
+dis_mestre_repete|Recomeçou a forma do primeiro passo quando o corpo a esqueceu.
+dis_forma_herdada|Passou a um aprendiz o trecho da forma que o corpo havia esquecido.
+dis_um_ano|Passou um ano inteiro repetindo uma única forma.
+dis_mestra_garca|Copiou cada passo da mestra da ponte da Garça numa só tarde.
+dis_caderno|Anotou no caderno a diferença de uma respiração.
+dis_lanceira|Contou em voz alta os golpes da lanceira sem escola.
+dis_estilo_unico|Fundiu as cinco lições dos mestres errantes numa só, sem nome.
+dis_copia_fiel|Copiou à mão o rolo de passos tão fielmente que a mestra confundiu as duas versões.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
