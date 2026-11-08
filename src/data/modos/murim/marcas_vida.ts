@@ -224,6 +224,24 @@ dra_carroca_puxada|Puxou sozinho a carroça de três famílias até a cidade.
 dra_duelo_abraco|Venceu o duelo na ponte prendendo o adversário num abraço.
 dra_cavalo_calmo|Descarregou a carroça devagar para não assustar o cavalo.
 
+ver_pediu_devagar|Pediu ao mestre que repetisse devagar o que já entendera.
+ver_pulou_etapa|Pulou etapas por saber demais e pagou depois.
+ver_ensinou_colegas|Ensinou os colegas com as próprias palavras antes de o mestre terminar.
+ver_base_refeita|Refez a base da escola, um exercício por mês, depois de perder para uma varredura de calcanhar.
+ver_mestre_de_bairro|Aprendeu com o oponente os golpes pequenos e vulgares que nunca precisou.
+ver_aluno_lento_ensinado|Ensinou um aluno lento até ele superá-lo, e aprendeu com ele o que faltava.
+ver_aluno_lento_recusado|Recusou um aluno lento e o encontrou anos depois como mestre.
+ver_aluno_lento_ferido|Feriu um aluno lento ao acelerar o método dele.
+ver_licao_devagar_ok|Aprendeu devagar um poema que nunca entenderia depressa.
+ver_aprendiz_fim|Aprendeu, tarde, a esperar a coisa vir.
+ver_herdeiro_devagar|Ensinou a um jovem apressado a palavra devagar.
+ver_primeiro_dia|Começou pelo fundamento mais antigo, do primeiro dia.
+ver_cinco_mestres|Aprendeu cinco lições em uma hora e passou o dia comparando-as.
+ver_mestra_garca|Imitou a mestra da Garça na primeira vez em que a viu.
+ver_rolo_copiado|Copiou de memória o rolo de lança, com dois erros que viraram estilo.
+ver_ponto_de_noh|Aprendeu o ponto de bainha olhando Noh uma vez.
+ver_mapa_dos_erros|Recebeu do médico da espada o mapa dos erros de quem tinha pressa.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
