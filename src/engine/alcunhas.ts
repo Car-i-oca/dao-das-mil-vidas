@@ -11,6 +11,8 @@ import { generoDoNome } from '../data/modos/xianxia/nomes';
  */
 export const EIXOS: Eixo[] = ['compaixao', 'violencia', 'astucia', 'cautela', 'ambicao', 'disciplina', 'devocao', 'ganancia'];
 const LIMIAR_NASCER = 5;
+/** Xianxia: mesmo corte de z do eixo único (0,85 × 5 pontos); ver Z_PURO. */
+const LIMIAR_NASCER_MODO: Record<string, number> = { murim: 5, xianxia: 4.25 };
 const MARGEM_MUDAR = 5;
 
 export interface EstadoAlcunha {
@@ -68,6 +70,8 @@ const ESCALA: Record<string, Record<Eixo, number>> = {
   murim: { compaixao: 13.5, violencia: 1.9, astucia: 6.1, cautela: 7.5, ambicao: 2.1, disciplina: 12.1, devocao: 1.3, ganancia: 2 },
   xianxia: { compaixao: 26, violencia: 5.6, astucia: 13.7, cautela: 27.1, ambicao: 8.9, disciplina: 20.7, devocao: 16.8, ganancia: 3.8 },
 };
+/** Menor z para uma alcunha de eixo único. O Xianxia acumula perfil de forma mais espalhada (mais eixos com valores próximos), então o limiar é menor. */
+const Z_PURO: Record<string, number> = { murim: 1.0, xianxia: 0.85 };
 /** Quanto do eixo, em relação à vida típica (1 = típico). */
 export function zEixo(s: State, e: Eixo): number {
   const p = s.perfil?.[e] ?? 0;
@@ -79,12 +83,12 @@ export function pontuar(s: State, a: Alcunha): number {
   if (a.trilha && !a.trilha.includes(s.path)) return 0;
   if (a.talento && !a.talento.includes(s.talent)) return 0;
   if (a.defeito && !a.defeito.includes(s.flaw)) return 0;
-  if (a.feito) return a.feito(s) ? 6 + (a.eixos ? Math.min(...a.eixos.map((e) => zEixo(s, e))) * 2 : 0) : 0;
+  if (a.feito) return a.feito(s) ? 6 + (a.peso ?? 0) + (a.eixos ? Math.min(...a.eixos.map((e) => zEixo(s, e))) * 2 : 0) : 0;
   if (!a.eixos) return 0;
   const maior = Math.max(...EIXOS.map((e) => zEixo(s, e)));
   if (a.eixos.length === 1) {
     const z = zEixo(s, a.eixos[0]);
-    return z >= 1.0 && z >= maior ? z * 5 + (a.trilha || a.talento || a.defeito ? 3 : 0) : 0;
+    return z >= (Z_PURO[pacoteDe(s.modo).id] ?? 1) && z >= maior ? z * 5 + (a.trilha || a.talento || a.defeito ? 3 : 0) : 0;
   }
   const [x, y] = a.eixos;
   const menor = Math.min(zEixo(s, x), zEixo(s, y));
@@ -113,7 +117,7 @@ export function cenaPendente(s: State): CenaAlcunha | null {
   const e = alc(s);
   if (s.turn - e.turno < 4) return null;
   const m = melhor(s);
-  if (!e.atual) return m && m.score >= LIMIAR_NASCER ? { tipo: 'nasce', id: m.a.id } : null;
+  if (!e.atual) return m && m.score >= (LIMIAR_NASCER_MODO[pacoteDe(s.modo).id] ?? LIMIAR_NASCER) ? { tipo: 'nasce', id: m.a.id } : null;
   const atual = alcunhaPorId(s, e.atual.id);
   if (!atual) return null;
   if (!e.atual.manchada && atual.contra?.length) {
@@ -131,9 +135,30 @@ export function cenaPendente(s: State): CenaAlcunha | null {
 export interface OpcaoCena { texto: string; fn: (rng: Rng, aplicar: (fx: Effects) => void) => string }
 export interface CenaMontada { titulo: string; texto: string; opcoes: OpcaoCena[] }
 
-const QUADRO: Record<string, string> = {
-  murim: 'Numa casa de chá à beira da estrada, um viajante conta, para quem quiser ouvir, a história de alguém a quem chamam',
-  xianxia: 'Num pavilhão de passagem, entre cultivadores que fingem não ouvir, alguém conta a história de quem já chamam',
+/** Onde a história do nome é contada: varia com o eixo da alcunha (ou 'feito', para as de feito concreto) e com o modo. Termina pedindo o nome. */
+const QUADRO: Record<string, Record<string, string>> = {
+  murim: {
+    compaixao: 'Na porta de uma casa de caridade, onde a fila de quem espera um prato quente dá a volta na esquina, uma mulher conta a história de quem chamam',
+    violencia: 'Num pátio de treino ainda marcado de sangue seco, dois discípulos falam baixo, sem tirar os olhos do chão, da história de quem chamam',
+    astucia: 'Numa casa de apostas de Hwayang, entre fichas e sorrisos que não chegam aos olhos, um corretor conta a história de quem chamam',
+    cautela: 'Numa estalagem de beira de estrada, de janelas fechadas cedo, um mascate repete em voz baixa a história de quem chamam',
+    ambicao: 'No salão de banquetes de uma escola em ascensão, entre brindes demasiado altos, alguém conta a história de quem chamam',
+    disciplina: 'No corredor de um dojo, depois do último treino do dia, um mestre idoso conta aos alunos a história de quem chamam',
+    devocao: 'Nos degraus de um templo de montanha, entre fiéis que acendem incenso, um monge conta a história de quem chamam',
+    ganancia: 'Numa casa de penhores de beira de rio, entre balanças e livros de contas, um agiota conta a história de quem chamam',
+    feito: 'Numa casa de chá à beira da estrada, um viajante conta, para quem quiser ouvir, a história de quem chamam',
+  },
+  xianxia: {
+    compaixao: 'Num pavilhão de cura, entre bacias de ervas e pacientes de olhos vendados, uma curandeira conta a história de quem já chamam',
+    violencia: 'Na borda de uma arena de duelos, entre cultivadores que limpam lâminas sem pressa, alguém conta a história de quem já chamam',
+    astucia: 'Numa sala de chá de uma cidade de feiras, entre emissários que fingem não ouvir, alguém conta a história de quem já chamam',
+    cautela: 'Num pavilhão de passagem, entre cultivadores que fingem não ouvir, alguém conta a história de quem já chamam',
+    ambicao: 'No pátio externo de uma seita grande, onde discípulos disputam um lugar na fila das promoções, alguém conta a história de quem já chamam',
+    disciplina: 'No salão de meditação de uma seita, entre esteiras alinhadas e incenso contado, um ancião conta a história de quem já chamam',
+    devocao: 'Diante de um altar de pedra, sob o sino que marca as horas do Dao, um sacerdote conta a história de quem já chamam',
+    ganancia: 'Numa casa de leilões, entre lotes selados e lances sussurrados, um leiloeiro conta a história de quem já chamam',
+    feito: 'Num pavilhão de passagem, entre cultivadores que fingem não ouvir, alguém conta a história de quem já chamam',
+  },
 };
 
 export function montarCena(s: State, c: CenaAlcunha): CenaMontada {
@@ -146,7 +171,7 @@ export function montarCena(s: State, c: CenaAlcunha): CenaMontada {
     const outra = () => { const rest = catalogo(s).filter((x) => x.id !== a.id && !e.recusadas.includes(x.id)); return rest.map((x) => ({ x, v: pontuar(s, x) })).filter((o) => o.v > 0).sort((p, q) => q.v - p.v)[0]?.x; };
     return {
       titulo: 'Um nome que corre',
-      texto: `${QUADRO[modo]} «${nome}». ${pronomes(s, a.historia)} Quando o narrador ergue os olhos na sua direção, a sala inteira percebe que a história é sua.`,
+      texto: `${QUADRO[modo][a.eixos?.[0] ?? 'feito']} «${nome}». ${pronomes(s, a.historia)} Quando o narrador ergue os olhos na sua direção, a sala inteira percebe que a história é sua.`,
       opcoes: [
         { texto: `Aceitar o nome: «${nome}».`, fn: (_r, ap) => { marcar(); e.atual = { id: a.id, desde: s.age }; e.historico.push({ id: a.id, idade: Math.floor(s.age), como: 'aceita' }); ap({ fama: 3, setFlags: ['alcunha_aceita'] }); return `O nome pega. Em poucas semanas, gente que você nunca viu o diz como quem diz a hora. Você é «${nome}», e o mundo, a partir de agora, chega até você já sabendo o que esperar.`; } },
         { texto: 'Rejeitar o nome em voz alta, diante de todos.', fn: (_r, ap) => { marcar(); e.recusadas.push(a.id); for (const x of a.eixos ?? []) s.perfil = { ...(s.perfil ?? {}), [x]: Math.max(0, (s.perfil?.[x] ?? 0) - 3) }; ap({ fama: -1, setFlags: ['alcunha_recusada'], stats: { dao: 1 } }); return 'A sala fica em silêncio. Quem contava a história engole o resto dela. O nome não some, mas passa a andar sem o seu consentimento, e você aprende o preço de dizer não em público.'; } },

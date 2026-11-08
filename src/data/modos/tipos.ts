@@ -86,6 +86,8 @@ export interface Alcunha {
   eixos?: [Eixo] | [Eixo, Eixo];
   /** Feito concreto lido do estado (flag, fio, trilha...). */
   feito?: (s: State) => boolean;
+  /** Pontos extras do feito, para feitos raros que devem vencer (e substituir) alcunhas de perfil. */
+  peso?: number;
   trilha?: string[]; talento?: string[]; defeito?: string[];
   /** Eixos que, em excesso, mancham a alcunha. */
   contra?: Eixo[];

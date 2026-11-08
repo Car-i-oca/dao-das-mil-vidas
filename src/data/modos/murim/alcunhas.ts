@@ -153,7 +153,7 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
       ['Aceitar a cópia e corrigir o texto em público.', 'O mestre, desconcertado, agradece em voz baixa. A correção circula, e a técnica fica melhor do que antes.', { fama: 2, karma: 2 }],
       ['Desmascarar o plágio com provas.', 'A disputa é feia e rápida. Você ganha o direito de ser citado, e perde a paz por um tempo.', { fama: 3, karma: -1 }],
     ])] },
-  { id: 'mur_testemunha', m: 'a Testemunha de Hwayang', f: 'a Testemunha de Hwayang', feito: (s) => f(s, 'final_justica', 'legado_verificacao'),
+  { id: 'mur_testemunha', m: 'a Testemunha de Hwayang', f: 'a Testemunha de Hwayang', feito: (s) => f(s, 'final_justica', 'legado_verificacao'), peso: 8,
     historia: 'Dizem que, quando o conselho se reuniu, foi ela quem entrou com as provas e não saiu antes de elas serem lidas.',
     epilogo: 'Nos livros do conselho, o nome de {alcunha} aparece uma só vez, numa nota de rodapé. Nas casas das famílias que voltaram, aparece todas as noites, numa oração curta.',
     dica: 'Quem leva a prova até o fim fica com ela na memória.',

@@ -17,18 +17,22 @@ import { ALCUNHAS_MURIM } from './alcunhas';
 const EVENTS = comPerfil(EVENTOS_BASE);
 import { UPGRADES } from '../../legado';
 
+/** Flags que, ao chegar à velhice, definem o final da vida (em ordem de prioridade). O  conta estes finais como «caminho/final». */
+export const FINAIS_POR_FLAG: { flags: string[]; final: string; talento?: string }[] = [
+  { flags: ['final_justica', 'legado_verificacao'], final: 'murim_justica' },
+  { flags: ['final_duelo'], final: 'murim_duelo' },
+  { flags: ['final_acordo'], final: 'murim_acordo' },
+  { flags: ['final_tregua', 'final_exilio', 'legado_contestado'], final: 'murim_tregua' },
+  { flags: ['fundou_escola'], final: 'murim_escola' },
+  { flags: ['guardiao_estradas'], final: 'murim_guardiao' },
+  { flags: ['tecnica_aberta', 'metodo_verificado'], final: 'murim_mestre' },
+  { flags: ['legado_silenciado'], final: 'murim_heranca' },
+  { flags: ['arquivo_vivo'], final: 'murim_arquivista', talento: 'memoria_perfeita' },
+];
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
 function finalDeVelhice(s: State): string {
-  if (s.flags.includes('final_justica') || s.flags.includes('legado_verificacao')) return 'murim_justica';
-  if (s.flags.includes('final_duelo')) return 'murim_duelo';
-  if (s.flags.includes('final_acordo')) return 'murim_acordo';
-  if (s.flags.includes('final_tregua') || s.flags.includes('final_exilio') || s.flags.includes('legado_contestado')) return 'murim_tregua';
-  if (s.flags.includes('fundou_escola')) return 'murim_escola';
-  if (s.flags.includes('guardiao_estradas')) return 'murim_guardiao';
-  if (s.flags.includes('tecnica_aberta') || s.flags.includes('metodo_verificado')) return 'murim_mestre';
-  if (s.flags.includes('legado_silenciado')) return 'murim_heranca';
-  if (s.flags.includes('arquivo_vivo') && s.talent === 'memoria_perfeita') return 'murim_arquivista';
-  return 'velhice';
+  const r = FINAIS_POR_FLAG.find((x) => x.flags.some((f) => s.flags.includes(f)) && (!x.talento || s.talent === x.talento));
+  return r?.final ?? 'velhice';
 }
 
 /** Campanha Murim (Jianghu): carreira marcial humana, escolas, Clã Gwon, Hwayang. */

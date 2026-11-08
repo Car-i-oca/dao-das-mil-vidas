@@ -13,6 +13,7 @@ import { botPick } from './bot';
 import { Rng } from '../src/engine/rng';
 import type { Choice, Cond, Effects, GameEvent, Outcome } from '../src/types';
 import { PK, MODO } from './modo';
+import { FINAIS_POR_FLAG } from '../src/data/modos/murim';
 const EVENTS = PK.eventos;
 const CONSTITUTIONS = PK.nomes.constituicoes;
 const ORIGINS = PK.origens;
@@ -104,6 +105,9 @@ for (const e of EVENTS) {
 
 /* ---------- Mínimos por traço ---------- */
 const hasTrait = (c: Cond | undefined, kind: keyof Cond, id: string) => !!(c?.[kind] as string[] | undefined)?.includes(id);
+/** Flags lidas pelo motor para decidir o final da velhice (Murim): contam como caminho/final. */
+const FLAGS_FINAL = new Set(MODO === 'murim' ? FINAIS_POR_FLAG.flatMap((x) => x.flags) : []);
+const defineFinal = (f: string) => FLAGS_FINAL.has(f);
 interface Row { id: string; name: string; eventos: number; opcoes: number; caminhos: number }
 function traitRow(kind: 'talent' | 'flaw' | 'origin' | 'constitution', id: string, name: string): Row {
   let eventos = 0, opcoes = 0, caminhos = 0;
@@ -114,7 +118,7 @@ function traitRow(kind: 'talent' | 'flaw' | 'origin' | 'constitution', id: strin
       const chHas = hasTrait(c.cond, kind, id);
       if (chHas && !evHas) opcoes++;
       if (evHas || chHas) {
-        const fx = outcomes(c).flatMap((o) => [o.fx?.fim, o.fx?.trilha]).filter(Boolean);
+        const fx = outcomes(c).flatMap((o) => [o.fx?.fim, o.fx?.trilha, ...(o.fx?.setFlags ?? []).filter(defineFinal)]).filter(Boolean);
         if (fx.length) caminhos++;
       }
     }
@@ -131,7 +135,7 @@ const rootRows: Row[] = rootKinds.map((k) => {
   for (const e of EVENTS) {
     const evHas = !!e.cond?.root?.includes(k);
     if (evHas) eventos++;
-    for (const c of e.choices) if (c.cond?.root?.includes(k) && !evHas) { opcoes++; if (outcomes(c).some((o) => o.fx?.fim || o.fx?.trilha)) caminhos++; }
+    for (const c of e.choices) if (c.cond?.root?.includes(k) && !evHas) { opcoes++; if (outcomes(c).some((o) => o.fx?.fim || o.fx?.trilha || o.fx?.setFlags?.some(defineFinal))) caminhos++; }
   }
   return { id: k, name: k, eventos, opcoes, caminhos };
 });

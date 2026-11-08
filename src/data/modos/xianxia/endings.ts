@@ -124,6 +124,10 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'xx_ach_iluminacao', name: 'Despertar Sem Degraus', desc: 'Alcance a Iluminação ao fim da Peregrinação ao Oeste.', reward: '+8 Herança do Dao' },
   { id: 'xx_ach_celeste', name: 'Carimbo do Céu', desc: 'Torne-se Oficial da Corte Celeste ou o novo Registro.', reward: '+5 Herança do Dao' },
   { id: 'xx_ach_diaspora', name: 'Discípulo de Sábios', desc: 'Recebo métodos de um Mestre Oculto.', reward: '+3 Herança do Dao' },
+  { id: 'xx_ach_nome_compassivo', name: 'Nome de Imortal Compassivo', desc: 'Seja conhecido como o Imortal Compassivo.', reward: '+4 pontos de Legado' },
+  { id: 'xx_ach_nome_sem_medo', name: 'Nome Sem Medo', desc: 'Seja conhecido como Aquele que Venceu o Medo.', reward: '+4 pontos de Legado' },
+  { id: 'xx_ach_nome_herdeiro', name: 'Nome de Herdeiro', desc: 'Seja conhecido como o Herdeiro do Mestre Sem Nome.', reward: '+4 pontos de Legado' },
+  { id: 'xx_ach_nome_prudente', name: 'Nome Prudente', desc: 'Seja conhecido como o Passo Prudente.', reward: '+4 pontos de Legado' },
 ];
 
 /** Condição de cada conquista. `ending` só existe ao morrer. */
@@ -156,6 +160,10 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   xx_ach_iluminacao: (_s, e) => e === 'iluminacao',
   xx_ach_celeste: (_s, e) => e === 'celeste',
   xx_ach_diaspora: (s) => s.flags.includes('tocado_por_mestre'),
+  xx_ach_nome_compassivo: (s) => !!s.alc?.historico.some((h) => h.id === 'xx_compassivo' && h.como !== 'perdida'),
+  xx_ach_nome_sem_medo: (s) => !!s.alc?.historico.some((h) => h.id === 'xx_sem_medo' && h.como !== 'perdida'),
+  xx_ach_nome_herdeiro: (s) => !!s.alc?.historico.some((h) => h.id === 'xx_herdeiro_mestre' && h.como !== 'perdida'),
+  xx_ach_nome_prudente: (s) => !!s.alc?.historico.some((h) => h.id === 'xx_prudente' && h.como !== 'perdida'),
 };
 
 /** Bônus de Herança do Dao compráveis. O preço sobe a cada nível (ver upgradePrice). */
@@ -174,4 +182,5 @@ export const ACH_POINTS: Record<string, number> = {
   xx_ach_despertar: 3, xx_ach_vinganca: 5, xx_ach_fundador: 8, xx_ach_amor: 5, xx_ach_milionario: 4, xx_ach_patriarca: 6, xx_ach_guardiao: 6,
   xx_ach_pilula: 6, xx_ach_ancestral: 6, xx_ach_conselheiro: 5, xx_ach_senhor_sangue: 5, xx_ach_penitente: 6, xx_ach_iluminacao: 8,
   xx_ach_celeste: 5, xx_ach_mestre_veneno: 4, xx_ach_pacto_besta: 3, xx_ach_diaspora: 3,
+  xx_ach_nome_compassivo: 4, xx_ach_nome_sem_medo: 4, xx_ach_nome_herdeiro: 4, xx_ach_nome_prudente: 4,
 };

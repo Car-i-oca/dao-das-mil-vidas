@@ -35,6 +35,10 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'ach_sacrificio', name: 'A Sentença de Hwayang', desc: 'Leve provas e testemunhas ao conselho.', reward: 'Talento: Voz que reúne' },
   { id: 'ach_vazio', name: 'Rota da Casa de Chá', desc: 'Descubra a rede que opera sob a Lua Oca.', reward: 'Talento: Passo silencioso' },
   { id: 'ach_reencarnacao', name: 'Método Compartilhado', desc: 'Deixe uma técnica acessível a várias escolas.', reward: 'Talento: Força incomum' },
+  { id: 'ach_nome_testemunha', name: 'Nome de Testemunha', desc: 'Seja conhecido como a Testemunha de Hwayang.', reward: '+4 pontos de Legado' },
+  { id: 'ach_nome_asceta', name: 'Nome de Asceta', desc: 'Seja conhecido como o Asceta da Lâmina.', reward: '+4 pontos de Legado' },
+  { id: 'ach_nome_duelista', name: 'Nome da Ponte', desc: 'Seja conhecido como o Duelista da Ponte.', reward: '+4 pontos de Legado' },
+  { id: 'ach_nome_pedra', name: 'Nome de Pedra', desc: 'Seja conhecido como o Rancor de Pedra.', reward: '+4 pontos de Legado' },
 ];
 /** Condição de cada conquista. `ending` só existe ao morrer. */
 export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> = {
@@ -51,6 +55,10 @@ export const ACH_CHECKS: Record<string, (s: State, ending?: string) => boolean> 
   ach_eremita: (s) => s.flags.includes('guardiao_estradas'),
   ach_vazio: (s) => s.flags.includes('casa_cha'),
   ach_reencarnacao: (s) => s.flags.includes('tecnica_aberta'),
+  ach_nome_testemunha: (s) => !!s.alc?.historico.some((h) => h.id === 'mur_testemunha' && h.como !== 'perdida'),
+  ach_nome_asceta: (s) => !!s.alc?.historico.some((h) => h.id === 'mur_asceta' && h.como !== 'perdida'),
+  ach_nome_duelista: (s) => !!s.alc?.historico.some((h) => h.id === 'mur_duelista' && h.como !== 'perdida'),
+  ach_nome_pedra: (s) => !!s.alc?.historico.some((h) => h.id === 'mur_pedra' && h.como !== 'perdida'),
 };
 
 /** Pontos de Legado recebidos ao liberar cada conquista da campanha atual. */
@@ -58,4 +66,5 @@ export const ACH_POINTS: Record<string, number> = {
   ach_despertar: 3, ach_fundacao: 4, ach_nucleo: 5, ach_alquimista: 4, ach_demonio: 4,
   ach_mortal: 2, ach_ascensao: 8, ach_centenario: 4, ach_fundador: 8,
   ach_eremita: 6, ach_sacrificio: 6, ach_vazio: 5, ach_reencarnacao: 6,
+  ach_nome_testemunha: 4, ach_nome_asceta: 4, ach_nome_duelista: 4, ach_nome_pedra: 4,
 };

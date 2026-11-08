@@ -174,10 +174,10 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
       ['Contar a história inteira.', 'O discípulo ouve em silêncio. Ao final, pede para aprender a pausa estranha do movimento e não reclama mais do ritmo.', { karma: 2, stats: { car: 1 } }],
       ['Dizer que o mestre pediu para não ser lembrado.', 'O discípulo aceita. A pausa continua, a dúvida também, e a lenda cresce sem ajuda.', { fama: 1 }],
     ])] },
-  { id: 'xx_vulto_vermelho', m: 'o Vulto Vermelho', f: 'a Sombra Vermelha', feito: (s) => s.path === 'demoniaca' || flag(s, 'membro_demoniaca'), infame: { m: 'o Mensageiro do Sangue', f: 'a Mensageira do Sangue' },
+  { id: 'xx_vulto_vermelho', m: 'o Vulto Vermelho', f: 'a Sombra Vermelha', feito: (s) => s.path === 'demoniaca' || flag(s, 'membro_demoniaca') || (s.corr ?? 0) >= 15, peso: 8, infame: { m: 'o Mensageiro do Sangue', f: 'a Mensageira do Sangue' },
     historia: 'Dizem que, nas noites de lua minguante, uma figura de manto escuro cruza os telhados das seitas.',
     epilogo: 'As seitas retas diziam que {alcunha} era um perigo. As seitas escondidas diziam que era um abrigo. Ninguém dizia nada em voz alta, e esse era o tamanho da fama.',
-    dica: 'Quem escolhe o caminho do sangue é visto de longe e nomeado de perto.',
+    dica: 'Quem escolhe o caminho do sangue, ou deixa que ele escolha, é visto de longe e nomeado de perto.',
     reacoes: [reacao('recusa', 'A porta que se fecha', 'Uma seita de reputação limpa recusa o pedido de abrigo de «{alcunha}» durante uma tempestade, citando as companhias que você manteve.', [
       ['Insistir pelo mérito, diante de todos.', 'A seita cede por vergonha. Você passa a noite sob o telhado deles, sentindo cada olhar como uma lâmina fina.', { fama: 2, karma: -1 }],
       ['Aceitar a recusa e buscar abrigo em outro lugar.', 'O outro lugar paga melhor e pergunta menos. Você sai com contatos novos e uma dívida que ainda não sabe medir.', { pedras: 40, karma: -2 }],

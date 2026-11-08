@@ -28,3 +28,11 @@ Status/HUD: alcunha ao lado do nome; toque abre a história e as alcunhas anteri
 
 ## Limiares e metas medidas (1000 vidas por modo, metade com cada robô)
 Ver a tabela em `docs/relatorio-lote2.md`.
+
+## B1 — pendências fechadas (Lote 2)
+- **Feitos raros vencem:** `Alcunha.peso` soma pontos ao feito (Testemunha de Hwayang e Vulto Vermelho: +8), para que o feito possa nascer e também substituir uma alcunha de perfil (a mudança exige +5). Antes, o feito valia 6 e perdia para qualquer perfil forte.
+- **Vulto Vermelho (Xianxia):** além do Caminho do Sangue e da facção demoníaca, vale `corrupção ≥ 15` (p97 das vidas), porque os robôs quase nunca entram no caminho demoníaco. Dica do catálogo ajustada.
+- **Xianxia ≥ 70%:** alcunha de eixo único com z ≥ 0,85 (Murim continua 1,0), e nascimento com 4,25 pontos (= 0,85 × 5). Justificativa: no Xianxia o perfil se espalha por mais eixos, e 320 de 345 vidas sem alcunha tinham o maior eixo entre 0,7 e 1,0 da vida típica; nenhuma tinha menos de 20 anos.
+- **Quadro de nascimento:** varia com o eixo da alcunha (casa de caridade, pátio de treino, casa de apostas, templo…), por modo; feitos usam o quadro genérico.
+- **Conquistas das raras** (+4 Legado cada; vale se a alcunha chegou a ser aceita, trocada ou imposta e não foi perdida): Murim — Testemunha de Hwayang, Asceta da Lâmina, Duelista da Ponte, Rancor de Pedra; Xianxia — Imortal Compassivo, Que Venceu o Medo, Herdeiro do Mestre Sem Nome, Passo Prudente. Escolhidas por serem as 4 menos frequentes de cada modo (< 1% das vidas).
+- **Impacto:** `FINAIS_POR_FLAG` (Murim) lista as flags lidas pelo motor para o final da velhice; `sim/impacto.ts` as conta como caminho/final (Memória de escriba: 0 → 1, mínimos atingidos).

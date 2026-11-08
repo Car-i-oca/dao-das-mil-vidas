@@ -13,14 +13,14 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 | Eventos "tanto faz" | 4 | 0 |
 | Flags gravadas e nunca lidas | 48 | 0 |
 | Escolhas exclusivas por trilha / talento / defeito / item | 0 / 6 / 0 / 0 | muito mais |
-| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.775 | referência |
-| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.767 | bem menor que a de cima |
+| Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.760 | referência |
+| Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.729 | bem menor que a de cima |
 
 ### Talentos (mínimo: 4 eventos próprios, 6 opções exclusivas, 1 caminho/final)
 
 | Nome | Eventos próprios | Opções exclusivas | Caminhos/finais | OK |
 |---|---|---|---|---|
-| Memória de escriba | 4 | 6 | 0 | **não** |
+| Memória de escriba | 4 | 6 | 1 | sim |
 | Instinto oportuno | 0 | 0 | 0 | **não** |
 | Olho experiente | 0 | 0 | 0 | **não** |
 | Constituição vigorosa | 0 | 0 | 0 | **não** |

@@ -37,3 +37,7 @@ Crônicas (3 por modo, geradas) em `docs/cronicas-alcunhas.md`; li o Murim e cor
 - **Alcunhas raras que dão conquista:** não feito.
 - **Xianxia:** 65,5% das vidas com alcunha (meta 70%) e Vulto Vermelho (trilha demoníaca) nunca alcançado pelos robôs; Murim: Testemunha de Hwayang (flag do fim da campanha) idem.
 - **Escolas do Murim (Lâmina Errante a 73%) e escolhas sem marca:** inalteradas.
+
+
+## B1 — dourado do Murim
+O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas diverge, a vida i4): a Testemunha de Hwayang agora pode substituir uma alcunha de perfil (`peso: 8`), o que muda a alcunha final e as cenas de reação dessa vida. Regenerado com `npm run dourado -- --gravar`. O Xianxia não tem dourado.
