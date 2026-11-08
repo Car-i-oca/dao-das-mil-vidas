@@ -618,7 +618,7 @@ function doBreakthroughCore(s: State, rng: Rng, pill?: Item): string {
   if (rng.chance(p)) {
     const trib = top || L.realms[next].tribulation;
     if (trib) {
-      const tribOk = rng.chance(tribulationChance(s) * (top && s.v2 ? 0.35 : 1)); // v2: a última tribulação é mais rara (ascensão entre 0,5% e 2%)
+      const tribOk = rng.chance(tribulationChance(s) * (top && s.v2 ? 0.25 : 1)); // v2: a última tribulação é mais rara (ascensão entre 0,5% e 2%)
       s.flags = s.flags.filter((fl) => !TRIB_FLAGS.includes(fl));
       if (!tribOk) {
         if (s.items.includes('talisma_escudo')) {
