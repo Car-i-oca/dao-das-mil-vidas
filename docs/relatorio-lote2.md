@@ -71,3 +71,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — talento 8 de 14: Leitura de postura (`olhar_dao`)
 - **Entrou** (`tracos/olhar_dao.ts`): 4 cenas (`pos_pisada`, `pos_mestre_cansado`, `pos_duelo_sem_golpe`, `pos_postura_propria`), 6 opções exclusivas (torneio, duelo na ponte, bandidos, ponte da Garça, estilos errantes, oferta da Lua Oca) e o final `murim_olho_no_espelho` (flag `pos_postura_lida`). Cicatriz: ver a fraqueza de todos e decidir o que fazer com ela. Dourado inalterado em relação ao commit anterior (nenhuma das 330 vidas fixas usa este talento).
 - **Dourado:** agora `267a7874e8c7cb17`.
+
+## B2 — talento 9 de 14: Saúde duradoura (`vida_longa`)
+- **Entrou** (`tracos/vida_longa.ts`): 4 cenas (`lon_epidemia`, `lon_enterro_do_amigo`, `lon_filhos_dos_outros`, `lon_ultima_da_mesa`), 6 opções exclusivas (refugiados, vila sob a neve, dia na estrada, último inverno, peregrinos, retorno à ponte) e o final `murim_ultimo_da_mesa` (flag `lon_ultimo_da_mesa`). Cicatriz: quem vive muito enterra os que amou.
+- **Dourado:** agora `4979b38fa0f7fa6d`.

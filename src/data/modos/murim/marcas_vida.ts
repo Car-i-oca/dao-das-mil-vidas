@@ -151,6 +151,24 @@ pos_mestra_lida|Apontou à mestra da Garça onde ela cederia o peso.
 pos_arbitro|Aprendeu com o ex-árbitro a explicar o que enxergava.
 pos_choi_rin_lida|Percebeu que a lâmina de Choi Rin era herdada.
 
+lon_cuidou_vila|Cuidou das crianças doentes da vila numa epidemia que não o pegou.
+lon_porta_fechada|Fechou a porta durante a epidemia, e a vila nunca esqueceu.
+lon_boticaria|Ofereceu o próprio corpo à boticária Seo Yun e ajudou a criar uma receita.
+lon_viuva_cuidada|Cuidou da viúva e dos filhos de Min-jae.
+lon_juramento_vigilia|Jurou, junto à cova de Min-jae, viver o que ele não viveu.
+lon_silencio_amigo|Calou a morte de Min-jae até acordar com o nome dele na boca.
+lon_memoria_da_vila|Contou a vila inteira de volta aos mortos e pintou os seus nomes numa parede.
+lon_solidao_aceita|Aceitou a solidão de ter visto nascer quase todos à sua volta.
+lon_receita_ensinada|Ensinou a uma jovem a receita de caminhar, comer pouco e dormir cedo.
+lon_ultimo_da_mesa|Ficou como o último da mesa e não fugiu da pergunta.
+lon_nomes_passados|Passou a um neto de amigo os nomes que só ele guardava.
+lon_noite_caminhada|Caminhou a noite toda ao lado da carroça dos refugiados.
+lon_noite_ao_relento|Dormiu ao relento para ceder o abrigo a quem não aguentava o frio.
+lon_sopa_amarga|Aceitou, pela quarta vez, a sopa amarga da velha da estrada.
+lon_cartas_ao_fim|Escreveu uma carta a cada pessoa que sobreviveu a ele.
+lon_velhice_lugar|Ouviu de um monge que a velhice é um lugar, não um castigo.
+lon_neto_do_amigo|Reconheceu num menino da ponte o neto de um velho amigo.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(

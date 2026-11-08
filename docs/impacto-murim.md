@@ -6,13 +6,13 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 
 | Métrica | Valor | Meta |
 |---|---|---|
-| Escolhas no jogo | 260 | — |
-| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (14%) | 0 |
+| Escolhas no jogo | 278 | — |
+| Escolhas sem marca (nenhuma flag, agenda, item, mudança de local/facção ou efeito grande) | 36 (13%) | 0 |
 | Escolhas cuja única marca é o perfil de conduta (sem flag, agenda, item etc.) | 0 (0%) | cair ao longo dos lotes |
 | Escolhas com a mesma consequência de outra do mesmo evento | 0 | 0 |
 | Eventos "tanto faz" | 0 | 0 |
 | Flags gravadas e nunca lidas | 49 | 0 |
-| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 54 / 0 / 0 | muito mais |
+| Escolhas exclusivas por trilha / talento / defeito / item | 0 / 61 / 0 / 0 | muito mais |
 | Semelhança (Jaccard) entre vidas com a MESMA trilha, talento e defeito | 0.744 | referência |
 | Semelhança entre vidas com a mesma trilha e talento/defeito DIFERENTES | 0.603 | bem menor que a de cima |
 
@@ -28,7 +28,7 @@ Gerado por `npm run impacto`. Sem baseline para comparar.
 | Aprendiz disciplinado | 4 | 6 | 3 | sim |
 | Vontade firme | 4 | 6 | 3 | sim |
 | Leitura de postura | 4 | 6 | 3 | sim |
-| Saúde duradoura | 0 | 0 | 0 | **não** |
+| Saúde duradoura | 4 | 6 | 3 | sim |
 | Voz que reúne | 0 | 0 | 0 | **não** |
 | Passo silencioso | 0 | 0 | 0 | **não** |
 | Força incomum | 0 | 0 | 0 | **não** |

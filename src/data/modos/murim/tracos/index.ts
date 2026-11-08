@@ -8,8 +8,9 @@ import { CARISMA_NATO } from './carisma_nato';
 import { MESTRE_NATO } from './mestre_nato';
 import { CORACAO_INABALAVEL } from './coracao_inabalavel';
 import { OLHAR_DAO } from './olhar_dao';
+import { VIDA_LONGA } from './vida_longa';
 
-const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA, CORPO_RESISTENTE, CARISMA_NATO, MESTRE_NATO, CORACAO_INABALAVEL, OLHAR_DAO];
+const CONJUNTOS: ConjuntoTraco[] = [SORTE_DESTINO, ALMA_ANTIGA, CORPO_RESISTENTE, CARISMA_NATO, MESTRE_NATO, CORACAO_INABALAVEL, OLHAR_DAO, VIDA_LONGA];
 
 function aplica(op: OpT): Choice {
   const { p, ...c } = op;
