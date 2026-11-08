@@ -26,9 +26,14 @@ Fator da tribulação final 0,35 → 0,25: **0,8%** em 1000 vidas (`docs/varieda
 
 Crônicas (3 por modo, geradas) em `docs/cronicas-alcunhas.md`; li o Murim e corrigi: artigo duplicado («a «a Cobradora»»), preposição sem contração («de o»), pronome fixo na história e particípio fixo em reação. O quadro da cena de nascimento é o mesmo para todas as alcunhas do modo (só a história muda): soa repetitivo e fica como aberto.
 
+## Lote 2: primeiro talento do Murim — Memória de escriba (`memoria_perfeita`)
+- **4 cenas próprias** (`mem_aula`, `mem_escriba`, `mem_testemunho`, `mem_peso`), **6 opções exclusivas** escritas para cada cena comum (livro sob a ponte, armazém, torneio, conselho, nomes riscados, julgamento) e **1 final exclusivo**, «O arquivo que andava» (`murim_arquivista`, aberto pela flag `arquivo_vivo` em `mem_peso`). Cada opção tem consequência própria (flag lida em cena posterior ou no resumo, pedras, fama, karma).
+- O `impacto` mostra 4 / 6 / 0 porque conta só finais dados por `fx.fim`; o final exclusivo vem do `finalDeVelhice` (flag), então a linha de «caminhos» fica 0 no relatório mesmo com o caminho existindo. Ajustar a ferramenta fica como aberto.
+- Dourado regenerado: novo hash em `docs/dourado-murim.json`, porque o Murim ganhou 4 cenas, 6 opções e 1 final.
+
 ## O que ficou aberto (alcunhas e Lote 2)
+- **Lote 2 em andamento:** 1 de 14 talentos do Murim feito (Memória de escriba); faltam 13 talentos, os 9 defeitos, as origens, as trilhas e o Xianxia (conversão dos lotes 26 a 28 de `899108c`).
 - **Cenas de reação:** 1 por alcunha (meta: 3). O `validate` avisa. Os 3 por alcunha e as cenas «que só existem por causa dela» exigem mais ~96 cenas escritas.
 - **Alcunhas raras que dão conquista:** não feito.
 - **Xianxia:** 65,5% das vidas com alcunha (meta 70%) e Vulto Vermelho (trilha demoníaca) nunca alcançado pelos robôs; Murim: Testemunha de Hwayang (flag do fim da campanha) idem.
-- **Lote 2 (talentos, defeitos, origens, trilhas):** não iniciado. As metas por traço continuam como em `docs/impacto-murim.md` e `docs/impacto-xianxia.md`.
 - **Escolas do Murim (Lâmina Errante a 73%) e escolhas sem marca:** inalteradas.

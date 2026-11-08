@@ -27,6 +27,7 @@ function finalDeVelhice(s: State): string {
   if (s.flags.includes('guardiao_estradas')) return 'murim_guardiao';
   if (s.flags.includes('tecnica_aberta') || s.flags.includes('metodo_verificado')) return 'murim_mestre';
   if (s.flags.includes('legado_silenciado')) return 'murim_heranca';
+  if (s.flags.includes('arquivo_vivo') && s.talent === 'memoria_perfeita') return 'murim_arquivista';
   return 'velhice';
 }
 

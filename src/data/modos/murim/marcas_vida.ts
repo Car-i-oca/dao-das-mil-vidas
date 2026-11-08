@@ -7,6 +7,16 @@
  * entram junto com o Lote 2, flag a flag, só para as flags que o jogo de fato lê.
  */
 const TABELA = `
+memoria_livro|Leu o livro sob a ponte duas vezes e guardou cada nome, cada valor e cada data até o fim.
+nomes_restaurados_memoria|Recompôs de memória os nomes riscados, e uma velha sentou no chão ao ler o do marido.
+depoimento_exato|Ditou, de memória, depoimentos mais exatos do que os do escrivão.
+livros_duplos|Copiou os livros duplos da casa de contas e deixou uma nota na margem.
+testemunha_exata|Depôs palavra por palavra, e o comerciante desistiu de contestar.
+cadernos_escritos|Passou as memórias para quarenta cadernos e queimou onze.
+memoria_em_paz|Aprendeu com um monge de passagem a lembrar sem carregar.
+memoria_pesada|Recusou o conselho do monge e seguiu lembrando tudo, cada vez mais calado.
+mem_biblioteca|Recebeu, ainda criança, uma carta para a biblioteca do templo.
+mem_discreta|Aprendeu cedo que lembrar tudo e mostrar tudo são habilidades diferentes.
 caravana_avisada|Avisou, sem se identificar, uma caravana de remédios da emboscada que a esperava.
 alcunha_aceita|Aceitou o nome que o mundo lhe deu e passou a viver à altura dele.
 alcunha_recusada|Recusou em voz alta o nome que o mundo lhe deu, e aprendeu o preço de dizer não em público.
