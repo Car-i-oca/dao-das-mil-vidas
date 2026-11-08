@@ -125,3 +125,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 ## B2 — defeito 7 de 9: Atenção dispersa (`distraido`)
 - **Entrou** (`tracos/distraido.ts`): 4 cenas (`dsp_o_pote_derramado`, `dsp_a_vigia_perdida`, `dsp_o_detalhe_que_salvou`, `dsp_a_nuvem_que_ficou`), 6 opções exclusivas de quem tem o defeito (escola, ponte da Garça, armazém, arquivo, banca de Noh, lâmina com duas versões), arco de redenção (`dsp_o_detalhe_que_salvou`, `fx.superar` ao achar uma atenção própria) e o final `murim_olhar_da_varanda` (flag `dsp_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **Dourado:** agora `03eac32d3b694098`.
+
+## B2 — defeito 8 de 9: Impulsividade (`impulsivo`)
+- **Entrou** (`tracos/impulsivo.ts`): 4 cenas (`imp_o_salto_do_muro`, `imp_a_palavra_dita`, `imp_a_corda_cortada`, `imp_tres_respiracoes`), 6 opções exclusivas de quem tem o defeito (torneio, bandidos, duelo na ponte, audiência, festival, oferta da Lua Oca), arco de redenção (`imp_a_corda_cortada`, `fx.superar` ao esperar três respirações) e o final `murim_ensinou_a_esperar` (flag `imp_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
+- **Dourado:** agora `6a4a2cfd691ea58b`.

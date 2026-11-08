@@ -399,6 +399,25 @@ dsp_arquivo_a_dois|Salvou o arquivo da Garça com um colega que anotava o que es
 dsp_tabuleta_de_noh|Anotou numa tabuleta o que precisava comprar e saiu da feira só com isso.
 dsp_segunda_versao|Pediu que cada um repetisse a versão e achou o detalhe que desfez a acusação.
 
+imp_saltou_o_muro|Saltou o muro do vizinho sem olhar e foi perseguido pelo cão.
+imp_olhou_antes|Olhou do alto do muro antes de descer, pela primeira vez.
+imp_bateu_a_porta|Bateu à porta do vizinho em vez de saltar o muro.
+imp_disse_tudo|Disse a frase inteira no jantar e envergonhou dois mestres.
+imp_contou_ate_dez|Contou até dez e respondeu com uma frase curta, no jantar de escola.
+imp_riu_de_si|Riu da própria forma no jantar e transformou a crítica em lição.
+imp_esperou|Esperou três respirações diante da corda do poço e salvou a criança.
+imp_tres_respiracoes_ok|Aprendeu, tarde, a esperar três respirações, e superou a impulsividade.
+imp_cortou_a_corda|Cortou a corda e saltou no poço, e se feriu.
+imp_ordem_na_praca|Deu uma só ordem na praça e a corda subiu com a criança.
+imp_fim_ok|Resolveu o que fazer com o neto no alto do muro.
+imp_ensinou_a_esperar|Ensinou ao neto a respiração que lhe custou a vida inteira.
+imp_antes_do_sinal|Atacou antes do sinal do juiz e foi desqualificado.
+imp_saltou_no_lider|Atirou-se sobre o líder dos bandidos e ganhou uma cicatriz.
+imp_duelo_sem_ouvir|Duelou na ponte sem ouvir o mascarado.
+imp_acusou_cedo|Acusou Gwon Tae-seok antes do momento combinado.
+imp_confrontou_oficial|Confrontou o oficial da taxa no meio da praça.
+imp_avisou_o_cobrador|Correu com a lâmina da Lua Oca para avisar o cobrador.
+
 `;
 
 export const MARCAS_VIDA: Record<string, string> = Object.fromEntries(
