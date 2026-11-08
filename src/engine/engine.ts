@@ -7,6 +7,7 @@ import { pacoteDe, type Modo } from '../data/modos';
 import { generoDoNome } from '../data/modos/xianxia/nomes';
 import { gerarAparencia } from '../ui/art/pintura/aparencia';
 import { eventoV2, MOLDE, aplicarEfeitosMundo } from './v2/moldes';
+import { cenaPendente, montarCena, textoAlcunha, nomeAlcunha, alcunhaPorId, aplicarAlcunha, pronomes, type CenaAlcunha } from './alcunhas';
 import { iniciarV2, pickNextV2, depoisDaCena, sincronizarMundo, finalDeVelhiceV2 } from './v2/diretor';
 import { FOE, foeFor } from '../data/combates';
 import { eventTypeOf } from '../data/event-type';
@@ -182,7 +183,7 @@ export function cultivationRate(s: State): number {
 }
 
 export function fill(s: State, text: string): string {
-  return text
+  return aplicarAlcunha(text
     .replace(/\{nome\}/g, s.name)
     .replace(/\{rival\}/g, s.names.rival)
     .replace(/\{mentor\}/g, s.names.mentor)
@@ -197,7 +198,7 @@ export function fill(s: State, text: string): string {
     .replace(/\{reino\}/g, realmName(s))
     .replace(/\{eco_final\}/g, s.names.eco_final ?? '')
     .replace(/\{eco_trilha\}/g, s.names.eco_trilha ?? '')
-    .replace(/\{eco\}/g, s.names.eco ?? '');
+    .replace(/\{eco\}/g, s.names.eco ?? ''), textoAlcunha(s) || s.name);
 }
 
 /** Etiquetas da raiz espiritual: tipo (unica, mutante, dupla, tripla, quadrupla, caotica) e elementos. */
@@ -694,9 +695,10 @@ export interface View {
   noticias?: string[];
 }
 
-export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro'; pill?: Item }
+export interface Visible { choice?: Choice; action?: 'break' | 'wait' | 'retiro' | 'alcunha'; alcIdx?: number; pill?: Item }
 
 export function visibleChoices(s: State): Visible[] {
+  if (s.current?.alc) return montarCena(s, s.current.alc as CenaAlcunha).opcoes.map((_, i) => ({ action: 'alcunha' as const, alcIdx: i }));
   if (s.current?.retiro) return [{ action: 'retiro' }];
   if (s.current?.breakthrough) {
     const v: Visible[] = [{ action: 'break' }];
@@ -751,6 +753,10 @@ export function view(s: State): View {
   }
   if (s.result) return { kind: 'result', title: '', text: s.result.text, choices: [] };
   const cur = s.current!;
+  if (cur.alc) {
+    const c = montarCena(s, cur.alc as CenaAlcunha);
+    return { kind: 'event', title: c.titulo, rarity: 'raro', text: c.texto, choices: c.opcoes.map((o) => ({ text: o.texto })) };
+  }
   if (cur.breakthrough) {
     const L = ladderOf(s);
     const next = s.tier + 1;
@@ -891,6 +897,13 @@ function chooseCore(s: State, idx: number, rng: Rng) {
   if (v.choice?.custo && s.pedras < v.choice.custo) return;
   if (v.choice?.bloq) return;
   s.turn++;
+  if (v.action === 'alcunha') {
+    const op = montarCena(s, s.current!.alc as CenaAlcunha).opcoes[v.alcIdx ?? 0];
+    const txt = op.fn(rng, (fx) => applyFx(s, fx, rng));
+    s.result = { text: txt };
+    addLog(s, txt);
+    return;
+  }
   if (v.action) {
     if (v.action === 'retiro') {
       const d = s.current?.d ?? 10;
@@ -1050,6 +1063,9 @@ export function pickNext(s: State, rng: Rng) {
     s.current = { id: '__break', breakthrough: true };
     return;
   }
+  // 1b) alcunha: nasce, muda, mancha ou o mundo reage a ela
+  const cenaAlc = cenaPendente(s);
+  if (cenaAlc) { s.current = { id: '__alcunha', alc: cenaAlc }; return; }
   // 2) eventos agendados
   const dueIdx = s.v2 ? -1 : s.scheduled.findIndex((x) => x.at <= s.age && P(s).ix.EVENT[x.event] && s.seen[x.event] === undefined && condMet(s, P(s).ix.EVENT[x.event].cond));
   if (dueIdx >= 0) {
@@ -1131,7 +1147,9 @@ export function finalizeLife(meta: Meta, s: State): void {
   meta.recent = [Object.keys(s.seen).filter((k) => !k.startsWith('__')), ...(meta.recent ?? [])].slice(0, 3);
   meta.history.unshift({ modo: P(s).id, name: s.name, path: P(s).ix.PATH[s.path].name, tierName: realmName(s), age: Math.floor(s.age), ending: end.name });
   if (meta.history.length > 30) meta.history.pop();
-  s.summary = { legacy: gain, ach: newAch, tierName: realmName(s), marcas, equipment: { ...s.equipment } };
+  const alcAtual = s.alc?.atual ? alcunhaPorId(s, s.alc.atual.id) : undefined;
+  if (alcAtual) { meta.alcunhas ??= []; if (!meta.alcunhas.includes(alcAtual.id)) meta.alcunhas.push(alcAtual.id); }
+  s.summary = { alcunha: alcAtual ? { id: alcAtual.id, nome: nomeAlcunha(s, alcAtual, s.alc!.atual!.manchada), epilogo: pronomes(s, fill(s, alcAtual.epilogo)) } : undefined, legacy: gain, ach: newAch, tierName: realmName(s), marcas, equipment: { ...s.equipment } };
 }
 
 export function buyUpgrade(meta: Meta, id: string, cost: number, max: number): boolean {

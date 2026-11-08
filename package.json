@@ -14,6 +14,7 @@
     "variedade": "tsx sim/todos.ts variedade",
     "dourado": "tsx sim/dourado.ts",
     "alcance": "tsx sim/todos.ts alcance",
+    "alcunhas": "tsx sim/todos.ts alcunhas",
     "icons": "node scripts/gen-icons.mjs",
     "poder": "tsx sim/todos.ts poder",
     "galeria": "tsx sim/galeria.ts",

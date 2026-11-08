@@ -418,3 +418,11 @@ p { margin-top: 0; }
 .modo-troca { margin: 8px 0; gap: 8px; flex-wrap: wrap; }
 .chapter-card { margin: 0 0 10px; padding: 8px 12px; border-left: 3px solid var(--gold, #d2a95c); background: rgba(210, 169, 92, 0.08); font-size: 0.9rem; font-style: italic; overflow-wrap: anywhere; }
 .noticias { margin: 10px 0 0; padding-left: 18px; font-size: 0.85rem; opacity: 0.85; overflow-wrap: anywhere; }
+
+/* ---------- Alcunhas ---------- */
+.alcunha-chip { display: inline-block; max-width: 100%; margin-left: 8px; padding: 1px 8px; font: inherit; font-size: .72em; font-style: italic; color: var(--gold, #d2a95c); background: transparent; border: 1px solid var(--gold, #d2a95c); border-radius: 999px; cursor: pointer; overflow-wrap: anywhere; text-align: left; }
+.alcunha-historia { font-style: italic; line-height: 1.5; overflow-wrap: anywhere; }
+.alcunha-lista { margin: 6px 0 0; padding-left: 18px; overflow-wrap: anywhere; }
+.alcunha-final h2 { margin: 4px 0; color: var(--gold-bright, #f0c978); overflow-wrap: anywhere; }
+.alcunha-linha { padding: 4px 0; overflow-wrap: anywhere; }
+.alcunha-linha.found b { color: var(--gold, #d2a95c); }

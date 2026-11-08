@@ -4,6 +4,8 @@
  * mesmo quando nenhum evento posterior pergunta por isso. Formato: `flag|frase`.
  */
 const TABELA = `
+alcunha_aceita|Aceitou o nome que as seitas lhe deram e passou a viver à altura dele.
+alcunha_recusada|Recusou em voz alta o nome que as seitas lhe deram, e aprendeu o preço de dizer não em público.
 sino_devolvido|Devolveu ao rio o sino sem badalo que achou aos seis anos, e o rio nunca mais cobrou nada.
 sino_segredo|Guardou o sino sem badalo até a noite em que alguém bateu à porta, e descobriu que guardar também é um posto.
 monge_amigo|Entregou o sino ao monge da beira do rio e ganhou, com isso, um aliado e uma tarefa sem prazo.

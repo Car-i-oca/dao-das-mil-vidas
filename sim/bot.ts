@@ -22,6 +22,8 @@ function demonScore(c: Visible['choice']): number {
 export function botPick(s: State, rng: Rng, seekDemon: boolean): number {
   const v = view(s);
   const vis = visibleChoices(s);
+  // Cena de alcunha: a maioria das pessoas aceita o nome que o mundo lhe dá.
+  if (s.current?.alc && rng.chance(0.7)) return 0;
   const valid = v.choices.map((c, i) => ({ c, i, raw: vis[i]?.choice })).filter((x) => !x.c.disabled);
   if (seekDemon && DEMON_EVENTS.has(s.current?.id ?? '')) {
     const best = valid.reduce((a, b) => (demonScore(b.raw) > demonScore(a.raw) ? b : a), valid[0]);

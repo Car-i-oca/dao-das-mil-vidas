@@ -331,8 +331,10 @@ export interface State {
   v: 1;
   /** Modo de jogo da vida (ausente em saves antigos = Murim). */
   modo?: Modo;
-  /** Perfil de conduta acumulado (só Xianxia). */
+  /** Perfil de conduta acumulado (escrito à mão nas escolhas, nos dois modos). */
   perfil?: Record<string, number>;
+  /** Alcunhas: atual, história, recusadas (ver src/engine/alcunhas.ts). */
+  alc?: import('./engine/alcunhas').EstadoAlcunha;
   /** Recurso da trilha (só Xianxia). */
   rec?: number;
   /** Aparência do jogador (sorteada na criação do Xianxia). */
@@ -386,7 +388,7 @@ export interface State {
   log: LogEntry[];
   turn: number;
   /** Evento atual (null quando em resultado/final). */
-  current: { id: string; v2?: { molde: string; bind: Record<string, string> }; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
+  current: { id: string; alc?: { tipo: string; id: string; reacao?: string }; v2?: { molde: string; bind: Record<string, string> }; breakthrough?: boolean; retiro?: boolean; /** duração da reclusão, em anos */ d?: number; /** variante de texto */ v?: number; foe?: string; foeName?: string } | null;
   /** Efeitos temporários e sua duração restante em turnos. */
   statuses?: StatusEffect[];
   /** Resultado exibido após uma escolha. */
@@ -405,7 +407,7 @@ export interface State {
   ending: string | null;
   endingText: string | null;
   /** Preenchido quando a vida é encerrada (finalizeLife). */
-  summary?: { legacy: number; ach: string[]; tierName: string; marcas?: string[]; equipment?: Partial<Record<EquipmentSlot, string>> };
+  summary?: { alcunha?: { id: string; nome: string; epilogo: string }; legacy: number; ach: string[]; tierName: string; marcas?: string[]; equipment?: Partial<Record<EquipmentSlot, string>> };
   legacyBonus: { stats: number; xp: number; luck: number; pedras: number };
 }
 
@@ -429,4 +431,6 @@ export interface Meta {
   history: { modo?: Modo; name: string; path: string; tierName: string; age: number; ending: string }[];
   /** Bestiário persistente: IDs dos inimigos vencidos em qualquer vida. */
   defeatedFoes?: string[];
+  /** Alcunhas já conquistadas (ids, com prefixo do modo). */
+  alcunhas?: string[];
 }

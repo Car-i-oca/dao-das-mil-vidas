@@ -10,7 +10,7 @@ const itemIds = new Set(PK.itens.map((i) => i.id)), endIds = new Set(PK.finais.m
 
 const CAMPOS = new Set(['nome', 'trato', 'Trato', 'reino', 'faccao', 'idade', 'causa', 'ele', 'Ele', 'dele', 'Dele', 'nele', 'Nele', 'o', 'O', 'um', 'Um', 'este', 'Este', 'mesmo', 'moco', 'homem', 'Homem', 'velho', 'lo', 'senhor', 'Senhor', 'irmao', 'jovem', 'filho', 'vitima', 'Vitima', 'dovitima', 'aovitima', 'tutor', 'Tutor', 'dotutor', 'aotutor', 'casa', 'Casa']);
 const GLOBAIS = new Set(['jogador', 'mundo', 'ferida', 'familia']);
-const V1 = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
+const V1 = new Set(['alcunha', 'nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha', 'eco_tecnica']);
 /** Moldes onde "ele/ela" não se refere a uma pessoa (coisa, lugar ou nome). */
 const PRONOME_LIVRE = new Set(['virada_reerguer', 'seita_guerra', 'reacao_rompimento']);
 

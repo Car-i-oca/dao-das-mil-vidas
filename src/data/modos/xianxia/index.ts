@@ -10,6 +10,7 @@ import { MARCAS_VIDA } from './marcas_vida';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
 import { EVENTOS_XIANXIA } from './eventos';
 import { MOLDES } from './v2';
+import { ALCUNHAS_XIANXIA } from './alcunhas';
 
 /** Reserva do motor clássico: o diretor da v2 escolhe o final de velhice (finalDeVelhiceV2) e tem prioridade; aqui só sobram os dois finais simples. */
 function finalDeVelhice(s: State): string {
@@ -96,4 +97,5 @@ export const XIANXIA: PacoteModo = {
     eventoVidaComum: 'vida_comum',
   },
   finalDeVelhice,
+  alcunhas: ALCUNHAS_XIANXIA,
 };

@@ -7,6 +7,8 @@ import {
 } from '../engine/engine';
 import { upgradePrice } from '../data/legado';
 import { pacoteDe, MODOS, type Modo } from '../data/modos';
+import { textoAlcunha, nomeAlcunha, alcunhaPorId, pronomes } from '../engine/alcunhas';
+import { fill } from '../engine/engine';
 import type { Change, DiceRoll, EquipmentSlot, Item, Meta, State, StatKey, UiNotification } from '../types';
 import { itemIcon, pathIcon, realmIcon, definirEstilo, estiloValido, ESTILOS, amostraDe, type Estilo } from './art';
 import { sceneSvg, endingCard, type SceneKind } from './art';
@@ -117,6 +119,7 @@ let galleryOpen = false;
 let galleryTab: 'endings' | 'enemies' | 'artifacts' = 'endings';
 let shopOpen = false;
 let shopEventId = '';
+let alcunhaAberta = false;
 
 const app = document.getElementById('app')!;
 
@@ -377,7 +380,7 @@ function hudHtml(s: State): string {
   return `
     <div class="hud">
       <div class="hud-row"><div class="hud-pt">${portraitSvg(lookFromState(s), 52)}</div><div class="hud-main">
-      <div class="row between"><span class="name">${esc(s.name)}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
+      <div class="row between"><span class="name">${esc(s.name)}${textoAlcunha(s) ? `<button class="alcunha-chip" data-act="alcunha-info" aria-label="Ver a história da alcunha">${esc(textoAlcunha(s))}</button>` : ''}</span><span class="wounds" title="Ferimentos">${s.wounds > 0 ? '♥'.repeat(Math.min(6, Math.round(s.wounds))) : ''}</span></div>
       <div class="sub">${esc(realm.name)} · ${Math.floor(s.age)} anos de ${s.maxAge}${s.tier > 0 ? ` · ${Math.min(100, Math.round(s.xp))}%` : ''}</div>
       <div class="hud-resources"><span>Dia ${s.day ?? 1} · ${String(s.hour ?? 8).padStart(2, '0')}:00</span><span>${weatherLabel(s.weather)}</span>${sectRankOf(s) ? `<span>Escola: ${sectRankLabel(sectRankOf(s)!)}</span>` : ''}${statuses ? `<div class="status-chips">${statuses}</div>` : ''}</div>
       ${s.tier > 0 ? `<div class="bar"><i style="width:${Math.min(100, s.xp)}%"></i></div>` : ''}
@@ -410,6 +413,21 @@ function tabsHtml(): string {
   return `<nav class="tabs" aria-label="Navegação da vida">${t('aventura', '⚔', 'Aventura')}${t('equipamentos', '◈', 'Equipamentos')}${t('inventario', '▣', 'Inventário')}</nav>`;
 }
 
+function alcunhaModalHtml(s: State): string {
+  const e = s.alc;
+  const at = e?.atual && alcunhaPorId(s, e.atual.id);
+  if (!e || !at) return '';
+  const linhas = e.historico.map((h) => {
+    const a = alcunhaPorId(s, h.id);
+    return a ? `<li><b>${esc(nomeAlcunha(s, a, e.atual?.id === h.id && e.atual.manchada))}</b> <span class="muted small">· aos ${h.idade} anos (${esc({ aceita: 'aceita', trocada: 'trocada por outra', imposta: 'imposta pelo boato', mudou: 'veio no lugar da anterior', manchada: 'manchada por um ato', perdida: 'perdida' }[h.como] ?? h.como)})</span></li>` : '';
+  }).join('');
+  return `<div class="gallery-overlay" role="dialog" aria-modal="true" aria-label="Alcunha">
+    <button class="gallery-backdrop" data-act="alcunha-fechar" aria-label="Fechar"></button>
+    <section class="gallery-modal"><header class="gallery-header"><div><span class="muted small">ALCUNHA</span><h2>${esc(textoAlcunha(s))}</h2></div><button class="btn ghost" data-act="alcunha-fechar" aria-label="Fechar">×</button></header>
+      <div class="gallery-content"><p class="alcunha-historia">${esc(pronomes(s, at.historia))}</p><div class="muted small">COMO SURGIU</div><ul class="alcunha-lista">${linhas}</ul></div>
+    </section></div>`;
+}
+
 function renderGame() {
   const s = save.run!;
   const currentType = s.current ? K().ix.EVENT[s.current.id]?.type ?? (K().ix.EVENT[s.current.id] ? view(s).eventType : undefined) : undefined;
@@ -427,7 +445,8 @@ function renderGame() {
   else if (tab === 'inventario') body = lifeHtml(s);
   else body = logHtml(s);
   const frameTab = tab === 'inventario' ? 'aventura' : tab;
-  app.innerHTML = `<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<div class="journal-row"><button class="journal-link" data-act="tab" data-id="diario">Diário da vida <span>↗</span></button></div><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
+  const modalAlcunha = alcunhaAberta ? alcunhaModalHtml(s) : '';
+  app.innerHTML = `${modalAlcunha}<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<div class="journal-row"><button class="journal-link" data-act="tab" data-id="diario">Diário da vida <span>↗</span></button></div><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
   if (tab === 'aventura' || tab === 'inventario') startTyping(s);
 }
 
@@ -700,6 +719,7 @@ function renderEnd() {
       <div class="muted small" style="text-align:center">${esc(s.name)} · ${esc(K().ix.PATH[s.path].name)}</div>
       <h1>${esc(e.name)}</h1>
       <p class="epitaph">${esc(s.endingText ?? '')}</p>
+      ${sm.alcunha ? `<div class="card alcunha-final"><div class="muted small">ALCUNHA FINAL</div><h2>${esc(sm.alcunha.nome)}</h2><p class="epitaph">${esc(sm.alcunha.epilogo)}</p></div>` : '<div class="card muted small">Esta vida terminou sem alcunha: o mundo não chegou a dar um nome ao que você foi.</div>'}
       <div class="card sum">
         <span>Modo</span><b>${esc(K().nome)} · ${esc(K().subtitulo)}</b>
         <span>${esc(K().vocab.rotulos.reinoResumo)}</span><b>${esc(sm.tierName)}</b>
@@ -746,6 +766,7 @@ function renderMeta() {
     const pill = (name: string, ok: boolean, grade?: number, icon = '') => `<span class="pill cx ${ok && grade ? 'g' + Math.min(4, grade) : ''}" style="${ok ? '' : 'opacity:.4'}">${icon ? `<span class="cxi">${icon}</span>` : ''}${ok ? esc(name) : '???'}</span>`;
     body = `<div class="card"><div class="muted small">FINAIS · ${m.endingsSeen.length}/${K().finais.length}</div>${K().finais.map((e) => pill(e.name, m.endingsSeen.includes(e.id))).join('')}</div>
       <div class="card"><div class="muted small">ITENS · ${cx.items.length}/${K().itens.length}</div>${K().itens.map((i) => pill(i.name, cx.items.includes(i.id), i.grade, cx.items.includes(i.id) ? itemIcon(i, 26) : '')).join('')}</div>
+      <div class="card"><div class="muted small">ALCUNHAS · ${K().alcunhas.filter((a) => (m.alcunhas ?? []).includes(a.id)).length}/${K().alcunhas.length}</div>${K().alcunhas.map((a) => (m.alcunhas ?? []).includes(a.id) ? `<div class="alcunha-linha found"><b>${esc(a.m)}</b></div>` : `<div class="alcunha-linha"><b>???</b> <span class="muted small">${esc(a.dica)}</span></div>`).join('')}</div>
       <div class="card muted small">O Códice guarda tudo o que você já encontrou em qualquer vida. Os nomes escondidos (???) esperam ser descobertos.</div>`;
   } else if (metaTab === 'historico') {
     body = m.history.length
@@ -826,6 +847,8 @@ app.addEventListener('click', (ev) => {
     case 'home': screen = 'home'; render(); break;
     case 'gallery-open': galleryOpen = true; galleryTab = 'endings'; render(); break;
     case 'gallery-close': galleryOpen = false; render(); break;
+    case 'alcunha-info': alcunhaAberta = true; render(); break;
+    case 'alcunha-fechar': alcunhaAberta = false; render(); break;
     case 'gallery-tab': galleryTab = target.dataset.id as typeof galleryTab; render(); break;
     case 'new': screen = 'modo'; render(); break;
     case 'modo': {

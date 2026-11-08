@@ -10,7 +10,11 @@ import { MARCAS_VIDA } from './marcas_vida';
 import { REGION_POOLS } from './regions';
 import { AFINIDADES } from './afinidades';
 import { RETIRO_TEXTS, RETIRO_PATH_LINES, RETIRO_EXIT } from './retiros';
-import { EVENTS } from './eventos';
+import { EVENTS as EVENTOS_BASE } from './eventos';
+import { comPerfil } from './perfil';
+import { ALCUNHAS_MURIM } from './alcunhas';
+
+const EVENTS = comPerfil(EVENTOS_BASE);
 import { UPGRADES } from '../../legado';
 
 /** A velhice vira um final diferente conforme a vida que a pessoa levou. */
@@ -107,4 +111,5 @@ export const MURIM: PacoteModo = {
     eventoVidaComum: 'murim_vida_comum',
   },
   finalDeVelhice,
+  alcunhas: ALCUNHAS_MURIM,
 };

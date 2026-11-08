@@ -1,6 +1,6 @@
 import type { Rng } from '../../engine/rng';
 import type { Constitution } from './murim/nomes';
-import type { Achievement, Ending, Flaw, GameEvent, Item, Origin, Path, Place, Realm, Root, State, StatKey, Talent } from '../../types';
+import type { Effects, Achievement, Ending, Flaw, GameEvent, Item, Origin, Path, Place, Realm, Root, State, StatKey, Talent } from '../../types';
 
 /** Modo de jogo: cada vida pertence a um modo e usa o pacote de conteúdo dele. */
 export type Modo = 'murim' | 'xianxia';
@@ -68,6 +68,36 @@ export interface Nomes {
   constituicoes: Constitution[];
 }
 
+export type Eixo = 'compaixao' | 'violencia' | 'astucia' | 'cautela' | 'ambicao' | 'disciplina' | 'devocao' | 'ganancia';
+export interface ReacaoAlcunha {
+  id: string; titulo: string;
+  /** Pode citar {alcunha}. */
+  texto: string;
+  opcoes: { texto: string; res: string; fx?: Effects }[];
+}
+/** Alcunha: o nome que o mundo dá a quem viveu de certo jeito (ver docs/alcunhas.md). */
+export interface Alcunha {
+  id: string;
+  /** Nome no masculino e no feminino. */
+  m: string; f: string;
+  /** Versão infame (quando a reputação é negativa ou o nome é manchado). */
+  infame?: { m: string; f: string };
+  /** Um eixo = perfil puro; dois = combinação. Sem eixos, só `feito` vale. */
+  eixos?: [Eixo] | [Eixo, Eixo];
+  /** Feito concreto lido do estado (flag, fio, trilha...). */
+  feito?: (s: State) => boolean;
+  trilha?: string[]; talento?: string[]; defeito?: string[];
+  /** Eixos que, em excesso, mancham a alcunha. */
+  contra?: Eixo[];
+  /** Como a história começou a ser contada (entra na cena de nascimento). */
+  historia: string;
+  /** Parágrafo do epílogo, próprio desta alcunha. */
+  epilogo: string;
+  /** Dica vaga mostrada no catálogo antes de conquistada. */
+  dica: string;
+  reacoes: ReacaoAlcunha[];
+}
+
 export interface Afinidade { [cat: string]: number | undefined }
 
 export interface PacoteModo {
@@ -102,4 +132,5 @@ export interface PacoteModo {
   regras: Regras;
   /** Final escolhido quando a vida acaba de velhice. */
   finalDeVelhice: (s: State) => string;
+  alcunhas: Alcunha[];
 }

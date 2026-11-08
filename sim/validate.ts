@@ -176,7 +176,7 @@ for (const a of ACHIEVEMENTS) if (!ACH_CHECKS[a.id]) errors.push(`conquista ${a.
 
 
 /* ---------- Linter de texto e estrutura ---------- */
-const PLACEHOLDERS = new Set(['nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha']);
+const PLACEHOLDERS = new Set(['alcunha', 'nome', 'rival', 'mentor', 'amigo', 'noivo', 'discipulo', 'inimigo', 'seita', 'cla', 'vila', 'idade', 'reino', 'eco', 'eco_final', 'eco_trilha']);
 function lintText(where: string, text: string | undefined, max = 700) {
   if (text === undefined) return;
   if (!text.trim()) { errors.push(`${where}: texto vazio`); return; }
@@ -220,6 +220,25 @@ for (const ev of EVENTS) {
 
 const FLAGS_DO_MOTOR = new Set(['defeito_superado', 'juventude_eterna']);
 for (const [f, where] of needFlags) if (!setFlags.has(f) && !FLAGS_DO_MOTOR.has(f)) warnings.push(`flag "${f}" exigida em ${where} nunca é definida`);
+
+
+/* ---------- Alcunhas ---------- */
+{
+  const ids = new Set<string>();
+  if (PK.alcunhas.length < 24) errors.push(`alcunhas: só ${PK.alcunhas.length} (mínimo 24)`);
+  for (const a of PK.alcunhas) {
+    if (ids.has(a.id)) errors.push(`alcunha ${a.id}: id duplicado`);
+    ids.add(a.id);
+    if (!a.eixos && !a.feito) errors.push(`alcunha ${a.id}: sem eixos nem feito`);
+    for (const [campo, txt] of [['m', a.m], ['f', a.f], ['historia', a.historia], ['epilogo', a.epilogo], ['dica', a.dica], ...(a.infame ? [['infame.m', a.infame.m], ['infame.f', a.infame.f]] : [])] as [string, string][]) {
+      if (!txt?.trim()) errors.push(`alcunha ${a.id}.${campo}: texto vazio`);
+      for (const m of txt.matchAll(/\{([a-z_]+)\}/g)) if (!['alcunha', 'nome', 'vila', 'seita', 'cla'].includes(m[1])) errors.push(`alcunha ${a.id}.${campo}: marcador desconhecido {${m[1]}}`);
+    }
+    if (a.m === a.f && !a.m.startsWith('a ') && !a.m.startsWith('o ')) warnings.push(`alcunha ${a.id}: nome igual nos dois gêneros`);
+    if (a.reacoes.length < 3) warnings.push(`alcunha ${a.id}: ${a.reacoes.length} cena(s) de reação (meta: 3)`);
+    for (const r of a.reacoes) { if (r.opcoes.length < 2) errors.push(`alcunha ${a.id}/${r.id}: menos de 2 opções`); for (const o of r.opcoes) if (!o.fx || !Object.keys(o.fx).length) errors.push(`alcunha ${a.id}/${r.id}: opção sem consequência`); }
+  }
+}
 
 console.log(`Validação: ${EVENTS.length} eventos, ${ITEMS.length} itens, ${ENDINGS.length} finais, ${PATHS.length} estilos marciais.`);
 warnings.forEach((w) => console.log('  aviso:', w));

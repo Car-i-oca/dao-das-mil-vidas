@@ -7,6 +7,9 @@
  * entram junto com o Lote 2, flag a flag, só para as flags que o jogo de fato lê.
  */
 const TABELA = `
+caravana_avisada|Avisou, sem se identificar, uma caravana de remédios da emboscada que a esperava.
+alcunha_aceita|Aceitou o nome que o mundo lhe deu e passou a viver à altura dele.
+alcunha_recusada|Recusou em voz alta o nome que o mundo lhe deu, e aprendeu o preço de dizer não em público.
 
 `;
 
