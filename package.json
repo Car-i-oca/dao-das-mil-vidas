@@ -12,6 +12,7 @@
     "fuzz": "tsx sim/fuzz.ts",
     "endings": "tsx sim/endings.ts",
     "variedade": "tsx sim/variedade.ts",
+    "dourado": "tsx sim/dourado.ts",
     "icons": "node scripts/gen-icons.mjs",
     "poder": "tsx sim/poder.ts",
     "galeria": "tsx sim/galeria.ts",
