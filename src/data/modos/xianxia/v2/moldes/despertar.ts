@@ -195,4 +195,51 @@ export const DESPERTAR: Molde[] = [
       },
     ],
   }),
+
+  // Eco do método próprio (lê a flag metodo_proprio): o mundo das seitas estranha uma técnica sem linhagem.
+  molde({
+    id: 'metodo_sem_linhagem',
+    titulo: 'A Técnica Sem Linhagem',
+    tipo: 'personagem',
+    capitulos: ['ascensao', 'crise'],
+    unico: true,
+    papeis: {
+      anciao: { pessoa: { novo: true, criar: { traco: ['orgulhoso', 'cauteloso'], reino: 'jogador', objetivo: 'expor', faccao: 'seita' } } },
+      jovem: { pessoa: { desconhecido: true, idadeMax: 30, reinoMin: 1, idadeDif: [-200, -15] } },
+    },
+    quando: { jogador: { flag: ['metodo_proprio'], reinoMin: 3 } },
+    relevancia: [{ se: { jogador: { flag: ['metodo_proprio'] } }, mais: 45 }],
+    cena: 'Numa feira de seitas, você resolve uma briga de rua com dois movimentos. Ninguém reconhece o estilo, e é isso que chama atenção. {anciao.nome}, ancião de uma seita respeitada, abre caminho na multidão e exige saber de quem você roubou aquela técnica, porque "nada que funciona nasce sem linhagem". Atrás {anciao.dele}, {jovem.nome} observa tudo com uma fome que você conhece bem.',
+    opcoes: [
+      {
+        id: 'demonstrar', texto: 'Demonstrar o método diante de todos, do começo ao fim.', teste: { stat: ['esp', 'comp'], dif: 1 },
+        sucesso: {
+          texto: 'Você mostra cada passo, inclusive os erros que custaram anos. A multidão fica quieta. {anciao.nome} demora a falar e, quando fala, é para admitir em voz alta que aquilo não foi roubado de ninguém. Na semana seguinte, duas seitas mandam perguntar se você aceita visitas.',
+          efeitos: [{ opiniao: ['anciao', 20] }, { fato: ['anciao', 'reconheceu_metodo', 3] }],
+          fx: { fama: 3, perfil: { disciplina: 1, ambicao: 1 } },
+        },
+        falha: {
+          texto: 'No meio da demonstração, o Qi tropeça exatamente no ponto que você nunca soube explicar. {anciao.nome} sorri para a plateia como quem ganhou a discussão. "Remendo", diz. A palavra corre a feira mais rápido que você.',
+          efeitos: [{ opiniao: ['anciao', -15] }, { fato: ['anciao', 'chamou_de_remendo', 3] }],
+          fx: { fama: -1, ferida: 1, perfil: { ambicao: 1 } },
+        },
+      },
+      {
+        id: 'ensinar', texto: 'Ignorar o ancião e responder a {jovem.nome}, que pergunta baixinho se aquilo se aprende.',
+        res: {
+          texto: 'Você diz que sim, mas que dói. {jovem.nome} não recua. {anciao.nome} resmunga algo sobre ladrões ensinando ladrões e vai embora. Naquela noite, pela primeira vez, você tenta explicar em palavras o que só o corpo sabia, e descobre que ensinar é aprender o método uma segunda vez.',
+          efeitos: [{ papel: ['jovem', 'discipulo'] }, { opiniao: ['jovem', 30] }, { opiniao: ['anciao', -10] }],
+          fx: { karma: 1, perfil: { compaixao: 1, disciplina: 1 } },
+        },
+      },
+      {
+        id: 'calar', texto: 'Dizer que foi sorte e sair antes que façam mais perguntas.',
+        res: {
+          texto: 'Ninguém acredita, mas ninguém insiste. {anciao.nome} guarda o seu rosto com a atenção de quem vai procurar de novo. Você aprende que, num mundo de linhagens, quem não tem uma é sempre suspeito de alguma coisa.',
+          efeitos: [{ opiniao: ['anciao', -5] }, { fato: ['anciao', 'desconfia_metodo', 2] }],
+          fx: { perfil: { cautela: 2 } },
+        },
+      },
+    ],
+  }),
 ];

@@ -9,7 +9,7 @@
 - Dourado do Murim (`docs/dourado-murim.json`): `10975324d7bb6588` (regenerar após cada mudança intencional do Murim).
 
 ## Feito recentemente
-- **Xianxia, método próprio (IA semanal, 2026-11-20):** quem recusa mestre ("vou aprender sozinho") ou adia duas vezes ganha, a partir dos 30 anos, o molde `desp_metodo_proprio` (corpo, consciência, bestas ou formações, cada um com teste e custo). Vidas que terminavam sem trilha: 44,9% → 14,8%; maior trilha: Corpo 16,6% (1000 vidas do bot).
+- **Xianxia, método próprio (IA semanal, 2026-11-20):** quem recusa mestre ("vou aprender sozinho") ou adia duas vezes ganha, a partir dos 30 anos, o molde `desp_metodo_proprio` (corpo, consciência, bestas ou formações, cada um com teste e custo). Vidas que terminavam sem trilha: 44,9% → 14,8%; maior trilha: Corpo 16,6% (1000 vidas do bot). Eco: `metodo_sem_linhagem` (lê `metodo_proprio`; pode render um discípulo) aparece em 22% das vidas.
 - **Save (IA semanal, 2026-11-20):** `src/ui/save.ts` com `saveVersion` 2 e migração; vida quebrada descartada sem perder Legado; rede de segurança no render; `npm test` (`sim/save.ts`). Ver `DEVLOG_IA.md`.
 - **B1 concluído:** Testemunha de Hwayang e Vulto Vermelho alcançáveis (`peso`; corrupção ≥ 15); Xianxia 71,2% com alcunha; quadro de nascimento por eixo; 8 conquistas das alcunhas raras; `impacto` conta finais por flag. Detalhes em `docs/alcunhas.md`.
 - Lote 1: dois modos funcionando (pacotes, tela de escolha, `--modo`, motor v2 isolado no Xianxia).
