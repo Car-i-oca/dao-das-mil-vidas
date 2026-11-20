@@ -6,7 +6,7 @@
 - Branch: `feat/dois-modos` (nada novo em `main`; `main` = `eb13bc5`, Lote 1 aprovado e publicado como APK, assinatura fixa).
 - Último commit de conteúdo: B1 (alcunhas: feitos raros, conquistas, quadros, impacto). Antes: `6bc1c82` (talento Memória de escriba). Parte A em `b81cde1`.
 - Lote atual: **Lote 2** (impacto real de trilhas, talentos, defeitos e origens) + pendências das alcunhas.
-- Dourado do Murim (`docs/dourado-murim.json`): `4165908014599dee` (regenerar após cada mudança intencional do Murim).
+- Dourado do Murim (`docs/dourado-murim.json`): `10975324d7bb6588` (regenerar após cada mudança intencional do Murim).
 
 ## Feito recentemente
 - **Save (IA semanal, 2026-11-20):** `src/ui/save.ts` com `saveVersion` 2 e migração; vida quebrada descartada sem perder Legado; rede de segurança no render; `npm test` (`sim/save.ts`). Ver `DEVLOG_IA.md`.
@@ -17,7 +17,7 @@
 - Ascensão do Xianxia: 0,8% (1000 vidas).
 
 ## Próximos passos (em ordem)
-1. **B2 (em andamento)** Murim: Talentos (14) e defeitos (9) do Murim concluídos. Resta: nenhuma escola > 35% (Lâmina Errante).
+1. **B2 concluído** Murim: talentos (14), defeitos (9) e escolas (maior: Punho de Ferro 16,9%; os 73% da Lâmina Errante eram viés do bot, corrigido em `sim/bot.ts`).
 2. Pendência a) investigada: é bloqueio do jogo (a trilha `demoniaca` não está na lista de `desp_mestre_caminho` e nenhum molde a concede); detalhes em `docs/duvidas-lote2.md`; correção no B4.
 3. **B3** reações restantes das alcunhas (3 por alcunha, nos dois modos), revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
@@ -30,7 +30,7 @@
 | Ascensão (0,5–2%) | — | 0,8% |
 | Talentos/defeitos com mínimos | 23 de 23 | 0 de 23 (1–3 cenas cada) |
 | Escolhas sem marca / flags órfãs | 26% / 48 | 142 de 541 / 3 |
-| Escola mais comum (≤ 35%) | Lâmina Errante 73% | — |
+| Escola mais comum (≤ 35%) | Punho de Ferro 16,9% | — |
 | Genéricos < 35% / semelhança < 0,5 | 61% / 0,75 | 24,8% / 0,42 |
 
 ## Dúvidas pendentes para o autor

@@ -37,7 +37,10 @@ export function botPick(s: State, rng: Rng, seekDemon: boolean): number {
     if (safe.length) pool = safe;
   }
   if (pool.some((x) => x.c.chance !== undefined) && rng.chance(0.7)) {
-    return pool.reduce((a, b) => ((b.c.chance ?? 0.6) > (a.c.chance ?? 0.6) ? b : a), pool[0]).i;
+    // Empate na maior chance: sorteia entre as empatadas (antes ficava sempre a primeira da lista,
+    // o que inflava a primeira opção de cada cena, ex.: Lâmina Errante a 73% no Murim).
+    const top = Math.max(...pool.map((x) => x.c.chance ?? 0.6));
+    return rng.pick(pool.filter((x) => (x.c.chance ?? 0.6) === top)).i;
   }
   return rng.pick(pool).i;
 }

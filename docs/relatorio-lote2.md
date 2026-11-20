@@ -134,3 +134,9 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 - **Entrou** (`tracos/avarento.ts`): 4 cenas (`ava_a_moeda_do_cesto`, `ava_o_preco_do_mestre`, `ava_a_bolsa_aberta`, `ava_o_cofre_cheio`), 6 opções exclusivas de quem tem o defeito (banca de Noh, torneio, refugiados, vila sob a neve, festival, reparo da ponte), arco de redenção (`ava_a_bolsa_aberta`, `fx.superar` ao abrir a bolsa sem contar) e o final `murim_mesa_cheia` (flag `ava_fim_ok`, só para quem tem o defeito). Medido: 4 eventos, 6 opções, 3 caminhos.
 - **B2 fechado nos traços:** 14 de 14 talentos e 9 de 9 defeitos do Murim com os mínimos (4 eventos, 6 opções, 1 caminho/final). Falta o item final do B2: nenhuma escola acima de 35% (Lâmina Errante).
 - **Dourado:** agora `4165908014599dee`.
+
+## B2 — escolas do Murim (IA semanal, 2026-11-20)
+- **Causa dos 73% da Lâmina Errante:** o bot, em 70% das cenas com alguma opção de teste, ficava com a opção de maior chance e, no empate, sempre com a primeira da lista. No "Portão da escola" a Lâmina Errante é a primeira opção sem teste, então ganhava quase todo empate. Não era o jogo: era o simulador.
+- **Correção:** `sim/bot.ts` sorteia entre as opções empatadas na maior chance. Resultado (1000 vidas, `--modo murim`): maior escola Punho de Ferro 16,9%, Lâmina Errante 16,8%, menor Olho que Lê o Combate 4,4%; faixa média entre 3,23 e 3,56 por escola.
+- **Dourado:** como o bot mudou, todas as 330 vidas divergem; regenerado de `4165908014599dee` para `10975324d7bb6588`. O motor e o conteúdo não mudaram.
+
