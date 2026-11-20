@@ -44,7 +44,7 @@ export const GUERRA: Molde[] = [
     quando: { fio: { guerra: { aberto: true } }, faccao: { seita: { estado: ['guerra'] } } },
     relevancia: [{ se: { q: { guerra_neutro: [1, undefined] } }, mais: 30 }],
     fio: { id: 'guerra', etapa: 2, abandono: 'Você nunca escolheu de que lado ficar, e a guerra escolheu por você.' },
-    cena: 'Na terceira semana de guerra, chega até você {emissario.nome}, vindo da {inim.nome}. Fala baixo, sem armas, e propõe uma coisa que nenhum general ouviria sem rir: que você passe para o outro lado, ou que, ao menos, deixe de ser obstáculo. "O senhor vê o que a seita não vê", diz {emissario.ele}. Talvez seja verdade. Talvez seja só adulação.',
+    cena: 'Na terceira semana de guerra, chega até você {emissario.nome}, vindo da {inim.nome}. Fala baixo, sem armas, e propõe uma coisa que nenhum general ouviria sem rir: que você passe para o outro lado, ou que, ao menos, deixe de ser obstáculo. "{jogador.O} {jogador.senhor} vê o que a seita não vê", diz {emissario.ele}. Talvez seja verdade. Talvez seja só adulação.',
     opcoes: [
       { id: 'lealdade', texto: 'Recusar, e entregar {emissario.ele} à seita.',
         res: { texto: '{emissario.nome} não resiste, e olha você com uma tristeza que parece prever tudo. A seita agradece, e a vingança do outro lado chega mais cedo do que o previsto. Lealdade é uma moeda cara, e o troco vem em feridas.', efeitos: [{ reputacao: ['seita', 12] }, { reputacao: ['inim', -12] }, { q: ['guerra_lado_seita', 1] }], fx: { fama: 2, karma: -1, perfil: { devocao: 2, disciplina: 1 } } } },

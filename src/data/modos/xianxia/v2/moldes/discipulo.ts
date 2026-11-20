@@ -41,7 +41,7 @@ export const DISCIPULO: Molde[] = [
     relevancia: [{ se: { q: { metodo_rigor: [1, undefined] } }, mais: 25 }, { se: { papel: { discipulo: { opiniaoMax: 5 } } }, mais: 25 }],
     fio: { id: 'discipulo', espaco: 3, abandono: 'O que se ofereceu a {discipulo.nome} nunca foi dito em voz alta, e o silêncio deu a resposta por conta própria.' },
     cena: [
-      { se: { q: { metodo_rigor: [1, undefined] } }, texto: 'Você percebe que {discipulo.nome} anda se encontrando com alguém da {culto.nome}. Não há prova, só um cheiro de incenso novo na roupa e uma pergunta, feita de passagem: "Mestre, o que o senhor acha de quem ensina sem cobrar tanto?" Toda disciplina cria, em alguma medida, a vontade de escapar da própria disciplina.' },
+      { se: { q: { metodo_rigor: [1, undefined] } }, texto: 'Você percebe que {discipulo.nome} anda se encontrando com alguém da {culto.nome}. Não há prova, só um cheiro de incenso novo na roupa e uma pergunta, feita de passagem: "Mestre, o que {jogador.o} {jogador.senhor} acha de quem ensina sem cobrar tanto?" Toda disciplina cria, em alguma medida, a vontade de escapar da própria disciplina.' },
       { texto: 'Uma carta chega ao seu pavilhão, de {culto.nome}. Oferece a {discipulo.nome} uma posição, um mestre, uma promessa de atalhos. A carta foi aberta, lida, e deixada onde você a veria. Isso, por si só, é uma pergunta.' },
     ],
     opcoes: [

@@ -79,11 +79,11 @@ export const CLA: Molde[] = [
       },
       {
         id: 'pagar', texto: 'Pagar o que {capanga.ele} pede, para ganhar tempo.', custo: 40,
-        res: { texto: 'As moedas somem na manga {capanga.dele}, e o sorriso volta. "O senhor vai gostar de saber que o clã é sensato." Você ganhou meses, e perdeu uma coisa que não vai voltar tão cedo: a sensação de ter os próprios joelhos.', efeitos: [{ fato: ['culpado', 'recebeu_pagamento', 2] }, { q: ['cla_tempo', 1] }, { inclinar: ['reerguer_cla', 1] }], fx: { perfil: { cautela: 1, ganancia: -1 } } },
+        res: { texto: 'As moedas somem na manga {capanga.dele}, e o sorriso volta. "{jogador.O} {jogador.senhor} vai gostar de saber que o clã é sensato." Você ganhou meses, e perdeu uma coisa que não vai voltar tão cedo: a sensação de ter os próprios joelhos.', efeitos: [{ fato: ['culpado', 'recebeu_pagamento', 2] }, { q: ['cla_tempo', 1] }, { inclinar: ['reerguer_cla', 1] }], fx: { perfil: { cautela: 1, ganancia: -1 } } },
       },
       {
         id: 'mostrar', texto: 'Mostrar a {capanga.ele} o que você tem, e deixá-lo ler.', requer: { q: { cla_prova: [1, undefined] } }, seloBloqueio: 'Você não tem nada para mostrar', teste: { stat: ['comp', 'car'], dif: 0 },
-        sucesso: { texto: '{capanga.nome} lê, empalidece, e devolve o papel com as duas mãos. "Eu não vi isto", diz. "O senhor não sabe que eu vi." {capanga.Ele} vai embora devagar, e você sabe que {culpado.nome}, em algum momento, vai descobrir que o segredo não é mais só {culpado.dele}.', efeitos: [{ fato: ['culpado', 'sabe_que_ha_prova', 4] }, { q: ['cla_prova', 1] }, { inclinar: ['reerguer_cla', 2] }], fx: { fama: 1, perfil: { astucia: 1 } } },
+        sucesso: { texto: '{capanga.nome} lê, empalidece, e devolve o papel com as duas mãos. "Eu não vi isto", diz. "{jogador.O} {jogador.senhor} não sabe que eu vi." {capanga.Ele} vai embora devagar, e você sabe que {culpado.nome}, em algum momento, vai descobrir que o segredo não é mais só {culpado.dele}.', efeitos: [{ fato: ['culpado', 'sabe_que_ha_prova', 4] }, { q: ['cla_prova', 1] }, { inclinar: ['reerguer_cla', 2] }], fx: { fama: 1, perfil: { astucia: 1 } } },
         falha: { texto: 'Antes que você termine de desdobrar o papel, {capanga.nome} o arranca e o rasga em dois. "Nunca existiu", diz. A mão {capanga.dele} já está no cabo da faca, e o resto da conversa é feito de silêncios.', efeitos: [{ fato: ['culpado', 'destruiu_a_prova', 4] }, { q: ['cla_prova', -1] }, { opiniao: ['capanga', -15] }], fx: { ferida: 1, perfil: { astucia: 1 } } },
       },
       {
