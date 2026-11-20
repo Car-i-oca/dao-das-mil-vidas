@@ -177,9 +177,31 @@ function typewrite(el: HTMLElement, text: string, onDone: () => void) {
   const timer = window.setInterval(() => {
     i += 1 + (ms < 12 ? 2 : 0);
     el.textContent = text.slice(0, i);
+    seguirTexto(el);
     if (i >= text.length) finish();
   }, ms);
   typer = { timer, el, full: text, done: onDone };
+}
+/* ---------- Painel da história: acompanha o texto e avisa quando há mais abaixo ---------- */
+/** Falso quando o jogador rolou para cima durante a digitação: aí o painel não o arrasta de volta. */
+let seguirPainel = true;
+const faltaRolar = (p: HTMLElement) => p.scrollHeight - p.scrollTop - p.clientHeight > 6;
+function marcarMais(p: HTMLElement | null) {
+  if (p) p.classList.toggle('tem-mais', faltaRolar(p));
+}
+function seguirTexto(el: HTMLElement) {
+  const p = el.closest<HTMLElement>('.story-panel');
+  if (!p) return;
+  if (seguirPainel && faltaRolar(p)) p.scrollTo({ top: p.scrollHeight, behavior: 'instant' });
+  marcarMais(p);
+}
+function prepararPainel(p: HTMLElement | null) {
+  if (!p) return;
+  seguirPainel = true;
+  p.addEventListener('scroll', () => {
+    if (typer) seguirPainel = !faltaRolar(p);
+    marcarMais(p);
+  }, { passive: true });
 }
 function stopTyper() {
   if (typer) { clearInterval(typer.timer); typer = null; }
@@ -530,7 +552,9 @@ function startTyping(s: State) {
   if (!el || !choices) return;
   const v = view(s);
   const text = v.text;
-  const reveal = () => { choices.classList.add('show'); document.getElementById('hint')?.remove(); };
+  const panel = el.closest<HTMLElement>('.story-panel');
+  prepararPainel(panel);
+  const reveal = () => { choices.classList.add('show'); document.getElementById('hint')?.remove(); marcarMais(panel); };
   typewrite(el, text, reveal);
 }
 
