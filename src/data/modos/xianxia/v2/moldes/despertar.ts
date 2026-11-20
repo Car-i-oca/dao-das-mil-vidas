@@ -94,7 +94,7 @@ export const DESPERTAR: Molde[] = [
         res: {
           texto: '{mestre.nome} corta a própria palma e deixa três gotas caírem na sua língua. O Qi, que antes se debatia, se assenta como fera alimentada. "Cada degrau custa alguma coisa", avisa. "A diferença entre nós e os outros é que nós sabemos o preço."',
           efeitos: [{ opiniao: ['mestre', 25] }, { fato: ['mestre', 'aceitou_discipulo', 4] }, { trilhaDe: 'mestre' }, { papel: ['mestre', 'mestre'] }, { inclinar: ['superar_rival', 1] }],
-          fx: { corr: 6, setFlags: ['trilha_mestre', 'trilha_sangue'], perfil: { ambicao: 2 } },
+          fx: { corr: 6, setFlags: ['trilha_mestre'], perfil: { ambicao: 2 } },
         },
       },
       {
@@ -124,7 +124,7 @@ export const DESPERTAR: Molde[] = [
         res: {
           texto: '{mestre.nome} examina o sinal por muito tempo e, enfim, inclina a cabeça. "Igual, não. Mas também não servo." O método é o mesmo do sangue, ensinado sem as correntes que a seita põe nos de fora: você aprende a cobrar o preço de outros antes do seu.',
           efeitos: [{ opiniao: ['mestre', 15] }, { fato: ['mestre', 'aceitou_discipulo', 3] }, { trilhaDe: 'mestre' }, { papel: ['mestre', 'mestre'] }],
-          fx: { corr: 2, setFlags: ['trilha_mestre', 'trilha_sangue', 'sangue_como_igual'], perfil: { ambicao: 1, cautela: 1 } },
+          fx: { corr: 2, setFlags: ['trilha_mestre', 'sangue_como_igual'], perfil: { ambicao: 1, cautela: 1 } },
         },
       },
     ],
