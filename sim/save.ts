@@ -1,0 +1,105 @@
+/* Testes do save (src/ui/save.ts): versão, migração de saves antigos e dado corrompido.
+ * Uso: npm test  (sai com código 1 se algum caso falhar) */
+import assert from 'node:assert/strict';
+import { Rng } from '../src/engine/rng';
+import { newMeta, rollCreation, startLife, view } from '../src/engine/engine';
+import { pacoteDe, MODOS } from '../src/data/modos';
+import { lerSave, normSettings, SAVE_VERSION } from '../src/ui/save';
+import type { State } from '../src/types';
+
+let ok = 0;
+const casos: [string, () => void][] = [];
+const caso = (nome: string, f: () => void) => casos.push([nome, f]);
+
+function vida(modo: (typeof MODOS)[number], seed = 4242): State {
+  const meta = newMeta();
+  const rng = new Rng(seed);
+  const trilha = pacoteDe(modo).trilhas.find((t) => !t.unlock)!;
+  return startLife(meta, rollCreation(meta, rng, modo), trilha.id, rng.seed);
+}
+
+caso('vazio ou ausente → save novo, sem marcar corrompido', () => {
+  for (const raw of [null, undefined, '']) {
+    const r = lerSave(raw);
+    assert.equal(r.corrompido, false);
+    assert.equal(r.save.saveVersion, SAVE_VERSION);
+    assert.equal(r.save.run, null);
+  }
+});
+
+caso('JSON inválido ou sem meta → save novo e corrompido', () => {
+  for (const raw of ['{', 'null', '42', '[]', '{"run":null}', '"texto"']) {
+    const r = lerSave(raw);
+    assert.equal(r.corrompido, true, raw);
+    assert.deepEqual(r.save.meta, newMeta());
+  }
+});
+
+caso('v0 (sem saveVersion, vida sem modo) → migra para Murim e mantém o Legado', () => {
+  const run = vida('murim') as Partial<State>;
+  delete run.modo;
+  const antigo = { meta: { legacy: 37, lives: 4, achievements: ['a1'], upgrades: { vigor: 2 }, best: null, endingsSeen: ['x'], history: [] }, run, settings: { speed: 1 } };
+  const r = lerSave(JSON.stringify(antigo));
+  assert.equal(r.versaoOriginal, 0);
+  assert.equal(r.corrompido, false);
+  assert.equal(r.save.saveVersion, SAVE_VERSION);
+  assert.equal(r.save.run?.modo, 'murim');
+  assert.equal(r.save.meta.legacy, 37);
+  assert.deepEqual(r.save.meta.upgrades, { vigor: 2 });
+  assert.deepEqual(r.save.meta.codex, { items: [] }, 'campo novo da meta ganha padrão');
+  assert.equal(r.save.settings.speed, 1);
+  assert.equal(r.save.settings.estilo, 'manhwa');
+  view(r.save.run!); // a vida migrada continua jogável
+});
+
+caso('ida e volta nos dois modos preserva a vida', () => {
+  for (const modo of MODOS) {
+    const run = vida(modo, 777);
+    const r = lerSave(JSON.stringify({ saveVersion: SAVE_VERSION, meta: newMeta(), run, settings: normSettings({ modo }) }));
+    assert.equal(r.corrompido, false, modo);
+    assert.deepEqual(r.save.run, JSON.parse(JSON.stringify(run)), modo);
+    view(r.save.run!);
+  }
+});
+
+caso('vida quebrada é descartada, mas o Legado fica', () => {
+  const quebras: ((s: Record<string, unknown>) => void)[] = [
+    (s) => { delete s.stats; },
+    (s) => { s.flags = 'x'; },
+    (s) => { s.path = 'escola_que_nao_existe'; },
+    (s) => { s.modo = 'cyberpunk'; },
+    (s) => { s.age = 'velho'; },
+    (s) => { s.current = { id: 5 }; },
+  ];
+  for (const q of quebras) {
+    const run = vida('xianxia') as unknown as Record<string, unknown>;
+    q(run);
+    const r = lerSave(JSON.stringify({ saveVersion: SAVE_VERSION, meta: { ...newMeta(), legacy: 90 }, run }));
+    assert.equal(r.vidaDescartada, true, q.toString());
+    assert.equal(r.corrompido, true);
+    assert.equal(r.save.run, null);
+    assert.equal(r.save.meta.legacy, 90);
+  }
+});
+
+caso('meta com tipos errados volta ao padrão campo a campo', () => {
+  const r = lerSave(JSON.stringify({ meta: { legacy: 'muito', lives: -3, achievements: [1, 'ok'], upgrades: { a: 'x', b: 3 }, codex: 7, history: [] } }));
+  assert.equal(r.save.meta.legacy, 0);
+  assert.equal(r.save.meta.lives, 0);
+  assert.deepEqual(r.save.meta.achievements, ['ok']);
+  assert.deepEqual(r.save.meta.upgrades, { b: 3 });
+  assert.deepEqual(r.save.meta.codex, { items: [] });
+  assert.equal(r.corrompido, true);
+});
+
+caso('configurações fora da faixa voltam ao padrão', () => {
+  const s = normSettings({ speed: 9, font: 'g', difficulty: 2.5, theme: 'neon', estilo: 'aquarela', intro: 'sim', modo: 'xianxia' });
+  assert.deepEqual(s, { modo: 'xianxia', estilo: 'manhwa', speed: 2, theme: 'auto', font: 1, intro: false, difficulty: 0 });
+  assert.equal(normSettings({ difficulty: -1, font: 2, speed: 0 }).difficulty, -1);
+});
+
+for (const [nome, f] of casos) {
+  try { f(); ok++; console.log(`  ✓ ${nome}`); } catch (e) { console.error(`  ✗ ${nome}\n    ${(e as Error).message}`); }
+}
+console.log(`${ok === casos.length ? '✓' : '✗'} save: ${ok}/${casos.length} casos`);
+if (ok !== casos.length) process.exit(1);

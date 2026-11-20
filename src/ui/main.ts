@@ -1,7 +1,7 @@
 import './style.css';
 import { Rng } from '../engine/rng';
 import {
-  newMeta, rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
+  rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
   realmOf, ladderOf, eff, cultivationRate, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
   type Creation,
 } from '../engine/engine';
@@ -15,6 +15,7 @@ import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { FOES, foeFor } from '../data/combates';
 import { COMPANIONS } from '../data/companions';
+import { lerSave, novoSave, type Save, type Settings } from './save';
 import { playSfx, startAudioExperience, setAudioForeground } from './audio';
 import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
@@ -27,25 +28,16 @@ function K() {
 
 /* ---------- Persistência ---------- */
 const KEY = 'murim-quest-save-v1';
-interface Settings { modo?: Modo; estilo: Estilo; speed: number; theme: 'auto' | 'claro' | 'escuro'; font: number; intro: boolean; difficulty: number }
-function normSettings(x?: Partial<Settings>): Settings {
-  return { modo: x?.modo === 'xianxia' ? 'xianxia' : 'murim', estilo: estiloValido(x?.estilo) ? x.estilo : 'manhwa', speed: x?.speed ?? 2, theme: x?.theme ?? 'auto', font: x?.font ?? 1, intro: x?.intro ?? false, difficulty: x?.difficulty ?? 0 };
-}
-interface Save { meta: Meta; run: State | null; settings: Settings }
+/** Cópia do último texto que não pôde ser lido por inteiro (para recuperação manual; nunca é lida pelo jogo). */
+const KEY_CORROMPIDO = `${KEY}-corrompido`;
 
 function load(): Save {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const p = JSON.parse(raw) as Save;
-      if (p?.meta) {
-        // Vida em andamento salva antes dos modos: era Murim.
-        if (p.run && !p.run.modo) p.run.modo = 'murim';
-        return { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
-      }
-    }
-  } catch { /* save corrompido ou indisponível */ }
-  return { meta: newMeta(), run: null, settings: normSettings() };
+  let raw: string | null = null;
+  try { raw = localStorage.getItem(KEY); } catch { /* armazenamento indisponível */ }
+  const r = lerSave(raw);
+  // Antes que o próximo persist() sobrescreva o original, guarda o texto bruto para não perder o Legado de vez.
+  if (r.corrompido && raw) try { localStorage.setItem(KEY_CORROMPIDO, raw); } catch { /* sem espaço */ }
+  return r.save;
 }
 let save = load();
 function persist() {
@@ -986,17 +978,17 @@ app.addEventListener('click', (ev) => {
     case 'import': {
       const txt = window.prompt('Cole o save aqui:');
       if (!txt) break;
-      try {
-        const p = JSON.parse(txt) as Save;
-        if (!p.meta) throw new Error('inválido');
-        save = { meta: { ...newMeta(), ...p.meta }, run: p.run ?? null, settings: normSettings(p.settings) };
-        persist(); render(); toast('Save importado');
-      } catch { toast('Save inválido'); }
+      // Mesma leitura defensiva do carregamento: migra versões antigas e não troca um save bom por um quebrado.
+      const r = lerSave(txt.trim());
+      if (r.corrompido && !r.vidaDescartada) { toast('Save inválido'); break; }
+      save = r.save;
+      persist(); screen = 'home'; render();
+      toast(r.vidaDescartada ? 'Save importado (a vida em andamento estava incompleta e foi descartada)' : 'Save importado');
       break;
     }
     case 'wipe':
       if (window.confirm('Apagar TODO o progresso e o legado destas vidas?')) {
-        save = { meta: newMeta(), run: null, settings: save.settings };
+        save = { ...novoSave(), settings: save.settings };
         persist(); screen = 'home'; render();
       }
       break;
