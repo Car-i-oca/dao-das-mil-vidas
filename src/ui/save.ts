@@ -75,11 +75,20 @@ export function vidaValida(r: unknown): r is State {
   if (!isObj(r)) return false;
   const modo = r.modo as Modo | undefined;
   if (modo !== undefined && !MODOS.includes(modo)) return false;
-  if (typeof r.path !== 'string' || !(r.path in pacoteDe(modo).ix.PATH)) return false;
+  const ix = pacoteDe(modo).ix;
+  if (typeof r.path !== 'string' || !(r.path in ix.PATH)) return false;
   if (typeof r.name !== 'string' || !isObj(r.stats) || !isObj(r.seen) || !isObj(r.names)) return false;
   for (const k of ['flags', 'items', 'log', 'scheduled'] as const) if (!Array.isArray(r[k])) return false;
   for (const k of ['seed', 'age', 'tier', 'turn', 'maxAge', 'xp'] as const) if (!Number.isFinite(r[k])) return false;
-  return r.current === null || (isObj(r.current) && typeof r.current.id === 'string');
+  // Referências que o motor resolve sem checar (view() quebraria e a tela ficaria presa a cada abertura).
+  if (r.ending != null && (typeof r.ending !== 'string' || !(r.ending in ix.ENDING))) return false;
+  if (r.result != null && !(isObj(r.result) && typeof r.result.text === 'string')) return false;
+  const cur = r.current;
+  if (cur == null) return r.ending != null || r.result != null;
+  if (!isObj(cur) || typeof cur.id !== 'string') return false;
+  if (cur.v2) return isObj(r.v2);
+  if (cur.alc || cur.breakthrough || cur.retiro) return true;
+  return cur.id in ix.EVENT;
 }
 
 /** Sobe um objeto de save de qualquer versão anterior para a atual (sem validar tipos). */

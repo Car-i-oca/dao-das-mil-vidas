@@ -2,9 +2,10 @@
  * Uso: npm test  (sai com código 1 se algum caso falhar) */
 import assert from 'node:assert/strict';
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed } from '../src/engine/engine';
+import { botPick } from './bot';
 import { pacoteDe, MODOS } from '../src/data/modos';
-import { lerSave, normSettings, SAVE_VERSION } from '../src/ui/save';
+import { lerSave, normSettings, vidaValida, SAVE_VERSION } from '../src/ui/save';
 import type { State } from '../src/types';
 
 let ok = 0;
@@ -62,6 +63,26 @@ caso('ida e volta nos dois modos preserva a vida', () => {
   }
 });
 
+caso('nenhum estado real de jogo é descartado (bot joga 30 vidas por modo, salvando a cada passo)', () => {
+  let passos = 0, finais = 0;
+  for (const modo of MODOS) {
+    for (let i = 0; i < 30; i++) {
+      const seed = 9100 + i * 7919;
+      const s = vida(modo, seed);
+      const rng = new Rng(seed ^ 0x5bd1e995);
+      for (let g = 0; g < 4000; g++) {
+        const copia = JSON.parse(JSON.stringify(s));
+        assert.ok(vidaValida(copia), `${modo} seed ${seed} passo ${g}: ${JSON.stringify(s.current)} result=${!!s.result}`);
+        passos++;
+        if (s.ending) { finais++; break; }
+        if (view(s).kind === 'event') choose(s, botPick(s, rng, false), rng);
+        else proceed(s, rng);
+      }
+    }
+  }
+  assert.ok(finais >= 50 && passos > 2000, `cobertura baixa: ${finais} finais, ${passos} passos`);
+});
+
 caso('vida quebrada é descartada, mas o Legado fica', () => {
   const quebras: ((s: Record<string, unknown>) => void)[] = [
     (s) => { delete s.stats; },
@@ -70,6 +91,10 @@ caso('vida quebrada é descartada, mas o Legado fica', () => {
     (s) => { s.modo = 'cyberpunk'; },
     (s) => { s.age = 'velho'; },
     (s) => { s.current = { id: 5 }; },
+    (s) => { s.current = { id: 'evento_removido_numa_atualizacao' }; },
+    (s) => { s.current = null; s.result = null; s.ending = null; },
+    (s) => { s.ending = 'final_que_nao_existe'; },
+    (s) => { s.result = { texto: 'sem text' }; },
   ];
   for (const q of quebras) {
     const run = vida('xianxia') as unknown as Record<string, unknown>;
