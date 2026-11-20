@@ -9,6 +9,7 @@
 - Dourado do Murim (`docs/dourado-murim.json`): `4165908014599dee` (regenerar após cada mudança intencional do Murim).
 
 ## Feito recentemente
+- **Save (IA semanal, 2026-11-20):** `src/ui/save.ts` com `saveVersion` 2 e migração; vida quebrada descartada sem perder Legado; rede de segurança no render; `npm test` (`sim/save.ts`). Ver `DEVLOG_IA.md`.
 - **B1 concluído:** Testemunha de Hwayang e Vulto Vermelho alcançáveis (`peso`; corrupção ≥ 15); Xianxia 71,2% com alcunha; quadro de nascimento por eixo; 8 conquistas das alcunhas raras; `impacto` conta finais por flag. Detalhes em `docs/alcunhas.md`.
 - Lote 1: dois modos funcionando (pacotes, tela de escolha, `--modo`, motor v2 isolado no Xianxia).
 - Alcunhas: 24 por modo, cenas de nascimento/mudança/mancha/reação, UI, `sim/alcunhas.ts`, crônicas.
