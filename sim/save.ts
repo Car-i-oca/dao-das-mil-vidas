@@ -2,7 +2,7 @@
  * Uso: npm test  (sai com código 1 se algum caso falhar) */
 import assert from 'node:assert/strict';
 import { Rng } from '../src/engine/rng';
-import { newMeta, rollCreation, startLife, view, choose, proceed } from '../src/engine/engine';
+import { newMeta, rollCreation, startLife, view, choose, proceed, pickNext } from '../src/engine/engine';
 import { botPick } from './bot';
 import { pacoteDe, MODOS } from '../src/data/modos';
 import { lerSave, normSettings, vidaValida, SAVE_VERSION } from '../src/ui/save';
@@ -121,6 +121,20 @@ caso('configurações fora da faixa voltam ao padrão', () => {
   const s = normSettings({ speed: 9, font: 'g', difficulty: 2.5, theme: 'neon', estilo: 'aquarela', intro: 'sim', modo: 'xianxia' });
   assert.deepEqual(s, { modo: 'xianxia', estilo: 'manhwa', speed: 2, theme: 'auto', font: 1, intro: false, difficulty: 0 });
   assert.equal(normSettings({ difficulty: -1, font: 2, speed: 0 }).difficulty, -1);
+});
+
+caso('motor: Xianxia sem trilha no topo da escada provisória não rompe (antes virava Ascensão)', () => {
+  const s = vida('xianxia');
+  Object.assign(s, { path: '', tier: 1, xp: 500, age: 60, ending: undefined, current: undefined });
+  delete s.seen['__break'];
+  pickNext(s, new Rng(7));
+  assert.notEqual(s.current?.id, '__break');
+  assert.notEqual(s.ending, 'ascensao');
+  const c = vida('xianxia');
+  Object.assign(c, { tier: 1, xp: 500, age: 60, ending: undefined, current: undefined });
+  delete c.seen['__break'];
+  pickNext(c, new Rng(7));
+  assert.equal(c.current?.id, '__break', 'com trilha o rompimento continua aparecendo');
 });
 
 for (const [nome, f] of casos) {

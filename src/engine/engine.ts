@@ -1060,7 +1060,10 @@ function afinidade(e: GameEvent, porCat: Record<Cat, number>): number {
 export function pickNext(s: State, rng: Rng) {
   if (s.ending) return;
   // 1) rompimento
-  if (s.tier > 0 && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 4 + s.tier * 2 : 3)) {
+  // Sem método, a escada provisória (Xianxia: 'neutro', só Mortal e Qi Despertado) não tem degrau seguinte:
+  // antes, o "rompimento" desse topo virava Ascensão de alguém que nunca cultivou um caminho.
+  const semDegrau = !s.path && s.tier + 1 >= ladderOf(s).realms.length;
+  if (s.tier > 0 && !semDegrau && s.xp >= 100 && s.age - (s.seen['__break'] ?? -99) >= (s.v2 ? 4 + s.tier * 2 : 3)) {
     s.current = { id: '__break', breakthrough: true };
     return;
   }

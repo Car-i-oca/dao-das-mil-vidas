@@ -14,11 +14,11 @@
 - Lote 1: dois modos funcionando (pacotes, tela de escolha, `--modo`, motor v2 isolado no Xianxia).
 - Alcunhas: 24 por modo, cenas de nascimento/mudança/mancha/reação, UI, `sim/alcunhas.ts`, crônicas.
 - Talentos do Murim: 14 de 14 (Memória de escriba; Instinto oportuno, final `murim_andarilho`; Olho experiente, final `murim_olho_em_repouso`). Cada traço novo fica em `src/data/modos/murim/tracos/<id>.ts` (ver `tracos/index.ts`; use `Cond.noFlaw` para um defeito bloquear opção).
-- Ascensão do Xianxia: 0,8% (1000 vidas).
+- Ascensão do Xianxia: **0,0%** com trilha (1000 vidas). Os 0,8% medidos antes vinham todos de vidas sem trilha que rompiam o topo da escada provisória `neutro` (bug corrigido em `pickNext`). Com trilha, só 2 em 1000 chegam ao reino 8: a curva alta precisa de decisão do autor.
 
 ## Próximos passos (em ordem)
 1. **B2 concluído** Murim: talentos (14), defeitos (9) e escolas (maior: Punho de Ferro 16,9%; os 73% da Lâmina Errante eram viés do bot, corrigido em `sim/bot.ts`).
-2. Pendência a) **corrigida** (IA semanal, 2026-11-20): molde `desp_caminho_sangue` (despertar.ts) oferece o Caminho do Sangue a quem está sem trilha e tem corrupção ≥ 10, karma ≤ −4, violência ≥ 5 ou a origem Rebento; 5,5% das vidas do bot (1000), ascensão 0,7%.
+2. Pendência a) **corrigida** (IA semanal, 2026-11-20): molde `desp_caminho_sangue` (despertar.ts) oferece o Caminho do Sangue a quem está sem trilha e tem corrupção ≥ 10, karma ≤ −4, violência ≥ 5 ou a origem Rebento; 5,5% das vidas do bot (1000), ascensão real 0,0% (ver linha da tabela).
 3. **B3** reações restantes das alcunhas (3 por alcunha, nos dois modos), revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
 5. **B5** origens e trilhas nos dois modos.
@@ -27,7 +27,7 @@
 | Meta | Murim | Xianxia |
 |---|---|---|
 | Alcunha na vida / maior parcela / nunca alcançadas | 95,7% / 22,2% / 0 | 71,2% / 12,3% / 0 |
-| Ascensão (0,5–2%) | — | 0,8% |
+| Ascensão (0,5–2%) | — | **0,0%** (os 0,8% antigos eram vidas sem trilha "ascendendo" por bug, corrigido em 2026-11-20) |
 | Talentos/defeitos com mínimos | 23 de 23 | 0 de 23 (1–3 cenas cada) |
 | Escolhas sem marca / flags órfãs | 26% / 48 | 142 de 541 / 3 |
 | Escola mais comum (≤ 35%) | Punho de Ferro 16,9% | — |
