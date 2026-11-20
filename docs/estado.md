@@ -6,7 +6,7 @@
 - Branch: `feat/dois-modos` (nada novo em `main`; `main` = `eb13bc5`, Lote 1 aprovado e publicado como APK, assinatura fixa).
 - Último commit de conteúdo: B1 (alcunhas: feitos raros, conquistas, quadros, impacto). Antes: `6bc1c82` (talento Memória de escriba). Parte A em `b81cde1`.
 - Lote atual: **Lote 2** (impacto real de trilhas, talentos, defeitos e origens) + pendências das alcunhas.
-- Dourado do Murim (`docs/dourado-murim.json`): `10975324d7bb6588` (regenerar após cada mudança intencional do Murim).
+- Dourado do Murim (`docs/dourado-murim.json`): `4b0b3a9c64f7abcb` (regenerar após cada mudança intencional do Murim).
 
 ## Feito recentemente
 - **Xianxia, método próprio (IA semanal, 2026-11-20):** quem recusa mestre ("vou aprender sozinho") ou adia duas vezes ganha, a partir dos 30 anos, o molde `desp_metodo_proprio` (corpo, consciência, bestas ou formações, cada um com teste e custo). Vidas que terminavam sem trilha: 44,9% → 14,8%; maior trilha: Corpo 16,6% (1000 vidas do bot). Eco: `metodo_sem_linhagem` (lê `metodo_proprio`; pode render um discípulo) aparece em 22% das vidas.
@@ -20,7 +20,7 @@
 ## Próximos passos (em ordem)
 1. **B2 concluído** Murim: talentos (14), defeitos (9) e escolas (maior: Punho de Ferro 16,9%; os 73% da Lâmina Errante eram viés do bot, corrigido em `sim/bot.ts`).
 2. Pendência a) **corrigida** (IA semanal, 2026-11-20): molde `desp_caminho_sangue` (despertar.ts) oferece o Caminho do Sangue a quem está sem trilha e tem corrupção ≥ 10, karma ≤ −4, violência ≥ 5 ou a origem Rebento; 5,5% das vidas do bot (1000), ascensão real 0,0% (ver linha da tabela).
-3. **B3** reações restantes das alcunhas (3 por alcunha, nos dois modos), revisar com `revisor-texto`.
+3. **B3 (em andamento)** reações das alcunhas (3 por alcunha): feitas 5 do Murim e 10 do Xianxia em 2026-11-20; faltam 19 do Murim e 14 do Xianxia. Revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
 5. **B5** origens e trilhas nos dois modos.
 

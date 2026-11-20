@@ -140,3 +140,7 @@ O dourado mudou de `23690773a526c871` para `75265d8d67eeee36` (1 de 330 vidas di
 - **Correção:** `sim/bot.ts` sorteia entre as opções empatadas na maior chance. Resultado (1000 vidas, `--modo murim`): maior escola Punho de Ferro 16,9%, Lâmina Errante 16,8%, menor Olho que Lê o Combate 4,4%; faixa média entre 3,23 e 3,56 por escola.
 - **Dourado:** como o bot mudou, todas as 330 vidas divergem; regenerado de `4165908014599dee` para `10975324d7bb6588`. O motor e o conteúdo não mudaram.
 
+## B3 — reações de alcunha (IA semanal, 2026-11-20, parcial)
+- Murim: +2 reações para o Misericordioso, o Punho Sem Descanso, a Raposa de Hwayang, o Passo Cuidadoso e o Faminto de Escolas (3 cada). Xianxia: +2 para dez alcunhas (Compassivo, Carrasco, Tecelão, Prudente, Faminto, Monte Imóvel, Devoto, Cofre, Tigre, Gume). Faltam 19 alcunhas do Murim e 14 do Xianxia.
+- **Dourado:** as reações novas entram nas vidas do bot; 102 de 330 vidas divergem. Regenerado de `10975324d7bb6588` para `4b0b3a9c64f7abcb`.
+

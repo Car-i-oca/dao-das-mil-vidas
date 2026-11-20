@@ -20,6 +20,14 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
     [reacao('pedido', 'A fila na porta', 'Ao saber que «{alcunha}» está na estalagem, uma fila de gente humilde se forma no pátio: doentes, viúvas, um menino com a perna torta. Não há remédio nem prata para todos.', [
       ['Atender a todos até a lanterna acabar.', 'Você dorme sentado, as mãos cheias de pano e ervas. De manhã, metade da fila volta com pão. A outra metade volta só para agradecer.', { karma: 3, pedras: -15, stats: { car: 1 } }],
       ['Escolher os casos mais graves e explicar o limite.', 'Alguns saem de cabeça baixa, mas ninguém sai enganado. Você aprende que misericórdia também tem contabilidade.', { karma: 1, stats: { comp: 1 } }],
+    ]),
+    reacao('ferido_inimigo', 'O homem do Clã Gwon', 'Na beira da estrada, um capanga do Clã Gwon sangra com uma flecha na coxa. Foi ele quem queimou uma das aldeias que você ajudou a reconstruir. Ele reconhece «{alcunha}» e, sem forças, pede água.', [
+      ['Tratar a ferida como trataria a de qualquer um.', 'Você tira a flecha, limpa e enfaixa. Ele não agradece; só olha, confuso. Meses depois, uma aldeia escapa de um ataque porque alguém do clã avisou na véspera, sem dizer o nome.', { karma: 3, stats: { car: 1 } }],
+      ['Dar a água, mas deixá-lo para os guardas da estrada.', 'Ele bebe e é levado preso ao anoitecer. As viúvas da aldeia queimada agradecem. Você dorme bem e, no meio da noite, acorda sem saber exatamente por quê.', { karma: 1, fama: 2 }],
+    ]),
+    reacao('impostor', 'O falso Misericordioso', 'Numa vila distante, um homem usa o nome de «{alcunha}» para recolher doações "para os pobres das duas margens". A prata nunca chega a lugar nenhum.', [
+      ['Desmascará-lo na praça, diante de quem doou.', 'Ele foge pela janela da estalagem, deixando a bolsa para trás. Você devolve cada moeda pelo nome. A vila passa a conhecer o rosto verdadeiro por trás do apelido, e isso tem um preço.', { fama: 3, karma: 1, pedras: 5 }],
+      ['Procurá-lo em particular e oferecer trabalho honesto.', 'Ele ri da proposta, depois aceita, depois some. Um ano mais tarde aparece numa casa de remédios, carregando sacos e devolvendo troco certo. Diz que o nome emprestado pesou mais do que a prata.', { karma: 3, pedras: -10 }],
     ])],
     { contra: ['violencia', 'ganancia'], infame: { m: 'o Piedoso Tolo', f: 'a Piedosa Tola' } }),
   puro('violencia', 'mur_punho', 'o Punho Sem Descanso', 'a Mão Sem Descanso',
@@ -29,6 +37,14 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
     [reacao('desafio', 'O garoto da taberna', 'Um jovem de uma escola menor reconhece «{alcunha}» e o desafia diante da taberna lotada, mais por nome que por raiva. Todos esperam o primeiro golpe.', [
       ['Aceitar e vencer sem machucar.', 'Você o derruba duas vezes e o ajuda a levantar. A taberna não sabe se aplaude ou se cala. O garoto jura que nunca mais vai desafiar ninguém por nome.', { fama: 3, karma: 1 }],
       ['Aceitar e deixar a marca que a taberna espera.', 'O garoto fica três semanas de cama. A taberna passa a servi-lo primeiro e a olhá-lo por último.', { fama: 4, karma: -3, stats: { fis: 1 } }],
+    ]),
+    reacao('mestre_velho', 'O velho do pátio', 'Um velho mestre de punho, que já foi famoso, pede a «{alcunha}» um último duelo. Não quer vencer: quer saber se ainda aguenta três golpes. Os alunos dele assistem do muro.', [
+      ['Lutar a sério e deixar que ele aguente os três.', 'O terceiro golpe passa a um dedo do queixo dele, de propósito ou não. Ele fica de pé e sorri com a boca torta. Os alunos descem do muro diferentes, e você também.', { fama: 2, karma: 2 }],
+      ['Recusar com uma reverência profunda.', 'O velho fica ofendido por um momento e, depois, aliviado. Ele convida você para um chá onde falam de tudo, menos de brigas. É a conversa mais longa que você teve em anos.', { karma: 1, stats: { comp: 1 } }],
+    ]),
+    reacao('mao_ferida', 'A mão que não fecha', 'Depois de anos de pancadas, a mão direita de «{alcunha}» amanhece rígida e não fecha. O curandeiro diz que precisa de seis meses sem golpear, ou fica assim para sempre.', [
+      ['Obedecer: seis meses sem uma única briga.', 'Os seis meses são os mais longos da sua vida. Você aprende a desviar, a conversar, a sair cedo das tabernas. A mão volta a fechar, e você descobre que nem sempre quer fechá-la.', { karma: 2, stats: { fis: -1, car: 1 } }],
+      ['Treinar a mão esquerda e seguir em frente.', 'A esquerda aprende devagar, com raiva. A direita fica meio fechada, como um punho que mudou de ideia. As brigas continuam, mas agora todo mundo sabe de que lado você é fraco.', { stats: { fis: 1 }, ferida: 1, fama: 1 }],
     ])],
     { contra: ['compaixao'] }),
   puro('astucia', 'mur_raposa', 'o Zorro de Hwayang', 'a Raposa de Hwayang',
@@ -38,6 +54,14 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
     [reacao('convite', 'A carta sem selo', 'Um mensageiro entrega a «{alcunha}» uma carta sem selo: duas escolas rivais querem que alguém de fora arbitre uma disputa de herança, e as duas já pagaram adiantado.', [
       ['Arbitrar com cuidado e cobrar das duas.', 'Cada lado sai achando que ganhou o que queria. Você sai com duas bolsas e um sorriso que nenhum dos dois lê direito.', { pedras: 30, fama: 2 }],
       ['Recusar as duas bolsas e propor um acordo aberto.', 'A transparência assusta os dois no começo. Ao fim, é o único acordo que sobrevive ao inverno.', { karma: 2, fama: 3 }],
+    ]),
+    reacao('trapaca_descoberta', 'O contrato com duas caras', 'Um comerciante de Hwayang descobre que um acordo feito por «{alcunha}» anos atrás tinha uma cláusula escondida que o arruinou devagar. Ele aparece com a família inteira na porta.', [
+      ['Reconhecer a cláusula e devolver parte do que ganhou.', 'A devolução custa caro e não compra perdão. Mas o comerciante espalha que você paga as próprias dívidas, e em Hwayang isso vale mais do que esperteza.', { pedras: -30, karma: 3, fama: 2 }],
+      ['Mostrar que ele assinou de olhos abertos.', 'Legalmente, você está certo. Ele vai embora com a família e um ódio paciente. Em Hwayang, os contratos com você passam a ser lidos três vezes, devagar, em voz alta.', { pedras: 10, karma: -2, stats: { comp: 1 } }],
+    ]),
+    reacao('aprendiz_hwayang', 'A menina do mercado', 'Uma menina de rua, rápida e mentirosa, rouba a bolsa de «{alcunha}» no mercado de Hwayang e quase escapa. Quase. Agora ela espera o castigo com o queixo erguido.', [
+      ['Ensinar a ela como você teria roubado melhor.', 'Ela aprende em uma tarde o que você levou anos. Some na manhã seguinte e volta uma semana depois com uma informação que vale dez bolsas. É o começo de uma sociedade estranha.', { fama: 1, pedras: 15, stats: { sor: 1 } }],
+      ['Entregá-la a uma casa de órfãos com uma doação.', 'Ela foge três vezes e, na quarta, fica. Anos depois, uma escriturária séria de Hwayang manda uma carta agradecendo pelo dia em que foi pega.', { karma: 2, pedras: -10 }],
     ])]),
   puro('cautela', 'mur_sombra', 'o Passo Cuidadoso', 'a Sombra Prudente',
     'Dizem que olha três vezes para a ponte antes de pisar, e que por isso ainda anda por estradas onde muitos já não andam.',
@@ -46,6 +70,14 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
     [reacao('emboscada', 'O atalho gentil', 'Um carroceiro oferece a «{alcunha}» um atalho que economiza dois dias. A estrada é boa demais, e a hora é conveniente demais.', [
       ['Recusar o atalho e dar a volta longa.', 'Dois dias depois, vocês ouvem dizer que o atalho foi tomado por bandidos. O carroceiro nunca mais é visto.', { stats: { sor: 1 }, fama: 1 }],
       ['Aceitar, mas mandar alguém na frente.', 'O batedor volta correndo: havia, sim, gente esperando. Você os evita pelo outro lado e ganha a fama de quem cheira o perigo.', { fama: 3, pedras: 10 }],
+    ]),
+    reacao('companheiro_imprudente', 'O amigo que corre', 'Um companheiro de estrada de «{alcunha}» quer atravessar o desfiladeiro do Passo Norte de noite, para chegar antes de uma escola rival. Diz que cautela demais também mata, só que mais devagar.', [
+      ['Ir junto, mas com corda, tocha e uma parada a cada légua.', 'Vocês chegam com duas horas de atraso. A escola rival chega antes e ganha o contrato. No caminho de volta, passam pelos restos de uma carroça que tentou a mesma travessia na pressa.', { stats: { sor: 1 }, karma: 1 }],
+      ['Deixar que ele vá sozinho e seguir de dia.', 'Ele chega primeiro e ganha o contrato, com um tornozelo torcido e um sorriso de vitória. Você chega sem um arranhão e sem nada. Ele paga o jantar e não perde a chance de lembrar quem venceu.', { pedras: -5, stats: { esp: 1 } }],
+    ]),
+    reacao('casa_segura', 'A casa com três saídas', 'Uma família perseguida pelo Clã Gwon pede abrigo a «{alcunha}», que tem fama de nunca ser encontrado. Recebê-los é trazer o perigo para dentro de casa.', [
+      ['Escondê-los e ensinar a eles como não ser seguidos.', 'Por um mês, a casa vive em silêncio. Quando a família parte, sabe apagar rastros melhor que muitos batedores. O clã nunca descobre onde estiveram, e você ganha um segredo a mais para guardar.', { karma: 3, fama: 1 }],
+      ['Indicar outro esconderijo, longe da sua casa.', 'Você desenha o mapa com cuidado e dá prata para a viagem. Eles chegam salvos. Você não corre risco nenhum, e eles nunca mais procuram você, o que talvez seja justo.', { karma: 1, pedras: -10 }],
     ])]),
   puro('ambicao', 'mur_faminto', 'o Faminto de Escolas', 'a Faminta de Escolas',
     'Dizem que olha cada pátio como quem calcula quanto custaria comprá-lo.',
@@ -54,6 +86,14 @@ export const ALCUNHAS_MURIM: Alcunha[] = [
     [reacao('convite', 'A cadeira vazia', 'Uma escola em crise oferece a «{alcunha}» a cadeira de mestre interino. O preço é assinar uma dívida antiga que não é sua.', [
       ['Assinar e assumir a escola.', 'A cadeira é sua, e a dívida também. Você sobe um degrau e entende, na primeira noite, por que ninguém mais quis aquele lugar.', { fama: 5, pedras: -30, stats: { car: 1 } }],
       ['Negociar a dívida antes de sentar.', 'A escola relutante cede metade. Você assume com menos peso e mais inimigos entre os que queriam a cadeira.', { fama: 3, pedras: -10 }],
+    ]),
+    reacao('pupilo_antigo', 'O aluno que ficou para trás', 'Um antigo aluno de «{alcunha}», abandonado quando você trocou de escola por uma cadeira melhor, agora dirige um pátio pequeno e honesto. Ele convida você para uma visita, sem nenhum pedido.', [
+      ['Ir, e ficar uma semana ensinando de graça.', 'Os alunos dele treinam com você como quem treina com uma lenda. À noite, ele conta como foi ficar para trás. Você escuta sem se defender, e vai embora mais leve, com um pátio a mais que recebe você de portas abertas.', { karma: 3, fama: 2 }],
+      ['Mandar uma carta educada e seguir para o próximo convite.', 'A carta é bonita. A próxima cadeira é maior. Anos depois, alguém comenta que aquele pátio pequeno virou escola respeitada, e que lá ninguém fala de você.', { fama: 2, pedras: 20, karma: -1 }],
+    ]),
+    reacao('escola_comprada', 'A escola à venda', 'O velho dono de uma escola falida oferece a «{alcunha}» o pátio, o nome e os alunos por uma soma alta. Ele chora ao assinar o rascunho. Os alunos não sabem de nada.', [
+      ['Comprar e manter o velho como mestre honorário.', 'O velho volta a ter onde sentar. Os alunos não percebem a troca de dono, só a comida melhor. Você ganha uma escola e um conselheiro que conhece cada telha.', { pedras: -50, karma: 2, fama: 3 }],
+      ['Comprar barato, depois de mostrar a ele que ninguém mais vai fazer oferta.', 'O velho assina pela metade do preço. A escola é sua. Ele vai embora sem se despedir dos alunos, e um deles, o mais talentoso, vai junto.', { pedras: -20, karma: -2, fama: 2 }],
     ])], { contra: ['compaixao'] }),
   puro('disciplina', 'mur_coluna', 'o Pilar do Pátio', 'a Coluna do Pátio',
     'Dizem que treina no mesmo lugar, na mesma hora, desde antes de os alunos mais velhos chegarem.',
