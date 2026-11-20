@@ -199,15 +199,34 @@ function render() {
     app.innerHTML = `<div class="audio-gate"><div class="audio-gate-card"><div class="seal">武</div><h1>Murim Quest</h1><p>Uma vida no Jianghu. Cada escolha deixa seu nome na história.</p><div class="btn primary audio-start" data-act="start-audio" role="button" tabindex="0" aria-disabled="${audioStarting}">${audioStarting ? 'Preparando a jornada…' : 'Toque para entrar no Jianghu'}</div><span class="muted small audio-error">${esc(audioGateError)}</span></div></div>`;
     return;
   }
-  switch (screen) {
-    case 'home': renderHome(); break;
-    case 'modo': renderModo(); break;
-    case 'create': renderCreate(); break;
-    case 'game': renderGame(); break;
-    case 'end': renderEnd(); break;
-    case 'meta': renderMeta(); break;
+  try {
+    switch (screen) {
+      case 'home': renderHome(); break;
+      case 'modo': renderModo(); break;
+      case 'create': renderCreate(); break;
+      case 'game': renderGame(); break;
+      case 'end': renderEnd(); break;
+      case 'meta': renderMeta(); break;
+    }
+  } catch (err) {
+    // Rede de segurança: um estado inesperado não pode deixar a tela em branco (o save reabriria no mesmo erro).
+    console.error('[render]', err);
+    renderFalha();
+    return;
   }
   if (diceModal) app.insertAdjacentHTML('beforeend', diceModalHtml(diceModal));
+}
+
+function renderFalha() {
+  diceModal = null;
+  const vida = save.run && (screen === 'game' || screen === 'end');
+  app.innerHTML = `<div class="screen"><div class="card" role="alert">
+    <div class="muted small">ALGO SAIU DO LUGAR</div>
+    <h2>${vida ? 'Esta vida não pôde ser aberta' : 'Esta tela não pôde ser aberta'}</h2>
+    <p>${vida ? 'O registro da vida em andamento está incompleto, talvez de uma versão anterior do jogo. O Legado e as vidas passadas estão a salvo.' : 'O Legado e as vidas passadas estão a salvo.'}</p>
+    ${vida ? '<button class="btn primary" data-act="abandonar-quebrada">Encerrar esta vida e voltar ao início</button>' : ''}
+    <button class="btn ${vida ? 'ghost' : 'primary'}" data-act="home">Voltar ao início</button>
+  </div></div>`;
 }
 
 function diceModalHtml(modal: NonNullable<typeof diceModal>): string {
@@ -852,6 +871,11 @@ app.addEventListener('click', (ev) => {
       render();
       break;
     }
+    case 'abandonar-quebrada':
+      // Guarda a vida quebrada para recuperação manual antes de descartá-la.
+      try { localStorage.setItem(KEY_CORROMPIDO, JSON.stringify(save)); } catch { /* sem espaço */ }
+      save.run = null; persist(); screen = 'home'; render();
+      break;
     case 'continue':
       if (save.run) tab = 'aventura';
       screen = save.run?.ending ? 'end' : 'game';
