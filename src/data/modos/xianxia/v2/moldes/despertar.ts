@@ -49,7 +49,7 @@ export const DESPERTAR: Molde[] = [
         },
       },
       {
-        id: 'recusar', texto: 'Dizer que vai aprender sozinho.',
+        id: 'recusar', texto: 'Dizer que vai aprender sozinh{jogador.o}.',
         res: {
           texto: '"Orgulho é a primeira coisa que o Dao cobra", diz {mestre.nome}, sem raiva, e se afasta. A estrada tem muita gente com vontade de ensinar, mas poucos esperam duas vezes.',
           efeitos: [{ opiniao: ['mestre', -10] }, { fato: ['mestre', 'foi_recusado', 3] }, { q: ['sozinho', 1] }],
@@ -100,7 +100,7 @@ export const DESPERTAR: Molde[] = [
       {
         id: 'recusar', texto: 'Recusar e meditar até o gosto de ferro passar.', teste: { stat: ['esp', 'dao'], dif: 1 },
         sucesso: {
-          texto: '{mestre.nome} dá de ombros e vai embora antes do amanhecer. Você passa três dias sentado, respirando devagar, e o gosto de ferro some quase por inteiro. Fica só a lembrança de que alguém viu, em você, uma porta.',
+          texto: '{mestre.nome} dá de ombros e vai embora antes do amanhecer. Você passa três dias sentad{jogador.o}, respirando devagar, e o gosto de ferro some quase por inteiro. Fica só a lembrança de que alguém viu, em você, uma porta.',
           efeitos: [{ fato: ['mestre', 'foi_recusado', 3] }],
           fx: { corr: -4, perfil: { disciplina: 2 } },
         },
@@ -145,14 +145,14 @@ export const DESPERTAR: Molde[] = [
     },
     relevancia: [{ se: { jogador: { semTrilha: true, idadeMin: 40 } }, mais: 30 }],
     cena: [
-      { se: { q: { sozinho: [1, undefined] } }, texto: 'Você disse que aprenderia sozinho, e os anos cobraram a promessa. O Qi desperto continua girando sem rumo, como água num poço sem saída. Numa manhã fria, cansado de esperar que alguém volte pela estrada, você decide abrir o caminho com as próprias mãos.' },
+      { se: { q: { sozinho: [1, undefined] } }, texto: 'Você disse que aprenderia sozinh{jogador.o}, e os anos cobraram a promessa. O Qi desperto continua girando sem rumo, como água num poço sem saída. Numa manhã fria, cansad{jogador.o} de esperar que alguém volte pela estrada, você decide abrir o caminho com as próprias mãos.' },
       { texto: 'Os convites passaram e você deixou todos para depois. Agora não há mais ninguém na estrada perguntando nada. O Qi desperto pesa no peito como uma ferramenta que você nunca aprendeu a segurar. Se ninguém vai ensinar, alguém precisa inventar o método.' },
     ],
     opcoes: [
       {
         id: 'corpo', texto: 'Forjar o corpo no trabalho pesado até o Qi aprender a seguir os músculos.', teste: { stat: ['fis', 'dao'], dif: 2 },
         falha: {
-          texto: 'Você carrega pedra até as costas travarem. O Qi não desce para os ossos: fica preso no peito, quente e inútil. Passa uma estação inteira deitado, e o método continua sem nome.',
+          texto: 'Você carrega pedra até as costas travarem. O Qi não desce para os ossos: fica preso no peito, quente e inútil. Passa uma estação inteira deitad{jogador.o}, e o método continua sem nome.',
           fx: { ferida: 2, stats: { fis: 1 }, perfil: { disciplina: 1 } },
         },
         sucesso: {
@@ -174,7 +174,7 @@ export const DESPERTAR: Molde[] = [
       {
         id: 'feras', texto: 'Seguir os bichos espirituais das colinas e copiar o jeito deles de respirar.', teste: { stat: ['sor', 'esp'], dif: 1 },
         falha: {
-          texto: 'A raposa de cauda prateada some na primeira nevasca e não volta. Você passa o inverno sozinho numa gruta, aprende muito sobre frio e quase nada sobre Qi. Desce a montanha mais magro e mais humilde.',
+          texto: 'A raposa de cauda prateada some na primeira nevasca e não volta. Você passa o inverno sozinh{jogador.o} numa gruta, aprende muito sobre frio e quase nada sobre Qi. Desce a montanha mais magr{jogador.o} e mais humilde.',
           fx: { ferida: 1, perfil: { cautela: 1 } },
         },
         sucesso: {
@@ -185,7 +185,7 @@ export const DESPERTAR: Molde[] = [
       {
         id: 'contas', texto: 'Desenhar no chão os padrões que o Qi parece seguir e corrigi-los como um livro de contas.', requer: { jogador: { perfilMin: { astucia: 3 } } }, selo: 'Mente de calculista', teste: { stat: ['comp', 'esp'], dif: 1 },
         falha: {
-          texto: 'Os círculos no chão se multiplicam e nenhum fecha a conta. Numa madrugada você percebe que passou a semana corrigindo o mesmo erro. Apaga tudo com o pé, envergonhado, e guarda o giz no fundo da gaveta, mas não o joga fora.',
+          texto: 'Os círculos no chão se multiplicam e nenhum fecha a conta. Numa madrugada você percebe que passou a semana corrigindo o mesmo erro. Apaga tudo com o pé, envergonhad{jogador.o}, e guarda o giz no fundo da gaveta, mas não o joga fora.',
           fx: { stats: { comp: 1 }, perfil: { cautela: 1 } },
         },
         sucesso: {
