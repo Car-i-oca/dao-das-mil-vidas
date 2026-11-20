@@ -19,6 +19,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('praga', 'A vila que adoece', 'Uma vila sem seita protetora adoece em silêncio, e as crianças são as primeiras a cair. Alguém, sabendo quem «{alcunha}» é, vem buscar socorro a cavalo, sem pedir prêmio.', [
       ['Ir sem demora, gastando pílulas e Qi.', 'Você fica quinze dias entre febres e panos. A vila se recupera, e o seu cultivo atrasa. O nome, nessa vila, passa a ser dito com a boca baixa.', { karma: 4, pedras: -40, stats: { dao: 1 } }],
       ['Mandar pílulas e instruções, sem ir pessoalmente.', 'A vila se recupera pela metade. Você mantém o ritmo do cultivo e a dívida de saber o que poderia ter feito.', { karma: 1, pedras: -15 }],
+    ]),
+    reacao('devedor', 'O homem que voltou para pagar', 'Um mercador grisalho atravessa três províncias para devolver a «{alcunha}» uma bolsa de pedras espirituais. Diz que, vinte anos atrás, recebeu remédio de graça e prometeu que um dia pagaria. A bolsa pesa mais do que tudo o que você deu.', [
+      ['Recusar a bolsa e pedir que ele cure alguém no seu lugar.', 'O mercador chora, discute e, por fim, aceita. Anos depois, chega notícia de uma casa de remédios numa estrada pobre, com o seu nome escrito na porta sem que você tenha pedido.', { karma: 3, fama: 2 }],
+      ['Aceitar, para que a promessa dele possa terminar.', 'Ele vai embora mais leve, como quem tira um peso das costas. Você descobre que deixar alguém pagar também é uma forma de bondade, e o cultivo agradece as pedras.', { pedras: 50, karma: 1, stats: { car: 1 } }],
+    ]),
+    reacao('ingrato', 'A mão mordida', 'Um discípulo de seita que você salvou de uma tribulação agora espalha que «{alcunha}» o curou só para ter um devedor. Há quem acredite. A acusação chega antes de você em cada cidade.', [
+      ['Procurá-lo e perguntar, sem testemunhas, o que o machucou.', 'Ele não esperava a pergunta. Por trás da mentira há vergonha: precisou de ajuda diante de toda a seita. A calúnia para, não por medo, mas porque ele ficou sem raiva.', { karma: 2, stats: { dao: 1 } }],
+      ['Deixar que os curados falem por você.', 'Leva um ano, mas as vilas respondem por você, uma a uma. O discípulo some dos salões. A fama volta maior, e com ela uma pequena desconfiança de quem cura demais.', { fama: 4 }],
     ])], { contra: ['violencia', 'ganancia'], infame: { m: 'o Santo Ingênuo', f: 'a Santa Ingênua' } }),
   puro('violencia', 'xx_carrasco', 'o Carrasco de Nuvens', 'a Carrasca de Nuvens',
     'Dizem que as nuvens se afastam antes de ele chegar, como quem sabe o que vai acontecer.',
@@ -27,6 +35,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('prova', 'O desafio nas nuvens', 'Um jovem prodígio de uma seita menor sobe até as nuvens para provar que pode vencer «{alcunha}» num duelo marcado, diante dos anciãos.', [
       ['Vencer rápido e sem humilhar.', 'O jovem cai uma vez e agradece. Os anciãos, sem querer, passam a citar você como exemplo de contenção.', { fama: 3, karma: 1 }],
       ['Vencer devagar, para que todos vejam.', 'A plateia treme. O jovem nunca mais sobe àquelas nuvens. O nome fica mais curto e mais pesado.', { fama: 5, karma: -3, stats: { fis: 1 } }],
+    ]),
+    reacao('viuva', 'A viúva que não chora', 'Uma mulher de luto espera por «{alcunha}» à beira da estrada. O marido dela está numa daquelas listas de nomes riscados. Ela não ameaça e não chora: só quer saber se ele implorou no fim.', [
+      ['Dizer a verdade, seja qual for.', 'Você conta como foi. Ela escuta até o fim, agradece com uma reverência curta e vai embora. Naquela noite, a meditação não vem, e o Qi fica pesado como ferro molhado.', { karma: 1, corr: -2, stats: { esp: -1 } }],
+      ['Dizer que ele morreu sem medo, mesmo que não seja verdade.', 'A mentira sai fácil, e isso assusta mais do que a pergunta. A mulher acredita, ou finge. Você descobre que também sabe ter misericórdia, desde que custe pouco.', { karma: -1, fama: 1 }],
+    ]),
+    reacao('contrato', 'O nome na lista', 'Um emissário de seita traz a «{alcunha}» um contrato selado e uma bolsa pesada. O nome é de um ancião rival, poderoso e respeitado. O pagamento é alto demais para ser honesto.', [
+      ['Recusar e devolver o selo à seita que mandou.', 'A recusa vira notícia: há coisas que nem o carrasco faz. A seita que encomendou passa a odiar você em silêncio, e a do ancião passa a respeitá-lo em voz alta.', { fama: 3, karma: 2 }],
+      ['Aceitar o contrato e cumpri-lo sem perguntas.', 'O ancião cai numa manhã de neve. O pagamento é real, e o nome na lista agora é seu também, na lista de outra pessoa. Você dorme de costas para a parede.', { pedras: 90, karma: -4, corr: 4, fama: 2 }],
     ])], { contra: ['compaixao'], infame: { m: 'o Açougueiro Celeste', f: 'a Açougueira Celeste' } }),
   puro('astucia', 'xx_tecelao', 'o Tecelão de Mil Planos', 'a Tecelã de Mil Planos',
     'Dizem que quando duas seitas se desentendem, existe um fio na mão dele que ainda não foi puxado.',
@@ -35,6 +51,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('arbitro', 'A paz que alguém pagou', 'Duas seitas em tensão procuram «{alcunha}» para arbitrar em segredo uma disputa de minas espirituais.', [
       ['Arbitrar e cobrar uma parte da mina.', 'As duas seitas aceitam a divisão, contrariadas. Você sai com uma parte da mina e um nome mais conhecido do que desejava.', { pedras: 60, fama: 2 }],
       ['Arbitrar de graça e exigir uma testemunha neutra.', 'A testemunha incomoda as duas e protege as duas. A paz dura mais do que as minas.', { karma: 2, fama: 3 }],
+    ]),
+    reacao('fio_solto', 'O fio que alguém puxou', 'Um plano antigo de «{alcunha}» começa a desfazer-se: um mensageiro preso fala demais, e duas seitas que você aproximou descobrem que foram aproximadas. As duas querem saber quem teceu a rede.', [
+      ['Assumir a autoria e explicar por que foi feito.', 'A franqueza desarma metade da raiva. A outra metade fica, mas agora tem rosto e endereço. As seitas mantêm a paz, de má vontade, porque o motivo era bom demais para ser jogado fora.', { fama: 2, karma: 1, stats: { car: 1 } }],
+      ['Desviar a culpa para um intermediário que já morreu.', 'O morto não reclama. As seitas se acalmam e você guarda mais um segredo na manga. Mas um dos discípulos do morto começa a fazer perguntas, e ele é paciente.', { pedras: 20, karma: -2, stats: { comp: 1 } }],
+    ]),
+    reacao('aprendiz', 'A aprendiz de redes', 'Uma jovem estrategista de seita menor pede a «{alcunha}» que lhe ensine a tecer planos. Ela é brilhante e ambiciosa demais, e você reconhece no olhar dela o seu de muitos anos atrás.', [
+      ['Ensinar tudo, inclusive o que não se deve fazer.', 'Ela aprende rápido e, um dia, usa um dos seus truques contra você, com elegância. Naquela noite você ri a sós: o ofício sobreviveu ao mestre.', { karma: 1, fama: 2, stats: { comp: -1 } }],
+      ['Ensinar só a metade e guardar os fios mais finos.', 'Ela percebe a metade que falta e não perdoa. Vai embora com metade do ofício e uma inteira vontade de descobrir o resto. Você mantém a vantagem, e uma rival em formação.', { pedras: 15, stats: { comp: 1 } }],
     ])]),
   puro('cautela', 'xx_prudente', 'o Passo Prudente', 'a Sombra Prudente',
     'Dizem que olha o céu três vezes antes de abrir a janela, e que por isso ainda tem janela.',
@@ -43,6 +67,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('armadilha', 'O tesouro fácil demais', 'Um mapa de tesouro cai nas mãos de «{alcunha}» com uma facilidade suspeita. A recompensa é grande, o aviso é nenhum.', [
       ['Investigar o mapa durante semanas antes de agir.', 'Quando você acaba, o tesouro já foi tomado por outro. Mas o mapa era falso, e você é o único que sabe disso.', { stats: { comp: 1 }, fama: 1 }],
       ['Mandar um servo na frente.', 'O servo volta vivo e com um fragmento do tesouro. A armadilha era para quem fosse pessoalmente, e você vê as marcas na pedra.', { pedras: 40, karma: -1 }],
+    ]),
+    reacao('pressa', 'O amigo apressado', 'Um velho companheiro de cultivo convida «{alcunha}» para invadir junto uma ruína recém-descoberta, antes que as grandes seitas cheguem. Ele tem um mapa, um prazo e nenhum plano de saída.', [
+      ['Ir junto, mas exigir a sua própria rota de fuga.', 'A ruína desaba no terceiro salão. O seu túnel de saída salva os dois. O amigo não agradece: diz que, sem a sua demora, teriam chegado ao quarto salão. Mas ele está vivo para reclamar.', { pedras: 30, karma: 1, ferida: 1 }],
+      ['Recusar e esperar notícias.', 'Ele volta com um artefato e uma cicatriz. Diz que você perdeu a chance da vida. Talvez. No ano seguinte, a mesma ruína engole três expedições que seguiram o mapa dele.', { stats: { esp: 1 }, fama: 1 }],
+    ]),
+    reacao('covarde', 'O apelido que dói', 'Numa casa de chá, jovens de seita riem de «{alcunha}» e dizem que é covardia nunca ter enfrentado uma tribulação de frente. Um deles desafia você ali mesmo, diante de todos.', [
+      ['Aceitar o desafio, mas escolher o terreno e a hora.', 'Você marca o duelo para o amanhecer, num campo que conhece pedra por pedra. O jovem chega cansado e vai embora humilhado sem um arranhão. Ninguém mais ri, pelo menos em voz alta.', { fama: 3, stats: { comp: 1 } }],
+      ['Pagar o chá de todos e ir embora.', 'Os jovens riem mais alto. Você não ouve. Dez anos depois, dois deles estão mortos em duelos de orgulho, e o terceiro vem pedir conselho.', { pedras: -5, karma: 2 }],
     ])]),
   puro('ambicao', 'xx_faminto', 'o Faminto de Céu', 'a Faminta de Céu',
     'Dizem que a cada reino que alcança olha o próximo como se já o tivesse perdido.',
@@ -51,6 +83,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('convite', 'O assento do Ancião', 'Uma seita enfraquecida oferece a «{alcunha}» o assento de Ancião, com a condição de assumir o passivo do último ocupante.', [
       ['Aceitar o assento e o passivo.', 'O assento é seu. O passivo também. Em um ano, você entende por que o último ocupante nunca voltou para visitar.', { fama: 6, pedras: -60, stats: { car: 1 } }],
       ['Aceitar apenas depois de renegociar o passivo.', 'A seita cede metade. Você assume com menos peso e mais inimigos entre os que queriam o assento.', { fama: 3, pedras: -20 }],
+    ]),
+    reacao('irmao_deixado', 'O irmão de juramento', 'Um antigo irmão de juramento, que ficou para trás nos primeiros reinos, encontra «{alcunha}» num salão de seita. Está velho, preso no mesmo degrau há décadas, e pede uma pílula que talvez o leve adiante. É a pílula que você guardava para o próprio rompimento.', [
+      ['Entregar a pílula e adiar o próprio passo.', 'Ele rompe na semana seguinte e chora como criança. O seu cultivo espera mais um inverno. Pela primeira vez em muito tempo, você olha para o degrau atual sem pressa.', { karma: 4, stats: { dao: 1, comp: -1 } }],
+      ['Recusar: o céu não espera por ninguém.', 'Ele entende, ou diz que entende. Você rompe no mês seguinte, mais forte do que nunca. No ano em que ele morre de velhice, ninguém se lembra de avisar você.', { karma: -2, stats: { esp: 1 }, corr: 2 }],
+    ]),
+    reacao('heranca_de_ceu', 'O degrau comprado', 'Um velho cultivador moribundo oferece a «{alcunha}» todo o Qi acumulado em mil anos, num ritual de transferência. Pede só uma coisa em troca: que você cuide do neto dele, um menino sem talento algum.', [
+      ['Aceitar o Qi e cuidar do menino de verdade.', 'O Qi entra como um rio de inverno. O menino cresce na sua sombra, sem talento e sem medo. É a primeira coisa na sua vida que você não pode subir: só acompanhar.', { stats: { dao: 1, car: 1 }, karma: 2, pedras: -30 }],
+      ['Aceitar o Qi e deixar o menino aos cuidados de uma seita.', 'O Qi é seu. O menino recebe uma vaga, uma cama e nenhuma visita. Você manda pedras todo ano, pontualmente, como quem paga uma dívida sem olhar o credor.', { stats: { dao: 1 }, pedras: -20, karma: -1 }],
     ])], { contra: ['compaixao'] }),
   puro('disciplina', 'xx_rocha', 'o Monte Imóvel', 'a Rocha Imóvel',
     'Dizem que medita no mesmo ponto desde antes de a trilha ser aberta.',
