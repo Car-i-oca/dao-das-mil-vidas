@@ -99,6 +99,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('visita', 'A visita de um Patriarca', 'Um Patriarca, de passagem, observa «{alcunha}» meditar uma tarde inteira e diz que, com outro método, a mesma disciplina renderia o dobro.', [
       ['Ouvir o método e adotar o que servir.', 'O Patriarca sorri. Algumas partes do método servem; outras não. Você aprende a diferença sem perder a pedra.', { stats: { comp: 1, dao: 1 } }],
       ['Convidar o Patriarca a sentar ao lado, sem falar.', 'Ele aguenta até o fim da tarde, e sai calado. Manda um discípulo seu estudar com você, sem dizer o motivo.', { fama: 3 }],
+    ]),
+    reacao('enchente', 'A água que sobe', 'Uma enchente desce a montanha e vai cobrir a pedra onde «{alcunha}» medita há décadas. Os aldeões de baixo gritam para que você saia. A água já toca os joelhos.', [
+      ['Não sair do lugar e deixar o Qi segurar a água.', 'A água passa ao redor como se a pedra tivesse ombros. Quando baixa, a aldeia está inteira atrás de você. Ninguém sabe se foi o Qi ou a teimosia, e você também não.', { fama: 4, karma: 2, ferida: 1 }],
+      ['Levantar, pela primeira vez em anos, e ajudar a carregar os velhos.', 'As pernas estalam como galhos secos. Você carrega onze pessoas morro acima. A pedra some sob a lama, e, pela primeira vez, você medita em outro lugar e descobre que o lugar não importava.', { karma: 3, stats: { fis: 1, dao: -1 } }],
+    ]),
+    reacao('discipulo_impaciente', 'O discípulo que não aguenta esperar', 'Um rapaz senta ao lado de «{alcunha}» todos os dias, há um ano, esperando uma lição. Hoje, desesperado, ele pergunta se ficar parado também é um método ou só uma desculpa.', [
+      ['Responder com uma única frase e voltar ao silêncio.', '"Fique mais um ano e me diga." Ele fica. No fim do segundo ano, não pergunta mais nada: só respira no mesmo ritmo que você. Alguém, na aldeia, começa a chamá-lo de pedra pequena.', { karma: 1, stats: { dao: 1 } }],
+      ['Explicar, pela primeira vez, o que a quietude ensinou.', 'As palavras saem enferrujadas e, mesmo assim, úteis. O rapaz vai embora no dia seguinte, com um método que não é o seu e cabe nele. Você fica com a estranha sensação de ter falado demais.', { fama: 2, stats: { car: 1 } }],
     ])]),
   puro('devocao', 'xx_devoto', 'o Devoto do Dao', 'a Devota do Dao',
     'Dizem que reza pelas manhãs diante de uma pedra lisa, e que as manhãs, ali, são mais longas.',
@@ -107,6 +115,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('rito', 'O altar abandonado', 'Numa montanha deserta, um altar antigo está sem ninguém para cuidar. «{alcunha}» é chamado para decidir se vale a pena reabri-lo.', [
       ['Reabrir o altar e mantê-lo em pessoa.', 'Anos depois, peregrinos sobem a montanha, e você é, outra vez, o guardião de um lugar que ninguém lembrava.', { karma: 3, fama: 2, stats: { dao: 1 } }],
       ['Reabrir o altar e entregá-lo a uma família local.', 'A família assume, com orgulho e atrapalhos. O altar vive, e o seu nome continua nele, como uma nota de rodapé.', { karma: 2 }],
+    ]),
+    reacao('falso_milagre', 'O milagre de encomenda', 'Um templo rico oferece a «{alcunha}» uma fortuna para presidir uma cerimônia em que uma estátua vai "chorar" diante dos fiéis. O truque é de cera e água morna, e os fiéis são pobres.', [
+      ['Recusar e contar aos fiéis como o truque funciona.', 'O templo perde metade dos fiéis e ganha um inimigo para sempre. Os pobres voltam a rezar em casa, diante de pedras comuns. Dizem que as manhãs lá ficaram mais longas também.', { karma: 3, fama: 1, pedras: -10 }],
+      ['Recusar em silêncio e ir embora.', 'A estátua chora sem você. O templo enriquece, os fiéis empobrecem, e você reza com mais força do que nunca, sabendo que reza também por omissão.', { karma: 1, stats: { dao: 1 } }],
+    ]),
+    reacao('duvida', 'A noite sem resposta', 'Depois de décadas de rito, numa noite comum, a reza de «{alcunha}» não encontra nada do outro lado. Nenhum calor, nenhuma presença. Só o vento e a pedra lisa, fria.', [
+      ['Rezar mesmo assim, até o amanhecer.', 'O amanhecer vem sem resposta. Você continua no dia seguinte, e no outro. A fé deixa de ser conversa e vira hábito, e o hábito, para sua surpresa, aguenta peso maior.', { stats: { dao: 2 }, karma: 1 }],
+      ['Parar e perguntar a um monge velho se isso é normal.', 'Ele ri sem dentes. "Acontece com todo mundo que reza de verdade. Com os outros, nunca." A conversa dura até a madrugada, e você volta para a pedra mais leve, com um amigo novo.', { stats: { car: 1, esp: 1 } }],
     ])]),
   puro('ganancia', 'xx_cofre', 'o Cofre Sem Fundo', 'a Bolsa Sem Fundo',
     'Dizem que já pagou três vezes pelo mesmo tesouro e ainda assim saiu com lucro.',
@@ -115,6 +131,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     [reacao('divida', 'A seita falida', 'Uma seita falida vem pedir a «{alcunha}» um empréstimo para não fechar. Os discípulos esperam no pátio, em silêncio.', [
       ['Emprestar com garantia de uma mina.', 'A seita sobrevive, e a mina passa a ser sua. Os discípulos agradecem e passam a desviar o olhar quando você chega.', { pedras: 60, karma: -2 }],
       ['Emprestar sem garantia, uma única vez.', 'A seita paga, com atraso e com juros inesperados de lealdade. O nome ganha uma fenda por onde entra luz.', { pedras: -30, karma: 3, fama: 2 }],
+    ]),
+    reacao('auditoria', 'O livro que não fecha', 'Os livros-caixa de «{alcunha}», famosos por serem exatos, mostram uma diferença de três pedras espirituais. É pouco, mas nunca aconteceu. Alguém da casa está roubando, ou alguém de fora quer que você pense isso.', [
+      ['Revirar cada conta até achar as três pedras.', 'Leva um mês. As pedras estavam numa doação esquecida a um órfão, feita por você mesmo numa noite de inverno e de vinho demais. Você não comenta com ninguém, e deixa a conta aberta.', { karma: 2, stats: { comp: 1 } }],
+      ['Demitir o contador mais novo e encerrar o assunto.', 'O livro volta a fechar. O contador vai embora sem protestar, o que é estranho. Um ano depois, ele abre um negócio próprio a duas ruas da sua casa, com clientes que antes eram seus.', { pedras: 10, karma: -2, fama: -1 }],
+    ]),
+    reacao('herdeiro_pobre', 'O primo de sangue', 'Um primo distante bate à porta de «{alcunha}» com três filhos e nenhuma pedra. Não pede esmola: oferece trabalho em troca de abrigo. Os filhos olham para os cofres como quem olha para o céu.', [
+      ['Contratar o primo pelo preço de mercado, sem desconto nem favor.', 'Ele trabalha melhor do que qualquer contratado. Os filhos crescem contando moedas com você. Ninguém chama isso de bondade, nem você, mas a casa fica cheia pela primeira vez.', { pedras: -15, karma: 2, stats: { car: 1 } }],
+      ['Emprestar uma quantia com juros e mandá-lo procurar trabalho em outra cidade.', 'O primo paga cada pedra, com juros, em seis anos. A última parcela chega com uma carta curta: "Quitado." Você guarda a carta no cofre, junto com as pedras.', { pedras: 25, karma: -1 }],
     ])], { contra: ['compaixao'], infame: { m: 'o Sanguessuga das Seitas', f: 'a Sanguessuga das Seitas' } }),
 
   { id: 'xx_pune_protege', m: 'o Braço que Pune para Proteger', f: 'a Mão que Pune para Proteger', eixos: ['compaixao', 'violencia'],
@@ -148,6 +172,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     reacoes: [reacao('provoca', 'A provocação pública', 'Um cultivador famoso provoca «{alcunha}» publicamente, para forçá-lo a um duelo que ele teria vantagem em vencer.', [
       ['Ignorar a provocação e deixar que o cultivador se canse.', 'Ele grita por três dias e depois cai em desgraça por falta de resposta. Você ganha a reputação de quem não precisa responder.', { fama: 3 }],
       ['Aceitar o duelo e escolher o lugar e a hora.', 'Você escolhe uma hora em que ele está cansado. Vence sem pressa, e a plateia, sem entender, acha que foi magia.', { fama: 4, karma: -1 }],
+    ]),
+    reacao('emboscada', 'A emboscada paciente', 'Inimigos antigos montam uma armadilha para «{alcunha}» com a mesma arma que você sempre usou: tempo. Há semanas um vigia segue os seus passos, sem atacar, esperando um descuido.', [
+      ['Fingir o descuido e escolher onde ele vai acontecer.', 'Você deixa a guarda baixa numa ponte estreita, onde só cabe um de cada vez. Eles vêm em fila. Ao fim, o vigia é o único de pé, e corre para contar aos outros que o tigre não dorme.', { fama: 3, stats: { comp: 1 }, ferida: 1 }],
+      ['Mudar de cidade e de rotina, e deixar que eles se cansem.', 'Leva um ano. O vigia desiste antes dos patrões. Você perde clientes, conforto e um pouco do orgulho, mas ganha uma vida inteira para escolher outro momento.', { stats: { esp: 1 }, pedras: -20 }],
+    ]),
+    reacao('ataque_primeiro', 'A única exceção', 'Uma criança da aldeia é levada por bandidos que vão cruzar a fronteira ao amanhecer. Esperar o erro deles, como você sempre fez, significa perder a criança. «{alcunha}» precisa atacar primeiro, pela primeira vez.', [
+      ['Atacar agora, de frente, sem plano.', 'É feio, rápido e funciona. A criança volta. Você volta com um corte no rosto e a certeza de que a sua calma era uma escolha, não uma natureza.', { karma: 3, ferida: 2, fama: 2 }],
+      ['Gastar uma hora preparando o terreno, mesmo com o risco.', 'A hora custa caro: um dos bandidos foge com metade do resgate. Mas a criança volta inteira, e nenhum aldeão se fere. Você não sabe se foi prudência ou medo, e decide que não importa.', { karma: 2, stats: { comp: 1 } }],
     ])] },
   { id: 'xx_conquistador', m: 'o Conquistador de Picos', f: 'a Conquistadora de Picos', eixos: ['violencia', 'ambicao'],
     historia: 'Dizem que cada pico que sobe, ele muda o nome da seita que o ocupava.',
@@ -237,6 +269,14 @@ export const ALCUNHAS_XIANXIA: Alcunha[] = [
     reacoes: [reacao('desafio', 'A lâmina rival', 'Uma espadachim de outra seita desafia «{alcunha}» num duelo ritual, para decidir qual das duas escolas tem o melhor caminho.', [
       ['Aceitar o duelo e respeitar cada regra.', 'O duelo é breve e bonito. Ao final, as duas escolas trocam discípulos em vez de ressentimentos.', { fama: 4, karma: 1 }],
       ['Recusar e propor uma troca de lições.', 'A troca de lições dura um verão. As duas escolas saem com técnicas novas e nenhuma ferida.', { karma: 2, stats: { comp: 1 } }],
+    ]),
+    reacao('espada_quebrada', 'A espada que racha', 'A espada de «{alcunha}» racha no meio de um treino comum, depois de décadas de batalhas. O ferreiro diz que pode refundi-la, mas ela nunca mais será a mesma lâmina.', [
+      ['Refundir a espada e aprender o novo peso.', 'A lâmina nova é mais curta e mais rápida. O braço demora um ano para aceitar. Quando aceita, você percebe que lutava como a espada velha, e agora pode lutar como você.', { stats: { fis: 1 }, pedras: -25 }],
+      ['Enterrar a espada velha e lutar de mãos vazias por um tempo.', 'Sem lâmina, todo duelo vira conversa. Você descobre quantas brigas acabavam porque você estava armado, e quantas começavam pelo mesmo motivo.', { karma: 2, stats: { dao: 1, fis: -1 } }],
+    ]),
+    reacao('aluno_vingador', 'O filho do vencido', 'Um jovem espadachim procura «{alcunha}» com a espada do pai, morto num duelo justo que você venceu há vinte anos. Ele não quer duelo: quer aprender a técnica que matou o pai.', [
+      ['Ensinar, sabendo que um dia ele pode usá-la contra você.', 'Ele aprende em silêncio, com raiva e talento. No último dia, ergue a espada e a abaixa sem golpear. "Agora sei que meu pai perdeu para alguém que valia a pena." Vai embora sem olhar para trás.', { karma: 3, fama: 2 }],
+      ['Recusar e devolver a ele a bainha do pai, guardada desde o duelo.', 'Ele segura a bainha como quem segura um corpo. Não diz nada. Anos depois, a escola dele, do outro lado do rio, ensina uma única regra: nunca guarde a bainha de um vencido.', { karma: 1, stats: { car: 1 } }],
     ])] },
   { id: 'xx_sem_medo', m: 'o Que Venceu o Medo', f: 'a Que Venceu o Medo', feito: (s) => s.flaw === 'covarde' && flag(s, 'defeito_superado'),
     historia: 'Dizem que foi o último da turma a atravessar a ponte, e o primeiro a atravessá-la de volta para buscar os outros.',
