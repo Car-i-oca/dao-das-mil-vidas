@@ -433,3 +433,11 @@ p { margin-top: 0; }
 .alcunha-final h2 { margin: 4px 0; color: var(--gold-bright, #f0c978); overflow-wrap: anywhere; }
 .alcunha-linha { padding: 4px 0; overflow-wrap: anywhere; }
 .alcunha-linha.found b { color: var(--gold, #d2a95c); }
+
+/* ---------- Alvos de toque: 44 px no mínimo (diretriz de acessibilidade em celular) ---------- */
+.item .btn, .equipment-slot .btn, .shop-row .btn, .inventory-use, .item-detail > .btn, .gallery-tabs button { min-height: 44px; }
+.shop-header .btn, .gallery-header .btn, .inventory-header .btn, .item-detail-close { width: 44px; min-height: 44px; }
+/* Links discretos mantêm o tamanho visual; a área de toque cresce por fora, sem empurrar o layout. */
+.journal-row { position: relative; z-index: 6; }
+.journal-link, .intro summary, .alcunha-chip { position: relative; }
+.journal-link::before, .intro summary::before, .alcunha-chip::before { position: absolute; inset: -12px -10px; content: ""; }
