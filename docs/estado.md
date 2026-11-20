@@ -19,7 +19,7 @@
 
 ## Próximos passos (em ordem)
 1. **B2 concluído** Murim: talentos (14), defeitos (9) e escolas (maior: Punho de Ferro 16,9%; os 73% da Lâmina Errante eram viés do bot, corrigido em `sim/bot.ts`).
-2. Pendência a) **corrigida** (IA semanal, 2026-11-20): molde `desp_caminho_sangue` (despertar.ts) oferece o Caminho do Sangue a quem está sem trilha e tem corrupção ≥ 10, karma ≤ −4, violência ≥ 5 ou a origem Rebento; 5,5% das vidas do bot (1000), ascensão real 0,0% (ver linha da tabela).
+2. Pendência a) **corrigida** (IA semanal, 2026-11-20): molde `desp_caminho_sangue` (despertar.ts) oferece o Caminho do Sangue a quem está sem trilha e tem corrupção ≥ 10, karma ≤ −4, violência ≥ 5 ou a origem Rebento; 2,1% das vidas do bot (1000, depois do método próprio), ascensão real 0,0% (ver linha da tabela).
 3. **B3 (em andamento)** reações das alcunhas (3 por alcunha): feitas 5 do Murim e 10 do Xianxia em 2026-11-20; faltam 19 do Murim e 14 do Xianxia. Revisar com `revisor-texto`.
 4. **B4** Xianxia: talentos/defeitos/origens convertendo moldes dos lotes 26–28 de `899108c` (`auditor-conteudo` lista).
 5. **B5** origens e trilhas nos dois modos.
