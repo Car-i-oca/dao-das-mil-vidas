@@ -44,7 +44,7 @@ export const DESPERTAR: Molde[] = [
         id: 'tempo', texto: 'Pedir um tempo para pensar.',
         res: {
           texto: '"Pense", diz {mestre.nome}, "mas o mundo não espera tanto quanto você imagina." Segue pela estrada, sem olhar para trás. Você fica sabendo que existe um caminho, e que {mestre.ele} está andando em outra direção.',
-          efeitos: [{ fato: ['mestre', 'pediu_tempo', 1] }],
+          efeitos: [{ fato: ['mestre', 'pediu_tempo', 1] }, { q: ['adiou_mestre', 1] }],
           fx: { perfil: { cautela: 1 } },
         },
       },
@@ -52,7 +52,7 @@ export const DESPERTAR: Molde[] = [
         id: 'recusar', texto: 'Dizer que vai aprender sozinho.',
         res: {
           texto: '"Orgulho é a primeira coisa que o Dao cobra", diz {mestre.nome}, sem raiva, e se afasta. A estrada tem muita gente com vontade de ensinar, mas poucos esperam duas vezes.',
-          efeitos: [{ opiniao: ['mestre', -10] }, { fato: ['mestre', 'foi_recusado', 3] }],
+          efeitos: [{ opiniao: ['mestre', -10] }, { fato: ['mestre', 'foi_recusado', 3] }, { q: ['sozinho', 1] }],
           fx: { perfil: { ambicao: 1 }, stats: { dao: 1 } },
         },
       },
@@ -125,6 +125,72 @@ export const DESPERTAR: Molde[] = [
           texto: '{mestre.nome} examina o sinal por muito tempo e, enfim, inclina a cabeça. "Igual, não. Mas também não servo." O método é o mesmo do sangue, ensinado sem as correntes que a seita põe nos de fora: você aprende a cobrar o preço de outros antes do seu.',
           efeitos: [{ opiniao: ['mestre', 15] }, { fato: ['mestre', 'aceitou_discipulo', 3] }, { trilhaDe: 'mestre' }, { papel: ['mestre', 'mestre'] }],
           fx: { corr: 2, setFlags: ['trilha_mestre', 'trilha_sangue', 'sangue_como_igual'], perfil: { ambicao: 1, cautela: 1 } },
+        },
+      },
+    ],
+  }),
+
+  // Quem recusou mestre ("vou aprender sozinho") ou adiou duas vezes não fica preso para sempre no primeiro reino:
+  // o método vem do próprio esforço, com um custo diferente do de quem teve mestre.
+  molde({
+    id: 'desp_metodo_proprio', max: 2,
+    titulo: 'O Método Que Ninguém Ensinou',
+    tipo: 'virada',
+    capitulos: ['despertar', 'entrada', 'ascensao', 'crise'],
+    cooldown: 4,
+    papeis: {},
+    quando: {
+      jogador: { semTrilha: true, reinoMin: 1, idadeMin: 30 },
+      algum: [{ q: { sozinho: [1, undefined] } }, { q: { adiou_mestre: [2, undefined] } }],
+    },
+    relevancia: [{ se: { jogador: { semTrilha: true, idadeMin: 40 } }, mais: 30 }],
+    cena: [
+      { se: { q: { sozinho: [1, undefined] } }, texto: 'Você disse que aprenderia sozinho, e os anos cobraram a promessa. O Qi desperto continua girando sem rumo, como água num poço sem saída. Numa manhã fria, cansado de esperar que alguém volte pela estrada, você decide abrir o caminho com as próprias mãos.' },
+      { texto: 'Os convites passaram e você deixou todos para depois. Agora não há mais ninguém na estrada perguntando nada. O Qi desperto pesa no peito como uma ferramenta que você nunca aprendeu a segurar. Se ninguém vai ensinar, alguém precisa inventar o método.' },
+    ],
+    opcoes: [
+      {
+        id: 'corpo', texto: 'Forjar o corpo no trabalho pesado até o Qi aprender a seguir os músculos.', teste: { stat: ['fis', 'dao'], dif: 2 },
+        falha: {
+          texto: 'Você carrega pedra até as costas travarem. O Qi não desce para os ossos: fica preso no peito, quente e inútil. Passa uma estação inteira deitado, e o método continua sem nome.',
+          fx: { ferida: 2, stats: { fis: 1 }, perfil: { disciplina: 1 } },
+        },
+        sucesso: {
+          texto: 'Pedra, lenha, água do rio morro acima. Durante meses o corpo reclama e o Qi não responde. Um dia, carregando um tronco, você sente a força descer por dentro dos ossos como se sempre tivesse estado ali. Doeu chegar. Não há mestre a quem agradecer, só calos.',
+          fx: { trilha: 'corpo', ferida: 1, stats: { fis: 1 }, setFlags: ['metodo_proprio'], perfil: { disciplina: 2 } },
+        },
+      },
+      {
+        id: 'escutar', texto: 'Sentar-se toda noite e escutar o Qi até ele dizer o que quer.', teste: { stat: ['esp', 'dao'], dif: 1 },
+        sucesso: {
+          texto: 'Na quadragésima noite o barulho dentro da cabeça se aquieta, e o Qi, enfim, mostra o desenho que sempre fez: um mar parado, fundo, que responde à atenção. Você não aprendeu um método. Você o reconheceu.',
+          fx: { trilha: 'alma', stats: { esp: 1 }, setFlags: ['metodo_proprio'], perfil: { cautela: 1, devocao: 1 } },
+        },
+        falha: {
+          texto: 'Você escuta por semanas e só ouve o próprio cansaço. Numa noite o Qi se revolta, sobe pela garganta e deixa um gosto de ferro. Você desiste por ora, com a sensação incômoda de ter aberto uma porta errada.',
+          fx: { corr: 3, ferida: 1, perfil: { ambicao: 1 } },
+        },
+      },
+      {
+        id: 'feras', texto: 'Seguir os bichos espirituais das colinas e copiar o jeito deles de respirar.', teste: { stat: ['sor', 'esp'], dif: 1 },
+        falha: {
+          texto: 'A raposa de cauda prateada some na primeira nevasca e não volta. Você passa o inverno sozinho numa gruta, aprende muito sobre frio e quase nada sobre Qi. Desce a montanha mais magro e mais humilde.',
+          fx: { ferida: 1, perfil: { cautela: 1 } },
+        },
+        sucesso: {
+          texto: 'Uma raposa de cauda prateada tolera sua presença por um inverno inteiro. Você imita o modo como ela dorme, caça e foge, até que um dia o seu Qi passa a se mover do mesmo jeito: alerta, econômico, selvagem. Os aldeões começam a dizer que você tem cheiro de mato.',
+          fx: { trilha: 'bestas', stats: { sor: 1 }, karma: 1, setFlags: ['metodo_proprio'], perfil: { compaixao: 1, astucia: 1 } },
+        },
+      },
+      {
+        id: 'contas', texto: 'Desenhar no chão os padrões que o Qi parece seguir e corrigi-los como um livro de contas.', requer: { jogador: { perfilMin: { astucia: 3 } } }, selo: 'Mente de calculista', teste: { stat: ['comp', 'esp'], dif: 1 },
+        falha: {
+          texto: 'Os círculos no chão se multiplicam e nenhum fecha a conta. Numa madrugada você percebe que passou a semana corrigindo o mesmo erro. Apaga tudo com o pé, envergonhado, e guarda o giz no fundo da gaveta, mas não o joga fora.',
+          fx: { stats: { comp: 1 }, perfil: { cautela: 1 } },
+        },
+        sucesso: {
+          texto: 'Você enche o chão do quarto de círculos, setas e números. Os vizinhos acham que enlouqueceu. Mas, numa tarde, ao apagar uma linha torta, sente o Qi se acomodar no lugar certo, como uma dívida enfim quitada. Formações, sem nenhum professor de formações.',
+          fx: { trilha: 'formacoes', stats: { comp: 1 }, setFlags: ['metodo_proprio'], perfil: { astucia: 1, disciplina: 1 } },
         },
       },
     ],
