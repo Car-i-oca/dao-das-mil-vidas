@@ -1,5 +1,19 @@
 # DEVLOG da IA (execução semanal automática)
 
+## [2026-11-20] Execução semanal (3ª do dia, limites ×3; retomada após queda da conexão)
+- **Pilares:** UI/UX e game feel, Arquitetura e performance
+- **Entregas:**
+  - Painel da história acompanha o texto enquanto digita e mostra «⌄ continua» quando há texto abaixo da dobra.
+  - Celular baixo (≤ 700 px): história ganha espaço da arte; selo de clima/dia com fundo próprio, legível sobre céu claro.
+  - Alvos de toque de 44 px (equipamento, loja, inventário, galeria; área ampliada no Diário e «Como jogar») + teste `npm run e2e:toque` (falha na versão antiga, passa em 320/360/390/430 px).
+  - Gravação do save saiu do `main.ts` para `save.ts` (Storage injetável, 3 testes novos); aparelho que recusa gravar agora avisa uma vez.
+  - Cena (`view`) montada uma vez por render em vez de duas.
+- **Descartado/falhou:** conexão com o PC caiu no meio (~10 min); `git push` bloqueado de novo pelo ambiente (403): 26 commits só no PC.
+- **Validação:** typecheck OK · lint (sem script) · test OK (12/12) · build OK · validate/endings/dourado OK · e2e:toque OK (Chromium no container) | **Commits:** 15eefe0 8af3fdd 1976e2a 1282001 e50d0ec 1ddaee4
+- **Consumo:** ~115 chamadas de ferramenta · 244 linhas alteradas (216+, 28−)
+- **Próximo foco:** Save e dados, QA e estabilidade
+- **Para o Andre decidir:** nada novo (seguem abertas as 2 perguntas da entrada anterior).
+
 ## [2026-11-20] Execução semanal (2ª do dia, limites ×3 a pedido do Andre)
 - **Pilares:** Gameplay e balanceamento, Narrativa e conteúdo
 - **Entregas:**
@@ -12,15 +26,3 @@
 - **Consumo:** ~190 chamadas de ferramenta · 1154 linhas (350 escritas à mão; o resto é dourado e relatórios gerados)
 - **Próximo foco:** UI/UX, Arquitetura e performance
 - **Para o Andre decidir:** (1) curva alta do Xianxia: com trilha só 2 em 1000 vidas chegam ao reino 8, ascensão 0%; quer que a IA reequilibre (anos/longevidade/rompimento) para 0,5–2%? (2) Caminho do Sangue por karma/violência sem exigir a conquista «Sombra Escolhida»: manter?
-
-## [2026-11-20] Execução semanal
-- **Pilares:** Save, QA (primeira execução, sem DEVLOG anterior)
-- **Entregas:**
-  - `src/ui/save.ts`: `saveVersion` 2, migração de saves v0/v1, meta/configurações normalizadas campo a campo; texto ilegível copiado em `murim-quest-save-v1-corrompido` antes de sobrescrever; importar save usa a mesma leitura.
-  - Vida com evento, final ou resultado inexistente é descartada ao carregar (o Legado fica); teste com bot (30 vidas por modo) garante que nenhum estado real é descartado.
-  - Rede de segurança no `render()`: erro inesperado mostra aviso com "Encerrar esta vida" em vez de tela em branco (testado no Chromium a 360 px).
-- **Descartado/falhou:** extras não feitos (passou de HORA_PARAR: o setup do ambiente demorou); **push bloqueado pelo ambiente (403)**: os 4 commits estão só no PC, falta `git push`.
-- **Validação:** typecheck OK · lint (sem script) · test OK (`npm test`, novo) · build OK · validate/endings/dourado OK | **Commits:** 190369a 9acf06c 0e3aff3
-- **Consumo:** ~60 chamadas de ferramenta · ~340 linhas alteradas
-- **Próximo foco:** Gameplay e balanceamento, Narrativa e conteúdo
-- **Para o Andre decidir:** criar um script `lint` (ex.: eslint) ou seguir só com `tsc`?
