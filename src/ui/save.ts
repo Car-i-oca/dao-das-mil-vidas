@@ -1,5 +1,6 @@
 /* ---------- Save: leitura defensiva, versão e migração ----------
- * Módulo puro (sem DOM): recebe o texto bruto do armazenamento e devolve um save utilizável.
+ * Leitura pura (sem DOM): recebe o texto bruto do armazenamento e devolve um save utilizável.
+ * O acesso ao armazenamento (carregarSave/gravarSave) recebe o Storage por parâmetro, para testar sem navegador.
  * Regras: nunca lançar exceção; dado corrompido vira padrão campo a campo (o Legado sobrevive
  * mesmo se a vida em andamento estiver quebrada); saves antigos sobem de versão em `migrar`.
  */
@@ -121,4 +122,36 @@ export function lerSave(raw: string | null | undefined): Leitura {
     vidaDescartada,
     versaoOriginal,
   };
+}
+
+/* ---------- Armazenamento do aparelho ---------- */
+/** Chave do save. Não mudar: quem já joga perderia o Legado. */
+export const SAVE_KEY = 'murim-quest-save-v1';
+/** Cópia do último texto que não pôde ser lido por inteiro (para recuperação manual; nunca é lida pelo jogo). */
+export const SAVE_KEY_CORROMPIDO = `${SAVE_KEY}-corrompido`;
+/** O pedaço do Storage que o save usa: localStorage no jogo, um objeto falso nos testes. */
+export type Armazenamento = Pick<Storage, 'getItem' | 'setItem'>;
+
+function armazenamentoNativo(): Armazenamento | null {
+  try { return globalThis.localStorage ?? null; } catch { return null; } // WebView sem armazenamento lança ao acessar
+}
+
+/** Guarda um texto para recuperação manual. Nunca lança. */
+export function guardarCopia(texto: string, arm: Armazenamento | null = armazenamentoNativo()): boolean {
+  try { arm?.setItem(SAVE_KEY_CORROMPIDO, texto); return !!arm; } catch { return false; }
+}
+
+/** Abre o save do aparelho. Texto ilegível é copiado à parte antes que a próxima gravação o sobrescreva. Nunca lança. */
+export function carregarSave(arm: Armazenamento | null = armazenamentoNativo()): Leitura {
+  let raw: string | null = null;
+  try { raw = arm?.getItem(SAVE_KEY) ?? null; } catch { /* armazenamento indisponível */ }
+  const r = lerSave(raw);
+  if (r.corrompido && raw) guardarCopia(raw, arm);
+  return r;
+}
+
+/** Grava o save. Devolve falso se o aparelho recusou (sem espaço, modo privado, WebView sem armazenamento). Nunca lança. */
+export function gravarSave(save: Save, arm: Armazenamento | null = armazenamentoNativo()): boolean {
+  if (!arm) return false;
+  try { arm.setItem(SAVE_KEY, JSON.stringify(save)); return true; } catch { return false; }
 }

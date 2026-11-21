@@ -15,7 +15,7 @@ import { sceneSvg, endingCard, type SceneKind } from './art';
 import { portraitSvg, lookFromState, lookForNpc, type Role } from './art';
 import { FOES, foeFor } from '../data/combates';
 import { COMPANIONS } from '../data/companions';
-import { lerSave, novoSave, type Save, type Settings } from './save';
+import { lerSave, novoSave, carregarSave, gravarSave, guardarCopia, type Save, type Settings } from './save';
 import { playSfx, startAudioExperience, setAudioForeground } from './audio';
 import { pacote as pixelArt } from './art/pixel';
 const FOE_NAMES: Record<string, string> = Object.fromEntries(FOES.map((x) => [x.id, x.name]));
@@ -27,21 +27,12 @@ function K() {
 }
 
 /* ---------- Persistência ---------- */
-const KEY = 'murim-quest-save-v1';
-/** Cópia do último texto que não pôde ser lido por inteiro (para recuperação manual; nunca é lida pelo jogo). */
-const KEY_CORROMPIDO = `${KEY}-corrompido`;
-
-function load(): Save {
-  let raw: string | null = null;
-  try { raw = localStorage.getItem(KEY); } catch { /* armazenamento indisponível */ }
-  const r = lerSave(raw);
-  // Antes que o próximo persist() sobrescreva o original, guarda o texto bruto para não perder o Legado de vez.
-  if (r.corrompido && raw) try { localStorage.setItem(KEY_CORROMPIDO, raw); } catch { /* sem espaço */ }
-  return r.save;
-}
-let save = load();
+let save = carregarSave().save;
+/** Avisa uma vez por sessão quando o aparelho recusa gravar (antes falhava em silêncio e o progresso sumia). */
+let avisouSemGravar = false;
 function persist() {
-  try { localStorage.setItem(KEY, JSON.stringify(save)); } catch { /* sem armazenamento */ }
+  if (gravarSave(save)) { avisouSemGravar = false; return; }
+  if (!avisouSemGravar) { avisouSemGravar = true; toast('O aparelho não deixou salvar o progresso. Libere espaço ou saia do modo privado.', 'info'); }
 }
 
 function shopModalHtml(s: State): string {
@@ -897,7 +888,7 @@ app.addEventListener('click', (ev) => {
     }
     case 'abandonar-quebrada':
       // Guarda a vida quebrada para recuperação manual antes de descartá-la.
-      try { localStorage.setItem(KEY_CORROMPIDO, JSON.stringify(save)); } catch { /* sem espaço */ }
+      guardarCopia(JSON.stringify(save));
       save.run = null; persist(); screen = 'home'; render();
       break;
     case 'continue':

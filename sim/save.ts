@@ -5,7 +5,7 @@ import { Rng } from '../src/engine/rng';
 import { newMeta, rollCreation, startLife, view, choose, proceed, pickNext } from '../src/engine/engine';
 import { botPick } from './bot';
 import { pacoteDe, MODOS } from '../src/data/modos';
-import { lerSave, normSettings, vidaValida, SAVE_VERSION } from '../src/ui/save';
+import { lerSave, normSettings, vidaValida, SAVE_VERSION, carregarSave, gravarSave, SAVE_KEY, SAVE_KEY_CORROMPIDO, type Armazenamento } from '../src/ui/save';
 import type { State } from '../src/types';
 
 let ok = 0;
@@ -135,6 +135,47 @@ caso('motor: Xianxia sem trilha no topo da escada provisória não rompe (antes 
   delete c.seen['__break'];
   pickNext(c, new Rng(7));
   assert.equal(c.current?.id, '__break', 'com trilha o rompimento continua aparecendo');
+});
+
+/** Storage falso: guarda em memória; `cheio` faz setItem lançar como QuotaExceededError. */
+function armFalso(inicial: Record<string, string> = {}, cheio = false): Armazenamento & { dados: Record<string, string> } {
+  const dados = { ...inicial };
+  return {
+    dados,
+    getItem: (k) => dados[k] ?? null,
+    setItem: (k, v) => { if (cheio) throw new Error('QuotaExceededError'); dados[k] = v; },
+  };
+}
+
+caso('armazenamento: grava e reabre o mesmo save', () => {
+  const arm = armFalso();
+  const s = lerSave(null).save;
+  s.meta.legacy = 77;
+  s.run = vida('murim');
+  assert.equal(gravarSave(s, arm), true);
+  const r = carregarSave(arm);
+  assert.equal(r.corrompido, false);
+  assert.equal(r.save.meta.legacy, 77);
+  assert.equal(r.save.run?.name, s.run.name);
+});
+
+caso('armazenamento: texto ilegível é copiado à parte antes de ser sobrescrito', () => {
+  const arm = armFalso({ [SAVE_KEY]: '{"meta": {"legacy": 5' });
+  const r = carregarSave(arm);
+  assert.equal(r.corrompido, true);
+  assert.equal(arm.dados[SAVE_KEY_CORROMPIDO], '{"meta": {"legacy": 5');
+  assert.equal(r.save.run, null);
+});
+
+caso('armazenamento: aparelho cheio ou sem storage não derruba o jogo', () => {
+  const s = lerSave(null).save;
+  assert.equal(gravarSave(s, armFalso({}, true)), false);
+  assert.equal(gravarSave(s, null), false);
+  const quebrado: Armazenamento = { getItem: () => { throw new Error('SecurityError'); }, setItem: () => { throw new Error('SecurityError'); } };
+  const r = carregarSave(quebrado);
+  assert.equal(r.corrompido, false);
+  assert.equal(r.save.saveVersion, SAVE_VERSION);
+  assert.equal(carregarSave(null).save.run, null);
 });
 
 for (const [nome, f] of casos) {
