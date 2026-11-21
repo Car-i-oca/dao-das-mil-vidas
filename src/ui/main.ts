@@ -3,7 +3,7 @@ import { Rng } from '../engine/rng';
 import {
   rollCreation, startLife, view, choose, proceed, finalizeLife, useItem, useItemInEncounter, buyUpgrade,
   realmOf, ladderOf, eff, cultivationRate, STAT_KEYS, sectRankOf, equipItem, unequipItem, recruitCompanion, dismissCompanion, combatCheckPreview, tradeItem,
-  type Creation,
+  type Creation, type View,
 } from '../engine/engine';
 import { upgradePrice } from '../data/legado';
 import { pacoteDe, MODOS, type Modo } from '../data/modos';
@@ -464,14 +464,16 @@ function renderGame() {
     shopOpen = false;
   }
   let body = '';
-  if (tab === 'aventura') body = lifeHtml(s);
+  // Uma só montagem da cena por render: no Xianxia ela gera o texto do mundo com memória.
+  const v = tab === 'aventura' || tab === 'inventario' ? view(s) : null;
+  if (tab === 'aventura') body = lifeHtml(s, v!);
   else if (tab === 'equipamentos') body = equipmentHtml(s);
-  else if (tab === 'inventario') body = lifeHtml(s);
+  else if (tab === 'inventario') body = lifeHtml(s, v!);
   else body = logHtml(s);
   const frameTab = tab === 'inventario' ? 'aventura' : tab;
   const modalAlcunha = alcunhaAberta ? alcunhaModalHtml(s) : '';
   app.innerHTML = `${modalAlcunha}<div class="game-frame" data-tab="${frameTab}">${hudHtml(s)}<div class="journal-row"><button class="journal-link" data-act="tab" data-id="diario">Diário da vida <span>↗</span></button></div><main class="game" id="game">${body}</main></div>${tabsHtml()}`;
-  if (tab === 'aventura' || tab === 'inventario') startTyping(s);
+  if (v) startTyping(v);
 }
 
 const RARITY_LABEL: Record<string, string> = { comum: 'Comum', incomum: 'Incomum', raro: 'Raro', epico: 'Épico', lendario: 'Lendário' };
@@ -492,8 +494,7 @@ function adventureArt(s: State, eventId: string, title: string, eventType?: stri
   return `<section class="adventure-art">${sceneFor(s, eventId)}${encounter}<div class="art-caption"><span class="badge">${weatherLabel(s.weather)} · Dia ${s.day ?? 1}</span><h2>${esc(title)}</h2></div></section>`;
 }
 
-function lifeHtml(s: State): string {
-  const v = view(s);
+function lifeHtml(s: State, v: View): string {
   const intro = !save.settings.intro && s.turn < 2 ? INTRO_HTML : '';
   const eventId = s.current?.id ?? '';
   const title = v.kind === 'event' ? v.title : (s.ending ? K().ix.ENDING[s.ending]?.name ?? 'O destino se revela' : 'Consequências');
@@ -537,11 +538,10 @@ function lifeHtml(s: State): string {
     </div>`;
 }
 
-function startTyping(s: State) {
+function startTyping(v: View) {
   const el = document.getElementById('typed');
   const choices = document.getElementById('choices');
   if (!el || !choices) return;
-  const v = view(s);
   const text = v.text;
   const panel = el.closest<HTMLElement>('.story-panel');
   prepararPainel(panel);
