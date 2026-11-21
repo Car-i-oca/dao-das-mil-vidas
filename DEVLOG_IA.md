@@ -8,11 +8,12 @@
   - Alvos de toque de 44 px (equipamento, loja, inventário, galeria; área ampliada no Diário e «Como jogar») + teste `npm run e2e:toque` (falha na versão antiga, passa em 320/360/390/430 px).
   - Gravação do save saiu do `main.ts` para `save.ts` (Storage injetável, 3 testes novos); aparelho que recusa gravar agora avisa uma vez.
   - Cena (`view`) montada uma vez por render em vez de duas.
+  - Xianxia mais fácil no topo (aprovado pelo Andre): anos dos reinos 5–8 reduzidos, rompimento 0,27–0,38, última tribulação ×0,8 → reino 8 em 3,4% das vidas, ascensão 0% → 0,9% (1000 vidas; mortes por tribulação 6,5% → 10,2%).
 - **Descartado/falhou:** conexão com o PC caiu no meio (~10 min); `git push` bloqueado de novo pelo ambiente (403): 26 commits só no PC.
-- **Validação:** typecheck OK · lint (sem script) · test OK (12/12) · build OK · validate/endings/dourado OK · e2e:toque OK (Chromium no container) | **Commits:** 15eefe0 8af3fdd 1976e2a 1282001 e50d0ec 1ddaee4
-- **Consumo:** ~115 chamadas de ferramenta · 244 linhas alteradas (216+, 28−)
+- **Validação:** typecheck OK · lint (sem script) · test OK (12/12) · build OK · validate/endings/dourado OK · e2e:toque OK (Chromium no container) | **Commits:** 15eefe0 8af3fdd 1976e2a 1282001 e50d0ec 1ddaee4 + balance xianxia
+- **Consumo:** ~115 chamadas de ferramenta · 256 linhas alteradas
 - **Próximo foco:** Save e dados, QA e estabilidade
-- **Para o Andre decidir:** nada novo (seguem abertas as 2 perguntas da entrada anterior).
+- **Para o Andre decidir:** Caminho do Sangue sem exigir a conquista «Sombra Escolhida»: manter? (curva do Xianxia resolvida)
 
 ## [2026-11-20] Execução semanal (2ª do dia, limites ×3 a pedido do Andre)
 - **Pilares:** Gameplay e balanceamento, Narrativa e conteúdo
